@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { LogIn } from 'lucide-react'
-import { signin } from '@/app/actions/auth'
+import { signin } from '@/actions/auth'
 
 const SignInFormSchema = z.object({
   username: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
@@ -35,8 +35,8 @@ export function LoginForm() {
   })
 
   const onValid = async (values: z.infer<typeof SignInFormSchema>) => {
-    const user = await signin(values.username, values.password)
-    if (!user) {
+    const ok = await signin(values.username, values.password)
+    if (!ok) {
       form.setError('root.badRequest', { type: '400' })
     }
   }
