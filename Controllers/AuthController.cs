@@ -21,12 +21,12 @@ public class AuthController(AuthService authService) : ControllerBase
     {
        var token = await authService.Login(dto);
        if (token == null) return BadRequest("Invalid username or password");
-       Response.Cookies.Append("token", token, new CookieOptions
-       {
-           HttpOnly = true,
-           SameSite = SameSiteMode.Strict,
-           Expires = DateTimeOffset.Now.AddDays(7)
-       });
+       // Response.Cookies.Append("token", token, new CookieOptions
+       // {
+       //     HttpOnly = true,
+       //     SameSite = SameSiteMode.Strict,
+       //     Expires = DateTimeOffset.Now.AddDays(7)
+       // });
         return Ok(new { token });
     }
 

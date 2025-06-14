@@ -58,8 +58,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<StudentService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
