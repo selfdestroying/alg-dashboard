@@ -1,0 +1,16 @@
+import jwt from 'jsonwebtoken'
+
+export async function signin(username: string, password: string) {
+  const res = await fetch('http://localhost:5120/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ username, password }),
+  })
+  if (res.ok) {
+    const token = (await res.json()).token
+    return jwt.decode(token)
+  } else {
+    return null
+  }
+}
