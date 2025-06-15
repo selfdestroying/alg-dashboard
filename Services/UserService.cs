@@ -1,4 +1,5 @@
 ﻿using alg_dashboard_server.DTOs;
+using alg_dashboard_server.Interfaces;
 using alg_dashboard_server.Models;
 using alg_dashboard_server.Repositories;
 

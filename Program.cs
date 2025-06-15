@@ -1,5 +1,6 @@
 using System.Text;
 using alg_dashboard_server.Data;
+using alg_dashboard_server.Interfaces;
 using alg_dashboard_server.Repositories;
 using alg_dashboard_server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,9 +60,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<GroupService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -74,6 +77,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DataSeeder.SeedRoles(db);
+    DataSeeder.SeedCourses(db);
 }
 
 app.UseCors("AllowFrontend");

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("alg-dashboard-server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+273f453b790acecba83c422addd38c9a344644d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2994f21bc032d35cabec5cddcc6ca30af80fe4e4")]
 [assembly: System.Reflection.AssemblyProductAttribute("alg-dashboard-server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("alg-dashboard-server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

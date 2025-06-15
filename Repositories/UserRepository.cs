@@ -1,4 +1,5 @@
 ﻿using alg_dashboard_server.Data;
+using alg_dashboard_server.Interfaces;
 using alg_dashboard_server.Models;
 using Microsoft.EntityFrameworkCore;
 
