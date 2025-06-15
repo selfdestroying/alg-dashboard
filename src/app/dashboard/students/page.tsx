@@ -1,13 +1,21 @@
-import { columns, IStudents } from '@/app/dashboard/students/students'
-import DataTable from './data-table'
+import { columns, IStudent } from '@/app/dashboard/students/students'
+import DataTable from '@/components/data-table'
+import CreateStudentDialog from './create-student-dialog'
 
 export default async function Page() {
   const res = await fetch('http://localhost:5120/api/students')
-  const students: IStudents[] = await res.json()
+  const students: IStudent[] = await res.json()
 
   return (
-    <div className="container p-10">
-      <DataTable columns={columns} data={students} />
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Students</h1>
+          <p className="text-muted-foreground">Manage student records and group assignments</p>
+        </div>
+      </div>
+
+      <DataTable columns={columns} data={students} addButton={<CreateStudentDialog />} />
     </div>
   )
 }

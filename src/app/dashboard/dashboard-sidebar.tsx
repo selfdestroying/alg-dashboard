@@ -1,3 +1,4 @@
+'use client'
 import { GraduationCap, Home, User, Users } from 'lucide-react'
 
 import {
@@ -11,16 +12,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
 import { NavUser } from './nav-user'
-import { verifySession } from '@/lib/dal'
+import { usePathname } from 'next/navigation'
 
 const mainNavItems = [
   {
     title: 'Main',
-    url: '/',
+    url: '/dashboard',
     icon: Home,
     isActive: false,
   },
@@ -47,13 +47,18 @@ const additionalNavItems = [
   },
 ]
 
-export default async function DashboardSidebar() {
-  const session = await verifySession()
+export interface IUser {
+  id: number
+  username: string
+  role: string
+}
 
+export default function DashboardSidebar({ user }: { user: IUser }) {
+  const pathname = usePathname()
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarHeader>
       <SidebarSeparator className="mx-0" />
       <SidebarContent>
@@ -63,7 +68,7 @@ export default async function DashboardSidebar() {
             <SidebarMenu>
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={item.url == pathname}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -74,7 +79,7 @@ export default async function DashboardSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {session.user.role == 'Admin' && (
+        {user.role == 'Admin' && (
           <>
             <SidebarSeparator className="mx-0" />
             <SidebarGroup>

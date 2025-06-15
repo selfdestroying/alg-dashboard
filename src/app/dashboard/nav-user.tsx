@@ -1,3 +1,5 @@
+'use client'
+
 import { BadgeCheck, ChevronsUpDown, LogOut } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -10,11 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
-import { verifySession } from '@/lib/dal'
+import { IUser } from './dashboard-sidebar'
 
-export async function NavUser() {
-  const session = await verifySession()
-
+export function NavUser({ user }: { user: IUser }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -25,12 +25,12 @@ export async function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage alt={session.user.username} />
+                <AvatarImage alt={user.username} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{session.user.username}</span>
-                <span className="truncate text-xs">{session.user.role}</span>
+                <span className="truncate font-medium">{user.username}</span>
+                <span className="truncate text-xs">{user.role}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

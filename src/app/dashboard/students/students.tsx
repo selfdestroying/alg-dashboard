@@ -4,13 +4,13 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { ArrowUpDown } from 'lucide-react'
 
-export interface IStudents {
+export interface IStudent {
   id: number
   name: string
   age: number
 }
 
-export const columns: ColumnDef<IStudents>[] = [
+export const columns: ColumnDef<IStudent>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => {
