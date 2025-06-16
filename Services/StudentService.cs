@@ -20,6 +20,7 @@ public class StudentService(IStudentRepository studentRepository)
 
 
     public async Task AddAsync(Student student) => await studentRepository.AddAsync(student);
-
+    public async Task UpdateAsync(int id, UpdateStudentDto student) => await studentRepository.UpdateAsync(id, student);
+    public async Task DeleteAsync(int id) => await studentRepository.DeleteAsync(id);
     public async Task SaveAsync() => await studentRepository.SaveAsync();
 }

@@ -1,5 +1,6 @@
 ﻿using alg_dashboard_server.DTOs;
 using alg_dashboard_server.Interfaces;
+using alg_dashboard_server.Models;
 
 namespace alg_dashboard_server.Services;
 
@@ -34,4 +35,9 @@ public class GroupService(IGroupRepository groupRepository)
             }).ToList(),
         };
     }
+
+    public async Task AddAsync(Group group) => await groupRepository.AddAsync(group);
+    public async Task UpdateAsync(int id, UpdateGroupDto group) => await groupRepository.UpdateAsync(id, group);
+    public async Task DeleteAsync(int id) => await groupRepository.DeleteAsync(id);
+    public async Task SaveAsync() => await groupRepository.SaveAsync();
 }

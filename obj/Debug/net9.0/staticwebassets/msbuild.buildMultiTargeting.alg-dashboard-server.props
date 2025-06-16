@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\alg-dashboard-server.props" />
-</Project>

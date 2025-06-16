@@ -15,3 +15,9 @@ public class GroupDto
     public string Course { get; set; } = string.Empty;
     public List<StudentDto> Students { get; set; } = [];
 }
+
+public class UpdateGroupDto
+{
+    public string? Name { get; set; }
+    public int? CourseId { get; set; }
+}
