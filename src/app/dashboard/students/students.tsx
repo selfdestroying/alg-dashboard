@@ -2,40 +2,47 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
-import { ArrowUpDown } from 'lucide-react'
-
-export interface IStudent {
-  id: number
-  name: string
-  age: number
-}
+import { ArrowUpDown, EllipsisVertical, Trash } from 'lucide-react'
+import { IStudent } from '@/types/student'
+import { deleteStudent } from '@/actions/students'
+import UpdateStudentDialog from './update-student-dialog'
+import { toast } from 'sonner'
+import { useState } from 'react'
 
 export const columns: ColumnDef<IStudent>[] = [
   {
     accessorKey: 'name',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: 'Name',
   },
   {
     accessorKey: 'age',
-    header: ({ column }) => {
+    header: 'Age',
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const [isLoading, setIsLoading] = useState(false)
+      const handleDelete = () => {
+        setIsLoading(true)
+        const ok = deleteStudent(row.original.id)
+        toast.promise(ok, {
+          loading: 'Deleting...',
+          success: 'Student has been deleted!',
+          error: 'Error',
+        })
+      }
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Age
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex items-center justify-end gap-2">
+          <UpdateStudentDialog />
+          <Button
+            variant={'outline'}
+            className="cursor-pointer"
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            <Trash className="text-red-500" />
+          </Button>
+        </div>
       )
     },
   },

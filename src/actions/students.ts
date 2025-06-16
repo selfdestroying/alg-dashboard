@@ -14,3 +14,16 @@ export async function createStudent(name: string, age: number) {
   revalidatePath('/dashboard/students')
   return await res.json()
 }
+
+export async function deleteStudent(id: number) {
+  const res = await fetch(`http://localhost:5120/api/students/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  if (!res.ok) {
+    return false
+  }
+
+  revalidatePath('/dashboard/students')
+  return true
+}

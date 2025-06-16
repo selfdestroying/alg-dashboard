@@ -1,11 +1,15 @@
 import DataTable from '@/components/data-table'
-import { columns, IGroups } from './groups'
-import { Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { columns } from './groups'
+import { IGroups } from '@/types/group'
+import { ICourse } from '@/types/course'
+import CreateGroupDialog from './create-group-dialog'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:5120/api/groups')
-  const groups: IGroups[] = await res.json()
+  const groupsRes = await fetch('http://localhost:5120/api/groups')
+  const coursesRes = await fetch('http://localhost:5120/api/courses')
+
+  const groups: IGroups[] = await groupsRes.json()
+  const courses: ICourse[] = await coursesRes.json()
 
   return (
     <div className="space-y-6">
@@ -19,12 +23,7 @@ export default async function Page() {
       <DataTable
         columns={columns}
         data={groups}
-        addButton={
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Group
-          </Button>
-        }
+        addButton={<CreateGroupDialog courses={courses} />}
       />
     </div>
   )

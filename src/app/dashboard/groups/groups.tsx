@@ -2,27 +2,19 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
-import { ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, Trash } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { IStudent } from '../students/students'
-
-export interface IGroups {
-  id: number
-  name: string
-  course: string
-  students: number
-}
-export interface IGroup {
-  id: number
-  name: string
-  course: string
-  students: IStudent[]
-}
+import { IGroups } from '@/types/group'
+import { useState } from 'react'
+import { deleteGroup } from '@/actions/groups'
+import { toast } from 'sonner'
+import UpdateStudentDialog from '../students/update-student-dialog'
 
 export const columns: ColumnDef<IGroups>[] = [
   {
     accessorKey: 'name',
+    header: 'Name',
     cell: ({ row }) => (
       <Button variant={'link'} className="w-full p-0 h-fit">
         <Link href={`/dashboard/groups/${row.original.id}`} className="w-full text-start">
@@ -30,17 +22,6 @@ export const columns: ColumnDef<IGroups>[] = [
         </Link>
       </Button>
     ),
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
   },
   {
     accessorKey: 'course',
@@ -51,30 +32,38 @@ export const columns: ColumnDef<IGroups>[] = [
         </Badge>
       </div>
     ),
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Course
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: 'Course',
   },
   {
     accessorKey: 'students',
     cell: ({ row }) => row.original.students,
-    header: ({ column }) => {
+    header: 'Students',
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const [isLoading, setIsLoading] = useState(false)
+      const handleDelete = () => {
+        setIsLoading(true)
+        const ok = deleteGroup(row.original.id)
+        toast.promise(ok, {
+          loading: 'Deleting...',
+          success: 'Student has been deleted!',
+          error: 'Error',
+        })
+      }
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Students
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex items-center justify-end gap-2">
+          <UpdateStudentDialog />
+          <Button
+            variant={'outline'}
+            className="cursor-pointer"
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            <Trash className="text-red-500" />
+          </Button>
+        </div>
       )
     },
   },

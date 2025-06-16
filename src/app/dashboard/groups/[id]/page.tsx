@@ -1,8 +1,8 @@
 import DataTable from '@/components/data-table'
-import { IGroup } from '../groups'
 import { columns } from '../../students/students'
 import { UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { IGroup } from '@/types/group'
 
 export default async function GroupDetail({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
