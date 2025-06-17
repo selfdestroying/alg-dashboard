@@ -1,8 +1,3 @@
 'user server'
 
-
-
-
-export default async function getUser() {
-    
-}
+export default async function getUser() {}

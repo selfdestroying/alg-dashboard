@@ -2,6 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 
+export async function getStudentsExcludeGroup(groupId: number) {
+  const res = await fetch(`http://localhost:5120/api/students?groupId=${groupId}`)
+  if (!res.ok) {
+    return null
+  }
+
+  return await res.json()
+}
+
 export async function createStudent(name: string, age: number) {
   const res = await fetch('http://localhost:5120/api/students', {
     method: 'POST',

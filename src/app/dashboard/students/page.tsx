@@ -1,6 +1,7 @@
-import { columns, IStudent } from '@/app/dashboard/students/students'
+import { columns } from '@/app/dashboard/students/students'
 import DataTable from '@/components/data-table'
-import CreateStudentDialog from './create-student-dialog'
+import { IStudent } from '@/types/student'
+import StudentDialog from '../../../components/student-dialog'
 
 export default async function Page() {
   const res = await fetch('http://localhost:5120/api/students')
@@ -15,7 +16,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={students} addButton={<CreateStudentDialog />} />
+      <DataTable columns={columns} data={students} addButton={<StudentDialog />} />
     </div>
   )
 }

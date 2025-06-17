@@ -1,15 +1,12 @@
 import DataTable from '@/components/data-table'
 import { columns } from './groups'
 import { IGroups } from '@/types/group'
-import { ICourse } from '@/types/course'
-import CreateGroupDialog from './create-group-dialog'
+import GroupDialog from '@/components/group-dialog'
 
 export default async function Page() {
-  const groupsRes = await fetch('http://localhost:5120/api/groups')
-  const coursesRes = await fetch('http://localhost:5120/api/courses')
+  const res = await fetch('http://localhost:5120/api/groups')
 
-  const groups: IGroups[] = await groupsRes.json()
-  const courses: ICourse[] = await coursesRes.json()
+  const groups: IGroups[] = await res.json()
 
   return (
     <div className="space-y-6">
@@ -20,11 +17,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={groups}
-        addButton={<CreateGroupDialog courses={courses} />}
-      />
+      <DataTable columns={columns} data={groups} addButton={<GroupDialog />} />
     </div>
   )
 }

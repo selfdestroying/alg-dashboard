@@ -16,38 +16,40 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { updateStudent } from '@/actions/students'
+import { createStudent, updateStudent } from '@/actions/students'
 import { IStudent } from '@/types/student'
 import { toast } from 'sonner'
+import { FC } from 'react'
 
 const CreateStudentFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
   age: z.number().min(6, { error: 'Minimal age must be 6' }).max(18, 'Maximum age must be 18'),
 })
 
-export function UpdateStudentForm({
-  student,
-  callback,
-}: {
-  student: IStudent
-  callback: () => void
-}) {
+interface IDefaultValues {
+  name: string
+  age: number
+}
+
+interface IStudentFormProps {
+  student?: IStudent
+  defaultValues: IDefaultValues
+}
+
+export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) => {
   const form = useForm<z.infer<typeof CreateStudentFormSchema>>({
     resolver: zodResolver(CreateStudentFormSchema),
-    defaultValues: {
-      name: student.name,
-      age: student.age,
-    },
+    defaultValues: student ? { name: student.name, age: student.age } : defaultValues,
   })
 
-  const onValid = async (values: z.infer<typeof CreateStudentFormSchema>) => {
-    const ok = await updateStudent(student.id, values.name, values.age)
-    if (!ok) {
-      form.setError('root.badRequest', { type: '400' })
+  const onValid = (values: z.infer<typeof CreateStudentFormSchema>) => {
+    let ok
+    if (student) {
+      ok = updateStudent(student.id, values.name, values.age)
     } else {
-      callback()
-      toast.success('Student has been updated')
+      ok = createStudent(values.name, values.age)
     }
+    toast.promise(ok, { success: 'Student has been updated' })
   }
 
   return (
@@ -85,11 +87,10 @@ export function UpdateStudentForm({
             </FormItem>
           )}
         />
-        {form.formState.errors.root?.badRequest && (
-          <FormMessage>Invalid username or password</FormMessage>
-        )}
         <div className="w-full flex justify-end">
-          <Button type="submit">Create Student</Button>
+          <Button type="submit" className="cursor-pointer">
+            Submit
+          </Button>
         </div>
       </form>
     </Form>

@@ -1,12 +1,11 @@
 'use server'
-
 import { ICourse } from '@/types/course'
 
-export default async function getCourses() {
-  const coursesRes = await fetch('http://localhost:5120/api/courses')
+export const getCourses = async () => {
+  const coursesRes = await fetch('http://localhost:5120/api/courses', { cache: 'force-cache' })
 
   if (!coursesRes.ok) {
-    return null
+    return []
   }
 
   const courses: ICourse[] = await coursesRes.json()

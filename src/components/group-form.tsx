@@ -18,38 +18,43 @@ import {
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { ICourse } from '@/types/course'
-import { createGroup } from '@/actions/groups'
+import { createGroup, updateGroup } from '@/actions/groups'
 import { toast } from 'sonner'
+import { FC } from 'react'
+import { IGroups } from '@/types/group'
 
-const CreateStudentFormSchema = z.object({
+const GroupFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
   course: z.string(),
 })
 
-export function CreateGroupForm({
-  callback,
-  courses,
-}: {
-  callback: () => void
+interface IDefaultValues {
+  name: string
+  course: string
+}
+
+interface IGroupFormProps {
+  group?: IGroups
+  defaultValues: IDefaultValues
   courses: ICourse[]
-}) {
-  const form = useForm<z.infer<typeof CreateStudentFormSchema>>({
-    resolver: zodResolver(CreateStudentFormSchema),
-    defaultValues: {
-      name: '',
-      course: courses[0].id.toString(),
-    },
+}
+
+export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses }) => {
+  const form = useForm<z.infer<typeof GroupFormSchema>>({
+    resolver: zodResolver(GroupFormSchema),
+    defaultValues: group
+      ? { name: group.name, course: courses.find((i) => i.name == group.course)?.id.toString() }
+      : defaultValues,
   })
 
-  const onValid = async (values: z.infer<typeof CreateStudentFormSchema>) => {
-    console.log(values.course)
-    const ok = await createGroup(values.name, +values.course)
-    if (!ok) {
-      form.setError('root.badRequest', { type: '400' })
+  const onValid = (values: z.infer<typeof GroupFormSchema>) => {
+    let ok
+    if (group) {
+      ok = updateGroup(group.id, values.name, +values.course)
     } else {
-      callback()
-      toast.success('Group has been created')
+      ok = createGroup(values.name, +values.course)
     }
+    toast.promise(ok, { success: 'Group has been created' })
   }
 
   return (
@@ -68,6 +73,7 @@ export function CreateGroupForm({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="course"
@@ -77,7 +83,7 @@ export function CreateGroupForm({
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder={courses[0].name} />
+                    <SelectValue placeholder="Выберите курс" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -91,12 +97,9 @@ export function CreateGroupForm({
             </FormItem>
           )}
         />
-        {form.formState.errors.root?.badRequest && (
-          <FormMessage>Invalid username or password</FormMessage>
-        )}
         <div className="w-full flex justify-end">
           <Button type="submit" className="cursor-pointer">
-            Create
+            Submit
           </Button>
         </div>
       </form>
