@@ -40,4 +40,7 @@ public class GroupService(IGroupRepository groupRepository)
     public async Task UpdateAsync(int id, UpdateGroupDto group) => await groupRepository.UpdateAsync(id, group);
     public async Task DeleteAsync(int id) => await groupRepository.DeleteAsync(id);
     public async Task SaveAsync() => await groupRepository.SaveAsync();
+
+    public async Task AddToGroupAsync(int groupId, int studentId) =>
+        await groupRepository.AddToGroupAsync(groupId, studentId);
 }

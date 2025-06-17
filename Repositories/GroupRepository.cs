@@ -22,6 +22,7 @@ public class GroupRepository(AppDbContext context): IGroupRepository
     public async Task AddAsync(Group group)
     {
         await context.Groups.AddAsync(group);
+        await context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(int id, UpdateGroupDto group)
@@ -47,6 +48,17 @@ public class GroupRepository(AppDbContext context): IGroupRepository
 
     public async Task SaveAsync()
     {
+        await context.SaveChangesAsync();
+    }
+
+    public async Task AddToGroupAsync(int groupId, int studentId)
+    {
+        var studentGroup = new GroupStudent
+        {
+            GroupId = groupId,
+            StudentId = studentId
+        };
+        context.GroupStudents.Add(studentGroup);
         await context.SaveChangesAsync();
     }
 }

@@ -28,9 +28,14 @@ public class GroupsController(GroupService groupService): ControllerBase
     public async Task<IActionResult> Create(Group group)
     {
         await groupService.AddAsync(group);
-        await groupService.SaveAsync();
-        
         return CreatedAtAction(nameof(GetAll), new { id = group.Id }, group);
+    }
+
+    [HttpPost("add-to-group")]
+    public async Task<IActionResult> AddToGroup(AddToGroupDto addToGroupDto)
+    {
+        await groupService.AddToGroupAsync(addToGroupDto.GroupId, addToGroupDto.StudentId);
+        return Ok();
     }
 
     [HttpPut("{id}")]

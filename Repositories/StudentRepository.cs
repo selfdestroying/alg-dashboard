@@ -8,9 +8,17 @@ namespace alg_dashboard_server.Repositories;
 
 public class StudentRepository(AppDbContext context): IStudentRepository
 {
-    public async Task<List<Student>> GetAllAsync()
+    public async Task<List<Student>> GetAllAsync(int? groupId)
     {
-        return await context.Students.ToListAsync();
+        if (!groupId.HasValue) return await context.Students.ToListAsync();
+        var studentIdsInGroup = await context.GroupStudents
+            .Where(sg => sg.GroupId == groupId)
+            .Select(sg => sg.StudentId)
+            .ToListAsync();
+
+        return await context.Students
+            .Where(s => !studentIdsInGroup.Contains(s.Id))
+            .ToListAsync();
     }
 
     public async Task AddAsync(Student student)

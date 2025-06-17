@@ -10,12 +10,18 @@ namespace alg_dashboard_server.Controllers;
 public class StudentsController(StudentService studentService): ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery]int? groupId)
     {
-        var students = await studentService.GetAllAsync();
+        var students = await studentService.GetAllAsync(groupId);
         
         return Ok(students);
     }
+    
+    // [HttpGet]
+    // public async Task<IActionResult> GetExcludeGroup()
+    // {
+    //     
+    // }
 
     [HttpPost]
     public async Task<IActionResult> Create(Student student)

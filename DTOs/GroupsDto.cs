@@ -21,3 +21,9 @@ public class UpdateGroupDto
     public string? Name { get; set; }
     public int? CourseId { get; set; }
 }
+
+public class AddToGroupDto
+{
+    public int GroupId { get; set; }
+    public int StudentId { get; set; }
+}

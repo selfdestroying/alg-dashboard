@@ -45,11 +45,6 @@ logs/
 ## Secrets
 secrets.json
 
-## npm/yarn (если фронтенд есть)
-node_modules/
-dist/
-build/
-
 ## OS-specific
 .DS_Store
 Thumbs.db

@@ -7,9 +7,10 @@ namespace alg_dashboard_server.Services;
 
 public class StudentService(IStudentRepository studentRepository)
 {
-    public async Task<List<StudentDto>> GetAllAsync()
+    public async Task<List<StudentDto>> GetAllAsync(int? groupId)
     {
-        var students = await studentRepository.GetAllAsync();
+        
+        var students = await studentRepository.GetAllAsync(groupId);
         return students.Select(s => new StudentDto
         {
             Id = s.Id,

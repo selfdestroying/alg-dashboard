@@ -11,4 +11,5 @@ public interface IGroupRepository
     Task DeleteAsync(int id);
     Task UpdateAsync(int id, UpdateGroupDto group);
     Task SaveAsync();
+    Task AddToGroupAsync(int groupId, int studentId);
 }
