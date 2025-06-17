@@ -16,6 +16,7 @@ import {
 import Link from 'next/link'
 import { NavUser } from './nav-user'
 import { usePathname } from 'next/navigation'
+import { IUser } from '@/types/user'
 
 const mainNavItems = [
   {
@@ -46,12 +47,6 @@ const additionalNavItems = [
     isActive: false,
   },
 ]
-
-export interface IUser {
-  id: number
-  username: string
-  role: string
-}
 
 export default function DashboardSidebar({ user }: { user: IUser }) {
   const pathname = usePathname()

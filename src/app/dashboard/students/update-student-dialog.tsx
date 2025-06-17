@@ -10,10 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Edit, UserPlus } from 'lucide-react'
+import { UpdateStudentForm } from '@/components/update-student-form'
+import { IStudent } from '@/types/student'
+import { Edit } from 'lucide-react'
 import { useState } from 'react'
 
-export default function UpdateStudentDialog() {
+export default function UpdateStudentDialog({ student }: { student: IStudent }) {
   const [open, setOpen] = useState<boolean>(false)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -29,10 +31,11 @@ export default function UpdateStudentDialog() {
             Enter the student details to add them to the system.
           </DialogDescription>
         </DialogHeader>
-        <CreateStudentForm
+        <UpdateStudentForm
           callback={() => {
             setOpen(false)
           }}
+          student={student}
         />
       </DialogContent>
     </Dialog>

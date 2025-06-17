@@ -15,6 +15,19 @@ export async function createStudent(name: string, age: number) {
   return await res.json()
 }
 
+export async function updateStudent(id: number, name: string, age: number) {
+  const res = await fetch(`http://localhost:5120/api/students/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, age }),
+  })
+  if (!res.ok) {
+    return false
+  }
+  revalidatePath('/dashboard/students')
+  return true
+}
+
 export async function deleteStudent(id: number) {
   const res = await fetch(`http://localhost:5120/api/students/${id}`, {
     method: 'DELETE',
