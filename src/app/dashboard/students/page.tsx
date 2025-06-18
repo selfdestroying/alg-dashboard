@@ -1,11 +1,11 @@
 import { columns } from '@/app/dashboard/students/students'
-import DataTable from '@/components/data-table'
+import DataTable from '@/components/ui/data-table'
+import StudentDialog from '@/components/students/student-dialog'
 import { IStudent } from '@/types/student'
-import StudentDialog from '../../../components/student-dialog'
 
 export default async function Page() {
   const res = await fetch('http://localhost:5120/api/students')
-  const students: IStudent[] = await res.json()
+  const students: IStudent[] = (await res.json()).data
 
   return (
     <div className="space-y-6">

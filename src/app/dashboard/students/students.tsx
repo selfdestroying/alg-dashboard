@@ -3,12 +3,14 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { IStudent } from '@/types/student'
 import { deleteStudent } from '@/actions/students'
-import StudentDialog from '../../../components/student-dialog'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { DeleteDialog } from '@/components/delete-dialog'
+import { usePathname } from 'next/navigation'
+import { removeFromGroup } from '@/actions/groups'
+import StudentDialog from '@/components/students/student-dialog'
 
-export default function Actions({ student }: { student: IStudent }) {
+function Actions({ student }: { student: IStudent }) {
   const [, setIsLoading] = useState(false)
   const handleDelete = () => {
     setIsLoading(true)
@@ -16,6 +18,28 @@ export default function Actions({ student }: { student: IStudent }) {
     toast.promise(ok, {
       loading: 'Deleting...',
       success: 'Student has been deleted!',
+      error: 'Error',
+    })
+  }
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <StudentDialog student={student} />
+      <DeleteDialog handleDelete={handleDelete} />
+    </div>
+  )
+}
+
+function ActionsInGroup({ student }: { student: IStudent }) {
+  const [, setIsLoading] = useState(false)
+  const pathname = usePathname()
+  const groupId = pathname.split('/')[pathname.split('/').length - 1]
+  const handleDelete = () => {
+    setIsLoading(true)
+    const ok = removeFromGroup(+groupId, student.id)
+    toast.promise(ok, {
+      loading: 'Deleting...',
+      success: 'Student has been removed from group!',
       error: 'Error',
     })
   }
@@ -50,5 +74,9 @@ export const columnsInGroup: ColumnDef<IStudent>[] = [
   {
     accessorKey: 'age',
     header: 'Age',
+  },
+  {
+    id: 'actionsInGroup',
+    cell: ({ row }) => <ActionsInGroup student={row.original} />,
   },
 ]

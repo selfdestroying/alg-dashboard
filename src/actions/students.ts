@@ -8,7 +8,7 @@ export async function getStudentsExcludeGroup(groupId: number) {
     return null
   }
 
-  return await res.json()
+  return (await res.json()).data
 }
 
 export async function createStudent(name: string, age: number) {

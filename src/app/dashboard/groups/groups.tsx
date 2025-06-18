@@ -7,8 +7,8 @@ import Link from 'next/link'
 import { IGroups } from '@/types/group'
 import { deleteGroup } from '@/actions/groups'
 import { toast } from 'sonner'
-import GroupDialog from '../../../components/group-dialog'
 import { DeleteDialog } from '@/components/delete-dialog'
+import GroupDialog from '@/components/groups/group-dialog'
 
 export default function Actions({ group }: { group: IGroups }) {
   const handleDelete = () => {
@@ -52,7 +52,7 @@ export const columns: ColumnDef<IGroups>[] = [
   },
   {
     accessorKey: 'students',
-    cell: ({ row }) => row.original.students,
+    cell: ({ row }) => row.original.students.length,
     header: 'Students',
   },
   {

@@ -2,7 +2,7 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import DashboardSidebar from './dashboard-sidebar'
 import { verifySession } from '@/lib/dal'
-import { ModeToggle } from '@/components/mode-toggle'
+import { ModeToggle } from '@/components/ui/mode-toggle'
 import { IUser } from '@/types/user'
 
 export default async function Layout({ children }: { children: React.ReactNode }) {

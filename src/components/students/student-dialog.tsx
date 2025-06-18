@@ -9,10 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { StudentForm } from '@/components/student-form'
 import { IStudent } from '@/types/student'
 import { Edit, UserPlus } from 'lucide-react'
 import { useState } from 'react'
+import { StudentForm } from './student-form'
 
 export default function StudentDialog({ student }: { student?: IStudent }) {
   const [open, setOpen] = useState<boolean>(false)

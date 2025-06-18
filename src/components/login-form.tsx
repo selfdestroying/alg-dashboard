@@ -42,7 +42,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
@@ -83,7 +83,7 @@ export function LoginForm() {
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 mr-2" />
                     Signing in...
                   </>
                 ) : (
@@ -96,9 +96,9 @@ export function LoginForm() {
             </form>
           </Form>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-1">
+          <div className="mt-6 p-4 rounded-lg space-y-1">
             <p className="text-sm font-medium mb-2">Demo Accounts:</p>
-            <div className="text-xs space-y-1 bg-gray-200 rounded-md p-4">
+            <div className="text-xs space-y-1 rounded-md p-4">
               <p>
                 <strong>Username:</strong> admin
               </p>
@@ -106,7 +106,7 @@ export function LoginForm() {
                 <strong>Password:</strong> admin
               </p>
             </div>
-            <div className="text-xs space-y-1 bg-gray-200 rounded-md p-4">
+            <div className="text-xs space-y-1 rounded-md p-4">
               <p>
                 <strong>Username:</strong> user
               </p>

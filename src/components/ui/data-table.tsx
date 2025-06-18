@@ -18,14 +18,12 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { Search } from 'lucide-react'
 import { ReactNode, useState } from 'react'
-import { Input } from './ui/input'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  addButton: ReactNode
+  addButton?: ReactNode
 }
 
 export default function DataTable<TData, TValue>({
@@ -50,9 +48,9 @@ export default function DataTable<TData, TValue>({
   })
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-2 py-4 flex-1">
+        {/* <div className="flex items-center space-x-2 py-4 flex-1">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Filter by name..."
@@ -60,7 +58,7 @@ export default function DataTable<TData, TValue>({
             onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
             className="max-w-sm"
           />
-        </div>
+        </div> */}
         {addButton}
       </div>
       <div className="rounded-md border">

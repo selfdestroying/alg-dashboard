@@ -1,12 +1,12 @@
-import DataTable from '@/components/data-table'
+import DataTable from '@/components/ui/data-table'
 import { columns } from './groups'
 import { IGroups } from '@/types/group'
-import GroupDialog from '@/components/group-dialog'
+import GroupDialog from '@/components/groups/group-dialog'
 
 export default async function Page() {
   const res = await fetch('http://localhost:5120/api/groups')
 
-  const groups: IGroups[] = await res.json()
+  const groups: IGroups[] = (await res.json()).data
 
   return (
     <div className="space-y-6">

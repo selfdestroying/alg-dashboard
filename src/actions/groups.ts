@@ -42,15 +42,27 @@ export async function deleteGroup(id: number) {
 }
 
 export async function addToGroup(groupId: number, studentId: number) {
-  const res = await fetch('http://localhost:5120/api/groups/add-to-group', {
+  const res = await fetch('http://localhost:5120/api/groups/add-student', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ groupId, studentId }),
   })
-  console.log()
   if (!res.ok) {
     return false
   }
   revalidatePath(`/dashboard/groups/${groupId}`)
+  return true
+}
+
+export async function removeFromGroup(groupId: number, studentId: number) {
+  const res = await fetch('http://localhost:5120/api/groups/remove-student', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ groupId, studentId }),
+  })
+  if (!res.ok) {
+    return false
+  }
+  revalidatePath(`/dashboard/groups${groupId}`)
   return true
 }

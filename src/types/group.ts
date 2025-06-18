@@ -4,7 +4,7 @@ export interface IGroups {
   id: number
   name: string
   course: string
-  students: number
+  students: IStudent[]
 }
 export interface IGroup {
   id: number

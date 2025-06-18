@@ -16,12 +16,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+
 import { ICourse } from '@/types/course'
 import { createGroup, updateGroup } from '@/actions/groups'
 import { toast } from 'sonner'
 import { FC } from 'react'
 import { IGroups } from '@/types/group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const GroupFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),

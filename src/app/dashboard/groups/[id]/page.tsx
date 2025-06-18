@@ -1,4 +1,4 @@
-import DataTable from '@/components/data-table'
+import DataTable from '@/components/ui/data-table'
 import { columnsInGroup } from '../../students/students'
 import { IGroup } from '@/types/group'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,7 @@ import { getStudentsExcludeGroup } from '@/actions/students'
 export default async function GroupDetail({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const groupRes = await fetch(`http://localhost:5120/api/groups/${id}`)
-  const group: IGroup = await groupRes.json()
+  const group: IGroup = (await groupRes.json()).data
   const students = await getStudentsExcludeGroup(+id)
 
   return (
