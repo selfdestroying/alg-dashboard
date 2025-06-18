@@ -34,7 +34,6 @@ Migrations/
 
 ## Logs
 logs/
-*.log
 *.tlog
 *.svclog
 

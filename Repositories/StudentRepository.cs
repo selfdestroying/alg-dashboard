@@ -21,34 +21,37 @@ public class StudentRepository(AppDbContext context): IStudentRepository
             .ToListAsync();
     }
 
-    public async Task AddAsync(Student student)
+    public async Task<Student> AddAsync(StudentRequestDto student)
     {
-        await context.Students.AddAsync(student);
+        var newStudent = await context.Students.AddAsync(new Student
+        {
+            Name = student.Name,
+            Age = student.Age,
+        });
+        await context.SaveChangesAsync();
+        return newStudent.Entity;
     }
 
-    public async Task UpdateAsync(int id, UpdateStudentDto student)
+    public async Task<Student?> UpdateAsync(int id, UpdateStudentRequestDto student)
     {
         var studentFromDb = await context.Students.FindAsync(id);
-        if (studentFromDb == null) return;
+        if (studentFromDb == null) return null;
         
         studentFromDb.Name = student.Name ?? studentFromDb.Name;
         studentFromDb.Age = student.Age ?? studentFromDb.Age;
         
-        context.Students.Update(studentFromDb);
-
+        var updatedStudent = context.Students.Update(studentFromDb);
         await context.SaveChangesAsync();
+
+        return updatedStudent.Entity;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var studentFromDb = await context.Students.FindAsync(id);
-        if (studentFromDb == null) return;
+        if (studentFromDb == null) return false;
         context.Students.Remove(studentFromDb);
         await context.SaveChangesAsync();
-    }
-
-    public async Task SaveAsync()
-    {
-        await context.SaveChangesAsync();
+        return true;
     }
 }

@@ -1,15 +1,13 @@
 ﻿using alg_dashboard_server.Models;
 using alg_dashboard_server.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace alg_dashboard_server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(UserService userService): ControllerBase
+public class TeachersController(UserService userService): ControllerBase
 {
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -17,7 +15,6 @@ public class UsersController(UserService userService): ControllerBase
         return Ok(users);
     }
     
-    [Authorize(Roles = "Admin")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -25,21 +22,12 @@ public class UsersController(UserService userService): ControllerBase
         if (user == null) return NotFound();
         return Ok(user);
     }
-
-    [Authorize]
-    [HttpGet("me")]
-    public IActionResult GetMe()
-    {
-        var user = User.Identity?.Name;
-        return Ok(user);
-    }
     
-    [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+    public async Task<IActionResult> Create(Teacher teacher)
     {
-        await userService.AddAsync(user);
+        await userService.AddAsync(teacher);
         await userService.SaveAsync();
-        return CreatedAtAction(nameof(GetAll), new { id = user.Id }, user);
+        return CreatedAtAction(nameof(GetAll), new { id = teacher.Id }, teacher);
     }
 }

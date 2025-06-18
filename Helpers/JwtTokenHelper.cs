@@ -8,12 +8,12 @@ namespace alg_dashboard_server.Helpers;
 
 public static class JwtTokenHelper
 {
-    public static string GenerateToken(User user, IConfiguration config)
+    public static string GenerateToken(Teacher teacher, IConfiguration config)
     {
         var claims = new[]
         {
-            new Claim("username", user.Username),
-            new Claim("role", user.Role!.Name),
+            new Claim("username", teacher.Username),
+            new Claim("role", teacher.Role!.Name),
         };
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));

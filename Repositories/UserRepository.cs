@@ -7,24 +7,24 @@ namespace alg_dashboard_server.Repositories;
 
 public class UserRepository(AppDbContext context) : IUserRepository
 {
-    public async Task<List<User>> GetAllAsync()
+    public async Task<List<Teacher>> GetAllAsync()
     {
-        return await context.Users.Include(r => r.Role).ToListAsync();
+        return await context.Teachers.Include(r => r.Role).ToListAsync();
     }
 
-    public async Task<User?> GetByIdAsync(int id)
+    public async Task<Teacher?> GetByIdAsync(int id)
     {
-        return await context.Users.Include(r => r.Role).FirstOrDefaultAsync(u => u.Id == id);
+        return await context.Teachers.Include(r => r.Role).FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<Teacher?> GetByUsernameAsync(string username)
     {
-        return await context.Users.Include(r => r.Role).FirstOrDefaultAsync(u => u.Username == username);
+        return await context.Teachers.Include(r => r.Role).FirstOrDefaultAsync(u => u.Username == username);
     }
 
-    public async Task AddAsync(User user)
+    public async Task AddAsync(Teacher teacher)
     {
-        await context.Users.AddAsync(user);
+        await context.Teachers.AddAsync(teacher);
     }
 
     public async Task SaveAsync()

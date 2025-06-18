@@ -7,49 +7,110 @@ namespace alg_dashboard_server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GroupsController(GroupService groupService): ControllerBase
+public class GroupsController(GroupService groupService) : ControllerBase
 {
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var groups = await groupService.GetAllAsync();
-        return Ok(groups);
+        try
+        {
+            var groups = await groupService.GetAllAsync();
+            return Ok(new SuccessResponse<List<GroupResponseDto>>("", groups));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var group = await groupService.GetByIdAsync(id);
-        return Ok(group);
+        try
+        {
+            var group = await groupService.GetByIdAsync(id);
+            if (group == null) return NotFound(new ErrorResponse<string>("Group not found"));
+            return Ok(new SuccessResponse<GroupResponseDto>("", group));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Group group)
+    public async Task<IActionResult> Create([FromBody] GroupRequestDto group)
     {
-        await groupService.AddAsync(group);
-        return CreatedAtAction(nameof(GetAll), new { id = group.Id }, group);
+        try
+        {
+            var newGroup = await groupService.AddAsync(group);
+            if (newGroup == null) return NotFound(new ErrorResponse<string>("Course not found"));
+            return Ok(new SuccessResponse<GroupResponseDto>("", newGroup));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
 
-    [HttpPost("add-to-group")]
-    public async Task<IActionResult> AddToGroup(AddToGroupDto addToGroupDto)
+    [HttpPost("add-student")]
+    public async Task<IActionResult> AddStudent(EditStudentInGroupRequestDto requestDto)
     {
-        await groupService.AddToGroupAsync(addToGroupDto.GroupId, addToGroupDto.StudentId);
-        return Ok();
+        try
+        {
+            var ok = await groupService.AddToGroupAsync(requestDto);
+            if (!ok)
+                return NotFound(new ErrorResponse<string>("Group or student not found or student already in group"));
+            return Ok(new SuccessResponse<object>("Student has been added to the group", new { }));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
+    }
+
+    [HttpPost("remove-student")]
+    public async Task<IActionResult> RemoveStudent(EditStudentInGroupRequestDto requestDto)
+    {
+        try
+        {
+            var ok = await groupService.RemoveStudentAsync(requestDto);
+            if (!ok) return NotFound(new ErrorResponse<string>("Student has not been added to the group"));
+            return Ok(new SuccessResponse<object>("Student has been removed from the group", new { }));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateGroupDto group)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGroupRequestDto group)
     {
-        await groupService.UpdateAsync(id, group);
-        return Ok();
+        try
+        {
+            var updatedGroup = await groupService.UpdateAsync(id, group);
+            if (updatedGroup == null) return NotFound(new ErrorResponse<string>("Group or course not found"));
+            return Ok(new SuccessResponse<GroupResponseDto>("Group has been updated successfully", updatedGroup));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        await groupService.DeleteAsync(id);
-        return Ok();
+        try
+        {
+            var ok = await groupService.DeleteAsync(id);
+            if (!ok) return NotFound(new ErrorResponse<string>("Group not found"));
+            return Ok(new SuccessResponse<object>("Group has been deleted successfully", new { }));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        }
     }
-    
 }

@@ -7,9 +7,10 @@ public interface IGroupRepository
 {
     Task<List<Group>> GetAllAsync();
     Task<Group?> GetByIdAsync(int id);
-    Task AddAsync(Group group);
-    Task DeleteAsync(int id);
-    Task UpdateAsync(int id, UpdateGroupDto group);
-    Task SaveAsync();
-    Task AddToGroupAsync(int groupId, int studentId);
+    Task<Group?> AddAsync(GroupRequestDto group);
+    Task<Group?> UpdateAsync(int id, UpdateGroupRequestDto groupRequest);
+    Task<bool> DeleteAsync(int id);
+    
+    Task<bool> AddStudentAsync(EditStudentInGroupRequestDto requestDto);
+    Task<bool> RemoveStudentAsync(EditStudentInGroupRequestDto requestDto);
 }

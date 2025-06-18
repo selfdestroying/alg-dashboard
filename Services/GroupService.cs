@@ -6,41 +6,68 @@ namespace alg_dashboard_server.Services;
 
 public class GroupService(IGroupRepository groupRepository)
 {
-    public async Task<List<GroupsDto>> GetAllAsync()
+    public async Task<List<GroupResponseDto>> GetAllAsync()
     {
         var groups = await groupRepository.GetAllAsync();
-        return groups.Select(g => new GroupsDto
+        return groups.Select(g => new GroupResponseDto
         {
             Id = g.Id,
             Name = g.Name,
-            Course = g.Course?.Name ?? "N/A",
-            Students = g.GroupStudents.Count,
+            Course = g.Course.Name,
+            Students = g.GroupStudents.Select(gs => new StudentResponseDto
+            {
+                Id = gs.Student.Id,
+                Name = gs.Student.Name,
+                Age = gs.Student.Age,
+            }).ToList(),
         }).ToList();
     }
 
-    public async Task<GroupDto?> GetByIdAsync(int id)
+    public async Task<GroupResponseDto?> GetByIdAsync(int id)
     {
         var group = await groupRepository.GetByIdAsync(id);
         if (group == null) return null;
-        return new GroupDto
+        return new GroupResponseDto
         {
             Id = group.Id,
             Name = group.Name,
-            Course = group.Course?.Name ?? "N/A",
-            Students = group.GroupStudents.Select(sg => new StudentDto
+            Course = group.Course.Name,
+            Students = group.GroupStudents.Select(sg => new StudentResponseDto
             {
                 Id = sg.StudentId,
-                Name = sg.Student?.Name ?? "N/A",
-                Age = sg.Student?.Age ?? 0
+                Name = sg.Student.Name,
+                Age = sg.Student.Age
             }).ToList(),
         };
     }
 
-    public async Task AddAsync(Group group) => await groupRepository.AddAsync(group);
-    public async Task UpdateAsync(int id, UpdateGroupDto group) => await groupRepository.UpdateAsync(id, group);
-    public async Task DeleteAsync(int id) => await groupRepository.DeleteAsync(id);
-    public async Task SaveAsync() => await groupRepository.SaveAsync();
+    public async Task<GroupResponseDto?> AddAsync(GroupRequestDto group) {
+        var newGroup = await groupRepository.AddAsync(group);
+        if (newGroup == null) return null;
+        
+        return new GroupResponseDto
+        {
+            Id = newGroup.Id,
+            Name = newGroup.Name,
+            Course = "",
+            Students = []
+        };
+    }
+    public async Task<GroupResponseDto?> UpdateAsync(int id, UpdateGroupRequestDto groupRequest) {
+        var updatedGroup = await groupRepository.UpdateAsync(id, groupRequest);
+        if (updatedGroup == null) return null;
 
-    public async Task AddToGroupAsync(int groupId, int studentId) =>
-        await groupRepository.AddToGroupAsync(groupId, studentId);
+        return new GroupResponseDto
+        {
+            Id = updatedGroup.Id,
+            Name = updatedGroup.Name,
+            Course = "",
+            Students = []
+        };
+    }
+    public async Task<bool> DeleteAsync(int id) => await groupRepository.DeleteAsync(id);
+
+    public async Task<bool> AddToGroupAsync(EditStudentInGroupRequestDto requestDto) =>
+        await groupRepository.AddStudentAsync(requestDto);
+    public async Task<bool> RemoveStudentAsync(EditStudentInGroupRequestDto requestDto) => await groupRepository.RemoveStudentAsync(requestDto);
 }

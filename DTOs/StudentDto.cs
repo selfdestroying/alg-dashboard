@@ -1,14 +1,27 @@
 ﻿namespace alg_dashboard_server.DTOs;
 
-public class StudentDto
+public class StudentRequestDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public int Age { get; set; }
+    public required string Name { get; init; }
+    public required int Age { get; init; }
 }
 
-public class UpdateStudentDto
+public class StudentResponseDto
 {
-    public string? Name { get; set; }
-    public int? Age { get; set; }
+    public required int Id { get; set; }
+    public required string Name { get; init; }
+    public required int Age { get; init; }
+}
+
+public class UpdateStudentRequestDto
+{
+    public required string? Name { get; set; }
+    public required int? Age { get; set; }
+}
+
+public class UpdateStudentResponseDto
+{
+    public required int Id { get; set; }
+    public required string Name { get; set; }
+    public required int Age { get; set; }
 }

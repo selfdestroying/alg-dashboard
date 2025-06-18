@@ -7,5 +7,5 @@ public class Role
     public int Id { get; init; }
     [MaxLength(100)] public string Name { get; init; } = string.Empty;
 
-    public List<User> Users { get; init; } = [];
+    public List<Teacher> Teachers { get; init; } = [];
 }

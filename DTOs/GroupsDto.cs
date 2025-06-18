@@ -1,28 +1,27 @@
 ﻿namespace alg_dashboard_server.DTOs;
 
-public class GroupsDto
+public class GroupRequestDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Course { get; set; } = string.Empty;
-    public int Students { get; set; } = 0;
+    public required string Name { get; init; }
+    public required int CourseId { get; init; }
 }
 
-public class GroupDto
+public class GroupResponseDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Course { get; set; } = string.Empty;
-    public List<StudentDto> Students { get; set; } = [];
+    public required int Id { get; set; }
+    public required string Name { get; init; }
+    public required string Course { get; init; }
+    public required List<StudentResponseDto> Students { get; init; }
 }
 
-public class UpdateGroupDto
+
+public class UpdateGroupRequestDto
 {
     public string? Name { get; set; }
     public int? CourseId { get; set; }
 }
 
-public class AddToGroupDto
+public class EditStudentInGroupRequestDto
 {
     public int GroupId { get; set; }
     public int StudentId { get; set; }
