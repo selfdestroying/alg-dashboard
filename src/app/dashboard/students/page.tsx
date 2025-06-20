@@ -2,10 +2,10 @@ import { columns } from '@/app/dashboard/students/students'
 import DataTable from '@/components/ui/data-table'
 import StudentDialog from '@/components/students/student-dialog'
 import { IStudent } from '@/types/student'
+import { api } from '@/lib/api/api-client'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:5120/api/students')
-  const students: IStudent[] = (await res.json()).data
+  const students = await api.get<IStudent[]>('students')
 
   return (
     <div className="space-y-6">
@@ -15,8 +15,11 @@ export default async function Page() {
           <p className="text-muted-foreground">Manage student records and group assignments</p>
         </div>
       </div>
-
-      <DataTable columns={columns} data={students} addButton={<StudentDialog />} />
+      {students.success ? (
+        <DataTable columns={columns} data={students.data} addButton={<StudentDialog />} />
+      ) : (
+        <div>{students.message}</div>
+      )}
     </div>
   )
 }

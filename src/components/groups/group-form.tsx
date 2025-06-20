@@ -18,11 +18,12 @@ import {
 import { Button } from '@/components/ui/button'
 
 import { ICourse } from '@/types/course'
-import { createGroup, updateGroup } from '@/actions/groups'
 import { toast } from 'sonner'
 import { FC } from 'react'
-import { IGroups } from '@/types/group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { IGroup } from '@/types/group'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
 
 const GroupFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
@@ -35,7 +36,7 @@ interface IDefaultValues {
 }
 
 interface IGroupFormProps {
-  group?: IGroups
+  group?: IGroup
   defaultValues: IDefaultValues
   courses: ICourse[]
 }
@@ -49,13 +50,35 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses }
   })
 
   const onValid = (values: z.infer<typeof GroupFormSchema>) => {
-    let ok
-    if (group) {
-      ok = updateGroup(group.id, values.name, +values.course)
-    } else {
-      ok = createGroup(values.name, +values.course)
-    }
-    toast.promise(ok, { success: 'Group has been created' })
+    const ok = new Promise<ApiResponse<IGroup>>((resolve, reject) => {
+      let res
+      if (group) {
+        res = api.update<IGroup>(
+          `groups/${group.id}`,
+          { name: values.name, courseId: +values.course },
+          'dashboard/groups'
+        )
+      } else {
+        res = api.create<IGroup>(
+          'groups',
+          { name: values.name, courseId: +values.course },
+          'dashboard/groups'
+        )
+      }
+      res.then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
+    })
+
+    toast.promise(ok, {
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
+    })
   }
 
   return (

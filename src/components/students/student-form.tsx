@@ -16,10 +16,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { createStudent, updateStudent } from '@/actions/students'
 import { IStudent } from '@/types/student'
 import { toast } from 'sonner'
 import { FC } from 'react'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
 
 const CreateStudentFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
@@ -43,13 +44,34 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
   })
 
   const onValid = (values: z.infer<typeof CreateStudentFormSchema>) => {
-    let ok
-    if (student) {
-      ok = updateStudent(student.id, values.name, values.age)
-    } else {
-      ok = createStudent(values.name, values.age)
-    }
-    toast.promise(ok, { success: 'Student has been updated' })
+    const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
+      let res
+      if (student) {
+        res = api.update<IStudent>(
+          `students/${student.id}`,
+          { name: values.name, age: +values.age },
+          'dashboard/students'
+        )
+      } else {
+        res = api.create<IStudent>(
+          'students',
+          { name: values.name, age: +values.age },
+          'dashboard/students'
+        )
+      }
+      res.then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
+    })
+    toast.promise(ok, {
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
+    })
   }
 
   return (

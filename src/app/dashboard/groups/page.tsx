@@ -1,12 +1,11 @@
 import DataTable from '@/components/ui/data-table'
 import { columns } from './groups'
-import { IGroups } from '@/types/group'
 import GroupDialog from '@/components/groups/group-dialog'
+import { IGroup } from '@/types/group'
+import { api } from '@/lib/api/api-client'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:5120/api/groups')
-
-  const groups: IGroups[] = (await res.json()).data
+  const groups = await api.get<IGroup[]>('groups')
 
   return (
     <div className="space-y-6">
@@ -16,8 +15,11 @@ export default async function Page() {
           <p className="text-muted-foreground">Manage student groups and their capacity</p>
         </div>
       </div>
-
-      <DataTable columns={columns} data={groups} addButton={<GroupDialog />} />
+      {groups.success ? (
+        <DataTable columns={columns} data={groups.data} addButton={<GroupDialog />} />
+      ) : (
+        <div>{groups.message}</div>
+      )}
     </div>
   )
 }

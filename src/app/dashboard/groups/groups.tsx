@@ -4,19 +4,29 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { IGroups } from '@/types/group'
-import { deleteGroup } from '@/actions/groups'
 import { toast } from 'sonner'
 import { DeleteDialog } from '@/components/delete-dialog'
 import GroupDialog from '@/components/groups/group-dialog'
+import { IGroup } from '@/types/group'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
 
-export default function Actions({ group }: { group: IGroups }) {
+export default function Actions({ group }: { group: IGroup }) {
   const handleDelete = () => {
-    const ok = deleteGroup(group.id)
+    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
+      api.delete<boolean>(`groups/${group.id}`, {}, 'dashboard/groups').then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
+    })
+
     toast.promise(ok, {
-      loading: 'Deleting...',
-      success: 'Group has been deleted!',
-      error: 'Error',
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
     })
   }
   return (
@@ -27,7 +37,7 @@ export default function Actions({ group }: { group: IGroups }) {
   )
 }
 
-export const columns: ColumnDef<IGroups>[] = [
+export const columns: ColumnDef<IGroup>[] = [
   {
     accessorKey: 'name',
     header: 'Name',

@@ -2,23 +2,30 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { IStudent } from '@/types/student'
-import { deleteStudent } from '@/actions/students'
 import { toast } from 'sonner'
-import { useState } from 'react'
+
 import { DeleteDialog } from '@/components/delete-dialog'
 import { usePathname } from 'next/navigation'
-import { removeFromGroup } from '@/actions/groups'
 import StudentDialog from '@/components/students/student-dialog'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
 
 function Actions({ student }: { student: IStudent }) {
-  const [, setIsLoading] = useState(false)
   const handleDelete = () => {
-    setIsLoading(true)
-    const ok = deleteStudent(student.id)
+    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
+      api.delete<boolean>(`students/${student.id}`, {}, 'dashboard/students').then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
+    })
+
     toast.promise(ok, {
-      loading: 'Deleting...',
-      success: 'Student has been deleted!',
-      error: 'Error',
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
     })
   }
 
@@ -31,16 +38,31 @@ function Actions({ student }: { student: IStudent }) {
 }
 
 function ActionsInGroup({ student }: { student: IStudent }) {
-  const [, setIsLoading] = useState(false)
   const pathname = usePathname()
   const groupId = pathname.split('/')[pathname.split('/').length - 1]
   const handleDelete = () => {
-    setIsLoading(true)
-    const ok = removeFromGroup(+groupId, student.id)
+    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
+      console.log(groupId, student.id)
+      api
+        .delete<boolean>(
+          'groups/remove-student',
+          { groupId: groupId, studentId: student.id },
+          `dashboard/groups/${groupId}`
+        )
+        .then((r) => {
+          console.log(r)
+          if (r.success) {
+            resolve(r)
+          } else {
+            reject(r)
+          }
+        })
+    })
+
     toast.promise(ok, {
-      loading: 'Deleting...',
-      success: 'Student has been removed from group!',
-      error: 'Error',
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
     })
   }
   return (

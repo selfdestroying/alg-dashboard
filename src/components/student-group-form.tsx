@@ -27,7 +27,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { IStudent } from '@/types/student'
 import { FC } from 'react'
-import { addToGroup } from '@/actions/groups'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
 
 const FormSchema = z.object({
   studentName: z.string({
@@ -46,10 +47,25 @@ export const StudentGroupForm: FC<IComboboxProps> = ({ students, groupId }) => {
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    const studentId = students.find((s) => s.name == data.studentName)?.id as number
-    const ok = addToGroup(+groupId, +studentId)
+    const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
+      api
+        .create<IStudent>(
+          'groups/add-student',
+          { groupId: groupId, studentId: students.find((s) => s.name == data.studentName)?.id },
+          `dashboard/groups/${groupId}`
+        )
+        .then((r) => {
+          if (r.success) {
+            resolve(r)
+          } else {
+            reject(r)
+          }
+        })
+    })
     toast.promise(ok, {
-      success: 'Student has been added',
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
     })
   }
 

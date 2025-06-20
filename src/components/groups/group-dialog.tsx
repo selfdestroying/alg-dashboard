@@ -1,6 +1,5 @@
 'use client'
 
-import { getCourses } from '@/actions/courses'
 import { Button } from '@/components/ui/button'
 import {
   DialogHeader,
@@ -11,12 +10,13 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { ICourse } from '@/types/course'
-import { IGroups } from '@/types/group'
 import { Edit, Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { GroupForm } from './group-form'
+import { IGroup } from '@/types/group'
+import { getCourses } from '@/lib/utils'
 
-export default function GroupDialog({ group }: { group?: IGroups }) {
+export default function GroupDialog({ group }: { group?: IGroup }) {
   const [courses, setCourses] = useState<ICourse[]>([])
   const [, startTransition] = useTransition()
   useEffect(() => {

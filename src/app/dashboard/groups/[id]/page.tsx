@@ -3,28 +3,36 @@ import { columnsInGroup } from '../../students/students'
 import { IGroup } from '@/types/group'
 import { Badge } from '@/components/ui/badge'
 import StudentGroupDialog from '@/components/student-group-dialog'
-import { getStudentsExcludeGroup } from '@/actions/students'
+import { api } from '@/lib/api/api-client'
+import { IStudent } from '@/types/student'
 
 export default async function GroupDetail({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
-  const groupRes = await fetch(`http://localhost:5120/api/groups/${id}`)
-  const group: IGroup = (await groupRes.json()).data
-  const students = await getStudentsExcludeGroup(+id)
+  const group = await api.get<IGroup>(`groups/${id}`)
+
+  if (!group.success) {
+    return <div>Error</div>
+  }
+  const studentsExcludeInGroup = await api.get<IStudent[]>(`students?groupId=${id}`)
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold">{group.name}</h1>
-          <Badge variant={'secondary'}>{group.course}</Badge>
+          <h1 className="text-3xl font-bold">{group.data.name}</h1>
+          <Badge variant={'secondary'}>{group.data.course}</Badge>
         </div>
       </div>
 
-      <DataTable
-        columns={columnsInGroup}
-        data={group.students}
-        addButton={<StudentGroupDialog students={students} groupId={id} />}
-      />
+      {studentsExcludeInGroup.success ? (
+        <DataTable
+          columns={columnsInGroup}
+          data={group.data.students}
+          addButton={<StudentGroupDialog students={studentsExcludeInGroup.data} groupId={id} />}
+        />
+      ) : (
+        <div>Error</div>
+      )}
     </div>
   )
 }
