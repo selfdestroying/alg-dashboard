@@ -45,7 +45,7 @@ public class GroupsController(GroupService groupService) : ControllerBase
         {
             var newGroup = await groupService.AddAsync(group);
             if (newGroup == null) return NotFound(new ErrorResponse<string>("Course not found"));
-            return Ok(new SuccessResponse<GroupResponseDto>("", newGroup));
+            return Ok(new SuccessResponse<GroupResponseDto>("Group has been successfully added", newGroup));
         }
         catch (Exception)
         {
@@ -54,7 +54,7 @@ public class GroupsController(GroupService groupService) : ControllerBase
     }
 
     [HttpPost("add-student")]
-    public async Task<IActionResult> AddStudent(EditStudentInGroupRequestDto requestDto)
+    public async Task<IActionResult> AddStudent([FromBody] EditStudentInGroupRequestDto requestDto)
     {
         try
         {
@@ -69,19 +69,19 @@ public class GroupsController(GroupService groupService) : ControllerBase
         }
     }
 
-    [HttpPost("remove-student")]
-    public async Task<IActionResult> RemoveStudent(EditStudentInGroupRequestDto requestDto)
+    [HttpDelete("remove-student")]
+    public async Task<IActionResult> RemoveStudent([FromBody] EditStudentInGroupRequestDto requestDto)
     {
-        try
-        {
-            var ok = await groupService.RemoveStudentAsync(requestDto);
-            if (!ok) return NotFound(new ErrorResponse<string>("Student has not been added to the group"));
-            return Ok(new SuccessResponse<object>("Student has been removed from the group", new { }));
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
-        }
+        // try
+        // {
+        var ok = await groupService.RemoveStudentAsync(requestDto);
+        if (!ok) return NotFound(new ErrorResponse<string>("Student has not been added to the group"));
+        return Ok(new SuccessResponse<object>("Student has been removed from the group", new { }));
+        // }
+        // catch (Exception)
+        // {
+        //     return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+        // }
     }
 
     [HttpPut("{id}")]
