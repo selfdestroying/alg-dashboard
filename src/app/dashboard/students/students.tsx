@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { DeleteDialog } from '@/components/delete-dialog'
 import { usePathname } from 'next/navigation'
-import StudentDialog from '@/components/students/student-dialog'
+import StudentDialog from '@/components/student/student-dialog'
 import { ApiResponse } from '@/types/response'
 import { api } from '@/lib/api/api-client'
 

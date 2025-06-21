@@ -16,7 +16,7 @@ import {
 import Link from 'next/link'
 import { NavUser } from './nav-user'
 import { usePathname } from 'next/navigation'
-import { IUser } from '@/types/user'
+import { ITeacher } from '@/types/user'
 
 const mainNavItems = [
   {
@@ -48,7 +48,7 @@ const additionalNavItems = [
   },
 ]
 
-export default function DashboardSidebar({ user }: { user: IUser }) {
+export default function DashboardSidebar({ user }: { user: ITeacher }) {
   const pathname = usePathname()
   return (
     <Sidebar collapsible="icon">

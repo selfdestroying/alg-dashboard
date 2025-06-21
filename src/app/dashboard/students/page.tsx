@@ -1,6 +1,6 @@
 import { columns } from '@/app/dashboard/students/students'
 import DataTable from '@/components/ui/data-table'
-import StudentDialog from '@/components/students/student-dialog'
+import StudentDialog from '@/components/student/student-dialog'
 import { IStudent } from '@/types/student'
 import { api } from '@/lib/api/api-client'
 

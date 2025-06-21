@@ -1,6 +1,6 @@
 import DataTable from '@/components/ui/data-table'
 import { columns } from './groups'
-import GroupDialog from '@/components/groups/group-dialog'
+import GroupDialog from '@/components/group/group-dialog'
 import { IGroup } from '@/types/group'
 import { api } from '@/lib/api/api-client'
 

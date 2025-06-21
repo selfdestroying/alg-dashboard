@@ -9,22 +9,24 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { ICourse } from '@/types/course'
 import { Edit, Plus } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
 import { GroupForm } from './group-form'
 import { IGroup } from '@/types/group'
-import { getCourses } from '@/lib/utils'
+import { format } from 'date-fns'
+import { useData } from '../data-provider'
 
 export default function GroupDialog({ group }: { group?: IGroup }) {
-  const [courses, setCourses] = useState<ICourse[]>([])
-  const [, startTransition] = useTransition()
-  useEffect(() => {
-    startTransition(async () => {
-      const res = await getCourses()
-      setCourses(res)
-    })
-  }, [])
+  const { courses, teachers } = useData()
+  // const [courses, setCourses] = useState<ICourse[]>([])
+  // const [teachers, setTeachers] = useState<ITeacher[]>([])
+
+  // const [, startTransition] = useTransition()
+  // useEffect(() => {
+  //   startTransition(async () => {
+  //     // setCourses(await getCourses())
+  //     // setTeachers(await getTeachers())
+  //   })
+  // }, [])
 
   return (
     <Dialog>
@@ -48,8 +50,15 @@ export default function GroupDialog({ group }: { group?: IGroup }) {
         {courses.length != 0 && (
           <GroupForm
             group={group}
-            defaultValues={{ name: '', course: courses[0].id.toString() }}
+            defaultValues={{
+              name: '',
+              course: courses[0].id.toString(),
+              teacher: teachers[0].id.toString(),
+              time: format(new Date(), 'hh:mm'),
+              date: new Date(),
+            }}
             courses={courses}
+            teachers={teachers}
           />
         )}
       </DialogContent>

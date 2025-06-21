@@ -1,7 +1,7 @@
-import { IUser } from '@/types/user'
+import { ITeacher } from '@/types/user'
 import { ColumnDef } from '@tanstack/react-table'
 
-export const columns: ColumnDef<IUser>[] = [
+export const columns: ColumnDef<ITeacher>[] = [
   {
     accessorKey: 'username',
     header: 'username',
