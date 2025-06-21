@@ -17,9 +17,9 @@ public class GroupsController(GroupService groupService) : ControllerBase
             var groups = await groupService.GetAllAsync();
             return Ok(new SuccessResponse<List<GroupResponseDto>>("", groups));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse<string>(e.Message));
         }
     }
 
@@ -32,9 +32,9 @@ public class GroupsController(GroupService groupService) : ControllerBase
             if (group == null) return NotFound(new ErrorResponse<string>("Group not found"));
             return Ok(new SuccessResponse<GroupResponseDto>("", group));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse<string>(e.Message));
         }
     }
 

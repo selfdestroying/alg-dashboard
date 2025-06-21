@@ -62,12 +62,14 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TeacherService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<LessonService>();
 
 builder.Services.AddCors(options =>
 {
@@ -82,6 +84,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DataSeeder.SeedRoles(db);
     DataSeeder.SeedCourses(db);
+    DataSeeder.SeedTeachers(db);
 }
 
 app.UseCors("AllowFrontend");

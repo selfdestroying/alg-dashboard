@@ -4,7 +4,7 @@ using alg_dashboard_server.Models;
 
 namespace alg_dashboard_server.Services;
 
-public class UserService(IUserRepository userRepository)
+public class TeacherService(IUserRepository userRepository)
 {
     public async Task<List<TeacherDto>> GetAllAsync()
     {
@@ -12,7 +12,7 @@ public class UserService(IUserRepository userRepository)
         return users.Select(u => new TeacherDto
         {
             Id = u.Id,
-            Username = u.Username,
+            Name = u.Name,
             Role = u.Role?.Name ?? "N/A",
         }).ToList();
     }
@@ -24,7 +24,7 @@ public class UserService(IUserRepository userRepository)
         return new TeacherDto
         {
             Id = user.Id,
-            Username = user.Username,
+            Name = user.Name,
             Role = user.Role?.Name ?? "N/A",
         };
     }

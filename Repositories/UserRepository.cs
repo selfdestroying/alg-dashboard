@@ -19,7 +19,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task<Teacher?> GetByUsernameAsync(string username)
     {
-        return await context.Teachers.Include(r => r.Role).FirstOrDefaultAsync(u => u.Username == username);
+        return await context.Teachers.Include(r => r.Role).FirstOrDefaultAsync(u => u.Name == username);
     }
 
     public async Task AddAsync(Teacher teacher)
