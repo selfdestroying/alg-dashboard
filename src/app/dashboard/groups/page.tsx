@@ -1,25 +1,16 @@
-import DataTable from '@/components/ui/data-table'
-import { columns } from './groups'
-import GroupDialog from '@/components/group/group-dialog'
-import { IGroup } from '@/types/group'
-import { api } from '@/lib/api/api-client'
+import { Card } from '@/components/ui/card'
+import { Users } from 'lucide-react'
 
 export default async function Page() {
-  const groups = await api.get<IGroup[]>('groups')
-
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Groups</h1>
-          <p className="text-muted-foreground">Manage student groups and their capacity</p>
-        </div>
+    <Card className="h-96 flex items-center justify-center">
+      <div className="text-center">
+        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Select a Group</h3>
+        <p className="text-gray-600">
+          Choose a group from the list to view students, schedules, and manage attendance.
+        </p>
       </div>
-      {groups.success ? (
-        <DataTable columns={columns} data={groups.data} addButton={<GroupDialog />} />
-      ) : (
-        <div>{groups.message}</div>
-      )}
-    </div>
+    </Card>
   )
 }

@@ -42,7 +42,6 @@ function ActionsInGroup({ student }: { student: IStudent }) {
   const groupId = pathname.split('/')[pathname.split('/').length - 1]
   const handleDelete = () => {
     const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-      console.log(groupId, student.id)
       api
         .delete<boolean>(
           'groups/remove-student',
@@ -50,7 +49,6 @@ function ActionsInGroup({ student }: { student: IStudent }) {
           `dashboard/groups/${groupId}`
         )
         .then((r) => {
-          console.log(r)
           if (r.success) {
             resolve(r)
           } else {

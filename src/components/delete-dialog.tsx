@@ -16,7 +16,7 @@ export function DeleteDialog({ handleDelete }: { handleDelete: () => void }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="cursor-pointer">
+        <Button variant="outline" size={'icon'} className="cursor-pointer">
           <Trash className="text-red-500" />
         </Button>
       </AlertDialogTrigger>

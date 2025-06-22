@@ -12,7 +12,7 @@ export async function apiRequest<T>(
   options?: RequestInit,
   revalidateUrl?: string
 ): Promise<ApiResponse<T>> {
-  await delay(1000)
+  // await delay(1000)
   try {
     const res = await fetch(`${API_URL}/${url}`, {
       headers: {

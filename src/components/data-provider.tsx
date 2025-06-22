@@ -17,7 +17,6 @@ export function DataProvider({
   const [courses, setCourses] = useState<ICourse[]>([])
   const [teachers, setTeachers] = useState<ITeacher[]>([])
   useEffect(() => {
-    console.log('context')
     startTransition(async () => {
       setCourses(await getCourses())
       setTeachers(await getTeachers())

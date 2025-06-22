@@ -11,6 +11,13 @@ export enum DayOfWeek {
   Saturday = 6,
 }
 
+export enum GroupColors {
+  'bg-blue-500' = 0,
+  'bg-green-500' = 1,
+  'bg-purple-500' = 2,
+  'bg-orange-500' = 3,
+}
+
 export interface IGroup {
   id: number
   name: string

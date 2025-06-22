@@ -1,67 +1,70 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Edit, Plus } from 'lucide-react'
+import { Button } from '../ui/button'
 import {
-  DialogHeader,
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Edit, Plus } from 'lucide-react'
+} from '../ui/dialog'
+import { format } from 'date-fns'
+import { DeleteDialog } from '../delete-dialog'
 import { GroupForm } from './group-form'
 import { IGroup } from '@/types/group'
-import { format } from 'date-fns'
-import { useData } from '../data-provider'
+import { ApiResponse } from '@/types/response'
+import { api } from '@/lib/api/api-client'
+import { toast } from 'sonner'
 
 export default function GroupDialog({ group }: { group?: IGroup }) {
-  const { courses, teachers } = useData()
-  // const [courses, setCourses] = useState<ICourse[]>([])
-  // const [teachers, setTeachers] = useState<ITeacher[]>([])
-
-  // const [, startTransition] = useTransition()
-  // useEffect(() => {
-  //   startTransition(async () => {
-  //     // setCourses(await getCourses())
-  //     // setTeachers(await getTeachers())
-  //   })
-  // }, [])
-
+  const handleDelete = (group: IGroup) => {
+    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
+      api.delete<boolean>(`groups/${group.id}`, {}, 'dashboard/groups').then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
+    })
+    toast.promise(ok, {
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
+    })
+  }
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {group ? (
-          <Button className="cursor-pointer" variant={'outline'}>
-            <Edit className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button className="cursor-pointer">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Group
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Group Dialog</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>Create or Update groups</DialogDescription>
-        {courses.length != 0 && (
+    <div className="flex items-center justify-end gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          {group ? (
+            <Button className="cursor-pointer" size={'icon'} variant={'outline'}>
+              <Edit />
+            </Button>
+          ) : (
+            <Button size="icon" className="cursor-pointer size-8" variant={'outline'}>
+              <Plus />
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Group Dialog</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>Create or Update groups</DialogDescription>
           <GroupForm
-            group={group}
             defaultValues={{
               name: '',
-              course: courses[0].id.toString(),
-              teacher: teachers[0].id.toString(),
               time: format(new Date(), 'hh:mm'),
               date: new Date(),
             }}
-            courses={courses}
-            teachers={teachers}
+            group={group}
           />
-        )}
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+      {group && <DeleteDialog handleDelete={() => handleDelete(group)} />}
+    </div>
   )
 }

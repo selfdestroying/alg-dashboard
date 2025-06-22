@@ -20,8 +20,8 @@ export default function StudentDialog({ student }: { student?: IStudent }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {student ? (
-          <Button className="cursor-pointer" variant={'outline'}>
-            <Edit className="h-4 w-4" />
+          <Button className="cursor-pointer" size={'icon'} variant={'outline'}>
+            <Edit />
           </Button>
         ) : (
           <Button className="cursor-pointer">

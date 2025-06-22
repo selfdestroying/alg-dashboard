@@ -16,19 +16,17 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-
-import { ICourse } from '@/types/course'
 import { toast } from 'sonner'
 import { FC } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { IGroup } from '@/types/group'
 import { ApiResponse } from '@/types/response'
 import { api } from '@/lib/api/api-client'
-import { ITeacher } from '@/types/user'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ChevronDownIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { Calendar } from '../ui/calendar'
+import { useData } from '../data-provider'
 
 const GroupFormSchema = z.object({
   name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
@@ -40,8 +38,6 @@ const GroupFormSchema = z.object({
 
 interface IDefaultValues {
   name: string
-  course: string
-  teacher: string
   time: string
   date: Date
 }
@@ -49,11 +45,10 @@ interface IDefaultValues {
 interface IGroupFormProps {
   group?: IGroup
   defaultValues: IDefaultValues
-  courses: ICourse[]
-  teachers: ITeacher[]
 }
 
-export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses, teachers }) => {
+export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
+  const { courses, teachers } = useData()
   const form = useForm<z.infer<typeof GroupFormSchema>>({
     resolver: zodResolver(GroupFormSchema),
     defaultValues: group
@@ -68,6 +63,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses, 
   })
 
   const onValid = (values: z.infer<typeof GroupFormSchema>) => {
+    console.log('qwe')
     const body = {
       name: values.name,
       courseId: +values.course,
@@ -75,7 +71,6 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses, 
       startDate: format(values.date, 'yyyy-MM-dd'),
       lessonTime: values.time,
     }
-    console.log(body)
     const ok = new Promise<ApiResponse<IGroup>>((resolve, reject) => {
       let res
       if (group) {
@@ -187,7 +182,6 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues, courses, 
                     selected={field.value}
                     onSelect={field.onChange}
                     fixedWeeks
-                    onDayClick={(date) => console.log(date)}
                   />
                 </PopoverContent>
               </Popover>

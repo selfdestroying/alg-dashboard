@@ -1,4 +1,3 @@
-'use server'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import DashboardSidebar from './dashboard-sidebar'
 import { verifySession } from '@/lib/dal'

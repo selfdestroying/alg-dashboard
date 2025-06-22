@@ -25,8 +25,8 @@ export default function StudentGroupDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" variant={'outline'}>
-          <UserPlus className="h-4 w-4" />
+        <Button className="cursor-pointer" size={'icon'} variant={'outline'}>
+          <UserPlus />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
