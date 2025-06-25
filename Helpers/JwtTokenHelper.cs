@@ -12,7 +12,7 @@ public static class JwtTokenHelper
     {
         var claims = new[]
         {
-            new Claim("username", teacher.Name),
+            new Claim("name", teacher.Name),
             new Claim("role", teacher.Role!.Name),
         };
         

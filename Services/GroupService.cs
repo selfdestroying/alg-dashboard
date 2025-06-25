@@ -33,6 +33,8 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
                 Time = l.Time,
                 Attendances = l.Attendances.Select(a => new AttendanceResponseDto
                 {
+                    StudentId = a.Student.Id,
+                    LessonId = a.Lesson.Id,
                     Student = a.Student.Name,
                     WasPresent = a.WasPresent,
                 }).ToList()
@@ -66,6 +68,8 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
                 Time = l.Time,
                 Attendances = l.Attendances.Select(a => new AttendanceResponseDto
                 {
+                    StudentId = a.Student.Id,
+                    LessonId = a.Lesson.Id,
                     Student = a.Student.Name,
                     WasPresent = a.WasPresent,
                 }).ToList()

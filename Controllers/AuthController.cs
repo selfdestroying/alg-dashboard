@@ -20,7 +20,7 @@ public class AuthController(AppDbContext context, IConfiguration config) : Contr
         try
         {
             var user = await context.Teachers.Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Name == requestDto.Username);
+                .FirstOrDefaultAsync(u => u.Name == requestDto.Name);
             if (user == null) return BadRequest(new ErrorResponse<string>("Invalid username"));
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, requestDto.Password);
