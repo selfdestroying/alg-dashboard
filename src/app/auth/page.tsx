@@ -1,5 +1,5 @@
 import { LoginForm } from '@/components/login-form'
 
-export default function Auth() {
+export default async function Page() {
   return <LoginForm />
 }

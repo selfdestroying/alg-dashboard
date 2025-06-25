@@ -18,10 +18,14 @@ import {
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { LogIn } from 'lucide-react'
-import { signin } from '@/actions/auth'
+import { api } from '@/lib/api/api-client'
+import { toast } from 'sonner'
+import { ApiResponse } from '@/types/response'
+import { IAuth } from '@/types/user'
+import { createSession } from '@/lib/session'
 
 const SignInFormSchema = z.object({
-  username: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
+  name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
   password: z.string().min(2, { error: 'Password must be at least 2 characters long.' }),
 })
 
@@ -29,16 +33,33 @@ export function LoginForm() {
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
-      username: '',
+      name: '',
       password: '',
     },
   })
 
-  const onValid = async (values: z.infer<typeof SignInFormSchema>) => {
-    const ok = await signin(values.username, values.password)
-    if (!ok) {
-      form.setError('root.badRequest', { type: '400' })
-    }
+  const onValid = (values: z.infer<typeof SignInFormSchema>) => {
+    const ok = new Promise<ApiResponse<IAuth>>((resolve, reject) => {
+      api
+        .post<IAuth>('auth/login', {
+          name: values.name,
+          password: values.password,
+        })
+        .then((r) => {
+          if (r.success) {
+            createSession(r.data.token)
+            resolve(r)
+          } else {
+            reject(r)
+          }
+        })
+    })
+
+    toast.promise(ok, {
+      loading: 'Loding...',
+      success: (data) => data.message,
+      error: (data) => data.message,
+    })
   }
 
   return (
@@ -53,7 +74,7 @@ export function LoginForm() {
             <form onSubmit={form.handleSubmit(onValid)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="name"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <FormLabel>Username</FormLabel>
@@ -108,10 +129,10 @@ export function LoginForm() {
             </div>
             <div className="text-xs space-y-1 rounded-md p-4">
               <p>
-                <strong>Username:</strong> user
+                <strong>Username:</strong> teacher
               </p>
               <p>
-                <strong>Password:</strong> user
+                <strong>Password:</strong> teacher
               </p>
             </div>
           </div>

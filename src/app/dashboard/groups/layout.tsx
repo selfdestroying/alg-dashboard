@@ -5,21 +5,21 @@ import { IGroup } from '@/types/group'
 import { api } from '@/lib/api/api-client'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
-import { GroupForm } from '@/components/group/group-form'
-import { format } from 'date-fns'
 import GroupDialog from '@/components/group/group-dialog'
+import { getUser } from '@/lib/dal'
 
 export default async function Page({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await getUser()
   const groups = await api.get<IGroup[]>('groups')
 
   return (
     <Collapsible defaultOpen={true} className="space-y-2">
-      <div className="grid gap-6 lg:grid-cols-12 h-screen">
-        <div className="lg:col-span-3 max-h-full">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-3">
           <Card className="gap-2">
             <CardHeader className="grid-rows-1">
               <div className="flex items-center justify-between">
@@ -31,7 +31,7 @@ export default async function Page({
                   <CardDescription>Select a group to view details</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GroupDialog />
+                  {user && <GroupDialog />}
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="icon" className="cursor-pointer size-8">
                       <ChevronsUpDown />
@@ -48,7 +48,7 @@ export default async function Page({
             </CollapsibleContent>
           </Card>
         </div>
-        <div className="lg:col-span-9 overflow-y-auto">{children}</div>
+        <div className="lg:col-span-9">{children}</div>
       </div>
     </Collapsible>
   )

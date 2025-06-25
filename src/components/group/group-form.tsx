@@ -63,7 +63,6 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
   })
 
   const onValid = (values: z.infer<typeof GroupFormSchema>) => {
-    console.log('qwe')
     const body = {
       name: values.name,
       courseId: +values.course,
@@ -76,7 +75,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
       if (group) {
         res = api.update<IGroup>(`groups/${group.id}`, body, 'dashboard/groups')
       } else {
-        res = api.create<IGroup>('groups', body, 'dashboard/groups')
+        res = api.post<IGroup>('groups', body, 'dashboard/groups')
       }
       res.then((r) => {
         if (r.success) {

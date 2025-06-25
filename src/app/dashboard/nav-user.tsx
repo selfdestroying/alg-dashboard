@@ -13,8 +13,21 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { ITeacher } from '@/types/user'
+import { deleteSession } from '@/lib/session'
+import { toast } from 'sonner'
 
 export function NavUser({ user }: { user: ITeacher }) {
+  const onLogout = () => {
+    const ok = new Promise<void>((resolve, reject) => {
+      deleteSession()
+      resolve()
+    })
+
+    toast.promise(ok, {
+      loading: 'Loding...',
+      success: () => 'Logged out',
+    })
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -26,7 +39,9 @@ export function NavUser({ user }: { user: ITeacher }) {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.name.toUpperCase().slice(0, 2)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -41,13 +56,13 @@ export function NavUser({ user }: { user: ITeacher }) {
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={onLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

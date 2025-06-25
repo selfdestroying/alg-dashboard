@@ -14,9 +14,10 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import { NavUser } from './nav-user'
+import { NavUser } from '../app/dashboard/nav-user'
 import { usePathname } from 'next/navigation'
 import { ITeacher } from '@/types/user'
+import { Button } from '@/components/ui/button'
 
 const mainNavItems = [
   {
@@ -48,12 +49,18 @@ const additionalNavItems = [
   },
 ]
 
-export default function DashboardSidebar({ user }: { user: ITeacher }) {
+export default function DashboardSidebar({ user }: { user: ITeacher | null }) {
   const pathname = usePathname()
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <NavUser user={user} />
+        {user ? (
+          <NavUser user={user} />
+        ) : (
+          <Button asChild variant={'outline'}>
+            <Link href={'/auth'}>Log in</Link>
+          </Button>
+        )}
       </SidebarHeader>
       <SidebarSeparator className="mx-0" />
       <SidebarContent>
@@ -74,7 +81,7 @@ export default function DashboardSidebar({ user }: { user: ITeacher }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {user.role == 'Admin' && (
+        {user && user.role == 'Admin' && (
           <>
             <SidebarSeparator className="mx-0" />
             <SidebarGroup>

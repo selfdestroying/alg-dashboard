@@ -24,9 +24,11 @@ export async function apiRequest<T>(
     if (revalidateUrl) {
       revalidatePath(revalidateUrl)
     }
+
+    const data = await res.json()
     return {
       success: res.ok,
-      ...(await res.json()),
+      ...data,
     }
   } catch (error: unknown) {
     let message = 'Unknown error occurred'

@@ -17,41 +17,38 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { Button } from './button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  addButton?: ReactNode
+  pageSize?: number
 }
 
 export default function DataTable<TData, TValue>({
   columns,
   data,
-  addButton,
+  pageSize = 2,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 2,
+    pageSize,
   })
   const table = useReactTable({
     data,
     columns,
-    state: {
-      pagination,
-    },
+    state: pageSize ? { pagination } : undefined,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    onPaginationChange: pageSize ? setPagination : undefined,
   })
 
   return (
     <div>
-      <div className="flex justify-between items-center">{addButton}</div>
       <div className="space-y-2">
         <div className="rounded-md border">
           <Table>

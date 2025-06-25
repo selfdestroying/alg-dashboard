@@ -49,7 +49,7 @@ export const StudentGroupForm: FC<IComboboxProps> = ({ students, groupId }) => {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
       api
-        .create<IStudent>(
+        .post<IStudent>(
           'groups/add-student',
           { groupId: groupId, studentId: students.find((s) => s.name == data.studentName)?.id },
           `dashboard/groups/${groupId}`

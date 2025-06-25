@@ -3,18 +3,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 
 // const protectedRoutes = ['/dashboard']
-const publicRoutes = ['/auth']
+const PUBLIC_ROUTES = ['/auth']
 
 export default async function middleware(req: NextRequest) {
+  return NextResponse.next()
   const path = req.nextUrl.pathname
-  //   const isProtectedRoute = protectedRoutes.includes(path)
-  const isPublicRoute = publicRoutes.includes(path)
-
+  if (PUBLIC_ROUTES.includes(path)) return NextResponse.next()
   const token = (await cookies()).get('session')?.value
-  if (!isPublicRoute && !token) {
+  if (!token) {
     return NextResponse.redirect(new URL('/auth', req.nextUrl))
   }
-  const session = jwt.decode(token as string)
+
+  const session = jwt.decode(token)
   if (session && !path.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
   }

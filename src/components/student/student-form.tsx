@@ -53,7 +53,7 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
           'dashboard/students'
         )
       } else {
-        res = api.create<IStudent>(
+        res = api.post<IStudent>(
           'students',
           { name: values.name, age: +values.age },
           'dashboard/students'
