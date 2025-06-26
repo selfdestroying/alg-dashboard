@@ -1,15 +1,14 @@
 ﻿using alg_dashboard_server.DTOs;
-using alg_dashboard_server.Interfaces;
-using alg_dashboard_server.Models;
+using alg_dashboard_server.Repositories;
 
 namespace alg_dashboard_server.Services;
 
-public class TeacherService(IUserRepository userRepository)
+public class TeacherService(TeacherRepository teacherRepository)
 {
-    public async Task<List<TeacherDto>> GetAllAsync()
+    public async Task<List<TeacherResponseDto>> GetAll()
     {
-        var users = await userRepository.GetAllAsync();
-        return users.Select(u => new TeacherDto
+        var users = await teacherRepository.Get();
+        return users.Select(u => new TeacherResponseDto
         {
             Id = u.Id,
             Name = u.Name,
@@ -17,22 +16,18 @@ public class TeacherService(IUserRepository userRepository)
         }).ToList();
     }
 
-    public async Task<TeacherDto?> GetByIdAsync(int id)
+    public async Task<TeacherResponseDto?> GetById(int id)
     {
-        var user = await userRepository.GetByIdAsync(id);
+        var user = await teacherRepository.Get(id);
         if (user == null) return null;
-        return new TeacherDto
+        return new TeacherResponseDto
         {
             Id = user.Id,
             Name = user.Name,
             Role = user.Role?.Name ?? "N/A",
         };
     }
-    
-    
-    
-    public async Task AddAsync(Teacher teacher) => await userRepository.AddAsync(teacher);
-    
-    public async Task SaveAsync() => await userRepository.SaveAsync();
-    
+
+
+    public async Task Create(TeacherCreateDto teacher) => await teacherRepository.Create(teacher);
 }

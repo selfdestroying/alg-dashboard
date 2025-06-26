@@ -13,42 +13,43 @@ public class StudentsController(StudentService studentService) : ControllerBase
     {
         try
         {
-            var students = await studentService.GetAllAsync(groupId);
+            var students = await studentService.GetAll(groupId);
             return Ok(new SuccessResponse<List<StudentResponseDto>>("", students));
         }
         catch (Exception)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse("Internal server error"));
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] StudentRequestDto studentRequest)
+    public async Task<IActionResult> Create([FromBody] StudentCreateDto studentCreate)
     {
         try
         {
-            var newStudent = await studentService.AddAsync(studentRequest);
-            return Ok(new SuccessResponse<StudentResponseDto>("Student has been successfully added", newStudent));
+            var newStudent = await studentService.Create(studentCreate);
+            if (!newStudent) return BadRequest(new ErrorResponse("Student not created"));
+            return Ok(new SuccessResponse<object>("Student has been successfully added", new { }));
         }
         catch (Exception)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse("Internal server error"));
         }
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStudentRequestDto studentRequest)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] StudentUpdateDto studentRequest)
     {
         try
         {
-            var updatedStudent = await studentService.UpdateAsync(id, studentRequest);
-            if (updatedStudent == null) return NotFound(new ErrorResponse<string>("Student not found"));
-            return Ok(new SuccessResponse<UpdateStudentResponseDto>("Student has been updated successfully",
-                updatedStudent));
+            var updatedStudent = await studentService.Update(id, studentRequest);
+            if (!updatedStudent) return NotFound(new ErrorResponse("Student not found"));
+            return Ok(new SuccessResponse<object>("Student has been updated successfully",
+                new { }));
         }
         catch (Exception)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse("Internal server error"));
         }
     }
 
@@ -57,13 +58,13 @@ public class StudentsController(StudentService studentService) : ControllerBase
     {
         try
         {
-            var ok = await studentService.DeleteAsync(id);
-            if (!ok) return NotFound(new ErrorResponse<string>("Student not found"));
+            var ok = await studentService.Delete(id);
+            if (!ok) return NotFound(new ErrorResponse("Student not found"));
             return Ok(new SuccessResponse<object>("User has been deleted successfully", new { }));
         }
         catch (Exception)
         {
-            return StatusCode(500, new ErrorResponse<string>("Internal server error"));
+            return StatusCode(500, new ErrorResponse("Internal server error"));
         }
     }
 }

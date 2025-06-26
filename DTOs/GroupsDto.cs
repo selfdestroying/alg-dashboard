@@ -1,16 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using alg_dashboard_server.Models;
-
-namespace alg_dashboard_server.DTOs;
-
-public class GroupRequestDto
-{
-    public required string Name { get; init; }
-    public required int CourseId { get; init; }
-    public required int TeacherId { get; init; }
-    public required DateOnly StartDate { get; init; }
-    public required TimeOnly LessonTime { get; init; }
-}
+﻿namespace alg_dashboard_server.DTOs;
 
 public class GroupResponseDto
 {
@@ -22,11 +10,19 @@ public class GroupResponseDto
     public required DayOfWeek LessonDay { get; init; }
     public required TimeOnly LessonTime { get; init; }
     public required List<StudentResponseDto> Students { get; init; }
-    public required List<LessonResponseDto> Lessons { get; init; }
+    public List<LessonResponseDto>? Lessons { get; set; }
 }
 
+public class GroupCreateDto
+{
+    public required string Name { get; init; }
+    public required int CourseId { get; init; }
+    public required int TeacherId { get; init; }
+    public required DateOnly StartDate { get; init; }
+    public required TimeOnly LessonTime { get; init; }
+}
 
-public class UpdateGroupRequestDto
+public class GroupUpdateDto
 {
     public string? Name { get; set; }
     public int? CourseId { get; set; }

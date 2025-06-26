@@ -1,21 +1,21 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using alg_dashboard_server.DTOs;
+﻿using alg_dashboard_server.DTOs;
 using alg_dashboard_server.Helpers;
-using alg_dashboard_server.Interfaces;
 using alg_dashboard_server.Models;
+using alg_dashboard_server.Repositories;
+using Attendance = alg_dashboard_server.Models.Attendance;
 
 namespace alg_dashboard_server.Services;
 
-public class GroupService(IGroupRepository groupRepository, ILessonRepository lessonRepository)
+public class GroupService(GroupRepository groupRepository, LessonRepository lessonRepository)
 {
-    public async Task<List<GroupResponseDto>> GetAllAsync()
+    public async Task<List<GroupResponseDto>> GetAll()
     {
-        var groups = await groupRepository.GetAllAsync();
+        var groups = await groupRepository.Get();
         return groups.Select(g => new GroupResponseDto
         {
             Id = g.Id,
             Name = g.Name,
-            Course = g.Course.Name,
+            Course = g.Course.Name ,
             Teacher = g.Teacher.Name,
             StartDate = g.StartDate,
             LessonDay = g.LessonDay,
@@ -26,31 +26,18 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
                 Name = gs.Student.Name,
                 Age = gs.Student.Age,
             }).ToList(),
-            Lessons = g.Lessons.Select(l => new LessonResponseDto
-            {
-                Id = l.Id,
-                Date = l.Date,
-                Time = l.Time,
-                Attendances = l.Attendances.Select(a => new AttendanceResponseDto
-                {
-                    StudentId = a.Student.Id,
-                    LessonId = a.Lesson.Id,
-                    Student = a.Student.Name,
-                    WasPresent = a.WasPresent,
-                }).ToList()
-            }).ToList()
         }).ToList();
     }
 
-    public async Task<GroupResponseDto?> GetByIdAsync(int id)
+    public async Task<GroupResponseDto?> GetById(int id)
     {
-        var group = await groupRepository.GetByIdAsync(id);
+        var group = await groupRepository.Get(id);
         if (group == null) return null;
         return new GroupResponseDto
         {
             Id = group.Id,
             Name = group.Name,
-            Course = group.Course.Name,
+            Course = group.Course.Name ,
             Teacher = group.Teacher.Name,
             StartDate = group.StartDate,
             LessonDay = group.LessonDay,
@@ -66,6 +53,7 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
                 Id = l.Id,
                 Date = l.Date,
                 Time = l.Time,
+                GroupId = l.GroupId,
                 Attendances = l.Attendances.Select(a => new AttendanceResponseDto
                 {
                     StudentId = a.Student.Id,
@@ -77,11 +65,12 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
         };
     }
 
-    public async Task<GroupResponseDto?> AddAsync(GroupRequestDto group) {
-        var newGroup = await groupRepository.AddAsync(group);
-        if (newGroup == null) return null;
-        
-        var lessonDates = LessonsHelper.GenerateLessonDates(newGroup);
+    public async Task<bool> Create(GroupCreateDto group)
+    {
+        var newGroup = await groupRepository.Create(group);
+        if (newGroup == null) return false;
+
+        var lessonDates = LessonsHelper.GenerateLessonDates(group.StartDate, group.StartDate.DayOfWeek);
         var lessons = lessonDates.Select(date => new Lesson
         {
             GroupId = newGroup.Id,
@@ -93,42 +82,20 @@ public class GroupService(IGroupRepository groupRepository, ILessonRepository le
                 WasPresent = false
             }).ToList()
         }).ToList();
-        
-        await lessonRepository.AddRangeAsync(lessons);
-        
-        return new GroupResponseDto
-        {
-            Id = newGroup.Id,
-            Name = newGroup.Name,
-            Course = "",
-            Teacher = "",
-            StartDate = DateOnly.FromDateTime(DateTime.Now),
-            LessonDay = DayOfWeek.Monday,
-            LessonTime = TimeOnly.FromDateTime(DateTime.Now),
-            Students = [],
-            Lessons = []
-        };
-    }
-    public async Task<GroupResponseDto?> UpdateAsync(int id, UpdateGroupRequestDto groupRequest) {
-        var updatedGroup = await groupRepository.UpdateAsync(id, groupRequest);
-        if (updatedGroup == null) return null;
 
-        return new GroupResponseDto
-        {
-            Id = updatedGroup.Id,
-            Name = updatedGroup.Name,
-            Course = "",
-            Teacher = "",
-            StartDate = DateOnly.FromDateTime(DateTime.Now),
-            LessonDay = DayOfWeek.Monday,
-            LessonTime = TimeOnly.FromDateTime(DateTime.Now),
-            Students = [],
-            Lessons = []
-        };
-    }
-    public async Task<bool> DeleteAsync(int id) => await groupRepository.DeleteAsync(id);
+        await lessonRepository.Create(lessons);
 
-    public async Task<bool> AddToGroupAsync(EditStudentInGroupRequestDto requestDto) =>
-        await groupRepository.AddStudentAsync(requestDto);
-    public async Task<bool> RemoveStudentAsync(EditStudentInGroupRequestDto requestDto) => await groupRepository.RemoveStudentAsync(requestDto);
+        return true;
+    }
+
+    public async Task<bool> Update(int id, GroupUpdateDto groupRequest) =>
+        await groupRepository.Update(id, groupRequest);
+
+    public async Task<bool> Delete(int id) => await groupRepository.Delete(id);
+
+    public async Task<bool> AddStudent(EditStudentInGroupRequestDto requestDto) =>
+        await groupRepository.AddStudent(requestDto);
+
+    public async Task<bool> RemoveStudent(EditStudentInGroupRequestDto requestDto) =>
+        await groupRepository.RemoveStudent(requestDto);
 }

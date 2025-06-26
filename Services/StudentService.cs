@@ -1,14 +1,15 @@
 ﻿using alg_dashboard_server.DTOs;
-using alg_dashboard_server.Interfaces;
-using alg_dashboard_server.Models;
+using alg_dashboard_server.Repositories;
 
 namespace alg_dashboard_server.Services;
 
-public class StudentService(IStudentRepository studentRepository)
+public class StudentService(StudentRepository studentRepository)
 {
-    public async Task<List<StudentResponseDto>> GetAllAsync(int? groupId)
+    public async Task<List<StudentResponseDto>> GetAll(int? groupId)
     {
-        var students = await studentRepository.GetAllAsync(groupId);
+        var students = groupId.HasValue
+            ? await studentRepository.GetExcludeGroup(groupId.Value)
+            : await studentRepository.Get();
         return students.Select(s => new StudentResponseDto
         {
             Id = s.Id,
@@ -16,28 +17,15 @@ public class StudentService(IStudentRepository studentRepository)
             Age = s.Age
         }).ToList();
     }
-    
-    public async Task<StudentResponseDto> AddAsync(StudentRequestDto student)
+
+    public async Task<bool> Create(StudentCreateDto student)
     {
-        var newStudent = await studentRepository.AddAsync(student);
-        return new StudentResponseDto
-        {
-            Id = newStudent.Id,
-            Name = newStudent.Name,
-            Age = newStudent.Age
-        };
+        var newStudent = await studentRepository.Create(student);
+        return newStudent != null;
     }
-    
-    public async Task<UpdateStudentResponseDto?> UpdateAsync(int id, UpdateStudentRequestDto student)
-    {
-        var updatedStudent = await studentRepository.UpdateAsync(id, student);
-        if (updatedStudent == null) return null;
-        return new UpdateStudentResponseDto
-        {
-            Id = updatedStudent.Id,
-            Name = updatedStudent.Name,
-            Age = updatedStudent.Age
-        };
-    }
-    public async Task<bool> DeleteAsync(int id) => await studentRepository.DeleteAsync(id);
+
+    public async Task<bool> Update(int id, StudentUpdateDto student) =>
+        await studentRepository.Update(id, student);
+
+    public async Task<bool> Delete(int id) => await studentRepository.Delete(id);
 }

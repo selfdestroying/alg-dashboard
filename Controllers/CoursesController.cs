@@ -10,9 +10,9 @@ namespace alg_dashboard_server.Controllers;
 public class CoursesController(CourseService courseService): ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<IActionResult> GetAll()
     {
-        var courses = await courseService.GetAllAsync();
+        var courses = await courseService.GetAll();
         return Ok(courses);
     }
 }

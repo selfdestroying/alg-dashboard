@@ -1,9 +1,24 @@
 ﻿namespace alg_dashboard_server.DTOs;
 
 
-public class TeacherDto
+public class TeacherResponseDto
 {
-    public int Id { get; set; }
-    public string Name { get; init; } = string.Empty;
-    public string Role { get; init; } = string.Empty;
+    public required int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Role { get; set; }
+}
+
+
+public class TeacherCreateDto
+{
+    public required string Name { get; set; }
+    public required string Password { get; set; }
+    public required int RoleId { get; set; }
+}
+
+public class TeacherUpdateDto
+{
+    public required string? Name { get; set; }
+    public required string? Password { get; set; }
+    public required int? RoleId { get; set; }
 }

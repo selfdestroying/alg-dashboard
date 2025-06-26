@@ -1,6 +1,5 @@
 using System.Text;
 using alg_dashboard_server.Data;
-using alg_dashboard_server.Interfaces;
 using alg_dashboard_server.Repositories;
 using alg_dashboard_server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,17 +58,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<ILessonRepository, LessonRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<TeacherRepository>();
+builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<GroupRepository>();
+builder.Services.AddScoped<LessonRepository>();
+builder.Services.AddScoped<CourseRepository>();
+builder.Services.AddScoped<AttendanceRepository>();
 
 builder.Services.AddScoped<TeacherService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<LessonService>();
+builder.Services.AddScoped<AttendanceService>();
 
 builder.Services.AddCors(options =>
 {
