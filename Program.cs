@@ -77,6 +77,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("http://localhost:3000").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("https://pkdvdzkn-3000.inc1.devtunnels.ms").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
     });
 });
 var app = builder.Build();

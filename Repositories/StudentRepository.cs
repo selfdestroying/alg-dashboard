@@ -17,19 +17,4 @@ public class StudentRepository(AppDbContext context)
         entity.Name = dto.Name ?? entity.Name;
         entity.Age = dto.Age ?? entity.Age;
     }
-
-
-    public async Task<List<Student>> GetExcludeGroup(int groupId)
-    {
-        var studentIdsInGroup = await Context.GroupStudents
-            .Where(sg => sg.GroupId == groupId)
-            .Select(sg => sg.StudentId)
-            .ToListAsync();
-
-        return await Context.Students
-            .Where(s => !studentIdsInGroup.Contains(s.Id))
-            .ToListAsync();
-    }
-
-
 }

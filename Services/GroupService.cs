@@ -6,68 +6,12 @@ using Attendance = alg_dashboard_server.Models.Attendance;
 
 namespace alg_dashboard_server.Services;
 
-public class GroupService(GroupRepository groupRepository, LessonRepository lessonRepository)
+public class GroupService(GroupRepository repository, LessonRepository lessonRepository)
+    : BaseService<GroupRepository, Group, GroupResponseDto, GroupCreateDto, GroupUpdateDto>(repository)
 {
-    public async Task<List<GroupResponseDto>> GetAll()
+    public override async Task<bool> Create(GroupCreateDto group)
     {
-        var groups = await groupRepository.Get();
-        return groups.Select(g => new GroupResponseDto
-        {
-            Id = g.Id,
-            Name = g.Name,
-            Course = g.Course.Name ,
-            Teacher = g.Teacher.Name,
-            StartDate = g.StartDate,
-            LessonDay = g.LessonDay,
-            LessonTime = g.LessonTime,
-            Students = g.GroupStudents.Select(gs => new StudentResponseDto
-            {
-                Id = gs.Student.Id,
-                Name = gs.Student.Name,
-                Age = gs.Student.Age,
-            }).ToList(),
-        }).ToList();
-    }
-
-    public async Task<GroupResponseDto?> GetById(int id)
-    {
-        var group = await groupRepository.Get(id);
-        if (group == null) return null;
-        return new GroupResponseDto
-        {
-            Id = group.Id,
-            Name = group.Name,
-            Course = group.Course.Name ,
-            Teacher = group.Teacher.Name,
-            StartDate = group.StartDate,
-            LessonDay = group.LessonDay,
-            LessonTime = group.LessonTime,
-            Students = group.GroupStudents.Select(sg => new StudentResponseDto
-            {
-                Id = sg.StudentId,
-                Name = sg.Student.Name,
-                Age = sg.Student.Age
-            }).ToList(),
-            Lessons = group.Lessons.Select(l => new LessonResponseDto
-            {
-                Id = l.Id,
-                Date = l.Date,
-                Time = l.Time,
-                GroupId = l.GroupId,
-                Attendances = l.Attendances.Select(a => new AttendanceResponseDto
-                {
-                    StudentId = a.Student.Id,
-                    LessonId = a.Lesson.Id,
-                    Student = a.Student.Name,
-                    WasPresent = a.WasPresent,
-                }).ToList()
-            }).ToList()
-        };
-    }
-
-    public async Task<bool> Create(GroupCreateDto group)
-    {
-        var newGroup = await groupRepository.Create(group);
+        var newGroup = await Repository.Create(group);
         if (newGroup == null) return false;
 
         var lessonDates = LessonsHelper.GenerateLessonDates(group.StartDate, group.StartDate.DayOfWeek);
@@ -79,7 +23,8 @@ public class GroupService(GroupRepository groupRepository, LessonRepository less
             Attendances = newGroup.GroupStudents.Select(sg => new Attendance
             {
                 StudentId = sg.Student.Id,
-                WasPresent = false
+                Status = AttendanceStatus.Unspecified,
+                Comment = ""
             }).ToList()
         }).ToList();
 
@@ -88,14 +33,46 @@ public class GroupService(GroupRepository groupRepository, LessonRepository less
         return true;
     }
 
-    public async Task<bool> Update(int id, GroupUpdateDto groupRequest) =>
-        await groupRepository.Update(id, groupRequest);
 
-    public async Task<bool> Delete(int id) => await groupRepository.Delete(id);
+    protected override GroupResponseDto MapEntityToResponseDto(Group entity)
+    {
+        return new GroupResponseDto
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            Course = entity.Course.Name,
+            Teacher = entity.Teacher.Name,
+            StartDate = entity.StartDate,
+            LessonDay = entity.LessonDay,
+            LessonTime = entity.LessonTime,
+            BackOfficeUrl = entity.BackOfficeUrl,
+            Students = entity.GroupStudents.Select(sg => new StudentResponseDto
+            {
+                Id = sg.StudentId,
+                Name = sg.Student.Name,
+                Age = sg.Student.Age
+            }).ToList(),
+            Lessons = entity.Lessons.OrderBy(l => l.Date).ThenBy(l => l.Time).Select(l => new LessonResponseDto
+            {
+                Id = l.Id,
+                Date = l.Date,
+                Time = l.Time,
+                GroupId = l.GroupId,
+                Attendances = l.Attendances.Select(a => new AttendanceResponseDto
+                {
+                    StudentId = a.Student.Id,
+                    LessonId = a.Lesson.Id,
+                    Student = a.Student.Name,
+                    Status = a.Status,
+                    Comment = a.Comment
+                }).ToList()
+            }).ToList()
+        };
+    }
 
     public async Task<bool> AddStudent(EditStudentInGroupRequestDto requestDto) =>
-        await groupRepository.AddStudent(requestDto);
+        await Repository.AddStudent(requestDto);
 
     public async Task<bool> RemoveStudent(EditStudentInGroupRequestDto requestDto) =>
-        await groupRepository.RemoveStudent(requestDto);
+        await Repository.RemoveStudent(requestDto);
 }

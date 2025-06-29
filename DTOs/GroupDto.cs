@@ -9,6 +9,7 @@ public class GroupResponseDto
     public required DateOnly StartDate { get; init; }
     public required DayOfWeek LessonDay { get; init; }
     public required TimeOnly LessonTime { get; init; }
+    public required string BackOfficeUrl { get; init; }
     public required List<StudentResponseDto> Students { get; init; }
     public List<LessonResponseDto>? Lessons { get; set; }
 }
@@ -20,6 +21,7 @@ public class GroupCreateDto
     public required int TeacherId { get; init; }
     public required DateOnly StartDate { get; init; }
     public required TimeOnly LessonTime { get; init; }
+    public required string BackOfficeUrl { get; init; }
 }
 
 public class GroupUpdateDto
@@ -29,6 +31,7 @@ public class GroupUpdateDto
     public int? TeacherId { get; set; }
     public DateOnly? StartDate { get; set; }
     public TimeOnly? LessonTime { get; set; }
+    public string? BackOfficeUrl { get; set; }
 }
 
 public class EditStudentInGroupRequestDto

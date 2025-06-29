@@ -15,10 +15,9 @@ public class AttendanceRepository(AppDbContext context)
         var newAttendances = attendancesFromDb.Select(a =>
         {
             var attendanceExists = attendance.Attendances.Find(at => at.StudentId == a.StudentId);
-            if (attendanceExists != null)
-            {
-                a.WasPresent = attendanceExists.WasPresent;
-            }
+            if (attendanceExists == null) return a;
+            a.Status = attendanceExists.Status;
+            a.Comment = attendanceExists.Comment;
 
             return a;
         });
@@ -34,7 +33,8 @@ public class AttendanceRepository(AppDbContext context)
         {
             LessonId = entity.LessonId,
             StudentId = entity.StudentId,
-            WasPresent = entity.WasPresent,
+            Status = entity.Status,
+            Comment = entity.Comment,
         };
     }
 

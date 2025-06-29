@@ -1,17 +1,18 @@
 ﻿using alg_dashboard_server.DTOs;
+using alg_dashboard_server.Models;
 using alg_dashboard_server.Repositories;
 
 namespace alg_dashboard_server.Services;
 
-public class CourseService(CourseRepository courseRepository)
+public class CourseService(CourseRepository repository)
+    : BaseService<CourseRepository, Course, CourseResponseDto, CourseCreateDto, CourseUpdateDto>(repository)
 {
-    public async Task<List<CourseResponseDto>> GetAll()
+    protected override CourseResponseDto MapEntityToResponseDto(Course entity)
     {
-        var courses = await courseRepository.Get();
-        return courses.Select(c => new CourseResponseDto
+        return new CourseResponseDto
         {
-            Id = c.Id,
-            Name = c.Name,
-        }).ToList();
+            Id = entity.Id,
+            Name = entity.Name,
+        };
     }
 }

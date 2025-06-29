@@ -25,15 +25,26 @@ public class LessonRepository(AppDbContext context): BaseRepository<Lesson, Less
     //     await Context.SaveChangesAsync();
     // }
     //
-   
+
+    public override async Task<List<Lesson>> Get()
+    {
+        return await DbSet.OrderBy(l => l.Date).ThenBy(l => l.Time).ToListAsync();
+    }
+
 
     protected override Lesson MapCreateDtoToEntity(LessonCreateDto entity)
     {
-        throw new NotImplementedException();
+        return new Lesson
+        {
+            Date = entity.Date,
+            Time = entity.Time,
+            GroupId = entity.GroupId,
+        };
     }
 
     protected override void MapUpdateDtoToEntity(Lesson entity, LessonUpdateDto dto)
     {
-        throw new NotImplementedException();
+        entity.Date = dto.Date ?? entity.Date;
+        entity.Time = dto.Time ?? entity.Time;
     }
 }

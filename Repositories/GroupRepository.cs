@@ -6,16 +6,17 @@ using Attendance = alg_dashboard_server.Models.Attendance;
 
 namespace alg_dashboard_server.Repositories;
 
-public class GroupRepository(AppDbContext context) : BaseRepository<Group, GroupCreateDto, GroupUpdateDto> (context)
+public class GroupRepository(AppDbContext context) : BaseRepository<Group, GroupCreateDto, GroupUpdateDto>(context)
 {
     public override async Task<List<Group>> Get()
     {
-        return await DbSet.Include(g => g.GroupStudents).ThenInclude(gs => gs.Student).Include(g => g.Course).Include(g => g.Teacher).ToListAsync();
+        return await DbSet.Include(g => g.GroupStudents).ThenInclude(gs => gs.Student).Include(g => g.Course)
+            .Include(g => g.Teacher).ToListAsync();
     }
 
     public override async Task<Group?> Get(int id)
     {
-        return await context.Groups.Include(c => c.Course).Include(t => t.Teacher).Include(l => l.Lessons)
+        return await Context.Groups.Include(c => c.Course).Include(t => t.Teacher).Include(l => l.Lessons)
             .ThenInclude(a => a.Attendances)
             .Include(g => g.GroupStudents)
             .ThenInclude(sg => sg.Student)
@@ -31,7 +32,8 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
             TeacherId = entity.TeacherId,
             StartDate = entity.StartDate,
             LessonTime = entity.LessonTime,
-            LessonDay = entity.StartDate.DayOfWeek
+            LessonDay = entity.StartDate.DayOfWeek,
+            BackOfficeUrl = entity.BackOfficeUrl,
         };
     }
 
@@ -45,6 +47,7 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
         {
             return false;
         }
+
         var studentGroup = new GroupStudent
         {
             GroupId = requestDto.GroupId,
@@ -57,7 +60,8 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
         {
             StudentId = requestDto.StudentId,
             LessonId = l.Id,
-            WasPresent = false
+            Status = AttendanceStatus.Unspecified,
+            Comment = ""
         }).ToList();
         await Context.Attendances.AddRangeAsync(attendances);
         await Context.SaveChangesAsync();
@@ -74,13 +78,16 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
         await Context.SaveChangesAsync();
         return true;
     }
+
     protected override void MapUpdateDtoToEntity(Group entity, GroupUpdateDto dto)
     {
         entity.Name = dto.Name ?? entity.Name;
         entity.CourseId = dto.CourseId ?? entity.CourseId;
         entity.TeacherId = dto.TeacherId ?? entity.TeacherId;
-        entity.StartDate = dto.StartDate ?? entity.StartDate;
         entity.LessonTime = dto.LessonTime ?? entity.LessonTime;
-        
+        entity.BackOfficeUrl = dto.BackOfficeUrl ?? entity.BackOfficeUrl;
+        if (dto.StartDate == null) return;
+        entity.StartDate = entity.StartDate;
+        entity.LessonDay = entity.StartDate.DayOfWeek;
     }
 }
