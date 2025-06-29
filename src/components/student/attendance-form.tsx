@@ -1,43 +1,49 @@
 'use client'
 
 import { ILesson } from '@/types/lesson'
-import { Checkbox } from '../ui/checkbox'
 import { Button } from '../ui/button'
-import z from 'zod/v4'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { toast } from 'sonner'
 import { ApiResponse } from '@/types/response'
-import { IAttendance } from '@/types/attendance'
+import { AttendanceStatus, IAttendance } from '@/types/attendance'
 import { api } from '@/lib/api/api-client'
 import { useState } from 'react'
+import { Check, X } from 'lucide-react'
+import { Card, CardContent, CardTitle } from '../ui/card'
+import { Input } from '../ui/input'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { IUser } from '@/types/user'
+import { LessonActions } from '../lesson/lesson-actions'
 
-const FormSchema = z.object({
-  items: z.array(z.string()),
-})
-
-export default function AttendanceForm({ lesson }: { lesson: ILesson }) {
+export default function AttendanceForm({ lesson, user }: { lesson: ILesson; user: IUser | null }) {
   const [changed, setChanged] = useState<boolean>(true)
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      items: lesson.attendances.filter((a) => a.wasPresent).map((a) => a.student),
-    },
-  })
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const newAttendances = lesson.attendances.map((a) => {
-      a.wasPresent = data.items.includes(a.student)
-      return a
-    })
+  const [attendances, setAttendances] = useState<IAttendance[]>(lesson.attendances)
 
+  const onCommentChange = (studentId: number, comment: string) => {
+    setAttendances((prevAttendance) =>
+      prevAttendance.map((attendance) =>
+        attendance.studentId === studentId ? { ...attendance, comment } : attendance
+      )
+    )
+    setChanged(false)
+  }
+  const onStatusChange = (studentId: number, newStatus: 'Unspecified' | 'Present' | 'Absent') => {
+    setAttendances((prevAttendance) =>
+      prevAttendance.map((attendance) =>
+        attendance.studentId === studentId
+          ? { ...attendance, status: AttendanceStatus[newStatus] }
+          : attendance
+      )
+    )
+    setChanged(false)
+  }
+
+  function onSubmit() {
     const ok = new Promise<ApiResponse<IAttendance>>((resolve, reject) => {
       const res = api.update<IAttendance>(
-        `lessons/${lesson.id}/attendance`,
-        newAttendances,
+        `attendances/${lesson.id}`,
+        { lessonId: lesson.id, attendances: attendances },
         'dashboard/groups'
       )
-
       res.then((r) => {
         if (r.success) {
           resolve(r)
@@ -47,7 +53,7 @@ export default function AttendanceForm({ lesson }: { lesson: ILesson }) {
       })
     })
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -55,41 +61,60 @@ export default function AttendanceForm({ lesson }: { lesson: ILesson }) {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {lesson.attendances.map((item) => (
-            <FormField
-              key={item.student}
-              control={form.control}
-              name="items"
-              render={({ field }) => {
-                return (
-                  <FormItem key={item.student} className="flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        className="cursor-pointer"
-                        checked={field.value?.includes(item.student)}
-                        onCheckedChange={(checked) => {
-                          setChanged(false)
-                          return checked
-                            ? field.onChange([...field.value, item.student])
-                            : field.onChange(field.value?.filter((value) => value !== item.student))
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-sm font-normal">{item.student}</FormLabel>
-                  </FormItem>
-                )
-              }}
-            />
-          ))}
-          <FormMessage />
+    <div className="space-y-2">
+      {lesson.attendances.map((item) => (
+        <div key={item.studentId}>
+          <Card className="p-2">
+            <CardContent>
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="flex-1/2 text-base">{item.student}</CardTitle>
+                <div>
+                  <Input
+                    placeholder="Комментарий"
+                    defaultValue={item.comment}
+                    onChange={(e) => onCommentChange(item.studentId, e.target.value)}
+                    disabled={!user}
+                  />
+                </div>
+                <ToggleGroup
+                  type="single"
+                  variant={'outline'}
+                  defaultValue={AttendanceStatus[item.status]}
+                  onValueChange={(value: 'Present' | 'Absent') => {
+                    const newStatus = value ? value : 'Unspecified'
+                    onStatusChange(item.studentId, newStatus)
+                  }}
+                  disabled={!user}
+                >
+                  <ToggleGroupItem
+                    value="Present"
+                    className="cursor-pointer data-[state=on]:bg-green-300"
+                  >
+                    <Check className="h-4 w-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="Absent"
+                    className="cursor-pointer data-[state=on]:bg-red-300"
+                  >
+                    <X className="h-4 w-4" />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        <Button disabled={changed} type="submit" className="cursor-pointer">
-          Submit
+      ))}
+      <div className="flex justify-between">
+        {user ? <LessonActions lesson={lesson} /> : <div></div>}
+        <Button
+          disabled={changed || !user}
+          variant={'outline'}
+          onClick={onSubmit}
+          className="cursor-pointer"
+        >
+          Подтвердить
         </Button>
-      </form>
-    </Form>
+      </div>
+    </div>
   )
 }

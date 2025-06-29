@@ -30,7 +30,7 @@ export default function GroupDialog({ group }: { group?: IGroup }) {
       })
     })
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -51,14 +51,17 @@ export default function GroupDialog({ group }: { group?: IGroup }) {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Group Dialog</DialogTitle>
+            <DialogTitle>Редактирование группы</DialogTitle>
           </DialogHeader>
-          <DialogDescription>Create or Update groups</DialogDescription>
+          <DialogDescription>
+            Заполните поля чтобы создать или редактировать группу
+          </DialogDescription>
           <GroupForm
             defaultValues={{
               name: '',
               time: format(new Date(), 'hh:mm'),
               date: new Date(),
+              backofficeUrl: 'https://backoffice.algoritmika.org',
             }}
             group={group}
           />

@@ -17,18 +17,18 @@ export default async function Page({
   const groups = await api.get<IGroup[]>('groups')
 
   return (
-    <Collapsible defaultOpen={true} className="space-y-2">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-3">
+    <div className="grid gap-6 lg:grid-cols-12">
+      <div className="lg:col-span-3">
+        <Collapsible defaultOpen={true} className="space-y-2">
           <Card className="gap-2">
             <CardHeader className="grid-rows-1">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    Groups
+                    Группы
                   </CardTitle>
-                  <CardDescription>Select a group to view details</CardDescription>
+                  <CardDescription>Выбери группу чтобы посмотреть детали</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   {user && <GroupDialog />}
@@ -47,9 +47,9 @@ export default async function Page({
               </CardContent>
             </CollapsibleContent>
           </Card>
-        </div>
-        <div className="lg:col-span-9">{children}</div>
+        </Collapsible>
       </div>
-    </Collapsible>
+      <div className="lg:col-span-9">{children}</div>
+    </div>
   )
 }

@@ -2,7 +2,7 @@ import 'server-only'
 import { cookies } from 'next/headers'
 import { cache } from 'react'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { ITeacher } from '@/types/user'
+import { IUser } from '@/types/user'
 
 export const verifySession = cache(async () => {
   try {
@@ -23,7 +23,7 @@ export const getUser = async () => {
     if (!token) {
       return null
     }
-    const session = jwt.decode(token) as ITeacher
+    const session = jwt.decode(token) as IUser
     return session
   } catch {
     return null

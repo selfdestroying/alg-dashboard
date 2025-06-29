@@ -23,8 +23,11 @@ import { ApiResponse } from '@/types/response'
 import { api } from '@/lib/api/api-client'
 
 const CreateStudentFormSchema = z.object({
-  name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
-  age: z.number().min(6, { error: 'Minimal age must be 6' }).max(18, 'Maximum age must be 18'),
+  name: z.string().min(2, { error: 'Минимальная длинна 2 символа' }).trim(),
+  age: z
+    .number()
+    .min(6, { error: 'Минимальный возраст ученика: 6' })
+    .max(18, 'Максимальный возраст ученика: 18'),
 })
 
 interface IDefaultValues {
@@ -68,7 +71,7 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
       })
     })
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -82,9 +85,9 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
           name="name"
           render={({ field }) => (
             <FormItem className="space-y-1">
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Имя</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input placeholder="Введите имя" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,7 +98,7 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
           name="age"
           render={({ field }) => (
             <FormItem className="space-y-1">
-              <FormLabel>Age</FormLabel>
+              <FormLabel>Возраст</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -111,7 +114,7 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
         />
         <div className="w-full flex justify-end">
           <Button type="submit" className="cursor-pointer">
-            Submit
+            Подтвердить
           </Button>
         </div>
       </form>

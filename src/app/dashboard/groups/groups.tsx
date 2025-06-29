@@ -23,7 +23,7 @@ export default function Groups({ groups }: { groups: IGroup[] }) {
                 className="flex items-center justify-between"
               >
                 <h3 className="font-semibold">{group.name}</h3>
-                <Badge variant={'outline'}>{group.students.length} students</Badge>
+                <Badge variant={'outline'}>{group.students.length} ученик(а/ов)</Badge>
               </Link>
             </CardContent>
           </Card>

@@ -22,13 +22,13 @@ export function DeleteDialog({ handleDelete }: { handleDelete: () => void }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>This action cannot be undone</AlertDialogDescription>
+          <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+          <AlertDialogDescription>Это действие нельзя будет отменить!</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">Отмена</AlertDialogCancel>
           <AlertDialogAction className="cursor-pointer" onClick={handleDelete}>
-            Delete
+            Удалить
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

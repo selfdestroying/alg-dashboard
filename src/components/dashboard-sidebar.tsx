@@ -14,26 +14,25 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import { NavUser } from '../app/dashboard/nav-user'
 import { usePathname } from 'next/navigation'
-import { ITeacher } from '@/types/user'
-import { Button } from '@/components/ui/button'
+import { IUser } from '@/types/user'
+import NavUser from '@/app/dashboard/nav-user'
 
 const mainNavItems = [
   {
-    title: 'Main',
+    title: 'Главная',
     url: '/dashboard',
     icon: Home,
     isActive: false,
   },
   {
-    title: 'Students',
+    title: 'Ученики',
     url: '/dashboard/students',
     icon: User,
     isActive: false,
   },
   {
-    title: 'Groups',
+    title: 'Группы',
     url: '/dashboard/groups',
     icon: Users,
     isActive: false,
@@ -42,30 +41,24 @@ const mainNavItems = [
 
 const additionalNavItems = [
   {
-    title: 'Teachers',
+    title: 'Учителя',
     url: '/dashboard/teachers',
     icon: GraduationCap,
     isActive: false,
   },
 ]
 
-export default function DashboardSidebar({ user }: { user: ITeacher | null }) {
+export default function DashboardSidebar({ user }: { user: IUser | null }) {
   const pathname = usePathname()
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        {user ? (
-          <NavUser user={user} />
-        ) : (
-          <Button asChild variant={'outline'}>
-            <Link href={'/auth'}>Log in</Link>
-          </Button>
-        )}
+        <NavUser />
       </SidebarHeader>
       <SidebarSeparator className="mx-0" />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main Section</SidebarGroupLabel>
+          <SidebarGroupLabel>Общее</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
@@ -85,7 +78,7 @@ export default function DashboardSidebar({ user }: { user: ITeacher | null }) {
           <>
             <SidebarSeparator className="mx-0" />
             <SidebarGroup>
-              <SidebarGroupLabel>Admin Section</SidebarGroupLabel>
+              <SidebarGroupLabel>Администратор</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {additionalNavItems.map((item) => (

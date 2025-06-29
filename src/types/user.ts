@@ -1,7 +1,7 @@
 export interface IAuth {
   token: string
 }
-export interface ITeacher {
+export interface IUser {
   id: number
   name: string
   role: string

@@ -27,19 +27,22 @@ import { ChevronDownIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { Calendar } from '../ui/calendar'
 import { useData } from '../data-provider'
+import { ru } from 'date-fns/locale'
 
 const GroupFormSchema = z.object({
-  name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
+  name: z.string(),
   course: z.string(),
   teacher: z.string(),
-  date: z.date({ error: 'Please enter date' }),
-  time: z.string({ error: 'Please enter time' }),
+  date: z.date(),
+  time: z.string(),
+  backofficeUrl: z.url({ protocol: /^https$/, hostname: /^backoffice.algoritmika\.org$/ }),
 })
 
 interface IDefaultValues {
   name: string
   time: string
   date: Date
+  backofficeUrl: string
 }
 
 interface IGroupFormProps {
@@ -58,10 +61,10 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           teacher: teachers.find((t) => t.name == group.teacher)?.id.toString(),
           time: group.lessonTime,
           date: new Date(group.startDate),
+          backofficeUrl: group.backOfficeUrl,
         }
       : defaultValues,
   })
-
   const onValid = (values: z.infer<typeof GroupFormSchema>) => {
     const body = {
       name: values.name,
@@ -69,6 +72,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
       teacherId: +values.teacher,
       startDate: format(values.date, 'yyyy-MM-dd'),
       lessonTime: values.time,
+      backofficeUrl: values.backofficeUrl,
     }
     const ok = new Promise<ApiResponse<IGroup>>((resolve, reject) => {
       let res
@@ -87,7 +91,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
     })
 
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -101,7 +105,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           name="name"
           render={({ field }) => (
             <FormItem className="space-y-1">
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Название</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -115,11 +119,11 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           name="course"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Course</FormLabel>
+              <FormLabel>Курс</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder="Select course" />
+                    <SelectValue placeholder="Выбрать курс" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -138,11 +142,11 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           name="teacher"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Teacher</FormLabel>
+              <FormLabel>Учитель</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder="Select teacher" />
+                    <SelectValue placeholder="Выбрать учителя" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -162,7 +166,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor="date-picker" className="px-1">
-                Date
+                Дата
               </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -171,7 +175,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
                     id="date-picker"
                     className="justify-between font-normal"
                   >
-                    {field.value ? format(field.value, 'yyyy-MM-dd') : <span>Pick a date</span>}
+                    {field.value ? format(field.value, 'yyyy-MM-dd') : <span>Выберите дату</span>}
                     <ChevronDownIcon />
                   </Button>
                 </PopoverTrigger>
@@ -181,6 +185,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
                     selected={field.value}
                     onSelect={field.onChange}
                     fixedWeeks
+                    locale={ru}
                   />
                 </PopoverContent>
               </Popover>
@@ -194,7 +199,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor="time-picker" className="px-1">
-                Time
+                Время
               </FormLabel>
               <FormControl>
                 <Input
@@ -208,9 +213,22 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="backofficeUrl"
+          render={({ field }) => (
+            <FormItem className="space-y-1">
+              <FormLabel>BackOffice Url</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="w-full flex justify-end">
           <Button type="submit" className="cursor-pointer">
-            Submit
+            Подтвердить
           </Button>
         </div>
       </form>

@@ -2,13 +2,13 @@ import { ILesson } from './lesson'
 import { IStudent } from './student'
 
 export enum DayOfWeek {
-  Sunday = 0,
-  Monday = 1,
-  Tuesday = 2,
-  Wednesday = 3,
-  Thursday = 4,
-  Friday = 5,
-  Saturday = 6,
+  'Воскресенье' = 0,
+  'Понедельник' = 1,
+  'Вторник' = 2,
+  'Среда' = 3,
+  'Четверг' = 4,
+  'Пятница' = 5,
+  'Суббота' = 6,
 }
 
 export enum GroupColors {
@@ -26,6 +26,7 @@ export interface IGroup {
   startDate: string
   lessonDay: DayOfWeek
   lessonTime: string
+  backOfficeUrl: string
   students: IStudent[]
   lessons: ILesson[]
 }

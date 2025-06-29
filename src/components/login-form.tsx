@@ -25,8 +25,8 @@ import { IAuth } from '@/types/user'
 import { createSession } from '@/lib/session'
 
 const SignInFormSchema = z.object({
-  name: z.string().min(2, { error: 'Name must be at least 2 characters long.' }).trim(),
-  password: z.string().min(2, { error: 'Password must be at least 2 characters long.' }),
+  name: z.string().min(2, { error: 'Минимальная длинна 2 символа' }).trim(),
+  password: z.string().min(2, { error: 'Минимальная длинна 2 символа' }),
 })
 
 export function LoginForm() {
@@ -56,7 +56,7 @@ export function LoginForm() {
     })
 
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -66,8 +66,10 @@ export function LoginForm() {
     <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
+          <CardTitle className="text-2xl font-bold">Добро пожаловать</CardTitle>
+          <CardDescription>
+            Войдите в аккаунт чтобы использовать все функции панели управления
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -99,18 +101,22 @@ export function LoginForm() {
                 )}
               />
               {form.formState.errors.root?.badRequest && (
-                <FormMessage>Invalid username or password</FormMessage>
+                <FormMessage>Неверный логин или пароль</FormMessage>
               )}
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                disabled={form.formState.isSubmitting}
+              >
                 {form.formState.isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 mr-2" />
-                    Signing in...
+                    Вход...
                   </>
                 ) : (
                   <>
                     <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
+                    Войти
                   </>
                 )}
               </Button>

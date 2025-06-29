@@ -1,16 +1,13 @@
 'use client'
-
-import { ColumnDef } from '@tanstack/react-table'
+import { api } from '@/lib/api/api-client'
+import { ApiResponse } from '@/types/response'
 import { IStudent } from '@/types/student'
 import { toast } from 'sonner'
-
-import { DeleteDialog } from '@/components/delete-dialog'
+import { DeleteDialog } from '../delete-dialog'
+import StudentDialog from './student-dialog'
 import { usePathname } from 'next/navigation'
-import StudentDialog from '@/components/student/student-dialog'
-import { ApiResponse } from '@/types/response'
-import { api } from '@/lib/api/api-client'
 
-function Actions({ student }: { student: IStudent }) {
+export function Actions({ student }: { student: IStudent }) {
   const handleDelete = () => {
     const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
       api.delete<boolean>(`students/${student.id}`, {}, 'dashboard/students').then((r) => {
@@ -23,7 +20,7 @@ function Actions({ student }: { student: IStudent }) {
     })
 
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -37,7 +34,7 @@ function Actions({ student }: { student: IStudent }) {
   )
 }
 
-function ActionsInGroup({ student }: { student: IStudent }) {
+export function ActionsInGroup({ student }: { student: IStudent }) {
   const pathname = usePathname()
   const groupId = pathname.split('/')[pathname.split('/').length - 1]
   const handleDelete = () => {
@@ -58,7 +55,7 @@ function ActionsInGroup({ student }: { student: IStudent }) {
     })
 
     toast.promise(ok, {
-      loading: 'Loding...',
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
     })
@@ -70,33 +67,3 @@ function ActionsInGroup({ student }: { student: IStudent }) {
     </div>
   )
 }
-
-export const columns: ColumnDef<IStudent>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'age',
-    header: 'Age',
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <Actions student={row.original} />,
-  },
-]
-
-export const columnsInGroup: ColumnDef<IStudent>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'age',
-    header: 'Age',
-  },
-  {
-    id: 'actionsInGroup',
-    cell: ({ row }) => <ActionsInGroup student={row.original} />,
-  },
-]

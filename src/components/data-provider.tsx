@@ -1,10 +1,10 @@
 'use client'
-import { getCourses, getTeachers } from '@/lib/utils'
+import { getCourses, getTeachers } from '@/lib/api/api-server'
 import { ICourse } from '@/types/course'
-import { ITeacher } from '@/types/user'
+import { IUser } from '@/types/user'
 import { createContext, startTransition, useContext, useEffect, useState } from 'react'
 
-const DataContext = createContext<{ courses: ICourse[]; teachers: ITeacher[] }>({
+const DataContext = createContext<{ courses: ICourse[]; teachers: IUser[] }>({
   courses: [],
   teachers: [],
 })
@@ -15,7 +15,7 @@ export function DataProvider({
   children: React.ReactNode
 }>) {
   const [courses, setCourses] = useState<ICourse[]>([])
-  const [teachers, setTeachers] = useState<ITeacher[]>([])
+  const [teachers, setTeachers] = useState<IUser[]>([])
   useEffect(() => {
     startTransition(async () => {
       setCourses(await getCourses())
