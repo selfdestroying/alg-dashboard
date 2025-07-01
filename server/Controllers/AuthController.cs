@@ -27,7 +27,7 @@ public class AuthController(AppDbContext context, IConfiguration config) : Contr
             return result == PasswordVerificationResult.Failed
                 ? BadRequest(new ErrorResponse("Invalid password"))
                 : Ok(new SuccessResponse<AuthResponseDto>("Logged in",
-                    new AuthResponseDto(JwtTokenHelper.GenerateToken(user, config))));
+                    new AuthResponseDto(JwtTokenHelper.GenerateToken(user, config), config["Jwt:ExpirationHours"] ?? "1")));
         }
         catch (Exception)
         {

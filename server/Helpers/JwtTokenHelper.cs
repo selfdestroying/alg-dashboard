@@ -12,18 +12,21 @@ public static class JwtTokenHelper
     {
         var claims = new[]
         {
+            new Claim("id", teacher.Id.ToString()),
             new Claim("name", teacher.Name),
-            new Claim("role", teacher.Role!.Name),
+            new Claim("role", teacher.Role.Name),
         };
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        var expirationHours = config["Jwt:ExpirationHours"];
+        
+        var expires = DateTime.Now.AddHours(expirationHours != null ? int.Parse(expirationHours) : 1);
         var token = new JwtSecurityToken(
             issuer: config["Jwt:Issuer"],
             audience: config["Jwt:Issuer"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(120),
+            expires: expires,
             signingCredentials: credentials
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

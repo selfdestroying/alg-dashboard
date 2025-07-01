@@ -2,6 +2,7 @@
 
 namespace alg_dashboard_server.DTOs;
 
+
 public class AttendanceResponseDto
 {
     public required int StudentId { get; set; }

@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
-    
+
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -56,7 +56,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+    );
+});
 
 builder.Services.AddScoped<TeacherRepository>();
 builder.Services.AddScoped<StudentRepository>();
@@ -74,22 +80,23 @@ builder.Services.AddScoped<AttendanceService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
-        policy.WithOrigins("https://pkdvdzkn-3000.inc1.devtunnels.ms").AllowCredentials().AllowAnyHeader().AllowAnyMethod();
-    });
+    options.AddPolicy("AllowAll", policy => { policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
 });
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (args.Contains("migrate"))
+    {
+        db.Database.Migrate();
+    }
+
     DataSeeder.SeedRoles(db);
     DataSeeder.SeedCourses(db);
     DataSeeder.SeedTeachers(db);
 }
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

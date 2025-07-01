@@ -6,7 +6,7 @@ public class AuthRequestDto
     public required string Password { get; set; }
 }
 
-public sealed record AuthResponseDto(string Token)
+public sealed record AuthResponseDto(string Token, string ExpirationHours)
 {
 }
 

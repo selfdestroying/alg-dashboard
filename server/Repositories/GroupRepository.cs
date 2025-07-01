@@ -2,7 +2,7 @@
 using alg_dashboard_server.DTOs;
 using alg_dashboard_server.Models;
 using Microsoft.EntityFrameworkCore;
-using Attendance = alg_dashboard_server.Models.Attendance;
+
 
 namespace alg_dashboard_server.Repositories;
 
@@ -11,12 +11,13 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
     public override async Task<List<Group>> Get()
     {
         return await DbSet.Include(g => g.GroupStudents).ThenInclude(gs => gs.Student).Include(g => g.Course)
-            .Include(g => g.Teacher).ToListAsync();
+            .Include(g => g.Teacher).ThenInclude(t => t.Role).ToListAsync();
     }
 
     public override async Task<Group?> Get(int id)
     {
-        return await Context.Groups.Include(c => c.Course).Include(t => t.Teacher).Include(l => l.Lessons)
+        return await Context.Groups.Include(c => c.Course).Include(t => t.Teacher).ThenInclude(t => t.Role)
+            .Include(l => l.Lessons)
             .ThenInclude(a => a.Attendances)
             .Include(g => g.GroupStudents)
             .ThenInclude(sg => sg.Student)

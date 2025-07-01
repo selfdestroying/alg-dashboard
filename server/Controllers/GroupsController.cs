@@ -8,7 +8,8 @@ namespace alg_dashboard_server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GroupsController(GroupService service) : BaseController<GroupService, GroupRepository, Group, GroupResponseDto, GroupCreateDto, GroupUpdateDto>(service)
+public class GroupsController(GroupService service)
+    : BaseController<GroupService, GroupRepository, Group, GroupResponseDto, GroupCreateDto, GroupUpdateDto>(service)
 {
     [HttpPost("add-student")]
     public async Task<IActionResult> AddStudent([FromBody] EditStudentInGroupRequestDto requestDto)

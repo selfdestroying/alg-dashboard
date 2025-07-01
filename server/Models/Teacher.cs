@@ -8,5 +8,5 @@ public class Teacher
     [MaxLength(100), MinLength(2)] public required string Name { get; set; } = string.Empty;
     [MaxLength(100), MinLength(2)] public string Password { get; set; } = string.Empty;
     public int RoleId { get; set; }
-    public Role? Role { get; set; }
+    public Role Role { get; set; }
 }
