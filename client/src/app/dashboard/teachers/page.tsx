@@ -3,8 +3,18 @@ import { IUser } from '@/types/user'
 import { columns } from './teachers'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:5120/api/teachers')
-  const users: IUser[] = await res.json()
+  let users: IUser[]
+  try {
+    const res = await fetch(`${process.env.API_URL}/teachers`)
+    users = await res.json()
+  } catch {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teachers`)
+      users = await res.json()
+    } catch {
+      users = []
+    }
+  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

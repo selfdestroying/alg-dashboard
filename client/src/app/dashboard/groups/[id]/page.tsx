@@ -27,16 +27,29 @@ import {
 } from '@/components/ui/accordion'
 import StudentTable from '@/components/student/student-table'
 import LessonDialog from '@/components/lesson/lesson-dialog'
+import { redirect } from 'next/navigation'
 
-export default async function GroupDetail({ params }: { params: Promise<{ id: string }> }) {
-  const id = (await params).id
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const user = await getUser()
+  if (!user) {
+    return redirect('/auth')
+  }
+
+  const id = (await params).id
   const group = await api.get<IGroup>(`groups/${id}`)
 
   if (!group.success) {
-    return <div>{group.message}</div>
+    return (
+      <Card>
+        <CardHeader className="gap-0 justify-center">
+          Ошибка при получении группы: {group.message}
+        </CardHeader>
+      </Card>
+    )
   }
+
   const students = await api.get<IStudent[]>(`students`)
+
   return (
     <div className="space-y-4">
       <div className="flex lg:flex-row flex-col gap-4">
@@ -49,7 +62,7 @@ export default async function GroupDetail({ params }: { params: Promise<{ id: st
                   Информация о группе
                 </CardTitle>
               </div>
-              {user && <GroupDialog group={group.data} />}
+              <GroupDialog group={group.data} />
             </div>
           </CardHeader>
           <CardContent>
@@ -75,7 +88,7 @@ export default async function GroupDetail({ params }: { params: Promise<{ id: st
                   <User className="h-4 w-4" />
                   Учитель
                 </div>
-                <p className="font-semibold">{group.data.teacher}</p>
+                <p className="font-semibold">{group.data.teacher.name}</p>
               </div>
 
               <div className="space-y-2">
@@ -118,33 +131,33 @@ export default async function GroupDetail({ params }: { params: Promise<{ id: st
             </div>
           </CardContent>
         </Card>
-
         <Card className="flex-1/2 gap-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Ученики
-                </CardTitle>
-              </div>
-              {user && students.success && (
-                <StudentGroupDialog
-                  students={students.data.filter(
-                    (s) => !group.data.students.some((gs) => gs.id === s.id)
-                  )}
-                  groupId={id}
-                />
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {students.success ? (
-              <StudentTable data={group.data.students} inGroup isAuthenticated={Boolean(user)} />
-            ) : (
-              <div>Error</div>
-            )}
-          </CardContent>
+          {students.success ? (
+            <>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Ученики
+                    </CardTitle>
+                  </div>
+
+                  <StudentGroupDialog
+                    students={students.data.filter(
+                      (s) => !group.data.students.some((gs) => gs.id === s.id)
+                    )}
+                    groupId={id}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <StudentTable data={group.data.students} inGroup isAuthenticated={Boolean(user)} />
+              </CardContent>
+            </>
+          ) : (
+            <CardHeader>Ошибка при получении учеников: {students.message}</CardHeader>
+          )}
         </Card>
       </div>
       <Card className="gap-2">
@@ -154,7 +167,7 @@ export default async function GroupDetail({ params }: { params: Promise<{ id: st
               <Calendar className="h-5 w-5" />
               Расписание
             </CardTitle>
-            {user && <LessonDialog groupId={group.data.id} />}
+            <LessonDialog groupId={group.data.id} />
           </div>
         </CardHeader>
         <CardContent>

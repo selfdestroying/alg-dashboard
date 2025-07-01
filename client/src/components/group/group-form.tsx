@@ -58,7 +58,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
       ? {
           name: group.name,
           course: courses.find((i) => i.name == group.course)?.id.toString(),
-          teacher: teachers.find((t) => t.name == group.teacher)?.id.toString(),
+          teacher: teachers.find((t) => t.id == group.teacher.id)?.id.toString(),
           time: group.lessonTime,
           date: new Date(group.startDate),
           backofficeUrl: group.backOfficeUrl,

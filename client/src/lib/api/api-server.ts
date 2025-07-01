@@ -1,10 +1,6 @@
 'use server'
-import { ICourse } from '@/types/course'
-import { IGroup } from '@/types/group'
 import { ApiResponse } from '@/types/response'
-import { IUser } from '@/types/user'
 import { revalidatePath } from 'next/cache'
-import { api } from './api-client'
 import nodemailer from 'nodemailer'
 
 export async function delay(ms: number) {
@@ -46,33 +42,6 @@ export async function apiRequest<T>(
       message,
     }
   }
-}
-
-export const getCourses = async () => {
-  const coursesRes = await fetch(`${process.env.API_URL}/courses`, { cache: 'force-cache' })
-
-  if (!coursesRes.ok) {
-    return []
-  }
-  const courses: ICourse[] = await coursesRes.json()
-  return courses
-}
-
-export const getTeachers = async () => {
-  const res = await fetch(`${process.env.API_URL}/teachers`, { cache: 'force-cache' })
-  if (!res.ok) {
-    return []
-  }
-  const users: IUser[] = await res.json()
-  return users
-}
-
-export const getGroups = async () => {
-  const groups = await api.get<IGroup[]>('groups')
-  if (!groups.success) {
-    return []
-  }
-  return groups.data
 }
 
 export const sendEmail = async (name: string, feedback: string) => {

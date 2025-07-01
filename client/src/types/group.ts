@@ -1,5 +1,6 @@
 import { ILesson } from './lesson'
 import { IStudent } from './student'
+import { IUser } from './user'
 
 export enum DayOfWeek {
   'Воскресенье' = 0,
@@ -22,7 +23,7 @@ export interface IGroup {
   id: number
   name: string
   course: string
-  teacher: string
+  teacher: IUser
   startDate: string
   lessonDay: DayOfWeek
   lessonTime: string

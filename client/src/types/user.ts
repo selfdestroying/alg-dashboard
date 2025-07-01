@@ -1,5 +1,6 @@
 export interface IAuth {
   token: string
+  expirationHours: string
 }
 export interface IUser {
   id: number

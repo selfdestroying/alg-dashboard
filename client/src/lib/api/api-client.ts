@@ -1,7 +1,15 @@
 import { apiRequest } from './api-server'
 
 export const api = {
-  get: <T>(url: string, revalidateUrl?: string) => apiRequest<T>(url, {}, revalidateUrl),
+  get: <T>(url: string, options?: object, revalidateUrl?: string) =>
+    apiRequest<T>(
+      url,
+      {
+        method: 'GET',
+        ...options,
+      },
+      revalidateUrl
+    ),
   post: <T>(url: string, body?: object, revalidateUrl?: string) =>
     apiRequest<T>(
       url,

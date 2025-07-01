@@ -47,7 +47,7 @@ export function LoginForm() {
         })
         .then((r) => {
           if (r.success) {
-            createSession(r.data.token)
+            createSession(r.data.token, r.data.expirationHours)
             resolve(r)
           } else {
             reject(r)

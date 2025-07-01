@@ -1,17 +1,9 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { LoaderCircle } from 'lucide-react'
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-[120px]" />
-          <Skeleton className="h-6 w-96" />
-        </div>
-      </div>
-
-      <Skeleton className="h-10 w-34" />
-      <Skeleton className="h-52" />
+    <div className="flex items-center justify-center w-full h-full">
+      <LoaderCircle className="animate-spin" />
     </div>
   )
 }
