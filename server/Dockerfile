@@ -10,4 +10,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=builder /app/publish .
 EXPOSE 5000
-ENTRYPOINT [ "dotnet", "alg-dashboard-server.dll"]
+ENTRYPOINT [ "dotnet", "alg-dashboard-server.dll", "migrate"]

@@ -14,7 +14,7 @@ public class GroupService(GroupRepository repository, LessonRepository lessonRep
         var newGroup = await Repository.Create(group);
         if (newGroup == null) return false;
 
-        var lessonDates = LessonsHelper.GenerateLessonDates(group.StartDate, group.StartDate.DayOfWeek);
+        var lessonDates = LessonsHelper.GenerateLessonDates(group.LessonsAmount, group.StartDate, group.StartDate.DayOfWeek);
         var lessons = lessonDates.Select(date => new Lesson
         {
             GroupId = newGroup.Id,
@@ -51,6 +51,8 @@ public class GroupService(GroupRepository repository, LessonRepository lessonRep
             LessonDay = entity.LessonDay,
             LessonTime = entity.LessonTime,
             BackOfficeUrl = entity.BackOfficeUrl,
+            Type = entity.Type,
+            LessonsAmount = entity.LessonsAmount,
             Students = entity.GroupStudents.Select(sg => new StudentResponseDto
             {
                 Id = sg.StudentId,

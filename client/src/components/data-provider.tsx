@@ -22,6 +22,7 @@ export function DataProvider({
       const t = await api.get<IUser[]>('teachers', { cache: 'force-cache' })
       setCourses(c.success ? c.data : [])
       setTeachers(t.success ? t.data : [])
+      console.log(t)
     })
   }, [])
   return <DataContext.Provider value={{ courses, teachers }}>{children}</DataContext.Provider>

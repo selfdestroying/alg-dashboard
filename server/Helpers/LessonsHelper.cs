@@ -4,13 +4,13 @@ namespace alg_dashboard_server.Helpers;
 
 public static class LessonsHelper
 {
-    public static List<DateOnly> GenerateLessonDates(DateOnly date, DayOfWeek lessonDay)
+    public static List<DateOnly> GenerateLessonDates(int lessonsAmount, DateOnly date, DayOfWeek lessonDay)
     {
         var dates = new List<DateOnly>();
 
         var start = date;
         // TODO: remove number
-        var lessonCount = 32;
+        
 
         while (start.DayOfWeek != lessonDay)
         {
@@ -18,7 +18,7 @@ public static class LessonsHelper
         }
 
         var i = 0;
-        while (i < lessonCount)
+        while (i < lessonsAmount)
         {
             dates.Add(start);
             start = start.AddDays(7);

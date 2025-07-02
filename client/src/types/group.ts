@@ -12,6 +12,12 @@ export enum DayOfWeek {
   'Суббота' = 6,
 }
 
+export enum GroupType {
+  'Группа' = 0,
+  'Индививдуальное занятие' = 1,
+  'Интенсив' = 2,
+}
+
 export enum GroupColors {
   'bg-blue-500' = 0,
   'bg-green-500' = 1,
@@ -30,4 +36,6 @@ export interface IGroup {
   backOfficeUrl: string
   students: IStudent[]
   lessons: ILesson[]
+  type: GroupType
+  lessonsAmount: number
 }

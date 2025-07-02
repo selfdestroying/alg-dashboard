@@ -1,19 +1,6 @@
-﻿namespace alg_dashboard_server.DTOs;
+﻿using alg_dashboard_server.Models;
 
-public class GroupDto
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string BackOfficeUrl { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DayOfWeek LessonDay { get; set; }
-    public TimeOnly LessonTime { get; set; }
-
-    public string Course { get; set; }
-    public TeacherDto Teacher { get; set; }
-    public List<LessonDto> Lessons { get; set; }
-    public List<StudentDto> Students { get; set; }
-}
+namespace alg_dashboard_server.DTOs;
 
 public class GroupResponseDto
 {
@@ -25,6 +12,8 @@ public class GroupResponseDto
     public required DayOfWeek LessonDay { get; init; }
     public required TimeOnly LessonTime { get; init; }
     public required string BackOfficeUrl { get; init; }
+    public required GroupType Type { get; init; }
+    public required int LessonsAmount { get; init; }
     public required List<StudentResponseDto> Students { get; init; }
     public List<LessonResponseDto>? Lessons { get; set; }
 }
@@ -37,6 +26,8 @@ public class GroupCreateDto
     public required DateOnly StartDate { get; init; }
     public required TimeOnly LessonTime { get; init; }
     public required string BackOfficeUrl { get; init; }
+    public required GroupType Type { get; init; }
+    public required int LessonsAmount { get; init; }
 }
 
 public class GroupUpdateDto
@@ -47,6 +38,8 @@ public class GroupUpdateDto
     public DateOnly? StartDate { get; set; }
     public TimeOnly? LessonTime { get; set; }
     public string? BackOfficeUrl { get; set; }
+    public GroupType? Type { get; set; }
+    public int? LessonsAmount { get; set; }
 }
 
 public class EditStudentInGroupRequestDto

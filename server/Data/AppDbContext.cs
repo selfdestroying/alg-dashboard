@@ -17,7 +17,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        
+        
         modelBuilder.Entity<GroupStudent>().HasKey(sg => new { sg.GroupId, sg.StudentId });
         modelBuilder.Entity<GroupStudent>().HasOne(sg => sg.Student).WithMany(s => s.GroupStudents)
             .HasForeignKey(sg => sg.StudentId);

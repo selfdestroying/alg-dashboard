@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { FC } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { IGroup } from '@/types/group'
+import { GroupType, IGroup } from '@/types/group'
 import { ApiResponse } from '@/types/response'
 import { api } from '@/lib/api/api-client'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
@@ -28,14 +28,17 @@ import { format } from 'date-fns'
 import { Calendar } from '../ui/calendar'
 import { useData } from '../data-provider'
 import { ru } from 'date-fns/locale'
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 
 const GroupFormSchema = z.object({
-  name: z.string(),
+  name: z.string().nonempty({ error: 'Название не может быть пустым' }),
   course: z.string(),
   teacher: z.string(),
   date: z.date(),
   time: z.string(),
   backofficeUrl: z.url({ protocol: /^https$/, hostname: /^backoffice.algoritmika\.org$/ }),
+  type: z.number(),
+  lessonsAmount: z.number().nonnegative(),
 })
 
 interface IDefaultValues {
@@ -43,6 +46,8 @@ interface IDefaultValues {
   time: string
   date: Date
   backofficeUrl: string
+  type: GroupType
+  lessonsAmount: number
 }
 
 interface IGroupFormProps {
@@ -62,6 +67,8 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
           time: group.lessonTime,
           date: new Date(group.startDate),
           backofficeUrl: group.backOfficeUrl,
+          lessonsAmount: group.lessonsAmount,
+          type: group.type,
         }
       : defaultValues,
   })
@@ -73,7 +80,10 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
       startDate: format(values.date, 'yyyy-MM-dd'),
       lessonTime: values.time,
       backofficeUrl: values.backofficeUrl,
+      type: values.type,
+      lessonsAmount: values.lessonsAmount,
     }
+    console.log(body)
     const ok = new Promise<ApiResponse<IGroup>>((resolve, reject) => {
       let res
       if (group) {
@@ -221,6 +231,65 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
               <FormLabel>BackOffice Url</FormLabel>
               <FormControl>
                 <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {!group && (
+          <FormField
+            control={form.control}
+            name="lessonsAmount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Количество занятий</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    min={1}
+                    onChange={(e) => field.onChange(+e.target.value)}
+                    disabled={Boolean(group)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <p className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive">
+                Тип группы
+              </p>
+              <FormControl>
+                <RadioGroup
+                  defaultValue={field.value.toString()}
+                  onValueChange={(e) => field.onChange(+e)}
+                  className="flex flex-col"
+                >
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <RadioGroupItem value="0" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Группа</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <RadioGroupItem value="1" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Индивидуальные занятия</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <RadioGroupItem value="2" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Интенсив</FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>

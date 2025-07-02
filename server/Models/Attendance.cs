@@ -2,9 +2,9 @@
 
 public enum AttendanceStatus
 {
-    Unspecified = 0,
-    Present = 1,
-    Absent = 2
+    Unspecified,
+    Present,
+    Absent
 }
 
 public class Attendance

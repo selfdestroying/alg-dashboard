@@ -35,6 +35,8 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
             LessonTime = entity.LessonTime,
             LessonDay = entity.StartDate.DayOfWeek,
             BackOfficeUrl = entity.BackOfficeUrl,
+            Type = entity.Type,
+            LessonsAmount = entity.LessonsAmount,
         };
     }
 
@@ -86,6 +88,7 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
         entity.CourseId = dto.CourseId ?? entity.CourseId;
         entity.TeacherId = dto.TeacherId ?? entity.TeacherId;
         entity.LessonTime = dto.LessonTime ?? entity.LessonTime;
+        entity.Type = dto.Type ?? entity.Type;
         entity.BackOfficeUrl = dto.BackOfficeUrl ?? entity.BackOfficeUrl;
         if (dto.StartDate == null) return;
         entity.StartDate = entity.StartDate;

@@ -62,6 +62,8 @@ export default function GroupDialog({ group }: { group?: IGroup }) {
               time: format(new Date(), 'hh:mm'),
               date: new Date(),
               backofficeUrl: 'https://backoffice.algoritmika.org',
+              type: 0,
+              lessonsAmount: 32,
             }}
             group={group}
           />
