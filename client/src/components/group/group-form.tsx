@@ -1,12 +1,12 @@
 'use client'
 
-import type React from 'react'
-
-import { Input } from '@/components/ui/input'
-
+import React, { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { toast } from 'sonner'
 import {
   Form,
   FormField,
@@ -15,20 +15,24 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
-import { FC } from 'react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { GroupType, IGroup } from '@/types/group'
-import { ApiResponse } from '@/types/response'
-import { api } from '@/lib/api/api-client'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ChevronDownIcon } from 'lucide-react'
-import { format } from 'date-fns'
-import { Calendar } from '../ui/calendar'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+
 import { useData } from '../data-provider'
-import { ru } from 'date-fns/locale'
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
+import { GroupType, IGroup } from '@/types/group'
+import { api } from '@/lib/api/api-client'
 
 const GroupFormSchema = z.object({
   name: z.string().nonempty({ error: 'Название не может быть пустым' }),
@@ -38,7 +42,7 @@ const GroupFormSchema = z.object({
   time: z.string(),
   backofficeUrl: z.url({ protocol: /^https$/, hostname: /^backoffice.algoritmika\.org$/ }),
   type: z.number(),
-  lessonsAmount: z.number().nonnegative(),
+  lessonsAmount: z.number().nonnegative().min(1),
 })
 
 interface IDefaultValues {
@@ -72,6 +76,7 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
         }
       : defaultValues,
   })
+
   const onValid = (values: z.infer<typeof GroupFormSchema>) => {
     const body = {
       name: values.name,
@@ -83,22 +88,10 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
       type: values.type,
       lessonsAmount: values.lessonsAmount,
     }
-    console.log(body)
-    const ok = new Promise<ApiResponse<IGroup>>((resolve, reject) => {
-      let res
-      if (group) {
-        res = api.update<IGroup>(`groups/${group.id}`, body, 'dashboard/groups')
-      } else {
-        res = api.post<IGroup>('groups', body, 'dashboard/groups')
-      }
-      res.then((r) => {
-        if (r.success) {
-          resolve(r)
-        } else {
-          reject(r)
-        }
-      })
-    })
+
+    const ok = group
+      ? api.update<IGroup>(`groups/${group.id}`, body, 'dashboard/groups')
+      : api.post<IGroup>('groups', body, 'dashboard/groups')
 
     toast.promise(ok, {
       loading: 'Загрузка...',
@@ -109,197 +102,201 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onValid)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel>Название</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form
+        onSubmit={form.handleSubmit(onValid)}
+        className="flex flex-col gap-2 overflow-auto h-fit max-h-screen space-y-2 pb-10"
+      >
+        <Tabs defaultValue="main" className="w-full">
+          <TabsList>
+            <TabsTrigger value="main" className="cursor-pointer">
+              Основное
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="cursor-pointer">
+              Расписание
+            </TabsTrigger>
+          </TabsList>
 
-        <FormField
-          control={form.control}
-          name="course"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Курс</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder="Выбрать курс" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {courses.map((c) => (
-                    <SelectItem key={c.id} value={c.id.toString()} className="cursor-pointer">
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="teacher"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Учитель</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="cursor-pointer">
-                    <SelectValue placeholder="Выбрать учителя" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {teachers.map((c) => (
-                    <SelectItem key={c.id} value={c.id.toString()} className="cursor-pointer">
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="date-picker" className="px-1">
-                Дата
-              </FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    id="date-picker"
-                    className="justify-between font-normal"
-                  >
-                    {field.value ? format(field.value, 'yyyy-MM-dd') : <span>Выберите дату</span>}
-                    <ChevronDownIcon />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    fixedWeeks
-                    locale={ru}
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="time"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="time-picker" className="px-1">
-                Время
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="time"
-                  id="time-picker"
-                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="backofficeUrl"
-          render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormLabel>BackOffice Url</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {!group && (
-          <FormField
-            control={form.control}
-            name="lessonsAmount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Количество занятий</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    min={1}
-                    onChange={(e) => field.onChange(+e.target.value)}
-                    disabled={Boolean(group)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <TabsContent value="main" className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Название</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {!group && (
+              <FormField
+                control={form.control}
+                name="lessonsAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Количество занятий</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...field}
+                        onChange={(e) => field.onChange(+e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
-        )}
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <p className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive">
-                Тип группы
-              </p>
-              <FormControl>
-                <RadioGroup
-                  defaultValue={field.value.toString()}
-                  onValueChange={(e) => field.onChange(+e)}
-                  className="flex flex-col"
-                >
-                  <FormItem className="flex items-center gap-3">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive">
+                    Тип группы
+                  </p>
+                  <FormControl>
+                    <RadioGroup
+                      defaultValue={field.value.toString()}
+                      onValueChange={(e) => field.onChange(+e)}
+                    >
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="0" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Группа</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="1" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Индивидуальные занятия</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-3">
+                        <FormControl>
+                          <RadioGroupItem value="2" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Интенсив</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="course"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Курс</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <RadioGroupItem value="0" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выбрать курс" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormLabel className="font-normal">Группа</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center gap-3">
+                    <SelectContent>
+                      {courses.map((c) => (
+                        <SelectItem key={c.id} value={c.id.toString()}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="teacher"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Учитель</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <RadioGroupItem value="1" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выбрать учителя" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormLabel className="font-normal">Индивидуальные занятия</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center gap-3">
-                    <FormControl>
-                      <RadioGroupItem value="2" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Интенсив</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="w-full flex justify-end">
-          <Button type="submit" className="cursor-pointer">
-            Подтвердить
-          </Button>
-        </div>
+                    <SelectContent>
+                      {teachers.map((t) => (
+                        <SelectItem key={t.id} value={t.id.toString()}>
+                          {t.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+
+          <TabsContent value="schedule" className="space-y-4">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Дата</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="justify-between">
+                        {field.value ? format(field.value, 'dd.MM.yyyy') : 'Выбрать дату'}
+                        <ChevronDownIcon />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={ru}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Время</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="backofficeUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Backoffice URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+        </Tabs>
+
+        {/* Кнопка подтверждения внизу */}
+        <Button type="submit" className="w-full cursor-pointer">
+          Подтвердить
+        </Button>
       </form>
     </Form>
   )

@@ -37,7 +37,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const id = (await params).id
   const group = await api.get<IGroup>(`groups/${id}`)
-  console.log(group)
   if (!group.success) {
     return (
       <Card>

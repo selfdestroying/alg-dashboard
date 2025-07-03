@@ -49,7 +49,7 @@ export default function GroupDialog({ group }: { group?: IGroup }) {
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="overflow-hidden">
           <DialogHeader>
             <DialogTitle>Редактирование группы</DialogTitle>
           </DialogHeader>

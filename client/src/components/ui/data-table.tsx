@@ -39,12 +39,12 @@ export default function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    state: pageSize ? { pagination } : undefined,
+    state: pageSize > 0 ? { pagination } : undefined,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: pageSize ? setPagination : undefined,
+    getPaginationRowModel: pageSize > 0 ? getPaginationRowModel() : undefined,
+    onPaginationChange: pageSize > 0 ? setPagination : undefined,
   })
 
   return (

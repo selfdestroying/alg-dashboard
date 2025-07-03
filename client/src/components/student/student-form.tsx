@@ -27,7 +27,8 @@ const CreateStudentFormSchema = z.object({
   age: z
     .number()
     .min(6, { error: 'Минимальный возраст ученика: 6' })
-    .max(18, 'Максимальный возраст ученика: 18'),
+    .max(18, 'Максимальный возраст ученика: 18')
+    .nonnegative(),
 })
 
 interface IDefaultValues {
@@ -102,9 +103,9 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
               <FormControl>
                 <Input
                   {...field}
-                  type="number"
-                  min={6}
-                  max={18}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   onChange={(e) => field.onChange(+e.target.value)}
                 />
               </FormControl>
