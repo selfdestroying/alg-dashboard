@@ -18,11 +18,11 @@ import {
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { LogIn } from 'lucide-react'
-import { api } from '@/lib/api/api-client'
 import { toast } from 'sonner'
 import { ApiResponse } from '@/types/response'
 import { IAuth } from '@/types/user'
 import { createSession } from '@/lib/session'
+import { apiPost } from '@/lib/api/api-server'
 
 const SignInFormSchema = z.object({
   name: z.string().min(2, { error: 'Минимальная длинна 2 символа' }).trim(),
@@ -40,19 +40,17 @@ export function LoginForm() {
 
   const onValid = (values: z.infer<typeof SignInFormSchema>) => {
     const ok = new Promise<ApiResponse<IAuth>>((resolve, reject) => {
-      api
-        .post<IAuth>('auth/login', {
-          name: values.name,
-          password: values.password,
-        })
-        .then((r) => {
-          if (r.success) {
-            createSession(r.data.token, r.data.expirationHours)
-            resolve(r)
-          } else {
-            reject(r)
-          }
-        })
+      apiPost<IAuth>('auth/login', {
+        name: values.name,
+        password: values.password,
+      }).then((r) => {
+        if (r.success) {
+          createSession(r.data.token, r.data.expirationHours)
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
     })
 
     toast.promise(ok, {

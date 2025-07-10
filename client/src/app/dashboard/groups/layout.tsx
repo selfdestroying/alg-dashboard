@@ -2,12 +2,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { ChevronsUpDown, Users } from 'lucide-react'
 import Groups from './groups'
 import { IGroup } from '@/types/group'
-import { api } from '@/lib/api/api-client'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import GroupDialog from '@/components/group/group-dialog'
 import { getUser } from '@/lib/dal'
 import { redirect } from 'next/navigation'
+import { apiGet } from '@/lib/api/api-server'
 
 export default async function Page({
   children,
@@ -19,7 +19,7 @@ export default async function Page({
     return redirect('/auth')
   }
 
-  const groups = await api.get<IGroup[]>('groups')
+  const groups = await apiGet<IGroup[]>('groups')
   if (!groups.success) {
     return (
       <Card>

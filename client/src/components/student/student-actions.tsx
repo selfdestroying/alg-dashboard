@@ -1,16 +1,16 @@
 'use client'
-import { api } from '@/lib/api/api-client'
 import { ApiResponse } from '@/types/response'
 import { IStudent } from '@/types/student'
 import { toast } from 'sonner'
 import { DeleteDialog } from '../delete-dialog'
 import StudentDialog from './student-dialog'
 import { usePathname } from 'next/navigation'
+import { apiDelete } from '@/lib/api/api-server'
 
 export function Actions({ student }: { student: IStudent }) {
   const handleDelete = () => {
     const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-      api.delete<boolean>(`students/${student.id}`, {}, 'dashboard/students').then((r) => {
+      apiDelete<boolean>(`students/${student.id}`, {}, 'dashboard/students').then((r) => {
         if (r.success) {
           resolve(r)
         } else {

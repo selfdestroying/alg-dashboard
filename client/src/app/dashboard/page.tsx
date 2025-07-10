@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { api } from '@/lib/api/api-client'
+import { apiGet } from '@/lib/api/api-server'
 import { IGroup } from '@/types/group'
 import { IStudent } from '@/types/student'
 import { User, Users } from 'lucide-react'
 
 export default async function Page() {
-  const groups = await api.get<IGroup[]>('groups')
-  const students = await api.get<IStudent[]>('students')
+  const groups = await apiGet<IGroup[]>('groups')
+  const students = await apiGet<IStudent[]>('students')
 
   return (
     <div className="space-y-6">

@@ -1,5 +1,5 @@
 'use client'
-import { api } from '@/lib/api/api-client'
+import { apiGet } from '@/lib/api/api-server'
 import { ICourse } from '@/types/course'
 import { IUser } from '@/types/user'
 import { createContext, startTransition, useContext, useEffect, useState } from 'react'
@@ -18,8 +18,8 @@ export function DataProvider({
   const [teachers, setTeachers] = useState<IUser[]>([])
   useEffect(() => {
     startTransition(async () => {
-      const c = await api.get<ICourse[]>('courses', { cache: 'force-cache' })
-      const t = await api.get<IUser[]>('teachers', { cache: 'force-cache' })
+      const c = await apiGet<ICourse[]>('courses', { cache: 'force-cache' })
+      const t = await apiGet<IUser[]>('teachers', { cache: 'force-cache' })
       setCourses(c.success ? c.data : [])
       setTeachers(t.success ? t.data : [])
     })

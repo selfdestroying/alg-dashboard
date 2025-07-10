@@ -20,7 +20,7 @@ import { IStudent } from '@/types/student'
 import { toast } from 'sonner'
 import { FC } from 'react'
 import { ApiResponse } from '@/types/response'
-import { api } from '@/lib/api/api-client'
+import { apiPost, apiPut } from '@/lib/api/api-server'
 
 const CreateStudentFormSchema = z.object({
   name: z.string().min(2, { error: 'Минимальная длинна 2 символа' }).trim(),
@@ -51,13 +51,13 @@ export const StudentForm: FC<IStudentFormProps> = ({ defaultValues, student }) =
     const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
       let res
       if (student) {
-        res = api.update<IStudent>(
+        res = apiPut<IStudent>(
           `students/${student.id}`,
           { name: values.name, age: +values.age },
           'dashboard/students'
         )
       } else {
-        res = api.post<IStudent>(
+        res = apiPost<IStudent>(
           'students',
           { name: values.name, age: +values.age },
           'dashboard/students'

@@ -11,29 +11,37 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from './ui/sidebar'
-import { Home, User, Users } from 'lucide-react'
+import { HandCoins, Home, User, Users } from 'lucide-react'
 import Link from 'next/link'
+const generalNavItems = [
+  {
+    title: 'Главная',
+    url: '/dashboard',
+    icon: Home,
+    isActive: false,
+  },
+  {
+    title: 'Ученики',
+    url: '/dashboard/students',
+    icon: User,
+    isActive: false,
+  },
+  {
+    title: 'Группы',
+    url: '/dashboard/groups',
+    icon: Users,
+    isActive: false,
+  },
+]
+const managersNavItems = [
+  {
+    title: 'Финансы',
+    url: '/dashboard/payments',
+    icon: HandCoins,
+    isActive: false,
+  },
+]
 export default async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const mainNavItems = [
-    {
-      title: 'Главная',
-      url: '/dashboard',
-      icon: Home,
-      isActive: false,
-    },
-    {
-      title: 'Ученики',
-      url: '/dashboard/students',
-      icon: User,
-      isActive: false,
-    },
-    {
-      title: 'Группы',
-      url: '/dashboard/groups',
-      icon: Users,
-      isActive: false,
-    },
-  ]
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="pt-4">
@@ -44,7 +52,7 @@ export default async function AppSidebar({ ...props }: React.ComponentProps<type
           <SidebarGroupLabel>Общее</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
+              {generalNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
@@ -56,6 +64,21 @@ export default async function AppSidebar({ ...props }: React.ComponentProps<type
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Менеджер</SidebarGroupLabel>
+          <SidebarMenu>
+            {managersNavItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <Link href={item.url}>
+                    <item.icon />
+                    {item.title}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter></SidebarFooter>

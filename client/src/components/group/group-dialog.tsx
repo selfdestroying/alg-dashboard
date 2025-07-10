@@ -15,13 +15,13 @@ import { DeleteDialog } from '../delete-dialog'
 import { GroupForm } from './group-form'
 import { IGroup } from '@/types/group'
 import { ApiResponse } from '@/types/response'
-import { api } from '@/lib/api/api-client'
 import { toast } from 'sonner'
+import { apiDelete } from '@/lib/api/api-server'
 
 export default function GroupDialog({ group }: { group?: IGroup }) {
   const handleDelete = (group: IGroup) => {
     const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-      api.delete<boolean>(`groups/${group.id}`, {}, 'dashboard/groups').then((r) => {
+      apiDelete<boolean>(`groups/${group.id}`, {}, 'dashboard/groups').then((r) => {
         if (r.success) {
           resolve(r)
         } else {

@@ -11,8 +11,8 @@ import { Calendar } from '../ui/calendar'
 import { Input } from '../ui/input'
 import { ApiResponse } from '@/types/response'
 import { ILesson } from '@/types/lesson'
-import { api } from '@/lib/api/api-client'
 import { toast } from 'sonner'
+import { apiDelete, apiPost } from '@/lib/api/api-server'
 
 const LessonFormSchema = z.object({
   date: z.date(),
@@ -34,9 +34,9 @@ export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; grou
     const ok = new Promise<ApiResponse<ILesson>>((resolve, reject) => {
       let res
       if (lesson) {
-        res = api.update<ILesson>(`lessons/${lesson.id}`, body, `dashboard/groups/${groupId}`)
+        res = apiDelete<ILesson>(`lessons/${lesson.id}`, body, `dashboard/groups/${groupId}`)
       } else {
-        res = api.post<ILesson>('lessons', body, `dashboard/groups/${groupId}`)
+        res = apiPost<ILesson>('lessons', body, `dashboard/groups/${groupId}`)
       }
       res.then((r) => {
         if (r.success) {

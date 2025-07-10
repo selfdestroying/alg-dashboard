@@ -1,6 +1,5 @@
 import { DayOfWeek, IGroup } from '@/types/group'
 import StudentGroupDialog from '@/components/student-group-dialog'
-import { api } from '@/lib/api/api-client'
 import { IStudent } from '@/types/student'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -28,6 +27,7 @@ import {
 import StudentTable from '@/components/student/student-table'
 import LessonDialog from '@/components/lesson/lesson-dialog'
 import { redirect } from 'next/navigation'
+import { apiGet } from '@/lib/api/api-server'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const user = await getUser()
@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
 
   const id = (await params).id
-  const group = await api.get<IGroup>(`groups/${id}`)
+  const group = await apiGet<IGroup>(`groups/${id}`)
   if (!group.success) {
     return (
       <Card>
@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     )
   }
 
-  const students = await api.get<IStudent[]>(`students`)
+  const students = await apiGet<IStudent[]>(`students`)
 
   return (
     <div className="space-y-4">

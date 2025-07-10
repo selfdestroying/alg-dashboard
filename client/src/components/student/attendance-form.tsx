@@ -5,14 +5,14 @@ import { Button } from '../ui/button'
 import { toast } from 'sonner'
 import { ApiResponse } from '@/types/response'
 import { AttendanceStatus, IAttendance } from '@/types/attendance'
-import { api } from '@/lib/api/api-client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { Card, CardContent, CardTitle } from '../ui/card'
 import { Input } from '../ui/input'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import { IUser } from '@/types/user'
 import { LessonActions } from '../lesson/lesson-actions'
+import { apiPut } from '@/lib/api/api-server'
 
 export default function AttendanceForm({ lesson, user }: { lesson: ILesson; user: IUser | null }) {
   const [changed, setChanged] = useState<boolean>(true)
@@ -24,7 +24,6 @@ export default function AttendanceForm({ lesson, user }: { lesson: ILesson; user
         attendance.studentId === studentId ? { ...attendance, comment } : attendance
       )
     )
-    setChanged(false)
   }
   const onStatusChange = (studentId: number, newStatus: 'Unspecified' | 'Present' | 'Absent') => {
     setAttendances((prevAttendance) =>
@@ -34,12 +33,15 @@ export default function AttendanceForm({ lesson, user }: { lesson: ILesson; user
           : attendance
       )
     )
-    setChanged(false)
   }
+
+  useEffect(() => {
+    setChanged(attendances.find((a) => a.status == AttendanceStatus.Unspecified) ? true : false)
+  }, [attendances])
 
   function onSubmit() {
     const ok = new Promise<ApiResponse<IAttendance>>((resolve, reject) => {
-      const res = api.update<IAttendance>(
+      const res = apiPut<IAttendance>(
         `attendances/${lesson.id}`,
         { lessonId: lesson.id, attendances: attendances },
         'dashboard/groups'

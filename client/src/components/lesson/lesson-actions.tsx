@@ -1,22 +1,22 @@
-import { api } from '@/lib/api/api-client'
 import { ILesson } from '@/types/lesson'
 import { ApiResponse } from '@/types/response'
 import { toast } from 'sonner'
 import { DeleteDialog } from '../delete-dialog'
 import LessonDialog from './lesson-dialog'
+import { apiDelete } from '@/lib/api/api-server'
 
 export function LessonActions({ lesson }: { lesson: ILesson }) {
   const handleDelete = () => {
     const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-      api
-        .delete<boolean>(`lessons/${lesson.id}`, {}, `dashboard/groups/${lesson.groupId}`)
-        .then((r) => {
+      apiDelete<boolean>(`lessons/${lesson.id}`, {}, `dashboard/groups/${lesson.groupId}`).then(
+        (r) => {
           if (r.success) {
             resolve(r)
           } else {
             reject(r)
           }
-        })
+        }
+      )
     })
 
     toast.promise(ok, {

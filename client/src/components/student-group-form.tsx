@@ -9,8 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { IStudent } from '@/types/student'
 import { FC } from 'react'
 import { ApiResponse } from '@/types/response'
-import { api } from '@/lib/api/api-client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import { apiPost } from '@/lib/api/api-server'
 
 const FormSchema = z.object({
   studentId: z.string({
@@ -30,19 +30,17 @@ export const StudentGroupForm: FC<IComboboxProps> = ({ students, groupId }) => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
-      api
-        .post<IStudent>(
-          'groups/add-student',
-          { groupId: groupId, studentId: data.studentId },
-          `dashboard/groups/${groupId}`
-        )
-        .then((r) => {
-          if (r.success) {
-            resolve(r)
-          } else {
-            reject(r)
-          }
-        })
+      apiPost<IStudent>(
+        'groups/add-student',
+        { groupId: groupId, studentId: data.studentId },
+        `dashboard/groups/${groupId}`
+      ).then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
+      })
     })
     toast.promise(ok, {
       loading: 'Loding...',

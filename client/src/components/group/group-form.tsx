@@ -32,7 +32,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 import { useData } from '../data-provider'
 import { GroupType, IGroup } from '@/types/group'
-import { api } from '@/lib/api/api-client'
+import { apiPost, apiPut } from '@/lib/api/api-server'
 
 const GroupFormSchema = z.object({
   name: z.string().nonempty({ error: 'Название не может быть пустым' }),
@@ -90,8 +90,8 @@ export const GroupForm: FC<IGroupFormProps> = ({ group, defaultValues }) => {
     }
 
     const ok = group
-      ? api.update<IGroup>(`groups/${group.id}`, body, 'dashboard/groups')
-      : api.post<IGroup>('groups', body, 'dashboard/groups')
+      ? apiPut<IGroup>(`groups/${group.id}`, body, 'dashboard/groups')
+      : apiPost<IGroup>('groups', body, 'dashboard/groups')
 
     toast.promise(ok, {
       loading: 'Загрузка...',
