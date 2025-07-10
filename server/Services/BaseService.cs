@@ -15,9 +15,9 @@ public abstract class BaseService<TRepository, TEntity, TResponseDto, TCreateDto
         return entities.Select(MapEntityToResponseDto).ToList();
     }
 
-    public virtual async Task<TResponseDto?> Get(int id)
+    public virtual async Task<TResponseDto?> Get(params object?[] keyValues)
     {
-        var entity = await Repository.Get(id);
+        var entity = await Repository.Get(keyValues);
         return entity == null ? null : MapEntityToResponseDto(entity);
     }
 

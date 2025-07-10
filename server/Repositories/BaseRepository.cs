@@ -14,18 +14,26 @@ public abstract class BaseRepository<TEntity, TCreateDto, TUpdateDto>(AppDbConte
         return entities;
     }
 
-    public virtual async Task<TEntity?> Get(int id)
+    public virtual async Task<TEntity?> Get(params object?[] keyValues)
     {
-        var entity = await DbSet.FindAsync(id);
+        var entity = await DbSet.FindAsync(keyValues);
         return entity;
     }
 
     public virtual async Task<TEntity?> Create(TCreateDto dto)
     {
-        var entity = MapCreateDtoToEntity(dto);
-        var result = await DbSet.AddAsync(entity);
-        await Context.SaveChangesAsync();
-        return result.Entity;
+        try
+        {
+            var entity = MapCreateDtoToEntity(dto);
+            var result = await DbSet.AddAsync(entity);
+            await Context.SaveChangesAsync();
+            return result.Entity;
+        }
+        catch (Exception e)
+        {
+            await Context.DisposeAsync();
+            return null;
+        }
     }
 
     public virtual async Task<bool> Create(List<TEntity> dto)

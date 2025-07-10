@@ -14,14 +14,14 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
             .Include(g => g.Teacher).ThenInclude(t => t.Role).ToListAsync();
     }
 
-    public override async Task<Group?> Get(int id)
+    public override async Task<Group?> Get(params object?[] keyValues)
     {
-        return await Context.Groups.Include(c => c.Course).Include(t => t.Teacher).ThenInclude(t => t.Role)
+        return await DbSet.Where(g => keyValues.Contains(g.Id)).Include(c => c.Course).Include(t => t.Teacher).ThenInclude(t => t.Role)
             .Include(l => l.Lessons)
             .ThenInclude(a => a.Attendances)
             .Include(g => g.GroupStudents)
             .ThenInclude(sg => sg.Student)
-            .FirstOrDefaultAsync(g => g.Id == id);
+            .FirstOrDefaultAsync();
     }
 
     protected override Group MapCreateDtoToEntity(GroupCreateDto entity)

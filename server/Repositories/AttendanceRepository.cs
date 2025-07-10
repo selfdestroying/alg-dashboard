@@ -11,11 +11,22 @@ public class AttendanceRepository(AppDbContext context)
 {
     public async Task<bool> Update(AttendanceUpdateDto attendance)
     {
-        var attendancesFromDb = await Context.Attendances.Where(a => a.LessonId == attendance.LessonId).ToListAsync();
+        var attendancesFromDb = await Context.Attendances.Where(a => a.LessonId == attendance.LessonId).Include(a => a.Lesson).ToListAsync();
         var newAttendances = attendancesFromDb.Select(a =>
         {
             var attendanceExists = attendance.Attendances.Find(at => at.StudentId == a.StudentId);
             if (attendanceExists == null) return a;
+            if (a.Status is AttendanceStatus.Unspecified or AttendanceStatus.Absent && attendanceExists.Status == AttendanceStatus.Present)
+            {
+                var payment = Context.Payments.Find(a.StudentId, a.Lesson.GroupId);
+                if (payment != null)
+                {
+                    payment.ClassesLeft -= 1;
+                    Context.Payments.Update(payment);
+                }
+
+                
+            }
             a.Status = attendanceExists.Status;
             a.Comment = attendanceExists.Comment;
 

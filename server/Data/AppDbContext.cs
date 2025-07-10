@@ -13,18 +13,23 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<GroupStudent> GroupStudents { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        
-        modelBuilder.Entity<GroupStudent>().HasKey(sg => new { sg.GroupId, sg.StudentId });
+        modelBuilder.Entity<GroupStudent>().HasKey(sg => new { sg.StudentId, sg.GroupId });
         modelBuilder.Entity<GroupStudent>().HasOne(sg => sg.Student).WithMany(s => s.GroupStudents)
             .HasForeignKey(sg => sg.StudentId);
         modelBuilder.Entity<GroupStudent>().HasOne(sg => sg.Group).WithMany(g => g.GroupStudents)
             .HasForeignKey(sg => sg.GroupId);
 
+
+        modelBuilder.Entity<Payment>().HasKey(p => new { p.StudentId, p.GroupId });
+        modelBuilder.Entity<Payment>().HasOne(p => p.Student).WithMany().HasForeignKey(p => p.StudentId);
+        modelBuilder.Entity<Payment>().HasOne(p => p.Group).WithMany().HasForeignKey(p => p.GroupId);
+        
         modelBuilder.Entity<Attendance>().HasKey(a => new { a.LessonId, a.StudentId });
         modelBuilder.Entity<Attendance>()
             .HasOne(a => a.Lesson)

@@ -71,6 +71,7 @@ builder.Services.AddScoped<GroupRepository>();
 builder.Services.AddScoped<LessonRepository>();
 builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<AttendanceRepository>();
+builder.Services.AddScoped<PaymentRepository>();
 
 builder.Services.AddScoped<TeacherService>();
 builder.Services.AddScoped<StudentService>();
@@ -78,6 +79,7 @@ builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<LessonService>();
 builder.Services.AddScoped<AttendanceService>();
+builder.Services.AddScoped<PaymentService>();
 
 builder.Services.AddCors(options =>
 {
