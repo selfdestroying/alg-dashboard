@@ -14,6 +14,7 @@ import { formSchema } from "@/schemas/student";
 import { apiPost } from "@/actions/api";
 import { IStudent } from "@/types/student";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 export default function StudentForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -30,14 +31,18 @@ export default function StudentForm() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = apiPost<IStudent>(
-      "students",
-      {
-        name: values["first-name"] + " " + values["second-name"],
-        age: +values.age,
-      },
-      "dashboard/students"
+    const body = {
+      name: values['first-name'] + " " + values['second-name'],
+      age: +values.age
+    }
+    const ok = apiPost<IStudent>(
+      "students", body, "dashboard/students"
     );
+    toast.promise(ok, {
+      loading: "Загрузка...",
+      success: (data) => data.message,
+      error: (data) => data.message,
+    });
   }
 
   return (

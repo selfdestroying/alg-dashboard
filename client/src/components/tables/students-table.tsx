@@ -73,7 +73,6 @@ import {
   RiMoreLine,
 } from "@remixicon/react";
 import {
-  useEffect,
   useId,
   useMemo,
   useRef,
@@ -278,7 +277,7 @@ const getColumns = ({
   },
 ];
 
-export default function StudentsTable() {
+export default function StudentsTable({students}: {students: IStudent[]}) {
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -295,26 +294,10 @@ export default function StudentsTable() {
     },
   ]);
 
-  const [data, setData] = useState<IStudent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<IStudent[]>(students);
 
-  const columns = useMemo(() => getColumns({ data, setData }), [data]);
+  const columns = useMemo(() => getColumns({ data: students, setData }), [data]);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const res = await apiGet<IStudent[]>("students");
-        if (res.success) {
-          setData(res.data);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPosts();
-  }, []);
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
@@ -326,7 +309,7 @@ export default function StudentsTable() {
   };
 
   const table = useReactTable({
-    data,
+    data: students,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -603,13 +586,7 @@ export default function StudentsTable() {
         </TableHeader>
         <tbody aria-hidden="true" className="table-row h-1"></tbody>
         <TableBody>
-          {isLoading ? (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Loading...
-              </TableCell>
-            </TableRow>
-          ) : table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -694,12 +671,11 @@ function RowActions({
   const handleDelete = () => {
     startUpdateTransition(() => {
       const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-        apiDelete<boolean>(`students/${item.id}`).then((r) => {
+        apiDelete<boolean>(`students/${item.id}`, {}, '/dashboard/students').then((r) => {
           if (r.success) {
             const updatedData = data.filter(
               (dataItem) => dataItem.id !== item.id
             );
-            setData(updatedData);
             setShowDeleteDialog(false);
             resolve(r);
           } else {

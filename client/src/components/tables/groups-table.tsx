@@ -73,7 +73,6 @@ import {
   RiMoreLine,
 } from "@remixicon/react";
 import {
-  useEffect,
   useId,
   useMemo,
   useRef,
@@ -205,7 +204,7 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
 
   const [data, setData] = useState<IGroup[]>(groups);
 
-  const columns = getColumns({ data: groups, setData });
+  const columns = useMemo(() => getColumns({ data: groups, setData }), [data]);
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
@@ -494,8 +493,7 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
         </TableHeader>
         <tbody aria-hidden="true" className="table-row h-1"></tbody>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+          {table.getRowModel().rows?.length ? (table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}

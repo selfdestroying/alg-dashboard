@@ -6,7 +6,7 @@ import { IGroup } from "@/types/group";
 export default async function Page() {
   const groups = await apiGet<IGroup[]>("groups");
   if (!groups.success) {
-    return <div>Error</div>;
+    return <div>{groups.message}</div>;
   }
 
   return (
