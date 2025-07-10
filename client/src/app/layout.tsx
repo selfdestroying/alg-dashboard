@@ -1,45 +1,26 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/toaster'
-import { DataProvider } from '@/components/data-provider'
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/toaster";
+import { DataProvider } from "@/providers/data-provider";
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
-
-export const metadata: Metadata = {
-  title: 'ALG Dashboard',
-  description: '',
-}
+const fontSans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <DataProvider>
-            {children}
-            <Toaster />
-          </DataProvider>
-        </ThemeProvider>
+    <html lang="en" className="dark scheme-only-dark">
+      <body className={`${fontSans.variable} font-sans antialiased`}>
+        <DataProvider>
+          {children}
+          <Toaster />
+        </DataProvider>
       </body>
     </html>
-  )
+  );
 }

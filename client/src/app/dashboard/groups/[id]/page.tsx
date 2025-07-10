@@ -1,198 +1,97 @@
-import { DayOfWeek, IGroup } from '@/types/group'
-import StudentGroupDialog from '@/components/student-group-dialog'
-import { IStudent } from '@/types/student'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  BookOpen,
-  Calendar,
-  CalendarDays,
-  Link as LinkIcon,
-  Timer,
-  User,
-  Users,
-} from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { format } from 'date-fns'
-import GroupDialog from '@/components/group/group-dialog'
-import AttendanceForm from '@/components/student/attendance-form'
-import { getUser } from '@/lib/dal'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import StudentTable from '@/components/student/student-table'
-import LessonDialog from '@/components/lesson/lesson-dialog'
-import { redirect } from 'next/navigation'
-import { apiGet } from '@/lib/api/api-server'
+import { Button } from "@/components/ui/button";
+import StudentsTable from "@/components/tables/students-table";
+import { EventCalendar } from "@/components";
+import Component from "@/components/comp-542";
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const user = await getUser()
-  if (!user) {
-    return redirect('/auth')
-  }
-
-  const id = (await params).id
-  const group = await apiGet<IGroup>(`groups/${id}`)
-  if (!group.success) {
-    return (
-      <Card>
-        <CardHeader className="gap-0 justify-center">
-          Ошибка при получении группы: {group.message}
-        </CardHeader>
-      </Card>
-    )
-  }
-
-  const students = await apiGet<IStudent[]>(`students`)
-
+export default function Page() {
   return (
-    <div className="space-y-4">
-      <div className="flex lg:flex-row flex-col gap-4">
-        <Card className="flex-1/2 gap-2">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <div className="space-y-2">
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5" />
-                  Информация о группе
-                </CardTitle>
-              </div>
-              <GroupDialog group={group.data} />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <BookOpen className="h-4 w-4" />
-                  Название группы
-                </div>
-                <p className="font-semibold">{group.data.name}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <BookOpen className="h-4 w-4" />
-                  Курс
-                </div>
-                <p className="font-semibold">{group.data.course}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  Учитель
-                </div>
-                <p className="font-semibold">{group.data.teacher.name}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <CalendarDays className="h-4 w-4" />
-                  День занятия
-                </div>
-                <p className="font-semibold">{DayOfWeek[group.data.lessonDay]}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Timer className="h-4 w-4" />
-                  Время занятия
-                </div>
-                <p className="font-semibold">{group.data.lessonTime}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  Старт группы
-                </div>
-                <p className="font-semibold">
-                  {new Date(group.data.startDate).toLocaleDateString('ru-RU', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </p>
-              </div>
-              <div className="">
-                <Button asChild variant={'link'} className="p-0 has-[>svg]:px-0">
-                  <Link href={group.data.backOfficeUrl}>
-                    <LinkIcon className="h-4 w-4" />
-                    BackOffice Url
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="flex-1/2 gap-2">
-          {students.success ? (
-            <>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5" />
-                      Ученики
-                    </CardTitle>
-                  </div>
-
-                  <StudentGroupDialog
-                    students={students.data.filter(
-                      (s) => !group.data.students.some((gs) => gs.id === s.id)
-                    )}
-                    groupId={id}
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <StudentTable data={group.data.students} inGroup isAuthenticated={Boolean(user)} />
-              </CardContent>
-            </>
-          ) : (
-            <CardHeader>Ошибка при получении учеников: {students.message}</CardHeader>
-          )}
-        </Card>
-      </div>
-      <Card className="gap-2">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Расписание
-            </CardTitle>
-            <LessonDialog groupId={group.data.id} />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div>
-            <Accordion type="single" collapsible className="space-y-2">
-              {group.data.lessons.map((l) => (
-                <AccordionItem key={l.id} value={l.id.toString()} className="border-0">
-                  <Card className="gap-2 p-0">
-                    <AccordionTrigger className="cursor-pointer py-2 px-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <CardTitle className="m-0">{format(l.date, 'dd.MM')}</CardTitle>
-                        <Badge variant={'secondary'}>{l.time.slice(0, l.time.length - 3)}</Badge>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="p-0">
-                      <CardContent className="space-y-3 p-4">
-                        <AttendanceForm lesson={l} user={user} />
-                      </CardContent>
-                    </AccordionContent>
-                  </Card>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="min-h-[100vh] flex-1 md:min-h-min">
+      <Component />
     </div>
-  )
+  );
+
+  {
+    /* Numbers */
+  }
+  {
+    /* <StatsGrid
+            stats={[
+              {
+                title: "Connections",
+                value: "427,296",
+                change: {
+                  value: "+12%",
+                  trend: "up",
+                },
+                icon: (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={20}
+                    height={20}
+                    fill="currentColor"
+                  >
+                    <path d="M9 0v2.013a8.001 8.001 0 1 0 5.905 14.258l1.424 1.422A9.958 9.958 0 0 1 10 19.951c-5.523 0-10-4.478-10-10C0 4.765 3.947.5 9 0Zm10.95 10.95a9.954 9.954 0 0 1-2.207 5.329l-1.423-1.423a7.96 7.96 0 0 0 1.618-3.905h2.013ZM11.002 0c4.724.47 8.48 4.227 8.95 8.95h-2.013a8.004 8.004 0 0 0-6.937-6.937V0Z" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Contacts",
+                value: "37,429",
+                change: {
+                  value: "+42%",
+                  trend: "up",
+                },
+                icon: (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={18}
+                    height={19}
+                    fill="currentColor"
+                  >
+                    <path d="M2 9.5c0 .313.461.858 1.53 1.393C4.914 11.585 6.877 12 9 12c2.123 0 4.086-.415 5.47-1.107C15.538 10.358 16 9.813 16 9.5V7.329C14.35 8.349 11.827 9 9 9s-5.35-.652-7-1.671V9.5Zm14 2.829C14.35 13.349 11.827 14 9 14s-5.35-.652-7-1.671V14.5c0 .313.461.858 1.53 1.393C4.914 16.585 6.877 17 9 17c2.123 0 4.086-.415 5.47-1.107 1.069-.535 1.53-1.08 1.53-1.393v-2.171ZM0 14.5v-10C0 2.015 4.03 0 9 0s9 2.015 9 4.5v10c0 2.485-4.03 4.5-9 4.5s-9-2.015-9-4.5ZM9 7c2.123 0 4.086-.415 5.47-1.107C15.538 5.358 16 4.813 16 4.5c0-.313-.461-.858-1.53-1.393C13.085 2.415 11.123 2 9 2c-2.123 0-4.086.415-5.47 1.107C2.461 3.642 2 4.187 2 4.5c0 .313.461.858 1.53 1.393C4.914 6.585 6.877 7 9 7Z" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Value",
+                value: "$82,439",
+                change: {
+                  value: "+37%",
+                  trend: "up",
+                },
+                icon: (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={20}
+                    height={20}
+                    fill="currentColor"
+                  >
+                    <path d="M10 0c5.523 0 10 4.477 10 10s-4.477 10-10 10S0 15.523 0 10 4.477 0 10 0Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm3.833 3.337a.596.596 0 0 1 .763.067.59.59 0 0 1 .063.76c-2.18 3.046-3.38 4.678-3.598 4.897a1.5 1.5 0 0 1-2.122-2.122c.374-.373 2.005-1.574 4.894-3.602ZM15.5 9a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm-11 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm2.318-3.596a1 1 0 1 1-1.414 1.414 1 1 0 0 1 1.414-1.414ZM10 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Referrals",
+                value: "3,497",
+                change: {
+                  value: "-17%",
+                  trend: "down",
+                },
+                icon: (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={21}
+                    height={21}
+                    fill="currentColor"
+                  >
+                    <path d="m14.142.147 6.347 6.346a.5.5 0 0 1-.277.848l-1.474.23-5.656-5.657.212-1.485a.5.5 0 0 1 .848-.282ZM2.141 19.257c3.722-3.33 7.995-4.327 12.643-5.52l.446-4.017-4.297-4.298-4.018.447c-1.192 4.648-2.189 8.92-5.52 12.643L0 17.117c2.828-3.3 3.89-6.953 5.303-13.081l6.364-.708 5.657 5.657-.707 6.364c-6.128 1.415-9.782 2.475-13.081 5.304L2.14 19.258Zm5.284-6.029a2 2 0 1 1 2.828-2.828 2 2 0 0 1-2.828 2.828Z" />
+                  </svg>
+                ),
+              },
+            ]}
+          /> */
+  }
+  {
+    /* Table */
+  }
 }
