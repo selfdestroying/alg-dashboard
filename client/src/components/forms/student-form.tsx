@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Form,
   FormControl,
@@ -6,43 +6,41 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { z } from "zod/v4";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { formSchema } from "@/schemas/student";
-import { apiPost } from "@/actions/api";
-import { IStudent } from "@/types/student";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+} from '@/components/ui/form'
+import { z } from 'zod/v4'
+import { useForm, UseFormReturn } from 'react-hook-form'
+import { Input } from '@/components/ui/input'
+import { formSchema } from '@/schemas/student'
+import { apiPost } from '@/actions/api'
+import { IStudent } from '@/types/student'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 
 export default function StudentForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      "first-name": "",
-      "second-name": "",
+      'first-name': '',
+      'second-name': '',
       age: 0,
     },
-  });
+  })
   function onReset() {
-    form.reset();
-    form.clearErrors();
+    form.reset()
+    form.clearErrors()
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const body = {
-      name: values['first-name'] + " " + values['second-name'],
-      age: +values.age
+      name: values['first-name'] + ' ' + values['second-name'],
+      age: +values.age,
     }
-    const ok = apiPost<IStudent>(
-      "students", body, "dashboard/students"
-    );
+    const ok = apiPost<IStudent>('students', body, 'dashboard/students')
     toast.promise(ok, {
-      loading: "Загрузка...",
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
-    });
+    })
   }
 
   return (
@@ -95,7 +93,13 @@ export default function StudentForm() {
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    onChange={(e) => field.onChange(+e.target.value)}
+                    onChange={(e) => {
+                      try {
+                        field.onChange(+e.target.value)
+                      } catch {
+                        field.onChange(0)
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -106,5 +110,5 @@ export default function StudentForm() {
         </div>
       </form>
     </Form>
-  );
+  )
 }

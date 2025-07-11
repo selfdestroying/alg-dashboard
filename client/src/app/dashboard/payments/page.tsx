@@ -1,17 +1,23 @@
-import { Button } from "@/components/ui/button";
-import PaymentsTable from "@/components/tables/payments-table";
+import PaymentsTable from '@/components/tables/payments-table'
+import PaymentDialog from '@/components/dialogs/payment-dialog'
+import { apiGet } from '@/actions/api'
+import { IPayment } from '@/types/payments'
 
-export default function Page() {
+export default async function Page() {
+  const payments = await apiGet<IPayment[]>('payments')
+  if (!payments.success) {
+    return <div>{payments.message}</div>
+  }
   return (
     <>
       <div className="flex items-center justify-between gap-4">
-        <Button className="px-3">Добавить оплату</Button>
+        <PaymentDialog />
       </div>
       <div>
-        <PaymentsTable />
+        <PaymentsTable payments={payments.data} />
       </div>
     </>
-  );
+  )
 
   {
     /* Numbers */

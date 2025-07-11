@@ -1,12 +1,13 @@
-import { apiGet } from "@/actions/api";
-import GroupDialog from "@/components/dialogs/group-dialog";
-import GroupsTable from "@/components/tables/groups-table";
-import { IGroup } from "@/types/group";
+import { apiGet } from '@/actions/api'
+import GroupDialog from '@/components/dialogs/group-dialog'
+import GroupsTable from '@/components/tables/groups-table'
+import { IGroup } from '@/types/group'
 
 export default async function Page() {
-  const groups = await apiGet<IGroup[]>("groups");
+  const groups = await apiGet<IGroup[]>('groups')
   if (!groups.success) {
-    return <div>{groups.message}</div>;
+    console.log(groups.message)
+    return <div>{groups.message}</div>
   }
 
   return (
@@ -18,5 +19,5 @@ export default async function Page() {
         <GroupsTable groups={groups.data} />
       </div>
     </>
-  );
+  )
 }

@@ -34,11 +34,11 @@ import { toast } from "sonner";
 import { useData } from "@/providers/data-provider";
 
 export default function GroupForm() {
-  const { courses, teachers } = useData();
+  const { courses, users } = useData();
   const formSchema = z.object({
     name: z.string().min(1, { message: "This field is required" }),
     course: z.string().min(1, { message: "This field is required" }),
-    teacher: z.string().min(1, { message: "This field is required" }),
+    user: z.string().min(1, { message: "This field is required" }),
     date: z.date({
       error: "This field is required.",
     }),
@@ -61,7 +61,7 @@ export default function GroupForm() {
     defaultValues: {
       name: "",
       course: "",
-      teacher: "",
+      user: "",
       date: new Date(),
       time: "",
       backofficeUrl: "",
@@ -74,7 +74,7 @@ export default function GroupForm() {
     const body = {
       name: values.name,
       courseId: +values.course,
-      teacherId: +values.teacher,
+      userId: +values.user,
       startDate: format(values.date, "yyyy-MM-dd"),
       lessonTime: values.time,
       backofficeUrl: values.backofficeUrl,
@@ -153,7 +153,7 @@ export default function GroupForm() {
           />
           <FormField
             control={form.control}
-            name="teacher"
+            name="user"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
                 <FormLabel className="flex shrink-0">Учитель</FormLabel>
@@ -169,12 +169,12 @@ export default function GroupForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {teachers.map((teacher) => (
+                    {users.map((user) => (
                       <SelectItem
-                        key={teacher.id}
-                        value={teacher.id.toString()}
+                        key={user.id}
+                        value={user.id.toString()}
                       >
-                        {teacher.name}
+                        {user.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

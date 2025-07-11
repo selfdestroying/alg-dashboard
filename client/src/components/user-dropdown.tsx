@@ -1,17 +1,32 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { apiGet } from '@/actions/api'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
+import { IUser } from '@/types/user'
 
-import { RiSettingsLine, RiTeamLine, RiLogoutBoxLine } from "@remixicon/react";
+import { RiLogoutBoxLine } from '@remixicon/react'
+import { ArrowLeftRight, LogOut } from 'lucide-react'
 
-export default function UserDropdown() {
+export default async function UserDropdown() {
+  const users = await apiGet<IUser[]>('users')
+  if (!users.success) {
+    return <div>{users.message}</div>
+  }
+  const teachers = users.data.filter((u) => u.role.name == 'Учитель')
+  const owners = users.data.filter((u) => u.role.name == 'Основатель')
+  const managers = users.data.filter((u) => u.role.name == 'Менеджер')
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,24 +42,17 @@ export default function UserDropdown() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64" align="end">
-        <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium text-foreground">
-            Keith Kennedy
-          </span>
-          <span className="truncate text-xs font-normal text-muted-foreground">
-            k.kennedy@originui.com
-          </span>
-        </DropdownMenuLabel>
+
+      <DropdownMenuContent>
         <DropdownMenuItem>
-          <RiLogoutBoxLine
-            size={16}
-            className="opacity-60"
-            aria-hidden="true"
-          />
-          <span>Sign out</span>
+          <ArrowLeftRight size={16} className="opacity-60" aria-hidden="true" />
+          <span>Сменить аккаунт</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <LogOut size={16} className="opacity-60" aria-hidden="true" />
+          <span>Выйти</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

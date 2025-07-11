@@ -29,7 +29,7 @@ export interface IGroup {
   id: number
   name: string
   course: string
-  teacher: IUser
+  user: IUser
   startDate: string
   lessonDay: DayOfWeek
   lessonTime: string

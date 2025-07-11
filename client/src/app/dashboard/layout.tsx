@@ -1,25 +1,21 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from '@/components/app-sidebar'
 import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import FeedbackDialog from "@/components/dialogs/feedback-dialog";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import UserDropdown from "@/components/user-dropdown";
-import { Separator } from "@radix-ui/react-separator";
-import MyBreadCrumbs from "@/components/breadcrumbs";
+} from '@/components/ui/breadcrumb'
+import FeedbackDialog from '@/components/dialogs/feedback-dialog'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import UserDropdown from '@/components/user-dropdown'
+import { Separator } from '@radix-ui/react-separator'
+import MyBreadCrumbs from '@/components/breadcrumbs'
 
 export default function Layout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <SidebarProvider>
@@ -32,13 +28,10 @@ export default function Layout({
           </div>
           <div className="flex gap-3 ml-auto">
             <FeedbackDialog />
-            <UserDropdown />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 lg:gap-6 py-4 lg:py-6">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 lg:gap-6 py-4 lg:py-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

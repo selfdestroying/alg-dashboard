@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import StudentsTable from "@/components/tables/students-table";
-import { EventCalendar } from "@/components";
-import Component from "@/components/comp-542";
+import { Button } from '@/components/ui/button'
+import StudentsTable from '@/components/tables/students-table'
+import { EventCalendar } from '@/components/event-calendar'
+import Component from '@/components/event-calendar/comp-542'
 
 export default function Page() {
   return (
     <div className="min-h-[100vh] flex-1 md:min-h-min">
       <Component />
     </div>
-  );
+  )
 
   {
     /* Numbers */

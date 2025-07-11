@@ -1,24 +1,24 @@
-import { RiArrowRightUpLine } from "@remixicon/react";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
+import { ArrowUpRight } from 'lucide-react'
 
 interface StatsCardProps {
-  title: string;
-  value: string;
+  title: string
+  value: string
   change: {
-    value: string;
-    trend: "up" | "down";
-  };
-  icon: React.ReactNode;
+    value: string
+    trend: 'up' | 'down'
+  }
+  icon: React.ReactNode
 }
 
 export function StatsCard({ title, value, change, icon }: StatsCardProps) {
-  const isPositive = change.trend === "up";
-  const trendColor = isPositive ? "text-emerald-500" : "text-red-500";
+  const isPositive = change.trend === 'up'
+  const trendColor = isPositive ? 'text-emerald-500' : 'text-red-500'
 
   return (
     <div className="relative p-4 lg:p-5 group before:absolute before:inset-y-8 before:right-0 before:w-px before:bg-gradient-to-b before:from-input/30 before:via-input before:to-input/30 last:before:hidden">
       <div className="relative flex items-center gap-4">
-        <RiArrowRightUpLine
+        <ArrowUpRight
           className="absolute right-0 top-0 opacity-0 group-has-[a:hover]:opacity-100 transition-opacity text-emerald-500"
           size={20}
           aria-hidden="true"
@@ -37,19 +37,19 @@ export function StatsCard({ title, value, change, icon }: StatsCardProps) {
           </a>
           <div className="text-2xl font-semibold mb-2">{value}</div>
           <div className="text-xs text-muted-foreground/60">
-            <span className={cn("font-medium", trendColor)}>
-              {isPositive ? "↗" : "↘"} {change.value}
-            </span>{" "}
+            <span className={cn('font-medium', trendColor)}>
+              {isPositive ? '↗' : '↘'} {change.value}
+            </span>{' '}
             vs last week
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 interface StatsGridProps {
-  stats: StatsCardProps[];
+  stats: StatsCardProps[]
 }
 
 export function StatsGrid({ stats }: StatsGridProps) {
@@ -59,5 +59,5 @@ export function StatsGrid({ stats }: StatsGridProps) {
         <StatsCard key={stat.title} {...stat} />
       ))}
     </div>
-  );
+  )
 }
