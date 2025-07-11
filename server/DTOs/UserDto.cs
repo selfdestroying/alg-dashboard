@@ -1,7 +1,9 @@
-﻿namespace alg_dashboard_server.DTOs;
+﻿using alg_dashboard_server.Models;
+
+namespace alg_dashboard_server.DTOs;
 
 
-public class TeacherDto
+public class UserDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -9,22 +11,22 @@ public class TeacherDto
     public string Role { get; set; }
 }
 
-public class TeacherResponseDto
+public class UserResponseDto
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
-    public required string Role { get; set; }
+    public required Role Role { get; set; }
 }
 
 
-public class TeacherCreateDto
+public class UserCreateDto
 {
     public required string Name { get; set; }
     public required string Password { get; set; }
     public required int RoleId { get; set; }
 }
 
-public class TeacherUpdateDto
+public class UserUpdateDto
 {
     public required string? Name { get; set; }
     public required string? Password { get; set; }

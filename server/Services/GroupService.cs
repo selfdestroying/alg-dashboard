@@ -41,11 +41,16 @@ public class GroupService(GroupRepository repository, LessonRepository lessonRep
             Id = entity.Id,
             Name = entity.Name,
             Course = entity.Course.Name,
-            Teacher = new TeacherResponseDto
+            User = new UserResponseDto
             {
-                Id = entity.Teacher.Id,
-                Name = entity.Teacher.Name,
-                Role = entity.Teacher.Role.Name,
+                Id = entity.User.Id,
+                Name = entity.User.Name,
+                Role = new Role
+                {
+                    Id = entity.User.Role.Id,
+                    Name = entity.User.Role.Name,
+                    PasswordRequired = entity.User.Role.PasswordRequired
+                },
             },
             StartDate = entity.StartDate,
             LessonDay = entity.LessonDay,

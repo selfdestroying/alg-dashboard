@@ -12,22 +12,30 @@ namespace alg_dashboard_server.Controllers;
 [Route("api/[controller]")]
 public class AuthController(AppDbContext context, IConfiguration config) : ControllerBase
 {
-    private readonly PasswordHasher<Teacher> _passwordHasher = new();
+    private readonly PasswordHasher<User> _passwordHasher = new();
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] AuthRequestDto requestDto)
     {
         try
         {
-            var user = await context.Teachers.Include(u => u.Role)
+            var user = await context.Users.Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Name == requestDto.Name);
             if (user == null) return BadRequest(new ErrorResponse("Invalid username"));
 
+            if (!user.Role.PasswordRequired)
+                return Ok(new SuccessResponse<AuthResponseDto>("Logged in",
+                    new AuthResponseDto(JwtTokenHelper.GenerateToken(user, config),
+                        config["Jwt:ExpirationHours"] ?? "1")));
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, requestDto.Password);
-            return result == PasswordVerificationResult.Failed
-                ? BadRequest(new ErrorResponse("Invalid password"))
-                : Ok(new SuccessResponse<AuthResponseDto>("Logged in",
-                    new AuthResponseDto(JwtTokenHelper.GenerateToken(user, config), config["Jwt:ExpirationHours"] ?? "1")));
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return BadRequest(new ErrorResponse("Invalid password"));
+            }
+
+            return Ok(new SuccessResponse<AuthResponseDto>("Logged in",
+                new AuthResponseDto(JwtTokenHelper.GenerateToken(user, config), config["Jwt:ExpirationHours"] ?? "1")));
         }
         catch (Exception)
         {

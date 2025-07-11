@@ -8,8 +8,8 @@ namespace alg_dashboard_server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TeachersController(TeacherService service)
-    : BaseController<TeacherService, TeacherRepository, Teacher, TeacherResponseDto, TeacherCreateDto,
-        TeacherUpdateDto>(service)
+public class UsersController(UserService service)
+    : BaseController<UserService, UserRepository, User, UserResponseDto, UserCreateDto,
+        UserUpdateDto>(service)
 {
 }

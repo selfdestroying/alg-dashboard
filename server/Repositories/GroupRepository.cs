@@ -11,12 +11,12 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
     public override async Task<List<Group>> Get()
     {
         return await DbSet.Include(g => g.GroupStudents).ThenInclude(gs => gs.Student).Include(g => g.Course)
-            .Include(g => g.Teacher).ThenInclude(t => t.Role).ToListAsync();
+            .Include(g => g.User).ThenInclude(t => t.Role).ToListAsync();
     }
 
     public override async Task<Group?> Get(params object?[] keyValues)
     {
-        return await DbSet.Where(g => keyValues.Contains(g.Id)).Include(c => c.Course).Include(t => t.Teacher).ThenInclude(t => t.Role)
+        return await DbSet.Where(g => keyValues.Contains(g.Id)).Include(c => c.Course).Include(t => t.User).ThenInclude(t => t.Role)
             .Include(l => l.Lessons)
             .ThenInclude(a => a.Attendances)
             .Include(g => g.GroupStudents)
@@ -30,7 +30,7 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
         {
             Name = entity.Name,
             CourseId = entity.CourseId,
-            TeacherId = entity.TeacherId,
+            UserId = entity.UserId,
             StartDate = entity.StartDate,
             LessonTime = entity.LessonTime,
             LessonDay = entity.StartDate.DayOfWeek,
@@ -86,7 +86,7 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
     {
         entity.Name = dto.Name ?? entity.Name;
         entity.CourseId = dto.CourseId ?? entity.CourseId;
-        entity.TeacherId = dto.TeacherId ?? entity.TeacherId;
+        entity.UserId = dto.UserId ?? entity.UserId;
         entity.LessonTime = dto.LessonTime ?? entity.LessonTime;
         entity.Type = dto.Type ?? entity.Type;
         entity.BackOfficeUrl = dto.BackOfficeUrl ?? entity.BackOfficeUrl;

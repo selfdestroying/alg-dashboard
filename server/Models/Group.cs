@@ -22,8 +22,8 @@ public class Group
     public required GroupType Type { get; set; }
     public Course Course { get; init; } = null!;
     
-    public required int TeacherId { get; set; }
-    public Teacher Teacher { get; init; } = null!;
+    public required int UserId { get; set; }
+    public User User { get; init; } = null!;
     
     public List<GroupStudent> GroupStudents { get; init; } = [];
     public List<Lesson> Lessons { get; set; } = [];

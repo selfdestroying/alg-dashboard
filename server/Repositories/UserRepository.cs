@@ -1,14 +1,20 @@
 ﻿using alg_dashboard_server.Data;
 using alg_dashboard_server.DTOs;
 using alg_dashboard_server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace alg_dashboard_server.Repositories;
 
-public class TeacherRepository(AppDbContext context) : BaseRepository<Teacher, TeacherCreateDto, TeacherUpdateDto>(context)
+public class UserRepository(AppDbContext context) : BaseRepository<User, UserCreateDto, UserUpdateDto>(context)
 {
-    protected override Teacher MapCreateDtoToEntity(TeacherCreateDto entity)
+    public override async Task<List<User>> Get()
     {
-        return new Teacher
+        return await DbSet.Include(u => u.Role).ToListAsync();
+    }
+
+    protected override User MapCreateDtoToEntity(UserCreateDto entity)
+    {
+        return new User
         {
             Name = entity.Name,
             RoleId = entity.RoleId,
@@ -16,7 +22,7 @@ public class TeacherRepository(AppDbContext context) : BaseRepository<Teacher, T
         };
     }
 
-    protected override void MapUpdateDtoToEntity(Teacher entity, TeacherUpdateDto dto)
+    protected override void MapUpdateDtoToEntity(User entity, UserUpdateDto dto)
     {
         entity.Name = dto.Name ?? entity.Name;
         entity.RoleId = dto.RoleId ?? entity.RoleId;

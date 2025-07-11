@@ -65,7 +65,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     );
 });
 
-builder.Services.AddScoped<TeacherRepository>();
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<StudentRepository>();
 builder.Services.AddScoped<GroupRepository>();
 builder.Services.AddScoped<LessonRepository>();
@@ -73,7 +73,7 @@ builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<AttendanceRepository>();
 builder.Services.AddScoped<PaymentRepository>();
 
-builder.Services.AddScoped<TeacherService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<CourseService>();
@@ -96,7 +96,7 @@ using (var scope = app.Services.CreateScope())
 
     DataSeeder.SeedRoles(db);
     DataSeeder.SeedCourses(db);
-    DataSeeder.SeedTeachers(db);
+    DataSeeder.SeedUsers(db);
 }
 
 app.UseCors("AllowAll");
