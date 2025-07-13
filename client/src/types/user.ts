@@ -1,14 +1,14 @@
+export type RoleNames = 'Админ' | 'Основатель' | 'Учитель' | 'Менеджер'
+
 export interface ITokenData {
   id: string
   name: string
-  role: string
+  role: RoleNames
 }
 export interface IAuth {
   token: string
   expirationHours: string
 }
-
-export type RoleNames = 'Админ' | 'Основатель' | 'Учитель' | 'Менеджер'
 
 export interface IRole {
   id: number

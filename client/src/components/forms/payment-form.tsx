@@ -88,7 +88,7 @@ export default function PaymentForm({
                 <div className="w-full">
                   <FormControl>
                     <Select key="select-0" {...field} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full ">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="" />
                       </SelectTrigger>
                       <SelectContent>

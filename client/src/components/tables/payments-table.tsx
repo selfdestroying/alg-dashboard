@@ -143,7 +143,7 @@ const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<Item>[] => [
               aria-hidden="true"
             ></div>
           ) : (
-            value <= 5 && (
+            value <= 3 && (
               <div className="size-1.5 rounded-full bg-amber-500" aria-hidden="true"></div>
             )
           )}
@@ -451,8 +451,8 @@ export default function PaymentsTable({ payments }: { payments: IPayment[] }) {
       {table.getRowModel().rows.length > 0 && (
         <div className="flex items-center justify-between gap-3">
           <p className="flex-1 whitespace-nowrap text-sm text-muted-foreground" aria-live="polite">
-            Page{' '}
-            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> of{' '}
+            Страница{' '}
+            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из{' '}
             <span className="text-foreground">{table.getPageCount()}</span>
           </p>
           <Pagination className="w-auto">
@@ -465,7 +465,7 @@ export default function PaymentsTable({ payments }: { payments: IPayment[] }) {
                   disabled={!table.getCanPreviousPage()}
                   aria-label="Go to previous page"
                 >
-                  Previous
+                  Назад
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -476,7 +476,7 @@ export default function PaymentsTable({ payments }: { payments: IPayment[] }) {
                   disabled={!table.getCanNextPage()}
                   aria-label="Go to next page"
                 >
-                  Next
+                  Далее
                 </Button>
               </PaginationItem>
             </PaginationContent>

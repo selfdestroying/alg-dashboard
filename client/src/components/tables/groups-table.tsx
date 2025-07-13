@@ -65,9 +65,9 @@ import {
   Search,
   Trash,
 } from 'lucide-react'
-import { IGroup } from '@/types/group'
+import { GroupType, IGroup } from '@/types/group'
 import Link from 'next/link'
-import { IUser } from '@/types/user'
+import { ITokenData, IUser } from '@/types/user'
 
 const statusFilterFn: FilterFn<IUser> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
@@ -140,9 +140,14 @@ const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IGroup>[] => 
   },
 ]
 
-export default function GroupsTable({ groups }: { groups: IGroup[] }) {
+export default function GroupsTable({ user, groups }: { user: ITokenData; groups: IGroup[] }) {
   const id = useId()
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    {
+      id: 'user',
+      value: [user.name],
+    },
+  ])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -228,12 +233,8 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
     return courseFacetedValues ?? new Map()
   }, [courseColumn, courseFacetedValues])
 
-  const selectedUsers = useMemo(() => {
-    return (userFilterValue as string[]) ?? []
-  }, [userFilterValue])
-  const selectedCourses = useMemo(() => {
-    return (courseFilterValue as string[]) ?? []
-  }, [courseFilterValue])
+  const selectedUsers = useMemo(() => (userFilterValue as string[]) ?? [], [userFilterValue])
+  const selectedCourses = useMemo(() => (courseFilterValue as string[]) ?? [], [courseFilterValue])
 
   const handleUserChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn('user')?.getFilterValue() as string[]
@@ -510,8 +511,8 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
       {table.getRowModel().rows.length > 0 && (
         <div className="flex items-center justify-between gap-3">
           <p className="flex-1 whitespace-nowrap text-sm text-muted-foreground" aria-live="polite">
-            Page{' '}
-            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> of{' '}
+            Страница{' '}
+            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из{' '}
             <span className="text-foreground">{table.getPageCount()}</span>
           </p>
           <Pagination className="w-auto">
@@ -524,7 +525,7 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
                   disabled={!table.getCanPreviousPage()}
                   aria-label="Go to previous page"
                 >
-                  Previous
+                  Назад
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -535,7 +536,7 @@ export default function GroupsTable({ groups }: { groups: IGroup[] }) {
                   disabled={!table.getCanNextPage()}
                   aria-label="Go to next page"
                 >
-                  Next
+                  Далее
                 </Button>
               </PaginationItem>
             </PaginationContent>
@@ -584,7 +585,7 @@ function RowActions({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogTrigger asChild>
           <Button variant="ghost" size={'icon'}>
-            <Trash className="stroke-red-400" />
+            <Trash className="stroke-rose-400" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

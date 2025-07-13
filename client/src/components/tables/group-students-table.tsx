@@ -57,28 +57,19 @@ import { apiDelete } from '@/actions/api'
 import { ApiResponse } from '@/types/response'
 import { toast } from 'sonner'
 import { IStudent } from '@/types/student'
-import { ArrowDown, ArrowUpRight, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  CircleAlert,
+  CircleX,
+  Funnel,
+  Minus,
+  Search,
+} from 'lucide-react'
+import GroupStudentDialog from '../dialogs/group-student-dialog'
+import { IGroup } from '@/types/group'
 
-type Item = {
-  id: string
-  image: string
-  name: string
-  status: string
-  location: string
-  verified: boolean
-  referral: {
-    name: string
-    image: string
-  }
-  value: number
-  joinDate: string
-}
-
-const statusFilterFn: FilterFn<Item> = (row, columnId, filterValue: string[]) => {
-  if (!filterValue?.length) return true
-  const status = row.getValue(columnId) as string
-  return filterValue.includes(status)
-}
 const ageFilterFn: FilterFn<IStudent> = (row, columnId, filterValue: number[]) => {
   if (!filterValue?.length) return true
   const age = row.getValue(columnId) as number
@@ -86,11 +77,11 @@ const ageFilterFn: FilterFn<IStudent> = (row, columnId, filterValue: number[]) =
 }
 
 interface GetColumnsProps {
-  data: IStudent[]
-  setData: React.Dispatch<React.SetStateAction<IStudent[]>>
+  data: IGroup
+  studentsNotInGroup: IStudent[]
 }
 
-const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IStudent>[] => [
+const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<IStudent>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -133,38 +124,46 @@ const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IStudent>[] =
   },
   {
     id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions setData={setData} data={data} item={row.original} />,
+    header: () => (
+      <div className="flex items-center justify-end">
+        <GroupStudentDialog students={studentsNotInGroup} groupId={data.id} />
+      </div>
+    ),
+    cell: ({ row }) => <RowActions data={data} item={row.original} />,
     size: 60,
     enableHiding: false,
   },
 ]
 
-export default function StudentsTable({ students }: { students: IStudent[] }) {
+export default function GroupStudentsTable({
+  group,
+  studentsNotInGroup,
+}: {
+  group: IGroup
+  studentsNotInGroup: IStudent[]
+}) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'name',
-      desc: false,
-    },
-  ])
-
-  const [data, setData] = useState<IStudent[]>(students)
-
-  const columns = useMemo(() => getColumns({ data: students, setData }), [data])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const columns = getColumns({ data: group, studentsNotInGroup })
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const promises = selectedRows.map((row) =>
-      apiDelete<boolean>(`students/${row.original.id}`, {}, '/dashboard/students')
+      apiDelete<boolean>(
+        `groups/remove-student`,
+        {
+          groupId: group.id,
+          studentId: row.original.id,
+        },
+        `/dashboard/groups/${group.id}`
+      ).then((r) => console.log(r))
     )
     const ok = Promise.all(promises)
 
@@ -179,7 +178,7 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
   }
 
   const table = useReactTable({
-    data: students,
+    data: group.students,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -188,14 +187,12 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
       pagination,
       columnFilters,
-      columnVisibility,
     },
   })
 
@@ -205,20 +202,17 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
   const statusFilterValue = statusColumn?.getFilterValue()
 
   // Update useMemo hooks with simplified dependencies
-  const uniqueStatusValues = useMemo(() => {
-    if (!statusColumn) return []
-    const values = Array.from(statusFacetedValues?.keys() ?? [])
-    return values.sort()
-  }, [statusColumn, statusFacetedValues])
+  const uniqueStatusValues = useMemo(
+    () => (!statusColumn ? [] : Array.from(statusFacetedValues?.keys() ?? []).sort()),
+    [statusColumn, statusFacetedValues]
+  )
 
   const statusCounts = useMemo(() => {
     if (!statusColumn) return new Map()
     return statusFacetedValues ?? new Map()
   }, [statusColumn, statusFacetedValues])
 
-  const selectedStatuses = useMemo(() => {
-    return (statusFilterValue as string[]) ?? []
-  }, [statusFilterValue])
+  const selectedStatuses = useMemo(() => (statusFilterValue as string[]) ?? [], [statusFilterValue])
 
   const handleStatusChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn('age')?.getFilterValue() as string[]
@@ -237,11 +231,8 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
 
   return (
     <div className="space-y-4">
-      {/* Actions */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Left side */}
         <div className="flex items-center gap-3">
-          {/* Filter by name */}
           <div className="relative">
             <Input
               id={`${id}-input`}
@@ -282,8 +273,8 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
-                  <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-                  Удалить
+                  <Minus className="-ms-1 opacity-60" size={16} aria-hidden="true" />
+                  Удалить из группы
                   <span className="-me-1 ms-1 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -389,11 +380,7 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
                           asc: (
-                            <ArrowUpRight
-                              className="shrink-0 opacity-60"
-                              size={16}
-                              aria-hidden="true"
-                            />
+                            <ArrowUp className="shrink-0 opacity-60" size={16} aria-hidden="true" />
                           ),
                           desc: (
                             <ArrowDown
@@ -480,46 +467,38 @@ export default function StudentsTable({ students }: { students: IStudent[] }) {
   )
 }
 
-function RowActions({
-  setData,
-  data,
-  item,
-}: {
-  setData: React.Dispatch<React.SetStateAction<IStudent[]>>
-  data: IStudent[]
-  item: IStudent
-}) {
-  const [isUpdatePending, startUpdateTransition] = useTransition()
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-
+function RowActions({ data, item }: { data: IGroup; item: IStudent }) {
   const handleDelete = () => {
-    startUpdateTransition(() => {
-      const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-        apiDelete<boolean>(`students/${item.id}`, {}, '/dashboard/students').then((r) => {
-          if (r.success) {
-            const updatedData = data.filter((dataItem) => dataItem.id !== item.id)
-            setShowDeleteDialog(false)
-            resolve(r)
-          } else {
-            reject(r)
-          }
-        })
+    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
+      apiDelete<boolean>(
+        `groups/remove-student`,
+        {
+          groupId: data.id,
+          studentId: item.id,
+        },
+        `/dashboard/groups/${data.id}`
+      ).then((r) => {
+        if (r.success) {
+          resolve(r)
+        } else {
+          reject(r)
+        }
       })
+    })
 
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: (data) => data.message,
-        error: (data) => data.message,
-      })
+    toast.promise(ok, {
+      loading: 'Загрузка...',
+      success: (data) => data.message,
+      error: (data) => data.message,
     })
   }
 
   return (
     <div className="flex items-center justify-end">
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="ghost" size={'icon'}>
-            <Trash className="stroke-rose-400" />
+            <Minus className="stroke-rose-400" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -530,10 +509,9 @@ function RowActions({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={isUpdatePending}
               className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40"
             >
               Delete

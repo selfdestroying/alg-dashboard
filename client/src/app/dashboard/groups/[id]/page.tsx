@@ -1,12 +1,40 @@
-import { Button } from '@/components/ui/button'
-import StudentsTable from '@/components/tables/students-table'
-import { EventCalendar } from '@/components/event-calendar'
-import Component from '@/components/event-calendar/comp-542'
+import { apiGet } from '@/actions/api'
+import { IGroup } from '@/types/group'
+import { IStudent } from '@/types/student'
+import InfoSection from './info-section'
+import StudentsSection from './students-section'
+import { Card, CardHeader } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import AttendanceSection from './attendance-section'
 
-export default function Page() {
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id
+  const group = await apiGet<IGroup>(`groups/${id}`)
+  const students = await apiGet<IStudent[]>(`students`)
+  if (!group.success) {
+    return (
+      <Card>
+        <CardHeader className="gap-0 justify-center">
+          Ошибка при получении группы: {group.message}
+        </CardHeader>
+      </Card>
+    )
+  }
   return (
-    <div className="min-h-[100vh] flex-1 md:min-h-min">
-      <Component />
+    <div className="space-y-4">
+      <InfoSection group={group.data} />
+      <Tabs defaultValue="students">
+        <TabsList>
+          <TabsTrigger value="students">Ученики</TabsTrigger>
+          <TabsTrigger value="password">Расписание</TabsTrigger>
+        </TabsList>
+        <TabsContent value="students">
+          <StudentsSection group={group.data} students={students} />
+        </TabsContent>
+        <TabsContent value="password">
+          <AttendanceSection group={group.data} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 

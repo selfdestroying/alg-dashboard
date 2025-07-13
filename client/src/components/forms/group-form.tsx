@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Form,
   FormControl,
@@ -6,41 +6,56 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod/v4'
+import { useForm } from 'react-hook-form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { apiPost } from "@/actions/api";
-import { IGroup } from "@/types/group";
-import { toast } from "sonner";
-import { useData } from "@/providers/data-provider";
-
+} from '@/components/ui/select'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { apiPost } from '@/actions/api'
+import { IGroup } from '@/types/group'
+import { toast } from 'sonner'
+import { useData } from '@/providers/data-provider'
+const timeSlots = [
+  { time: '09:00', available: false },
+  { time: '09:30', available: false },
+  { time: '10:00', available: true },
+  { time: '10:30', available: true },
+  { time: '11:00', available: true },
+  { time: '11:30', available: true },
+  { time: '12:00', available: false },
+  { time: '12:30', available: true },
+  { time: '13:00', available: true },
+  { time: '13:30', available: true },
+  { time: '14:00', available: true },
+  { time: '14:30', available: false },
+  { time: '15:00', available: false },
+  { time: '15:30', available: true },
+  { time: '16:00', available: true },
+  { time: '16:30', available: true },
+  { time: '17:00', available: true },
+  { time: '17:30', available: true },
+]
 export default function GroupForm() {
-  const { courses, users } = useData();
+  const { courses, users } = useData()
   const formSchema = z.object({
-    name: z.string().min(1, { message: "This field is required" }),
-    course: z.string().min(1, { message: "This field is required" }),
-    user: z.string().min(1, { message: "This field is required" }),
+    name: z.string().min(1, { message: 'This field is required' }),
+    course: z.string().min(1, { message: 'This field is required' }),
+    user: z.string().min(1, { message: 'This field is required' }),
     date: z.date({
-      error: "This field is required.",
+      error: 'This field is required.',
     }),
     time: z.string(),
     backofficeUrl: z.url({
@@ -50,48 +65,48 @@ export default function GroupForm() {
     type: z.number(),
     lessonsAmount: z
       .number({
-        error: "This field must be a number",
+        error: 'This field must be a number',
       })
-      .min(1, { message: "This field is required" })
-      .gt(-1, { message: "Must be greater than -1" }),
-  });
+      .min(1, { message: 'This field is required' })
+      .gt(-1, { message: 'Must be greater than -1' }),
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      course: "",
-      user: "",
+      name: '',
+      course: '',
+      user: '',
       date: new Date(),
-      time: "",
-      backofficeUrl: "",
+      time: '',
+      backofficeUrl: '',
       type: 0,
       lessonsAmount: 0,
     },
-  });
+  })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const body = {
       name: values.name,
       courseId: +values.course,
       userId: +values.user,
-      startDate: format(values.date, "yyyy-MM-dd"),
+      startDate: format(values.date, 'yyyy-MM-dd'),
       lessonTime: values.time,
       backofficeUrl: values.backofficeUrl,
       type: values.type,
       lessonsAmount: values.lessonsAmount,
-    };
-    const ok = apiPost<IGroup>("groups", body, "dashboard/groups");
+    }
+    const ok = apiPost<IGroup>('groups', body, 'dashboard/groups')
     toast.promise(ok, {
-      loading: "Загрузка...",
+      loading: 'Загрузка...',
       success: (data) => data.message,
       error: (data) => data.message,
-    });
+    })
   }
 
   function onReset() {
-    form.reset();
-    form.clearErrors();
+    form.reset()
+    form.clearErrors()
   }
 
   return (
@@ -110,13 +125,7 @@ export default function GroupForm() {
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
                 <FormLabel className="flex shrink-0">Название</FormLabel>
                 <FormControl>
-                  <Input
-                    key="text-input-0"
-                    placeholder=""
-                    type="text"
-                    className=" "
-                    {...field}
-                  />
+                  <Input key="text-input-0" placeholder="" type="text" className=" " {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,11 +137,7 @@ export default function GroupForm() {
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
                 <FormLabel className="flex shrink-0">Курс</FormLabel>
-                <Select
-                  key="select-0"
-                  {...field}
-                  onValueChange={field.onChange}
-                >
+                <Select key="select-0" {...field} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full ">
                       <SelectValue placeholder="" />
@@ -158,11 +163,7 @@ export default function GroupForm() {
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
                 <FormLabel className="flex shrink-0">Учитель</FormLabel>
 
-                <Select
-                  key="select-1"
-                  {...field}
-                  onValueChange={field.onChange}
-                >
+                <Select key="select-1" {...field} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full ">
                       <SelectValue placeholder="" />
@@ -170,10 +171,7 @@ export default function GroupForm() {
                   </FormControl>
                   <SelectContent>
                     {users.map((user) => (
-                      <SelectItem
-                        key={user.id}
-                        value={user.id.toString()}
-                      >
+                      <SelectItem key={user.id} value={user.id.toString()}>
                         {user.name}
                       </SelectItem>
                     ))}
@@ -196,13 +194,11 @@ export default function GroupForm() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
+                      variant={'outline'}
                       className="justify-start text-left font-normal w-full"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value
-                        ? format(field.value, "dd.MM.yyyy")
-                        : "Выбрать дату"}
+                      {field.value ? format(field.value, 'dd.MM.yyyy') : 'Выбрать дату'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -219,11 +215,22 @@ export default function GroupForm() {
             name="time"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                <FormLabel className="flex shrink-0">Дата начала</FormLabel>
+                <FormLabel className="flex shrink-0">Время занятия</FormLabel>
 
-                <FormControl>
-                  <Input type="time" {...field} />
-                </FormControl>
+                <Select {...field} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full ">
+                      <SelectValue placeholder="" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {timeSlots.map((timeSlot) => (
+                      <SelectItem key={timeSlot.time} value={timeSlot.time}>
+                        {timeSlot.time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
                 <FormMessage />
               </FormItem>
@@ -234,18 +241,10 @@ export default function GroupForm() {
             name="backofficeUrl"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                <FormLabel className="flex shrink-0">
-                  Ссылка на backoffice
-                </FormLabel>
+                <FormLabel className="flex shrink-0">Ссылка на backoffice</FormLabel>
 
                 <FormControl>
-                  <Input
-                    key="url-input-0"
-                    placeholder=""
-                    type="url"
-                    className=" "
-                    {...field}
-                  />
+                  <Input key="url-input-0" placeholder="" type="url" className=" " {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -275,9 +274,7 @@ export default function GroupForm() {
                       <FormControl>
                         <RadioGroupItem value="1" />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        Индивидуальные занятия
-                      </FormLabel>
+                      <FormLabel className="font-normal">Индивидуальные занятия</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center gap-3">
                       <FormControl>
@@ -297,9 +294,7 @@ export default function GroupForm() {
             name="lessonsAmount"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                <FormLabel className="flex shrink-0">
-                  Количество занятий
-                </FormLabel>
+                <FormLabel className="flex shrink-0">Количество занятий</FormLabel>
 
                 <FormControl>
                   <Input
@@ -309,9 +304,9 @@ export default function GroupForm() {
                     pattern="[0-9]*"
                     onChange={(e) => {
                       try {
-                        field.onChange(+e.target.value);
+                        field.onChange(+e.target.value)
                       } catch {
-                        field.onChange(0);
+                        field.onChange(0)
                       }
                     }}
                   />
@@ -324,5 +319,5 @@ export default function GroupForm() {
         </div>
       </form>
     </Form>
-  );
+  )
 }
