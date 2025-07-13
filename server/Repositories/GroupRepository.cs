@@ -73,7 +73,7 @@ public class GroupRepository(AppDbContext context) : BaseRepository<Group, Group
 
     public async Task<bool> RemoveStudent(EditStudentInGroupRequestDto requestDto)
     {
-        var groupStudentFromDb = await Context.GroupStudents.FindAsync(requestDto.GroupId, requestDto.StudentId);
+        var groupStudentFromDb = await Context.GroupStudents.FindAsync(requestDto.StudentId, requestDto.GroupId);
         if (groupStudentFromDb == null) return false;
         var attendances = Context.Attendances.Where(a => a.StudentId == requestDto.StudentId).ToList();
         Context.Attendances.RemoveRange(attendances);
