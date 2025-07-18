@@ -11,8 +11,8 @@ import { Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 import LessonDialog from '@/components/dialogs/lesson-dialog'
 import Attendances from '@/components/attendances'
-import { getUser } from '@/actions/auth'
 import { redirect } from 'next/navigation'
+import { getUser } from '@/actions/users'
 
 export default async function AttendanceSection({ group }: { group: IGroup }) {
   const user = await getUser()
@@ -35,7 +35,7 @@ export default async function AttendanceSection({ group }: { group: IGroup }) {
           {group.lessons.map((l) => (
             <AccordionItem key={l.id} value={l.id.toString()} className="border-0">
               <Card className="gap-2 p-0">
-                <AccordionTrigger className="cursor-pointer py-2 px-4">
+                <AccordionTrigger className="cursor-pointer px-4 py-2">
                   <div className="flex items-center justify-between gap-2">
                     <CardTitle className="m-0">{format(l.date, 'dd.MM')}</CardTitle>
                     <Badge variant={'secondary'}>{l.time.slice(0, l.time.length - 3)}</Badge>

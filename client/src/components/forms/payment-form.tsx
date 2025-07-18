@@ -22,45 +22,30 @@ import { IStudent } from '@/types/student'
 import { IGroup } from '@/types/group'
 import { apiPost } from '@/actions/api'
 import { toast } from 'sonner'
+import { Student } from '@prisma/client'
+import { GroupWithTeacher } from '@/actions/groups'
+import { createPayment } from '@/actions/payments'
+import { PaymentSchema, PaymentSchemaType } from '@/schemas/payments'
 
 export default function PaymentForm({
   students,
   groups,
 }: {
-  students: IStudent[]
-  groups: IGroup[]
+  students: Student[]
+  groups: GroupWithTeacher[]
 }) {
-  const formSchema = z.object({
-    student: z.string().min(1, { message: 'This field is required' }),
-    group: z.string().min(1, { message: 'This field is required' }),
-    classesAmount: z
-      .number({
-        error: 'This field must be a number',
-      })
-      .min(1, { message: 'This field is required' })
-      .gt(0, { message: 'Must be greater than 0' }),
-  })
+  const form = useForm<PaymentSchemaType>({ resolver: zodResolver(PaymentSchema) })
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      student: '',
-      group: '',
-      classesAmount: 0,
-    },
-  })
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const body = {
-      studentId: values.student,
-      groupId: values.group,
-      classesAmount: values.classesAmount,
-    }
-    const ok = apiPost('payments', body, '/dashboard/payments')
+  function onSubmit(values: PaymentSchemaType) {
+    const ok = createPayment({
+      studentId: values.studentId,
+      groupId: values.groupId,
+      lessonsPaid: values.lessonsPaid,
+    })
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: (data) => data.message,
-      error: (data) => data.message,
+      success: 'Оплата успешно создана',
+      error: (e) => e.message,
     })
   }
 
@@ -74,27 +59,27 @@ export default function PaymentForm({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={onReset}
-        className="space-y-8 @container"
+        className="@container space-y-8"
         id="payment-form"
       >
         <div className="grid grid-cols-12 gap-4">
           <FormField
             control={form.control}
-            name="student"
+            name="studentId"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Ученик</FormLabel>
 
                 <div className="w-full">
                   <FormControl>
-                    <Select key="select-0" {...field} onValueChange={field.onChange}>
+                    <Select key="select-0" onValueChange={(value) => field.onChange(+value)}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="" />
                       </SelectTrigger>
                       <SelectContent>
                         {students.map((student) => (
                           <SelectItem key={student.id} value={student.id.toString()}>
-                            {student.name}
+                            {student.firstName}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -108,15 +93,15 @@ export default function PaymentForm({
           />
           <FormField
             control={form.control}
-            name="group"
+            name="groupId"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Группа</FormLabel>
 
                 <div className="w-full">
                   <FormControl>
-                    <Select key="select-1" {...field} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full ">
+                    <Select key="select-1" onValueChange={(value) => field.onChange(+value)}>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="" />
                       </SelectTrigger>
                       <SelectContent>
@@ -136,19 +121,19 @@ export default function PaymentForm({
           />
           <FormField
             control={form.control}
-            name="classesAmount"
+            name="lessonsPaid"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Количество занятий</FormLabel>
 
                 <div className="w-full">
                   <FormControl>
                     <div className="relative w-full">
                       <Input
-                        {...field}
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
+                        name={field.name}
                         onChange={(e) => {
                           try {
                             field.onChange(+e.target.value)

@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Dialog,
@@ -9,9 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import StudentForm from "../forms/student-form";
+} from '@/components/ui/dialog'
+import { Button } from '../ui/button'
+import StudentForm from '../forms/student-form'
 
 export default function StudentDialog() {
   return (
@@ -21,13 +21,10 @@ export default function StudentDialog() {
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
-          <DialogTitle className="border-b px-6 py-4 text-base">
-            Редактирование ученика
-          </DialogTitle>
+          <DialogTitle className="border-b px-6 py-4 text-base">Редактирование ученика</DialogTitle>
         </DialogHeader>
         <DialogDescription className="sr-only">
-          Make changes to your profile here. You can change your photo and set a
-          username.
+          Make changes to your profile here. You can change your photo and set a username.
         </DialogDescription>
         <div className="overflow-y-auto">
           <div className="px-6 pt-4 pb-6">
@@ -44,5 +41,5 @@ export default function StudentDialog() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

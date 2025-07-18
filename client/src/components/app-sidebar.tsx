@@ -1,10 +1,8 @@
 import * as React from 'react'
 
-import { SearchForm } from '@/components/forms/search-form'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -15,48 +13,67 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 
-import { HandCoins, LayoutDashboard, LogOut, User, Users } from 'lucide-react'
+import {
+  FolderKanban,
+  HandCoins,
+  House,
+  LayoutDashboard,
+  LucideProps,
+  User as UserIcon,
+  Users,
+} from 'lucide-react'
 import { NavUser } from './nav-user'
-import { getUser } from '@/actions/auth'
 import { redirect } from 'next/navigation'
+import { getUser } from '@/actions/users'
+import { User } from '@prisma/client'
 
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: 'Общее',
-      url: '#',
-      items: [
-        {
-          title: 'Ученики',
-          url: '/dashboard/students',
-          icon: User,
-          roles: ['Teacher', 'Админ', 'Основатель', 'Учитель', 'Менеджер'],
-        },
-        {
-          title: 'Группы',
-          url: '/dashboard/groups',
-          icon: Users,
-          roles: ['Админ', 'Основатель', 'Учитель', 'Менеджер'],
-        },
-      ],
-      roles: ['Админ', 'Основатель', 'Учитель', 'Менеджер'],
-    },
-    {
-      title: 'Менеджер',
-      url: '#',
-      items: [
-        {
-          title: 'Оплаты',
-          url: '/dashboard/payments',
-          icon: HandCoins,
-          roles: ['Админ', 'Основатель', 'Менеджер'],
-        },
-      ],
-      roles: ['Админ', 'Основатель', 'Менеджер'],
-    },
-  ],
+interface NavData {
+  title: string
+  url: string
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'>>
+  items: NavData[]
+  roles: User['role'][]
 }
+
+const data: NavData[] = [
+  {
+    title: 'Общее',
+    url: '#',
+    icon: House,
+    items: [
+      {
+        title: 'Ученики',
+        url: '/dashboard/students',
+        icon: UserIcon,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+      {
+        title: 'Группы',
+        url: '/dashboard/groups',
+        icon: Users,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+    ],
+    roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+  },
+  {
+    title: 'Менеджер',
+    url: '#',
+    icon: FolderKanban,
+    items: [
+      {
+        title: 'Оплаты',
+        url: '/dashboard/payments',
+        icon: HandCoins,
+        items: [],
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
+      },
+    ],
+    roles: ['ADMIN', 'OWNER', 'MANAGER'],
+  },
+]
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = await getUser()
@@ -76,7 +93,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  className="group/menu-button font-medium gap-3 h-9 rounded-md bg-gradient-to-r hover:bg-transparent hover:from-sidebar-accent hover:to-sidebar-accent/40 data-[active=true]:from-primary/20 data-[active=true]:to-primary/5 [&>svg]:size-auto"
+                  className="group/menu-button hover:from-sidebar-accent hover:to-sidebar-accent/40 data-[active=true]:from-primary/20 data-[active=true]:to-primary/5 h-9 gap-3 rounded-md bg-gradient-to-r font-medium hover:bg-transparent [&>svg]:size-auto"
                 >
                   <a href={'/dashboard'}>
                     <LayoutDashboard
@@ -91,11 +108,12 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {data.navMain.map(
+        {data.map(
           (item) =>
             item.roles.includes(user?.role) && (
               <SidebarGroup key={item.title}>
-                <SidebarGroupLabel className="uppercase text-muted-foreground/60">
+                <SidebarGroupLabel className="text-muted-foreground/60 flex items-center gap-2 uppercase">
+                  <item.icon />
                   {item.title}
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="px-2">
@@ -106,7 +124,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                           <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
                               asChild
-                              className="group/menu-button font-medium gap-3 h-9 rounded-md bg-gradient-to-r hover:bg-transparent hover:from-sidebar-accent hover:to-sidebar-accent/40 data-[active=true]:from-primary/20 data-[active=true]:to-primary/5 [&>svg]:size-auto"
+                              className="group/menu-button hover:from-sidebar-accent hover:to-sidebar-accent/40 data-[active=true]:from-primary/20 data-[active=true]:to-primary/5 h-9 gap-3 rounded-md bg-gradient-to-r font-medium hover:bg-transparent [&>svg]:size-auto"
                             >
                               <a href={item.url}>
                                 {item.icon && (

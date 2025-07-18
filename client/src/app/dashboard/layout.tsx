@@ -26,11 +26,11 @@ export default function Layout({
             <SidebarTrigger />
             <MyBreadCrumbs />
           </div>
-          <div className="flex gap-3 ml-auto">
+          <div className="ml-auto flex gap-3">
             <FeedbackDialog />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 lg:gap-6 py-4 lg:py-6">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )

@@ -1,8 +1,7 @@
-export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
+export type ApiResponse<T = null> = SuccessResponse<T> | ErrorResponse
 
 export interface SuccessResponse<T> {
   success: true
-  message: string
   data: T
 }
 

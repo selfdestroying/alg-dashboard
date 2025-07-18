@@ -1,26 +1,24 @@
-"use client";
-import { usePathname } from "next/navigation";
+'use client'
+import { usePathname } from 'next/navigation'
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./ui/breadcrumb";
-import React from "react";
+} from './ui/breadcrumb'
+import React from 'react'
 
 export default function MyBreadCrumbs() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbPage className="max-w-20 truncate md:max-w-none">
-            /
-          </BreadcrumbPage>
+          <BreadcrumbPage className="max-w-20 truncate md:max-w-none">/</BreadcrumbPage>
         </BreadcrumbItem>
-        {pathname.split("/").map(
+        {pathname.split('/').map(
           (breadcrumb) =>
             breadcrumb.length > 0 && (
               <React.Fragment key={breadcrumb}>
@@ -35,5 +33,5 @@ export default function MyBreadCrumbs() {
         )}
       </BreadcrumbList>
     </Breadcrumb>
-  );
+  )
 }

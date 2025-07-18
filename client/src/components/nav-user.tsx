@@ -1,4 +1,3 @@
-import { getUser } from '@/actions/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -10,8 +9,9 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { ArrowLeftRight, ChevronsUpDown } from 'lucide-react'
 import { Badge } from './ui/badge'
-import { deleteSession } from '@/actions/session'
 import { redirect } from 'next/navigation'
+import { getUser } from '@/actions/users'
+import { signout } from '@/actions/auth'
 
 export async function NavUser() {
   const user = await getUser()
@@ -20,7 +20,7 @@ export async function NavUser() {
   }
   const onLogout = async () => {
     'use server'
-    await deleteSession()
+    await signout()
   }
   return (
     <SidebarMenu>
@@ -32,24 +32,24 @@ export async function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground [&>svg]:size-5"
             >
               <Avatar className="size-8">
-                <AvatarImage alt={user.name} />
-                <AvatarFallback className="rounded-lg">{user.name[0]}</AvatarFallback>
+                <AvatarImage alt={user.firstName} />
+                <AvatarFallback className="rounded-lg">{user.firstName[0]}</AvatarFallback>
               </Avatar>
               <div className="flex items-center gap-2 text-left text-sm">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.firstName}</span>
                 <Badge variant={'outline'}>{user.role}</Badge>
               </div>
-              <ChevronsUpDown className="ml-auto size-5 text-muted-foreground/80" />
+              <ChevronsUpDown className="text-muted-foreground/80 ml-auto size-5" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) dark bg-sidebar"
+            className="dark bg-sidebar w-(--radix-dropdown-menu-trigger-width)"
             side="top"
             align="start"
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-3 focus:bg-sidebar-accent" onClick={onLogout}>
-                <ArrowLeftRight size={20} className="size-5 text-muted-foreground/80" />
+              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3" onClick={onLogout}>
+                <ArrowLeftRight size={20} className="text-muted-foreground/80 size-5" />
                 Сменить аккаунт
               </DropdownMenuItem>
             </DropdownMenuGroup>

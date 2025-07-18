@@ -24,8 +24,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './dialogs/alert-dialog'
+import { getUser, UserData } from '@/actions/users'
 
-export default function Attendances({ lesson, user }: { lesson: ILesson; user: ITokenData }) {
+export default function Attendances({ lesson, user }: { lesson: ILesson; user: UserData }) {
   const [changed, setChanged] = useState<boolean>(true)
   const [attendances, setAttendances] = useState<IAttendance[]>(lesson.attendances)
 
@@ -173,7 +174,7 @@ function LessonActions({ lesson }: { lesson: ILesson }) {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40"
+                className="bg-destructive hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-white shadow-xs"
               >
                 Delete
               </AlertDialogAction>

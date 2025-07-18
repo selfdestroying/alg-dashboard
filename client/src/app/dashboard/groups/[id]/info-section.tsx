@@ -11,14 +11,14 @@ export default async function InfoSection({ group }: { group: IGroup }) {
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {/* Group Name */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <BookOpen className="h-3 w-3" />
               Название
             </div>
-            <p className="text-sm font-semibold flex items-center">
+            <p className="flex items-center text-sm font-semibold">
               {group.name}{' '}
               <Button variant={'link'} size={'icon'} asChild className="h-full">
                 <a target="_blank" rel="noopener noreferrer" href={group.backOfficeUrl}>
@@ -30,7 +30,7 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Teacher */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <User className="h-3 w-3" />
               Преподаватель
             </div>
@@ -39,7 +39,7 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Course */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <BookOpen className="h-3 w-3" />
               Курс
             </div>
@@ -48,12 +48,12 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Group Type */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <Users className="h-3 w-3" />
               Тип группы
             </div>
             <div>
-              <Badge variant="secondary" className="text-xs px-2 py-0.5">
+              <Badge variant="secondary" className="px-2 py-0.5 text-xs">
                 {GroupType[group.type]}
               </Badge>
             </div>
@@ -61,7 +61,7 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Class Schedule */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <CalendarDays className="h-3 w-3" />
               День недели
             </div>
@@ -70,7 +70,7 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Class Time */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <Clock className="h-3 w-3" />
               Время
             </div>
@@ -81,7 +81,7 @@ export default async function InfoSection({ group }: { group: IGroup }) {
 
           {/* Start Date */}
           <div className="space-y-1">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <Calendar className="h-3 w-3" />
               Дата старта
             </div>

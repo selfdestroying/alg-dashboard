@@ -8,20 +8,20 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { z } from 'zod/v4'
-import { useForm, UseFormReturn } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
-import { formSchema } from '@/schemas/student'
-import { apiPost } from '@/actions/api'
-import { IStudent } from '@/types/student'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { createStudent } from '@/actions/students'
+import { StudentSchema, StudentSchemaType } from '@/schemas/student'
 
 export default function StudentForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<StudentSchemaType>({
+    resolver: zodResolver(StudentSchema),
     defaultValues: {
-      'first-name': '',
-      'second-name': '',
+      firstName: '',
+      lastName: '',
       age: 0,
     },
   })
@@ -30,16 +30,16 @@ export default function StudentForm() {
     form.clearErrors()
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const body = {
-      name: values['first-name'] + ' ' + values['second-name'],
-      age: +values.age,
-    }
-    const ok = apiPost<IStudent>('students', body, 'dashboard/students')
+  function onSubmit(values: StudentSchemaType) {
+    const ok = createStudent({
+      age: values.age,
+      firstName: values.firstName,
+      lastName: values.lastName,
+    })
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: (data) => data.message,
-      error: (data) => data.message,
+      success: 'Ученик успешно создан',
+      error: (e) => e.message,
     })
   }
 
@@ -47,16 +47,16 @@ export default function StudentForm() {
     <Form {...form}>
       <form
         onReset={onReset}
-        className="space-y-8 @container"
+        className="@container space-y-8"
         onSubmit={form.handleSubmit(onSubmit)}
         id="student-form"
       >
         <div className="grid grid-cols-12 gap-4">
           <FormField
             control={form.control}
-            name="first-name"
+            name="firstName"
             render={({ field }) => (
-              <FormItem className="col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-6 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Имя</FormLabel>
                 <FormControl>
                   <Input placeholder="" type="text" className=" " {...field} />
@@ -67,9 +67,9 @@ export default function StudentForm() {
           />
           <FormField
             control={form.control}
-            name="second-name"
+            name="lastName"
             render={({ field }) => (
-              <FormItem className="col-span-6 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-6 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Фамилия</FormLabel>
 
                 <FormControl>
@@ -84,7 +84,7 @@ export default function StudentForm() {
             control={form.control}
             name="age"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Возраст</FormLabel>
                 <FormControl>
                   <Input

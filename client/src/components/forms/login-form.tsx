@@ -8,16 +8,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { useForm } from 'react-hook-form'
 
 import { Input } from '@/components/ui/input'
 import { LogIn } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
-import { useEffect, useState } from 'react'
-import { IAuth, IUser, RoleNames } from '@/types/user'
-import { apiGet, apiPost } from '@/actions/api'
+import { useActionState, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -27,55 +25,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
-import { ApiResponse } from '@/types/response'
-import { toast } from 'sonner'
-import { createSession } from '@/actions/session'
+import { sigin } from '@/actions/auth'
+import { signInFormSchema } from '@/schemas/auth'
+import { UserData, type getUsers } from '@/actions/users'
+import { User } from '@prisma/client'
 
-export default function LoginForm({ users }: { users: IUser[] }) {
-  const [selectedUserRole, setSelectedUserRole] = useState<RoleNames>()
+export default function LoginForm({ users }: { users: UserData[] }) {
+  const [selectedUserRole, setSelectedUserRole] = useState<User['role']>()
+  const [state, action] = useActionState(sigin, undefined)
 
-  const formSchema = z.object({
-    user: z.string().min(1, { message: 'This field is required' }),
-    password: z.string(),
-  })
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signInFormSchema>>({
+    resolver: zodResolver(signInFormSchema),
     defaultValues: {
       user: '',
       password: '',
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const ok = new Promise<ApiResponse<IAuth>>((resolve, reject) => {
-      apiPost<IAuth>('auth/login', {
-        name: values.user,
-        password: values.password,
-      }).then((r) => {
-        if (r.success) {
-          createSession(r.data.token, r.data.expirationHours)
-          resolve(r)
-        } else {
-          reject(r)
-        }
-      })
-    })
-
-    toast.promise(ok, {
-      loading: 'Загрузка...',
-      success: (data) => data.message,
-      error: (data) => data.message,
-    })
-  }
-
-  function onReset() {
-    form.reset()
-    form.clearErrors()
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Добро пожаловать</CardTitle>
@@ -85,13 +53,13 @@ export default function LoginForm({ users }: { users: IUser[] }) {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form action={action} className="space-y-4">
               <FormField
                 control={form.control}
                 name="user"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <p className="text-foreground text-sm leading-4 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive">
+                    <p className="text-foreground data-[error=true]:text-destructive text-sm leading-4 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                       Пользователь
                     </p>
                     <FormControl>
@@ -99,11 +67,11 @@ export default function LoginForm({ users }: { users: IUser[] }) {
                         key="select-0"
                         {...field}
                         onValueChange={(value) => {
-                          setSelectedUserRole(users.find((u) => u.name == value)?.role.name)
+                          setSelectedUserRole(users.find((u) => u.firstName == value)?.role)
                           return field.onChange(value)
                         }}
                       >
-                        <SelectTrigger className="w-full ">
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="" />
                         </SelectTrigger>
                         <SelectContent>
@@ -112,40 +80,40 @@ export default function LoginForm({ users }: { users: IUser[] }) {
                               <SelectGroup>
                                 <SelectLabel>Администраторы</SelectLabel>
                                 {users
-                                  .filter((u) => u.role.name == 'Админ')
+                                  .filter((u) => u.role == 'ADMIN')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.name}>
-                                      {item.name}
+                                    <SelectItem key={item.id} value={item.firstName}>
+                                      {item.firstName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
                               <SelectGroup>
                                 <SelectLabel>Основатели</SelectLabel>
                                 {users
-                                  .filter((u) => u.role.name == 'Основатель')
+                                  .filter((u) => u.role == 'OWNER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.name}>
-                                      {item.name}
+                                    <SelectItem key={item.id} value={item.firstName}>
+                                      {item.firstName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
                               <SelectGroup>
                                 <SelectLabel>Менеджеры</SelectLabel>
                                 {users
-                                  .filter((u) => u.role.name == 'Менеджер')
+                                  .filter((u) => u.role == 'MANAGER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.name}>
-                                      {item.name}
+                                    <SelectItem key={item.id} value={item.firstName}>
+                                      {item.firstName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
                               <SelectGroup>
                                 <SelectLabel>Учителя</SelectLabel>
                                 {users
-                                  .filter((u) => u.role.name == 'Учитель')
+                                  .filter((u) => u.role == 'TEACHER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.name}>
-                                      {item.name}
+                                    <SelectItem key={item.id} value={item.firstName}>
+                                      {item.firstName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -158,29 +126,32 @@ export default function LoginForm({ users }: { users: IUser[] }) {
                   </FormItem>
                 )}
               />
-              {selectedUserRole && selectedUserRole != 'Учитель' && (
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1">
-                      <FormLabel>Пароль</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem
+                    className="space-y-1"
+                    hidden={!selectedUserRole || selectedUserRole == 'TEACHER'}
+                  >
+                    <FormLabel>Пароль</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button
                 type="submit"
                 className="w-full cursor-pointer"
                 disabled={form.formState.isSubmitting}
               >
-                <LogIn className="h-4 w-4 mr-2" />
+                <LogIn className="mr-2 h-4 w-4" />
                 Войти
               </Button>
+              {!state?.success && <p>{state?.message}</p>}
             </form>
           </Form>
         </CardContent>

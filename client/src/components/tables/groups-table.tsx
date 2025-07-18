@@ -12,18 +12,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/dialogs/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Progress } from '@/components/ui/progress'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -52,35 +43,20 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
-import { apiDelete, apiGet } from '@/actions/api'
-import { ApiResponse } from '@/types/response'
 import { toast } from 'sonner'
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpNarrowWide,
-  CircleAlert,
-  CircleX,
-  Funnel,
-  Search,
-  Trash,
-} from 'lucide-react'
-import { GroupType, IGroup } from '@/types/group'
+import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
-import { ITokenData, IUser } from '@/types/user'
+import { Prisma } from '@prisma/client'
+import { deleteGroup, GroupWithTeacher } from '@/actions/groups'
+import { UserData } from '@/actions/users'
 
-const statusFilterFn: FilterFn<IUser> = (row, columnId, filterValue: string[]) => {
+const userFilter: FilterFn<GroupWithTeacher> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
-  const status = row.getValue(columnId) as string
-  return filterValue.includes(status)
+  const user = row.getValue(columnId) as string
+  return filterValue.includes(user)
 }
 
-interface GetColumnsProps {
-  data: IGroup[]
-  setData: React.Dispatch<React.SetStateAction<IGroup[]>>
-}
-
-const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IGroup>[] => [
+const getColumns = (): ColumnDef<GroupWithTeacher>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -109,7 +85,7 @@ const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IGroup>[] => 
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
-          <Button asChild variant={'link'} size={'sm'} className="p-0 h-fit">
+          <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
             <Link href={`/dashboard/groups/${row.original.id}`}>{row.getValue('name')}</Link>
           </Button>
         </div>
@@ -121,31 +97,41 @@ const getColumns = ({ data, setData }: GetColumnsProps): ColumnDef<IGroup>[] => 
   {
     header: 'Курс',
     accessorKey: 'course',
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('course')}</span>,
+    accessorFn: (item) => item.course.name,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.original.course.name}</span>,
     size: 110,
   },
   {
     header: 'Учитель',
-    accessorKey: 'user',
-    accessorFn: (item: IGroup) => item.user.name,
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('user')}</span>,
+    accessorKey: 'teacher',
+    accessorFn: (item) => item.teacher.firstName,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.teacher.firstName}</span>
+    ),
     size: 110,
+    filterFn: userFilter,
   },
   {
     id: 'actions',
     header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions setData={setData} data={data} item={row.original} />,
+    cell: ({ row }) => <RowActions item={row.original} />,
     size: 60,
     enableHiding: false,
   },
 ]
 
-export default function GroupsTable({ user, groups }: { user: ITokenData; groups: IGroup[] }) {
+export default function GroupsTable({
+  user,
+  groups,
+}: {
+  user: UserData
+  groups: GroupWithTeacher[]
+}) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     {
-      id: 'user',
-      value: [user.name],
+      id: 'teacher',
+      value: [user?.firstName],
     },
   ])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -162,23 +148,17 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
     },
   ])
 
-  const [data, setData] = useState<IGroup[]>(groups)
-
-  const columns = useMemo(() => getColumns({ data: groups, setData }), [data])
+  const columns = getColumns()
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
-    const promises = selectedRows.map((row) =>
-      apiDelete<boolean>(`groups/${row.original.id}`, {}, '/dashboard/groups')
-    )
+    const promises = selectedRows.map((row) => deleteGroup(row.original.id))
     const ok = Promise.all(promises)
+    table.resetRowSelection()
 
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: () => {
-        table.resetRowSelection()
-        return 'Ученики успешно удалены'
-      },
+      success: 'Ученики успешно удалены',
       error: 'Ошибка при удалении учеников',
     })
   }
@@ -205,7 +185,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
   })
 
   // Extract complex expressions into separate variables
-  const userColumn = table.getColumn('user')
+  const userColumn = table.getColumn('teacher')
   const userFacetedValues = userColumn?.getFacetedUniqueValues()
   const userFilterValue = userColumn?.getFilterValue()
 
@@ -237,7 +217,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
   const selectedCourses = useMemo(() => (courseFilterValue as string[]) ?? [], [courseFilterValue])
 
   const handleUserChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn('user')?.getFilterValue() as string[]
+    const filterValue = table.getColumn('teacher')?.getFilterValue() as string[]
     const newFilterValue = filterValue ? [...filterValue] : []
 
     if (checked) {
@@ -249,7 +229,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
       }
     }
 
-    table.getColumn('user')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
+    table.getColumn('teacher')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
   }
   const handleCourseChange = (checked: boolean, value: string) => {
     const filterValue = table.getColumn('course')?.getFilterValue() as string[]
@@ -279,7 +259,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
-                'peer min-w-60 ps-9 bg-background bg-gradient-to-br from-accent/60 to-accent',
+                'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
                 Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9'
               )}
               value={(table.getColumn('name')?.getFilterValue() ?? '') as string}
@@ -288,12 +268,12 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
               type="text"
               aria-label="Search by name"
             />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/60 peer-disabled:opacity-50">
+            <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
               <Search size={20} aria-hidden="true" />
             </div>
             {Boolean(table.getColumn('name')?.getFilterValue()) && (
               <button
-                className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/60 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
                   table.getColumn('name')?.setFilterValue('')
@@ -315,7 +295,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
                 <Button className="ml-auto" variant="outline">
                   <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
                   Delete
-                  <span className="-me-1 ms-1 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                  <span className="border-border bg-background text-muted-foreground/70 ms-1 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {table.getSelectedRowModel().rows.length}
                   </span>
                 </Button>
@@ -323,7 +303,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
               <AlertDialogContent>
                 <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                   <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
+                    className="border-border flex size-9 shrink-0 items-center justify-center rounded-full border"
                     aria-hidden="true"
                   >
                     <CircleAlert className="opacity-80" size={16} />
@@ -348,13 +328,13 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
             <PopoverTrigger asChild>
               <Button variant="outline">
                 <Funnel
-                  className="size-5 -ms-1.5 text-muted-foreground/60"
+                  className="text-muted-foreground/60 -ms-1.5 size-5"
                   size={20}
                   aria-hidden="true"
                 />
                 Учитель
                 {selectedUsers.length > 0 && (
-                  <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                  <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {selectedUsers.length}
                   </span>
                 )}
@@ -375,7 +355,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
                         className="flex grow justify-between gap-2 font-normal"
                       >
                         {value}{' '}
-                        <span className="ms-2 text-xs text-muted-foreground">
+                        <span className="text-muted-foreground ms-2 text-xs">
                           {userCounts.get(value)}
                         </span>
                       </Label>
@@ -389,13 +369,13 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
             <PopoverTrigger asChild>
               <Button variant="outline">
                 <Funnel
-                  className="size-5 -ms-1.5 text-muted-foreground/60"
+                  className="text-muted-foreground/60 -ms-1.5 size-5"
                   size={20}
                   aria-hidden="true"
                 />
                 Курс
                 {selectedCourses.length > 0 && (
-                  <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                  <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {selectedCourses.length}
                   </span>
                 )}
@@ -416,7 +396,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
                         className="flex grow justify-between gap-2 font-normal"
                       >
                         {value}{' '}
-                        <span className="ms-2 text-xs text-muted-foreground">
+                        <span className="text-muted-foreground ms-2 text-xs">
                           {courseCounts.get(value)}
                         </span>
                       </Label>
@@ -439,13 +419,13 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
                   <TableHead
                     key={header.id}
                     style={{ width: `${header.getSize()}px` }}
-                    className="relative h-9 select-none bg-sidebar border-y border-border first:border-l first:rounded-l-lg last:border-r last:rounded-r-lg"
+                    className="bg-sidebar border-border relative h-9 border-y select-none first:rounded-l-lg first:border-l last:rounded-r-lg last:border-r"
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
                         className={cn(
                           header.column.getCanSort() &&
-                            'flex h-full cursor-pointer select-none items-center gap-2'
+                            'flex h-full cursor-pointer items-center gap-2 select-none'
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {
@@ -487,10 +467,10 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg h-px hover:bg-accent/50"
+                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="last:py-0 h-[inherit]">
+                  <TableCell key={cell.id} className="h-[inherit] last:py-0">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -510,7 +490,7 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
       {/* Pagination */}
       {table.getRowModel().rows.length > 0 && (
         <div className="flex items-center justify-between gap-3">
-          <p className="flex-1 whitespace-nowrap text-sm text-muted-foreground" aria-live="polite">
+          <p className="text-muted-foreground flex-1 text-sm whitespace-nowrap" aria-live="polite">
             Страница{' '}
             <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из{' '}
             <span className="text-foreground">{table.getPageCount()}</span>
@@ -547,35 +527,18 @@ export default function GroupsTable({ user, groups }: { user: ITokenData; groups
   )
 }
 
-function RowActions({
-  setData,
-  data,
-  item,
-}: {
-  setData: React.Dispatch<React.SetStateAction<IGroup[]>>
-  data: IGroup[]
-  item: IGroup
-}) {
+function RowActions({ item }: { item: GroupWithTeacher }) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleDelete = () => {
     startUpdateTransition(() => {
-      const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-        apiDelete<boolean>(`groups/${item.id}`, {}, '/dashboard/groups').then((r) => {
-          if (r.success) {
-            setShowDeleteDialog(false)
-            resolve(r)
-          } else {
-            reject(r)
-          }
-        })
-      })
+      const ok = deleteGroup(item.id)
 
       toast.promise(ok, {
         loading: 'Загрузка...',
-        success: (data) => data.message,
-        error: (data) => data.message,
+        success: 'Группа успешно удалена',
+        error: (e) => e.message,
       })
     })
   }
@@ -600,7 +563,7 @@ function RowActions({
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isUpdatePending}
-              className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40"
+              className="bg-destructive hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-white shadow-xs"
             >
               Delete
             </AlertDialogAction>

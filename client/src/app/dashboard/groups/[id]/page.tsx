@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!group.success) {
     return (
       <Card>
-        <CardHeader className="gap-0 justify-center">
+        <CardHeader className="justify-center gap-0">
           Ошибка при получении группы: {group.message}
         </CardHeader>
       </Card>

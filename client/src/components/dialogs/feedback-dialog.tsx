@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/dialogs/dialog";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/dialogs/dialog'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function FeedbackDialog() {
   return (
@@ -21,18 +21,18 @@ export default function FeedbackDialog() {
         <DialogHeader>
           <DialogTitle>Send us feedback</DialogTitle>
           <DialogDescription>
-            Watch{" "}
+            Watch{' '}
             <a className="text-foreground hover:underline" href="#">
               tutorials
             </a>
-            , read Origin UI&lsquo;s{" "}
+            , read Origin UI&lsquo;s{' '}
             <a className="text-foreground hover:underline" href="#">
               documentation
             </a>
-            , or join our{" "}
+            , or join our{' '}
             <a className="text-foreground hover:underline" href="#">
               Discord
-            </a>{" "}
+            </a>{' '}
             for community help.
           </DialogDescription>
         </DialogHeader>
@@ -48,5 +48,5 @@ export default function FeedbackDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

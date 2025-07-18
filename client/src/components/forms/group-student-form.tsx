@@ -52,7 +52,7 @@ export const GroupStudentForm: FC<IComboboxProps> = ({ students, groupId }) => {
   return (
     <Form {...form}>
       <form
-        className="space-y-8 @container"
+        className="@container space-y-8"
         onSubmit={form.handleSubmit(onSubmit)}
         id="group-student-form"
       >
@@ -61,12 +61,12 @@ export const GroupStudentForm: FC<IComboboxProps> = ({ students, groupId }) => {
             control={form.control}
             name="studentId"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <div className="w-full">
                   <FormLabel>Ученик</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="cursor-pointer w-full">
+                      <SelectTrigger className="w-full cursor-pointer">
                         <SelectValue placeholder="Выбрать ученика" />
                       </SelectTrigger>
                     </FormControl>

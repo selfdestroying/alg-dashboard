@@ -1,5 +1,6 @@
 import { apiGet } from '@/actions/api'
-import { getUser } from '@/actions/auth'
+import { getGroups } from '@/actions/groups'
+import { getUser } from '@/actions/users'
 import GroupDialog from '@/components/dialogs/group-dialog'
 import GroupsTable from '@/components/tables/groups-table'
 import { IGroup } from '@/types/group'
@@ -10,11 +11,7 @@ export default async function Page() {
   if (!user) {
     redirect('/auth')
   }
-  const groups = await apiGet<IGroup[]>('groups')
-  if (!groups.success) {
-    console.log(groups.message)
-    return <div>{groups.message}</div>
-  }
+  const groups = await getGroups()
 
   return (
     <>
@@ -22,7 +19,7 @@ export default async function Page() {
         <GroupDialog />
       </div>
       <div>
-        <GroupsTable groups={groups.data} user={user} />
+        <GroupsTable groups={groups} user={user} />
       </div>
     </>
   )

@@ -16,27 +16,27 @@ export function StatsCard({ title, value, change, icon }: StatsCardProps) {
   const trendColor = isPositive ? 'text-emerald-500' : 'text-red-500'
 
   return (
-    <div className="relative p-4 lg:p-5 group before:absolute before:inset-y-8 before:right-0 before:w-px before:bg-gradient-to-b before:from-input/30 before:via-input before:to-input/30 last:before:hidden">
+    <div className="group before:from-input/30 before:via-input before:to-input/30 relative p-4 before:absolute before:inset-y-8 before:right-0 before:w-px before:bg-gradient-to-b last:before:hidden lg:p-5">
       <div className="relative flex items-center gap-4">
         <ArrowUpRight
-          className="absolute right-0 top-0 opacity-0 group-has-[a:hover]:opacity-100 transition-opacity text-emerald-500"
+          className="absolute top-0 right-0 text-emerald-500 opacity-0 transition-opacity group-has-[a:hover]:opacity-100"
           size={20}
           aria-hidden="true"
         />
         {/* Icon */}
-        <div className="max-[480px]:hidden size-10 shrink-0 rounded-full bg-emerald-600/25 border border-emerald-600/50 flex items-center justify-center text-emerald-500">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-emerald-600/50 bg-emerald-600/25 text-emerald-500 max-[480px]:hidden">
           {icon}
         </div>
         {/* Content */}
         <div>
           <a
             href="#"
-            className="font-medium tracking-widest text-xs uppercase text-muted-foreground/60 before:absolute before:inset-0"
+            className="text-muted-foreground/60 text-xs font-medium tracking-widest uppercase before:absolute before:inset-0"
           >
             {title}
           </a>
-          <div className="text-2xl font-semibold mb-2">{value}</div>
-          <div className="text-xs text-muted-foreground/60">
+          <div className="mb-2 text-2xl font-semibold">{value}</div>
+          <div className="text-muted-foreground/60 text-xs">
             <span className={cn('font-medium', trendColor)}>
               {isPositive ? '↗' : '↘'} {change.value}
             </span>{' '}
@@ -54,7 +54,7 @@ interface StatsGridProps {
 
 export function StatsGrid({ stats }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-2 min-[1200px]:grid-cols-4 border border-border rounded-xl bg-gradient-to-br from-sidebar/60 to-sidebar">
+    <div className="border-border from-sidebar/60 to-sidebar grid grid-cols-2 rounded-xl border bg-gradient-to-br min-[1200px]:grid-cols-4">
       {stats.map((stat) => (
         <StatsCard key={stat.title} {...stat} />
       ))}

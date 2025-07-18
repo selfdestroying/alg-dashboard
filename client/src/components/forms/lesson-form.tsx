@@ -87,7 +87,7 @@ export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; grou
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         onReset={onReset}
-        className="space-y-8 @container"
+        className="@container space-y-8"
         id="group-form"
       >
         <div className="grid grid-cols-12 gap-4">
@@ -95,8 +95,8 @@ export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; grou
             control={form.control}
             name="date"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
-                <p className="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+                <p className="data-[error=true]:text-destructive flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                   Дата
                 </p>
 
@@ -104,7 +104,7 @@ export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; grou
                   <PopoverTrigger asChild>
                     <Button
                       variant={'outline'}
-                      className="justify-start text-left font-normal w-full"
+                      className="w-full justify-start text-left font-normal"
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {field.value ? format(field.value, 'dd.MM.yyyy') : 'Выбрать дату'}
@@ -123,12 +123,12 @@ export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; grou
             control={form.control}
             name="time"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start">
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <FormLabel className="flex shrink-0">Время</FormLabel>
 
                 <Select {...field} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger className="w-full ">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="" />
                     </SelectTrigger>
                   </FormControl>
