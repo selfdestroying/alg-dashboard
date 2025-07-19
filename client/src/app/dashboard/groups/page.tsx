@@ -1,9 +1,7 @@
-import { apiGet } from '@/actions/api'
 import { getGroups } from '@/actions/groups'
 import { getUser } from '@/actions/users'
 import GroupDialog from '@/components/dialogs/group-dialog'
 import GroupsTable from '@/components/tables/groups-table'
-import { IGroup } from '@/types/group'
 import { redirect } from 'next/navigation'
 
 export default async function Page() {

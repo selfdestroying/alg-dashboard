@@ -46,17 +46,16 @@ import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
-import { Prisma } from '@prisma/client'
-import { deleteGroup, GroupWithTeacher } from '@/actions/groups'
+import { deleteGroup, GroupWithTeacherAndCourse } from '@/actions/groups'
 import { UserData } from '@/actions/users'
 
-const userFilter: FilterFn<GroupWithTeacher> = (row, columnId, filterValue: string[]) => {
+const userFilter: FilterFn<GroupWithTeacherAndCourse> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
   const user = row.getValue(columnId) as string
   return filterValue.includes(user)
 }
 
-const getColumns = (): ColumnDef<GroupWithTeacher>[] => [
+const getColumns = (): ColumnDef<GroupWithTeacherAndCourse>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -125,7 +124,7 @@ export default function GroupsTable({
   groups,
 }: {
   user: UserData
-  groups: GroupWithTeacher[]
+  groups: GroupWithTeacherAndCourse[]
 }) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
@@ -527,7 +526,7 @@ export default function GroupsTable({
   )
 }
 
-function RowActions({ item }: { item: GroupWithTeacher }) {
+function RowActions({ item }: { item: GroupWithTeacherAndCourse }) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 

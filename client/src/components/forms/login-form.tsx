@@ -27,7 +27,7 @@ import {
 } from '../ui/select'
 import { sigin } from '@/actions/auth'
 import { signInFormSchema } from '@/schemas/auth'
-import { UserData, type getUsers } from '@/actions/users'
+import { UserData } from '@/actions/users'
 import { User } from '@prisma/client'
 
 export default function LoginForm({ users }: { users: UserData[] }) {

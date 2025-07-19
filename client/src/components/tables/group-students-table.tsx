@@ -12,18 +12,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/dialogs/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Progress } from '@/components/ui/progress'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -42,7 +32,6 @@ import {
   FilterFn,
   PaginationState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
@@ -52,36 +41,25 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
-import { useId, useMemo, useRef, useState, useTransition } from 'react'
-import { apiDelete } from '@/actions/api'
-import { ApiResponse } from '@/types/response'
+import { useId, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { IStudent } from '@/types/student'
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpRight,
-  CircleAlert,
-  CircleX,
-  Funnel,
-  Minus,
-  Search,
-} from 'lucide-react'
+import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Minus, Search } from 'lucide-react'
 import GroupStudentDialog from '../dialogs/group-student-dialog'
-import { IGroup } from '@/types/group'
+import { Student } from '@prisma/client'
+import { AllGroupData, removeFromGroup } from '@/actions/groups'
 
-const ageFilterFn: FilterFn<IStudent> = (row, columnId, filterValue: number[]) => {
+const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
   if (!filterValue?.length) return true
   const age = row.getValue(columnId) as number
   return filterValue.includes(age)
 }
 
 interface GetColumnsProps {
-  data: IGroup
-  studentsNotInGroup: IStudent[]
+  data: AllGroupData
+  studentsNotInGroup: Student[]
 }
 
-const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<IStudent>[] => [
+const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<Student>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -105,11 +83,14 @@ const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<IS
     enableHiding: false,
   },
   {
-    header: 'Имя',
-    accessorKey: 'name',
+    header: 'Полное имя',
+    accessorKey: 'fullName',
+    accessorFn: (value) => `${value.firstName} ${value.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <div className="font-medium">{row.getValue('name')}</div>
+        <div className="font-medium">
+          {row.original.firstName} {row.original.lastName}
+        </div>
       </div>
     ),
     size: 180,
@@ -129,7 +110,7 @@ const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<IS
         <GroupStudentDialog students={studentsNotInGroup} groupId={data.id} />
       </div>
     ),
-    cell: ({ row }) => <RowActions data={data} item={row.original} />,
+    cell: ({ row }) => <RowActions group={data} item={row.original} />,
     size: 60,
     enableHiding: false,
   },
@@ -139,8 +120,8 @@ export default function GroupStudentsTable({
   group,
   studentsNotInGroup,
 }: {
-  group: IGroup
-  studentsNotInGroup: IStudent[]
+  group: AllGroupData
+  studentsNotInGroup: Student[]
 }) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -156,23 +137,14 @@ export default function GroupStudentsTable({
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const promises = selectedRows.map((row) =>
-      apiDelete<boolean>(
-        `groups/remove-student`,
-        {
-          groupId: group.id,
-          studentId: row.original.id,
-        },
-        `/dashboard/groups/${group.id}`
-      ).then((r) => console.log(r))
+      removeFromGroup({ groupId: group.id, studentId: row.original.id })
     )
     const ok = Promise.all(promises)
 
+    table.resetRowSelection()
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: () => {
-        table.resetRowSelection()
-        return 'Ученики успешно удалены'
-      },
+      success: () => 'Ученики успешно удалены',
       error: 'Ошибка при удалении учеников',
     })
   }
@@ -239,10 +211,10 @@ export default function GroupStudentsTable({
               ref={inputRef}
               className={cn(
                 'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
-                Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9'
+                Boolean(table.getColumn('fullName')?.getFilterValue()) && 'pe-9'
               )}
-              value={(table.getColumn('name')?.getFilterValue() ?? '') as string}
-              onChange={(e) => table.getColumn('name')?.setFilterValue(e.target.value)}
+              value={(table.getColumn('fullName')?.getFilterValue() ?? '') as string}
+              onChange={(e) => table.getColumn('fullName')?.setFilterValue(e.target.value)}
               placeholder="Search by name"
               type="text"
               aria-label="Search by name"
@@ -250,12 +222,12 @@ export default function GroupStudentsTable({
             <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
               <Search size={20} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('name')?.getFilterValue()) && (
+            {Boolean(table.getColumn('fullName')?.getFilterValue()) && (
               <button
                 className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn('name')?.setFilterValue('')
+                  table.getColumn('fullName')?.setFilterValue('')
                   if (inputRef.current) {
                     inputRef.current.focus()
                   }
@@ -467,29 +439,14 @@ export default function GroupStudentsTable({
   )
 }
 
-function RowActions({ data, item }: { data: IGroup; item: IStudent }) {
+function RowActions({ group, item }: { group: AllGroupData; item: Student }) {
   const handleDelete = () => {
-    const ok = new Promise<ApiResponse<boolean>>((resolve, reject) => {
-      apiDelete<boolean>(
-        `groups/remove-student`,
-        {
-          groupId: data.id,
-          studentId: item.id,
-        },
-        `/dashboard/groups/${data.id}`
-      ).then((r) => {
-        if (r.success) {
-          resolve(r)
-        } else {
-          reject(r)
-        }
-      })
-    })
+    const ok = removeFromGroup({ groupId: group.id, studentId: item.id })
 
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: (data) => data.message,
-      error: (data) => data.message,
+      success: 'Ученик удален из группы',
+      error: (e) => e.message,
     })
   }
 

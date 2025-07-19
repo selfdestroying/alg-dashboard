@@ -1,7 +1,5 @@
 import PaymentsTable from '@/components/tables/payments-table'
 import PaymentDialog from '@/components/dialogs/payment-dialog'
-import { apiGet } from '@/actions/api'
-import { IPayment } from '@/types/payments'
 import { getPayments } from '@/actions/payments'
 
 export default async function Page() {

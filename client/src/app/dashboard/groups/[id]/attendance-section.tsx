@@ -1,55 +1,51 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { IGroup } from '@/types/group'
-import { Calendar } from 'lucide-react'
-import { format } from 'date-fns'
-import LessonDialog from '@/components/dialogs/lesson-dialog'
-import Attendances from '@/components/attendances'
-import { redirect } from 'next/navigation'
+import { AllGroupData } from '@/actions/groups'
 import { getUser } from '@/actions/users'
+import LessonDialog from '@/components/dialogs/lesson-dialog'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { format } from 'date-fns'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
-export default async function AttendanceSection({ group }: { group: IGroup }) {
+function isToday(d1: Date, d2: Date) {
+  return (
+    d1.getDate() === d2.getDate() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getFullYear() === d2.getFullYear()
+  )
+}
+
+export default async function LessonsSection({ group }: { group: AllGroupData }) {
   const user = await getUser()
+
   if (!user) {
     return redirect('/auth')
   }
   return (
     <Card className="gap-2">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Расписание
-          </CardTitle>
+        <div>
           <LessonDialog groupId={group.id} />
         </div>
       </CardHeader>
       <CardContent>
-        <Accordion type="single" collapsible className="space-y-2">
-          {group.lessons.map((l) => (
-            <AccordionItem key={l.id} value={l.id.toString()} className="border-0">
-              <Card className="gap-2 p-0">
-                <AccordionTrigger className="cursor-pointer px-4 py-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <CardTitle className="m-0">{format(l.date, 'dd.MM')}</CardTitle>
-                    <Badge variant={'secondary'}>{l.time.slice(0, l.time.length - 3)}</Badge>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="p-0">
-                  <CardContent className="space-y-3 p-4">
-                    <Attendances lesson={l} user={user} />
-                  </CardContent>
-                </AccordionContent>
-              </Card>
-            </AccordionItem>
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-8">
+          {group.lessons.map((lesson) => (
+            <Button
+              key={lesson.id}
+              variant={'outline'}
+              className="hover:border-primary/90 flex items-center justify-center gap-2 rounded-lg border p-2 transition-colors"
+              asChild
+            >
+              <Link href={`/dashboard/lessons/${lesson.id}`}>
+                {isToday(new Date(), lesson.date) && (
+                  <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
+                )}
+                {format(lesson.date.toString(), 'dd.MM')}
+              </Link>
+            </Button>
           ))}
-        </Accordion>
+        </div>
       </CardContent>
     </Card>
   )

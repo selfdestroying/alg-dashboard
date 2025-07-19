@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +13,8 @@ import {
 } from '@/components/dialogs/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { cn } from '@/lib/utils'
+
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -26,10 +27,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { AttendanceStatus, Prisma } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
-  FilterFn,
   PaginationState,
   SortingState,
   VisibilityState,
@@ -41,20 +42,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-
-import { useId, useMemo, useRef, useState, useTransition } from 'react'
-import { toast } from 'sonner'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
-import { Student } from '@prisma/client'
-import { deleteStudent } from '@/actions/students'
+import { useId, useMemo, useRef, useState } from 'react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
-const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
-  if (!filterValue?.length) return true
-  const age = row.getValue(columnId) as number
-  return filterValue.includes(age)
-}
-
-const getColumns = (): ColumnDef<Student>[] => [
+const getColumns = (): ColumnDef<Prisma.AttendanceGetPayload<{ include: { student: true } }>>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -80,34 +72,33 @@ const getColumns = (): ColumnDef<Student>[] => [
   {
     header: 'Полное имя',
     accessorKey: 'fullName',
-    accessorFn: (value) => `${value.firstName} ${value.lastName}`,
+    accessorFn: (value) => `${value.student.firstName} ${value.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
-          {row.original.firstName} {row.original.lastName}
+          {row.original.student.firstName} {row.original.student.lastName}
         </div>
       </div>
     ),
-    size: 180,
     enableHiding: false,
   },
   {
-    header: 'Возраст',
-    accessorKey: 'age',
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('age')}</span>,
-    size: 110,
-    filterFn: ageFilterFn,
+    header: 'Статус',
+    accessorKey: 'status',
+    cell: ({ row }) => <StatusAction status={row.original.status} />,
   },
   {
-    id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions item={row.original} />,
-    size: 60,
-    enableHiding: false,
+    header: 'Комментарий',
+    accessorKey: 'comment',
+    cell: ({ row }) => <CommentAction comment={row.original.comment} />,
   },
 ]
 
-export default function StudentsTable({ students }: { students: Student[] }) {
+export default function AttendanceTable({
+  attendance,
+}: {
+  attendance: Prisma.AttendanceGetPayload<{ include: { student: true } }>[]
+}) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -127,20 +118,11 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   const columns = getColumns()
 
   const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows
-    const promises = selectedRows.map((row) => deleteStudent(row.original.id))
-    const ok = Promise.all(promises)
     table.resetRowSelection()
-
-    toast.promise(ok, {
-      loading: 'Загрузка...',
-      success: 'Ученики успешно удалены',
-      error: 'Ошибка при удалении учеников',
-    })
   }
 
   const table = useReactTable({
-    data: students,
+    data: attendance,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -161,7 +143,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   })
 
   // Extract complex expressions into separate variables
-  const statusColumn = table.getColumn('age')
+  const statusColumn = table.getColumn('status')
   const statusFacetedValues = statusColumn?.getFacetedUniqueValues()
   const statusFilterValue = statusColumn?.getFilterValue()
 
@@ -182,8 +164,9 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   }, [statusFilterValue])
 
   const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn('age')?.getFilterValue() as string[]
+    const filterValue = table.getColumn('status')?.getFilterValue() as string[]
     const newFilterValue = filterValue ? [...filterValue] : []
+
     if (checked) {
       newFilterValue.push(value)
     } else {
@@ -193,7 +176,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
       }
     }
 
-    table.getColumn('age')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
+    table.getColumn('status')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
   }
 
   return (
@@ -202,7 +185,6 @@ export default function StudentsTable({ students }: { students: Student[] }) {
       <div className="flex flex-wrap items-center gap-3">
         {/* Left side */}
         <div className="flex items-center gap-3">
-          {/* Filter by name */}
           <div className="relative">
             <Input
               id={`${id}-input`}
@@ -244,7 +226,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
                   <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-                  Удалить
+                  Delete
                   <span className="border-border bg-background text-muted-foreground/70 ms-1 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -274,7 +256,6 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               </AlertDialogContent>
             </AlertDialog>
           )}
-          {/* Filter by status */}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
@@ -283,7 +264,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
                   size={20}
                   aria-hidden="true"
                 />
-                Возраст
+                Группа
                 {selectedStatuses.length > 0 && (
                   <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {selectedStatuses.length}
@@ -437,48 +418,33 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   )
 }
 
-function RowActions({ item }: { item: Student }) {
-  const [isUpdatePending, startUpdateTransition] = useTransition()
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+const StatusMap: { [key in AttendanceStatus]: string } = {
+  ABSENT: 'Пропустил',
+  PRESENT: 'Пришел',
+  UNSPECIFIED: 'Не отмечен',
+}
 
-  const handleDelete = () => {
-    startUpdateTransition(() => {
-      const ok = deleteStudent(item.id)
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ученик успешно удален',
-        error: (e) => e.message,
-      })
-    })
-  }
-
+function StatusAction({ status }: { status: AttendanceStatus }) {
   return (
-    <div className="flex items-center justify-end">
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size={'icon'}>
-            <Trash className="stroke-rose-400" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this contact.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isUpdatePending}
-              className="bg-destructive hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-white shadow-xs"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <Select defaultValue={status != 'UNSPECIFIED' ? status : undefined}>
+      <SelectTrigger size="sm" className="data-[size=sm]:h-7">
+        <SelectValue placeholder={StatusMap[status]} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={AttendanceStatus.PRESENT}>
+          <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
+          {StatusMap.PRESENT}
+        </SelectItem>
+        <SelectItem value={AttendanceStatus.ABSENT}>
+          <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
+          {StatusMap.ABSENT}
+        </SelectItem>
+      </SelectContent>
+    </Select>
   )
+}
+
+function CommentAction({ comment }: { comment: string }) {
+  const [value, setValue] = useState<string>(comment)
+  return <Input value={value} onChange={(e) => setValue(e.target.value)} />
 }

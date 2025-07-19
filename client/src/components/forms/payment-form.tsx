@@ -8,7 +8,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod/v4'
 import { useForm } from 'react-hook-form'
 import {
   Select,
@@ -18,12 +17,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { IStudent } from '@/types/student'
-import { IGroup } from '@/types/group'
-import { apiPost } from '@/actions/api'
 import { toast } from 'sonner'
 import { Student } from '@prisma/client'
-import { GroupWithTeacher } from '@/actions/groups'
+import { GroupWithTeacherAndCourse } from '@/actions/groups'
 import { createPayment } from '@/actions/payments'
 import { PaymentSchema, PaymentSchemaType } from '@/schemas/payments'
 
@@ -32,7 +28,7 @@ export default function PaymentForm({
   groups,
 }: {
   students: Student[]
-  groups: GroupWithTeacher[]
+  groups: GroupWithTeacherAndCourse[]
 }) {
   const form = useForm<PaymentSchemaType>({ resolver: zodResolver(PaymentSchema) })
 

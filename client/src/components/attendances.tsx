@@ -1,18 +1,13 @@
 'use client'
 
-import { ILesson } from '@/types/lesson'
-import { Button } from './ui/button'
-import { toast } from 'sonner'
-import { ApiResponse } from '@/types/response'
-import { AttendanceStatus, IAttendance } from '@/types/attendance'
-import { useEffect, useState } from 'react'
-import { Check, Trash, X } from 'lucide-react'
-import { Card, CardContent, CardTitle } from './ui/card'
-import { Input } from './ui/input'
-import { ITokenData, IUser } from '@/types/user'
 import { apiDelete, apiPut } from '@/actions/api'
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
-import LessonDialog from './dialogs/lesson-dialog'
+import { UserData } from '@/actions/users'
+import { AttendanceStatus, IAttendance } from '@/types/attendance'
+import { ILesson } from '@/types/lesson'
+import { ApiResponse } from '@/types/response'
+import { Check, Trash, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,9 +19,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './dialogs/alert-dialog'
-import { getUser, UserData } from '@/actions/users'
+import { Button } from './ui/button'
+import { Card, CardContent, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+import { Lesson } from '@prisma/client'
 
-export default function Attendances({ lesson, user }: { lesson: ILesson; user: UserData }) {
+export default function Attendances({ lesson, user }: { lesson: Lesson; user: UserData }) {
   const [changed, setChanged] = useState<boolean>(true)
   const [attendances, setAttendances] = useState<IAttendance[]>(lesson.attendances)
 

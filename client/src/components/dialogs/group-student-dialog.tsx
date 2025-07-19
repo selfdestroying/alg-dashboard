@@ -11,16 +11,16 @@ import {
   DialogClose,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { IStudent } from '@/types/student'
-import { Plus, UserPlus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { GroupStudentForm } from '../forms/group-student-form'
+import { Student } from '@prisma/client'
 
 export default function GroupStudentDialog({
   students,
   groupId,
 }: {
-  students: IStudent[]
+  students: Student[]
   groupId: number
 }) {
   const [open, setOpen] = useState<boolean>(false)

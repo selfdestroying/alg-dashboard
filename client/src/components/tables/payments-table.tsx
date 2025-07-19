@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +13,9 @@ import {
 } from '@/components/dialogs/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { cn } from '@/lib/utils'
 
+import { PaymentsWithStudentAndGroup } from '@/actions/payments'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -41,9 +42,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useId, useMemo, useRef, useState } from 'react'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
-import { PaymentsWithStudentAndGroup } from '@/actions/payments'
+import { useId, useMemo, useRef, useState } from 'react'
 
 const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
@@ -103,7 +103,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
           <span className="text-muted-foreground">{value}</span>
           {value == 0 ? (
             <div
-              className="size-1.5 animate-pulse rounded-full bg-red-500"
+              className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
               aria-hidden="true"
             ></div>
           ) : (
@@ -115,13 +115,6 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
       )
     },
     size: 110,
-  },
-  {
-    id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions item={row.original} />,
-    size: 60,
-    enableHiding: false,
   },
 ]
 
@@ -443,8 +436,4 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
       )}
     </div>
   )
-}
-
-function RowActions({ item }: { item: PaymentsWithStudentAndGroup }) {
-  return <></>
 }

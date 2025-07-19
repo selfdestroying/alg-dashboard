@@ -3,49 +3,29 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { IStudent } from '@/types/student'
 import { FC } from 'react'
-import { ApiResponse } from '@/types/response'
-import { apiPost } from '@/actions/api'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-
-const FormSchema = z.object({
-  studentId: z.string({
-    required_error: 'Please select a student.',
-  }),
-})
+import { Student } from '@prisma/client'
+import { addToGroup } from '@/actions/groups'
+import { StudentGroupSchema, StudentGroupSchemaType } from '@/schemas/group'
 
 interface IComboboxProps {
-  students: IStudent[]
+  students: Student[]
   groupId: number
 }
 
 export const GroupStudentForm: FC<IComboboxProps> = ({ students, groupId }) => {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<StudentGroupSchemaType>({
+    resolver: zodResolver(StudentGroupSchema),
   })
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const ok = new Promise<ApiResponse<IStudent>>((resolve, reject) => {
-      apiPost<IStudent>(
-        'groups/add-student',
-        { groupId: groupId, studentId: data.studentId },
-        `dashboard/groups/${groupId}`
-      ).then((r) => {
-        if (r.success) {
-          resolve(r)
-        } else {
-          reject(r)
-        }
-      })
-    })
+  function onSubmit(data: StudentGroupSchemaType) {
+    const ok = addToGroup({ studentId: data.studentId, groupId })
     toast.promise(ok, {
       loading: 'Loding...',
-      success: (data) => data.message,
-      error: (data) => data.message,
+      success: 'Ученик успешно добавлен в группу',
+      error: (e) => e.message,
     })
   }
 
@@ -64,7 +44,7 @@ export const GroupStudentForm: FC<IComboboxProps> = ({ students, groupId }) => {
               <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <div className="w-full">
                   <FormLabel>Ученик</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={(value) => field.onChange(+value)}>
                     <FormControl>
                       <SelectTrigger className="w-full cursor-pointer">
                         <SelectValue placeholder="Выбрать ученика" />
@@ -73,7 +53,7 @@ export const GroupStudentForm: FC<IComboboxProps> = ({ students, groupId }) => {
                     <SelectContent>
                       {students.map((s) => (
                         <SelectItem key={s.id} value={s.id.toString()} className="cursor-pointer">
-                          {s.name}
+                          {s.firstName} {s.lastName}
                         </SelectItem>
                       ))}
                     </SelectContent>

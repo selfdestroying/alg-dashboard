@@ -69,12 +69,12 @@ model StudentGroup {
 }
 
 model Lesson {
-    id        Int       @id @default(autoincrement())
-    group     Group     @relation(fields: [groupId], references: [id])
+    id        Int      @id @default(autoincrement())
+    group     Group    @relation(fields: [groupId], references: [id])
     groupId   Int
     date      DateTime
-    time      DateTime?
-    createdAt DateTime  @default(now())
+    time      String
+    createdAt DateTime @default(now())
 
     attendance Attendance[]
 }

@@ -70,7 +70,7 @@ async function getUsers(): Promise<Prisma.UserCreateManyInput[]> {
 }
 
 async function getStudents(): Promise<Prisma.StudentCreateManyInput[]> {
-  const names = [
+  const firstNames = [
     'Алексей',
     'Мария',
     'Иван',
@@ -172,8 +172,112 @@ async function getStudents(): Promise<Prisma.StudentCreateManyInput[]> {
     'Тимур',
     'Ангелина',
   ]
-  return names.map((name) => ({
+  const lastNames = [
+    'Иванов',
+    'Петров',
+    'Сидоров',
+    'Смирнов',
+    'Кузнецов',
+    'Попов',
+    'Васильев',
+    'Соколов',
+    'Михайлов',
+    'Новиков',
+    'Фёдоров',
+    'Морозов',
+    'Волков',
+    'Алексеев',
+    'Лебедев',
+    'Семенов',
+    'Егоров',
+    'Павлов',
+    'Козлов',
+    'Степанов',
+    'Николаев',
+    'Орлов',
+    'Андреев',
+    'Макаров',
+    'Никитин',
+    'Захаров',
+    'Зайцев',
+    'Соловьёв',
+    'Борисов',
+    'Яковлев',
+    'Григорьев',
+    'Романов',
+    'Виноградов',
+    'Климов',
+    'Белов',
+    'Тарасов',
+    'Беляев',
+    'Комаров',
+    'Лукин',
+    'Савельев',
+    'Жуков',
+    'Крылов',
+    'Карпов',
+    'Щербаков',
+    'Куликов',
+    'Агафонов',
+    'Поляков',
+    'Быков',
+    'Сергеев',
+    'Королёв',
+    'Гусев',
+    'Фролов',
+    'Дьяков',
+    'Герасимов',
+    'Пономарёв',
+    'Голубев',
+    'Калинин',
+    'Курочкин',
+    'Горбунов',
+    'Ларионов',
+    'Молчанов',
+    'Соболев',
+    'Буров',
+    'Мартынов',
+    'Ершов',
+    'Носков',
+    'Краснов',
+    'Фомин',
+    'Мельников',
+    'Анисимов',
+    'Тимофеев',
+    'Гаврилов',
+    'Коновалов',
+    'Данилов',
+    'Сафонов',
+    'Шестаков',
+    'Шилов',
+    'Медведев',
+    'Демидов',
+    'Никифоров',
+    'Матвеев',
+    'Горшков',
+    'Овчинников',
+    'Цветков',
+    'Трофимов',
+    'Нечаев',
+    'Лыткин',
+    'Устинов',
+    'Брагин',
+    'Грачёв',
+    'Мухин',
+    'Артамонов',
+    'Бобров',
+    'Костин',
+    'Чернов',
+    'Субботин',
+    'Журавлёв',
+    'Пахомов',
+    'Прохоров',
+    'Наумов',
+  ]
+
+  return firstNames.map((name) => ({
     firstName: name,
+    lastName: lastNames[getRandomInteger(0, lastNames.length - 1)],
     age: getRandomInteger(6, 17),
   }))
 }
@@ -187,7 +291,6 @@ async function getGroups() {
       type: ['GROUP', 'INDIVIDUAL', 'INTENSIVE'][getRandomInteger(0, 2)] as GroupType,
       teacherId: getRandomInteger(1, 7),
       startDate: date,
-      dayOfWeek: date.getDay(),
       time: getRandomTime(),
       courseId: getRandomInteger(1, 6),
     }
@@ -196,12 +299,33 @@ async function getGroups() {
   return groups
 }
 
+async function getStudentGroups() {
+  const studentGroups: Prisma.StudentGroupCreateManyInput[] = []
+  const studentsCount = await prisma.student.count()
+  const firstStudentId = (await prisma.student.findFirst())?.id as number
+  const firstGroupId = (await prisma.group.findFirst())?.id as number
+  const groupsCount = await prisma.group.count()
+  for (let i = 1; i <= 100; i++) {
+    const studentGroup = {
+      studentId: getRandomInteger(firstStudentId, firstStudentId + studentsCount - 1),
+      groupId: getRandomInteger(firstGroupId, firstGroupId + groupsCount - 1),
+    }
+    studentGroups.push(studentGroup)
+  }
+
+  return studentGroups
+}
+
 async function getPayments() {
   const payments: Prisma.PaymentCreateManyInput[] = []
+  const studentsCount = await prisma.student.count()
+  const firstStudentId = (await prisma.student.findFirst())?.id as number
+  const firstGroupId = (await prisma.group.findFirst())?.id as number
+  const groupsCount = await prisma.group.count()
   for (let i = 1; i <= 10; i++) {
     payments.push({
-      groupId: getRandomInteger(1, 10),
-      studentId: getRandomInteger(1, 100),
+      studentId: getRandomInteger(firstStudentId, firstStudentId + studentsCount - 1),
+      groupId: getRandomInteger(firstGroupId, firstGroupId + groupsCount - 1),
       lessonsPaid: getRandomInteger(0, 32),
     })
   }
@@ -234,25 +358,32 @@ async function getCourses() {
 
 export async function main() {
   if ((await prisma.user.count()) == 0)
-    for (const u of await getUsers()) {
-      await prisma.user.create({ data: u })
-    }
-  if ((await prisma.student.count()) == 0)
-    for (const s of await getStudents()) {
-      await prisma.student.create({ data: s })
-    }
+    await prisma.user.createMany({ data: await getUsers(), skipDuplicates: true })
+
   if ((await prisma.course.count()) == 0)
-    for (const c of await getCourses()) {
-      await prisma.course.create({ data: c })
-    }
+    await prisma.course.createMany({ data: await getCourses(), skipDuplicates: true })
+
+  if ((await prisma.student.count()) == 0)
+    await prisma.student.createMany({ data: await getStudents(), skipDuplicates: true })
+
   if ((await prisma.group.count()) == 0)
-    for (const g of await getGroups()) {
-      await prisma.group.create({ data: g })
-    }
+    await prisma.group.createMany({ data: await getGroups(), skipDuplicates: true })
+
+  if ((await prisma.studentGroup.count()) == 0)
+    await prisma.studentGroup.createMany({ data: await getStudentGroups(), skipDuplicates: true })
+
   if ((await prisma.payment.count()) == 0)
-    for (const p of await getPayments()) {
-      await prisma.payment.create({ data: p })
-    }
+    await prisma.payment.createMany({ data: await getPayments(), skipDuplicates: true })
+
+  const students = await prisma.student.findMany({ where: { groups: { some: { groupId: 7 } } } })
+  for (let i = 1; i <= 33; i++) {
+    students.forEach(
+      async (student) =>
+        await prisma.attendance.create({
+          data: { lessonId: i, studentId: student.id, status: 'UNSPECIFIED', comment: '' },
+        })
+    )
+  }
 }
 
 main()

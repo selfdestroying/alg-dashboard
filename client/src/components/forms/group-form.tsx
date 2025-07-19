@@ -1,4 +1,7 @@
 'use client'
+import { createGroup } from '@/actions/groups'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -7,30 +10,24 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod/v4'
-import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useData } from '@/providers/data-provider'
+import { GroupSchema, GroupSchemaType } from '@/schemas/group'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { GroupType } from '@prisma/client'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { apiPost } from '@/actions/api'
-import { IGroup } from '@/types/group'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useData } from '@/providers/data-provider'
-import { createGroup } from '@/actions/groups'
-import { GroupType } from '@prisma/client'
-import { GroupSchema, GroupSchemaType } from '@/schemas/group'
 
 const timeSlots = [
   { time: '09:00', available: false },
@@ -75,19 +72,9 @@ export default function GroupForm() {
     })
   }
 
-  function onReset() {
-    form.reset()
-    form.clearErrors()
-  }
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        onReset={onReset}
-        className="@container space-y-8"
-        id="group-form"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="@container space-y-8" id="group-form">
         <div className="grid grid-cols-12 gap-4">
           <FormField
             control={form.control}
@@ -150,7 +137,7 @@ export default function GroupForm() {
                   <SelectContent>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id.toString()}>
-                        {user.name}
+                        {user.firstName}
                       </SelectItem>
                     ))}
                   </SelectContent>

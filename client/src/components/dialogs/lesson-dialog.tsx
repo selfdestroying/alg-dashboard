@@ -10,11 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '../ui/button'
 import LessonForm from '../forms/lesson-form'
-import { ILesson } from '@/types/lesson'
+import { Button } from '../ui/button'
 
-export default function LessonDialog({ lesson, groupId }: { lesson?: ILesson; groupId: number }) {
+export default function LessonDialog({ groupId }: { groupId: number }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -29,7 +28,7 @@ export default function LessonDialog({ lesson, groupId }: { lesson?: ILesson; gr
         </DialogDescription>
         <div className="overflow-y-auto">
           <div className="px-6 pt-4 pb-6">
-            <LessonForm lesson={lesson} groupId={groupId} />
+            <LessonForm groupId={groupId} />
           </div>
         </div>
         <DialogFooter className="border-t px-6 py-4">
@@ -38,7 +37,7 @@ export default function LessonDialog({ lesson, groupId }: { lesson?: ILesson; gr
               Cancel
             </Button>
           </DialogClose>
-          <Button form="group-form">Подтвердить</Button>
+          <Button form="lesson-form">Подтвердить</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,15 +1,6 @@
 import { AppSidebar } from '@/components/app-sidebar'
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import FeedbackDialog from '@/components/dialogs/feedback-dialog'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import UserDropdown from '@/components/user-dropdown'
-import { Separator } from '@radix-ui/react-separator'
 import MyBreadCrumbs from '@/components/breadcrumbs'
 
 export default function Layout({

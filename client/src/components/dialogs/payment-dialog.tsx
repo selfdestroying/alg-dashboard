@@ -14,12 +14,12 @@ import { Button } from '../ui/button'
 import PaymentForm from '../forms/payment-form'
 import { useEffect, useState } from 'react'
 import { getStudents } from '@/actions/students'
-import { getGroups, GroupWithTeacher } from '@/actions/groups'
-import { Group, Student } from '@prisma/client'
+import { getGroups, GroupWithTeacherAndCourse } from '@/actions/groups'
+import { Student } from '@prisma/client'
 
 export default function PaymentDialog() {
   const [students, setStudents] = useState<Student[]>([])
-  const [groups, setGroups] = useState<GroupWithTeacher[]>([])
+  const [groups, setGroups] = useState<GroupWithTeacherAndCourse[]>([])
   useEffect(() => {
     async function fetchData() {
       const s = await getStudents()

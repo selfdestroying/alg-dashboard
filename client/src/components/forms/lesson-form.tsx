@@ -1,4 +1,7 @@
 'use client'
+import { createLesson } from '@/actions/lessons'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -7,28 +10,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod/v4'
-import { useForm } from 'react-hook-form'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { LessonSchema, LessonSchemaType } from '@/schemas/lesson'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { apiPost } from '@/actions/api'
-import { IGroup } from '@/types/group'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useData } from '@/providers/data-provider'
-import { ILesson } from '@/types/lesson'
 const timeSlots = [
   { time: '09:00', available: false },
   { time: '09:30', available: false },
@@ -49,46 +44,27 @@ const timeSlots = [
   { time: '17:00', available: true },
   { time: '17:30', available: true },
 ]
-export default function LessonForm({ lesson, groupId }: { lesson?: ILesson; groupId: number }) {
-  const formSchema = z.object({
-    date: z.date({
-      error: 'This field is required.',
-    }),
-    time: z.string(),
-    groupId: z.number(),
+export default function LessonForm({ groupId }: { groupId: number }) {
+  const form = useForm<LessonSchemaType>({
+    resolver: zodResolver(LessonSchema),
   })
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      date: lesson ? new Date(lesson.date) : new Date(),
-      time: lesson ? lesson.time : '00:00',
-      groupId: lesson ? lesson.groupId : groupId,
-    },
-  })
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const body = { date: format(values.date, 'yyyy-MM-dd'), time: values.time, groupId: groupId }
-    const ok = apiPost<ILesson>('lessons', body, `dashboard/groups/${groupId}`)
+  function onSubmit(values: LessonSchemaType) {
+    console.log('asdf')
+    const ok = createLesson({ date: values.date, time: values.time, groupId })
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: (data) => data.message,
-      error: (data) => data.message,
+      success: 'Урок успешно создан',
+      error: (e) => e.message,
     })
-  }
-
-  function onReset() {
-    form.reset()
-    form.clearErrors()
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        onReset={onReset}
         className="@container space-y-8"
-        id="group-form"
+        id="lesson-form"
       >
         <div className="grid grid-cols-12 gap-4">
           <FormField
