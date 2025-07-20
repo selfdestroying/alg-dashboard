@@ -1,5 +1,5 @@
 import { getLesson } from '@/actions/lessons'
-import AttendanceTable from '@/components/tables/attendance-table'
+import { AttendanceTable } from '@/components/tables/attendance-table'
 import { format } from 'date-fns'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

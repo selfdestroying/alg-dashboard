@@ -1,74 +1,54 @@
 'use client'
+import React, { useId, useMemo, useRef, useState } from 'react'
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/dialogs/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { AttendanceStatus, Prisma } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
-  PaginationState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
-import { useId, useMemo, useRef, useState } from 'react'
+import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
+import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
+import { Input } from '../ui/input'
+import { Label } from '../ui/label'
+import { Pagination, PaginationContent, PaginationItem } from '../ui/pagination'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
-const getColumns = (): ColumnDef<Prisma.AttendanceGetPayload<{ include: { student: true } }>>[] => [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 28,
-    enableSorting: false,
-    enableHiding: false,
-  },
+type AttendanceWithStudents = Prisma.AttendanceGetPayload<{ include: { student: true } }>
+
+function useSkipper() {
+  const shouldSkipRef = React.useRef(true)
+  const shouldSkip = shouldSkipRef.current
+
+  // Wrap a function with this to skip a pagination reset temporarily
+  const skip = React.useCallback(() => {
+    shouldSkipRef.current = false
+  }, [])
+
+  React.useEffect(() => {
+    shouldSkipRef.current = true
+  })
+
+  return [shouldSkip, skip] as const
+}
+
+const getColumns = (
+  setData: React.Dispatch<React.SetStateAction<AttendanceWithStudents[]>>,
+  skipAutoResetPageIndex: () => void
+): ColumnDef<AttendanceWithStudents>[] => [
   {
     header: 'Полное имя',
     accessorKey: 'fullName',
@@ -85,44 +65,77 @@ const getColumns = (): ColumnDef<Prisma.AttendanceGetPayload<{ include: { studen
   {
     header: 'Статус',
     accessorKey: 'status',
-    cell: ({ row }) => <StatusAction status={row.original.status} />,
+    cell: ({ row, getValue }) => (
+      <StatusAction
+        value={getValue() as AttendanceStatus}
+        onChange={(val: AttendanceStatus) => {
+          skipAutoResetPageIndex()
+          setData((prev) => {
+            return prev.map((item) => {
+              if (item.id === row.original.id) {
+                return {
+                  ...item,
+                  status: val,
+                }
+              }
+              return item
+            })
+          })
+        }}
+      />
+    ),
   },
   {
     header: 'Комментарий',
     accessorKey: 'comment',
-    cell: ({ row }) => <CommentAction comment={row.original.comment} />,
+    cell: ({ row, getValue }) => (
+      <CommentAction
+        value={getValue() as string}
+        onChange={(val: string) => {
+          skipAutoResetPageIndex()
+          setData((prev) => {
+            return prev.map((item) => {
+              if (item.id === row.original.id) {
+                return {
+                  ...item,
+                  comment: val,
+                }
+              }
+              return item
+            })
+          })
+        }}
+      />
+    ),
   },
 ]
 
-export default function AttendanceTable({
-  attendance,
-}: {
-  attendance: Prisma.AttendanceGetPayload<{ include: { student: true } }>[]
-}) {
+export function AttendanceTable({ attendance }: { attendance: AttendanceWithStudents[] }) {
   const id = useId()
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'fullName',
-      desc: false,
-    },
-  ])
+  const [data] = React.useState<AttendanceWithStudents[]>(() => attendance)
+  const [editedData, setEditedData] = useState<AttendanceWithStudents[]>(attendance)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'fullName', desc: false }])
 
-  const columns = getColumns()
+  const isModified = useMemo(() => {
+    return editedData.some((item, i) => {
+      const original = data[i]
+      return item.status !== original.status || item.comment !== original.comment
+    })
+  }, [editedData, editedData])
 
-  const handleDeleteRows = () => {
-    table.resetRowSelection()
-  }
+  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
+  const columns = useMemo<ColumnDef<AttendanceWithStudents>[]>(
+    () => getColumns(setEditedData, skipAutoResetPageIndex),
+    []
+  )
 
   const table = useReactTable({
-    data: attendance,
+    data: editedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -140,6 +153,7 @@ export default function AttendanceTable({
       columnFilters,
       columnVisibility,
     },
+    autoResetPageIndex,
   })
 
   // Extract complex expressions into separate variables
@@ -179,125 +193,98 @@ export default function AttendanceTable({
     table.getColumn('status')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
   }
 
+  const handleSave = () => {
+    console.log(editedData)
+  }
+
   return (
     <div className="space-y-4">
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Left side */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Input
-              id={`${id}-input`}
-              ref={inputRef}
-              className={cn(
-                'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
-                Boolean(table.getColumn('fullName')?.getFilterValue()) && 'pe-9'
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Left side */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Input
+                id={`${id}-input`}
+                ref={inputRef}
+                className={cn(
+                  'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
+                  Boolean(table.getColumn('fullName')?.getFilterValue()) && 'pe-9'
+                )}
+                value={(table.getColumn('fullName')?.getFilterValue() ?? '') as string}
+                onChange={(e) => table.getColumn('fullName')?.setFilterValue(e.target.value)}
+                placeholder="Search by name"
+                type="text"
+                aria-label="Search by name"
+              />
+              <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
+                <Search size={20} aria-hidden="true" />
+              </div>
+              {Boolean(table.getColumn('fullName')?.getFilterValue()) && (
+                <button
+                  className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Clear filter"
+                  onClick={() => {
+                    table.getColumn('fullName')?.setFilterValue('')
+                    if (inputRef.current) {
+                      inputRef.current.focus()
+                    }
+                  }}
+                >
+                  <CircleX size={16} aria-hidden="true" />
+                </button>
               )}
-              value={(table.getColumn('fullName')?.getFilterValue() ?? '') as string}
-              onChange={(e) => table.getColumn('fullName')?.setFilterValue(e.target.value)}
-              placeholder="Search by name"
-              type="text"
-              aria-label="Search by name"
-            />
-            <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
-              <Search size={20} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('fullName')?.getFilterValue()) && (
-              <button
-                className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Clear filter"
-                onClick={() => {
-                  table.getColumn('fullName')?.setFilterValue('')
-                  if (inputRef.current) {
-                    inputRef.current.focus()
-                  }
-                }}
-              >
-                <CircleX size={16} aria-hidden="true" />
-              </button>
-            )}
+          </div>
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Funnel
+                    className="text-muted-foreground/60 -ms-1.5 size-5"
+                    size={20}
+                    aria-hidden="true"
+                  />
+                  Группа
+                  {selectedStatuses.length > 0 && (
+                    <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                      {selectedStatuses.length}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto min-w-36 p-3" align="end">
+                <div className="space-y-3">
+                  <div className="space-y-3">
+                    {uniqueStatusValues.map((value, i) => (
+                      <div key={value} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${id}-${i}`}
+                          checked={selectedStatuses.includes(value)}
+                          onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
+                        />
+                        <Label
+                          htmlFor={`${id}-${i}`}
+                          className="flex grow justify-between gap-2 font-normal"
+                        >
+                          {value}{' '}
+                          <span className="text-muted-foreground ms-2 text-xs">
+                            {statusCounts.get(value)}
+                          </span>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Delete button */}
-          {table.getSelectedRowModel().rows.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="outline">
-                  <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-                  Delete
-                  <span className="border-border bg-background text-muted-foreground/70 ms-1 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {table.getSelectedRowModel().rows.length}
-                  </span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div
-                    className="border-border flex size-9 shrink-0 items-center justify-center rounded-full border"
-                    aria-hidden="true"
-                  >
-                    <CircleAlert className="opacity-80" size={16} />
-                  </div>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{' '}
-                      {table.getSelectedRowModel().rows.length} selected{' '}
-                      {table.getSelectedRowModel().rows.length === 1 ? 'row' : 'rows'}.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <Funnel
-                  className="text-muted-foreground/60 -ms-1.5 size-5"
-                  size={20}
-                  aria-hidden="true"
-                />
-                Группа
-                {selectedStatuses.length > 0 && (
-                  <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {selectedStatuses.length}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto min-w-36 p-3" align="end">
-              <div className="space-y-3">
-                <div className="space-y-3">
-                  {uniqueStatusValues.map((value, i) => (
-                    <div key={value} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${id}-${i}`}
-                        checked={selectedStatuses.includes(value)}
-                        onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
-                      />
-                      <Label
-                        htmlFor={`${id}-${i}`}
-                        className="flex grow justify-between gap-2 font-normal"
-                      >
-                        {value}{' '}
-                        <span className="text-muted-foreground ms-2 text-xs">
-                          {statusCounts.get(value)}
-                        </span>
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        <Button disabled={!isModified} onClick={handleSave}>
+          Сохранить
+        </Button>
       </div>
 
       {/* Table */}
@@ -424,11 +411,20 @@ const StatusMap: { [key in AttendanceStatus]: string } = {
   UNSPECIFIED: 'Не отмечен',
 }
 
-function StatusAction({ status }: { status: AttendanceStatus }) {
+function StatusAction({
+  value,
+  onChange,
+}: {
+  value: AttendanceStatus
+  onChange: (val: AttendanceStatus) => void
+}) {
   return (
-    <Select defaultValue={status != 'UNSPECIFIED' ? status : undefined}>
+    <Select
+      defaultValue={value != 'UNSPECIFIED' ? value : undefined}
+      onValueChange={(e: AttendanceStatus) => onChange(e)}
+    >
       <SelectTrigger size="sm" className="data-[size=sm]:h-7">
-        <SelectValue placeholder={StatusMap[status]} />
+        <SelectValue placeholder={StatusMap[value]} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={AttendanceStatus.PRESENT}>
@@ -444,7 +440,6 @@ function StatusAction({ status }: { status: AttendanceStatus }) {
   )
 }
 
-function CommentAction({ comment }: { comment: string }) {
-  const [value, setValue] = useState<string>(comment)
-  return <Input value={value} onChange={(e) => setValue(e.target.value)} />
+function CommentAction({ value, onChange }: { value: string; onChange: (val: string) => void }) {
+  return <Input value={value} onChange={(e) => onChange(e.target.value)} />
 }
