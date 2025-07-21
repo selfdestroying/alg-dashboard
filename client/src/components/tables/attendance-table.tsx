@@ -26,8 +26,10 @@ import { Pagination, PaginationContent, PaginationItem } from '../ui/pagination'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
+import { toast } from 'sonner'
+import { updateLesson } from '@/actions/lessons'
 
-type AttendanceWithStudents = Prisma.AttendanceGetPayload<{ include: { student: true } }>
 
 function useSkipper() {
   const shouldSkipRef = React.useRef(true)
@@ -114,7 +116,7 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [data] = React.useState<AttendanceWithStudents[]>(() => attendance)
+  const [data, setData] = React.useState<AttendanceWithStudents[]>(() => attendance)
   const [editedData, setEditedData] = useState<AttendanceWithStudents[]>(attendance)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -126,7 +128,7 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
       const original = data[i]
       return item.status !== original.status || item.comment !== original.comment
     })
-  }, [editedData, editedData])
+  }, [data, editedData])
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
   const columns = useMemo<ColumnDef<AttendanceWithStudents>[]>(
@@ -194,7 +196,8 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
   }
 
   const handleSave = () => {
-    console.log(editedData)
+    const ok = updateAttendance(editedData).then(() => setData(editedData))
+    toast.promise(ok, {loading: 'Загрузка...', success: 'Посещаемость успешно обновлена', error: (e) => e.message})
   }
 
   return (

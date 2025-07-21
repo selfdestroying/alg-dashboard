@@ -1,19 +1,20 @@
 'use server'
 import prisma from '@/lib/prisma'
-import { ApiResponse } from '@/types/response'
 import bcrypt from 'bcrypt'
 import { createSession, deleteSession } from '../lib/session'
 import { redirect } from 'next/navigation'
 import { signInFormSchema } from '@/schemas/auth'
 
 export async function sigin(
-  state: ApiResponse | undefined,
+  state: any | undefined,
   formData: FormData
-): Promise<ApiResponse | undefined> {
+): Promise<any | undefined> {
   const validatedFields = signInFormSchema.safeParse({
     user: formData.get('user'),
     password: formData.get('password'),
   })
+
+
 
   if (!validatedFields.success) {
     return { success: false, message: validatedFields.error.message }
@@ -25,6 +26,7 @@ export async function sigin(
   if (!user) {
     return { success: false, message: 'User not found' }
   }
+
 
   if (['ADMIN', 'OWNER', 'MANAGER'].includes(user.role)) {
     const isValidPassword = await bcrypt.compare(password, user.password)

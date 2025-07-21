@@ -358,22 +358,36 @@ async function getCourses() {
 
 export async function main() {
   if ((await prisma.user.count()) == 0)
-    await prisma.user.createMany({ data: await getUsers(), skipDuplicates: true })
+    await prisma.user.createMany({ data: await getUsers()})
 
   if ((await prisma.course.count()) == 0)
-    await prisma.course.createMany({ data: await getCourses(), skipDuplicates: true })
+    await prisma.course.createMany({ data: await getCourses() })
 
   if ((await prisma.student.count()) == 0)
-    await prisma.student.createMany({ data: await getStudents(), skipDuplicates: true })
+    await prisma.student.createMany({ data: await getStudents() })
 
   if ((await prisma.group.count()) == 0)
-    await prisma.group.createMany({ data: await getGroups(), skipDuplicates: true })
+    await prisma.group.createMany({ data: await getGroups() })
 
   if ((await prisma.studentGroup.count()) == 0)
-    await prisma.studentGroup.createMany({ data: await getStudentGroups(), skipDuplicates: true })
+    for (let sg of await getStudentGroups())
+    {
+      try {
+        await prisma.studentGroup.create({data: sg})
+      } catch {
+        console.log('duplicate')
+      }
+      
+    }
 
   if ((await prisma.payment.count()) == 0)
-    await prisma.payment.createMany({ data: await getPayments(), skipDuplicates: true })
+    await prisma.payment.createMany({ data: await getPayments() })
+
+  for (let i = 1; i <= 33; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() + 7 * i)
+    await prisma.lesson.create({data: {date, time: '15:00', groupId: 7 }})
+  }
 
   const students = await prisma.student.findMany({ where: { groups: { some: { groupId: 7 } } } })
   for (let i = 1; i <= 33; i++) {
