@@ -47,31 +47,10 @@ import { useId, useMemo, useRef, useState } from 'react'
 
 const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 28,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     header: 'Ученик',
     accessorKey: 'student',
-    accessorFn: (item) => (item.student ? item.student.firstName : 'Удаленный ученик'),
+    accessorFn: (item) =>
+      item.student ? `${item.student.firstName} ${item.student.lastName}` : 'Удаленный ученик',
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">{row.getValue('student')}</div>
@@ -95,9 +74,9 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   },
   {
     header: 'Осталось занятий',
-    accessorKey: 'classesLeft',
+    accessorKey: 'remainingLessons',
     cell: ({ row }) => {
-      const value = row.getValue('classesLeft') as number
+      const value = row.getValue('remainingLessons') as number
       return (
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">{value}</span>

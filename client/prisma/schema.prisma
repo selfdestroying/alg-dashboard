@@ -34,19 +34,20 @@ model Student {
 }
 
 model Group {
-    id            Int       @id @default(autoincrement())
+    id            Int        @id @default(autoincrement())
     name          String
     courseId      Int
-    course        Course    @relation(fields: [courseId], references: [id])
+    course        Course     @relation(fields: [courseId], references: [id])
     teacherId     Int
-    teacher       User      @relation(fields: [teacherId], references: [id])
-    type          GroupType
+    teacher       User       @relation(fields: [teacherId], references: [id])
+    type          GroupType?
     startDate     DateTime
     endDate       DateTime?
     time          String? // Stored as time-of-day in UTC (can use time type in raw SQL)
     backOfficeUrl String?
     lessonCount   Int?
-    createdAt     DateTime  @default(now())
+    lessonPerWeek Int?
+    createdAt     DateTime   @default(now())
 
     students StudentGroup[]
     lessons  Lesson[]
@@ -73,7 +74,7 @@ model Lesson {
     group     Group    @relation(fields: [groupId], references: [id])
     groupId   Int
     date      DateTime
-    time      String
+    time      String?
     createdAt DateTime @default(now())
 
     attendance Attendance[]
@@ -87,6 +88,8 @@ model Attendance {
     studentId Int
     status    AttendanceStatus
     comment   String
+
+    @@unique([studentId, lessonId])
 }
 
 model Payment {
@@ -96,7 +99,7 @@ model Payment {
     group       Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
     groupId     Int?
     lessonsPaid Int
-    amount      Decimal?
+    amount      Int?
     createdAt   DateTime @default(now())
 
     @@unique([studentId, groupId])

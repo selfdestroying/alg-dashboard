@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +13,10 @@ import {
 } from '@/components/dialogs/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { cn } from '@/lib/utils'
 
+import { deleteGroup, GroupWithTeacherAndCourse } from '@/actions/groups'
+import { UserData } from '@/actions/users'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -31,23 +33,21 @@ import {
   ColumnDef,
   ColumnFiltersState,
   FilterFn,
-  PaginationState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table'
-import { useId, useMemo, useRef, useState, useTransition } from 'react'
-import { toast } from 'sonner'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
-import { deleteGroup, GroupWithTeacherAndCourse } from '@/actions/groups'
-import { UserData } from '@/actions/users'
+import { useId, useMemo, useRef, useState, useTransition } from 'react'
+import { toast } from 'sonner'
 
 const userFilter: FilterFn<GroupWithTeacherAndCourse> = (row, columnId, filterValue: string[]) => {
   if (!filterValue?.length) return true
@@ -157,8 +157,8 @@ export default function GroupsTable({
 
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: 'Ученики успешно удалены',
-      error: 'Ошибка при удалении учеников',
+      success: 'Группы успешно удалены',
+      error: (e) => e.message,
     })
   }
 

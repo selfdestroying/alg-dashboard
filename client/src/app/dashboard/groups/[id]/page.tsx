@@ -2,8 +2,8 @@ import { getGroup } from '@/actions/groups'
 import { getStudents } from '@/actions/students'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import LessonsSection from './attendance-section'
 import InfoSection from './info-section'
+import LessonsSection from './lessons-section'
 import StudentsSection from './students-section'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

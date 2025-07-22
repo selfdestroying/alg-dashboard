@@ -6,12 +6,13 @@ export const GroupSchema = z.object({
   name: z.string().min(2, 'Укажите название группы'),
   teacherId: z.number().int().positive(),
   courseId: z.number().int().positive(),
-  type: GroupTypeEnum,
   startDate: z.date({ error: 'Неверная дата начала' }),
   // optional
+  type: GroupTypeEnum.optional(),
   endDate: z.date({ error: 'Неверная дата конца' }).optional(),
   time: z.string().optional(),
   lessonCount: z.number().int().positive().optional(),
+  lessonsPerWeek: z.number().int().positive().optional(),
   backOfficeUrl: z.string().optional(),
 })
 

@@ -1,9 +1,10 @@
-import PaymentsTable from '@/components/tables/payments-table'
-import PaymentDialog from '@/components/dialogs/payment-dialog'
 import { getPayments } from '@/actions/payments'
+import PaymentDialog from '@/components/dialogs/payment-dialog'
+import PaymentsTable from '@/components/tables/payments-table'
 
 export default async function Page() {
   const payments = await getPayments()
+  console.log(payments)
 
   return (
     <>

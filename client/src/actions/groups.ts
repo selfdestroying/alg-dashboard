@@ -1,8 +1,9 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { Course, Group, Lesson, Prisma, Student, User } from '@prisma/client'
+import { Course, Group, Prisma, Student, User } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { createLesson } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: { teacher: true; course: true }
@@ -10,7 +11,9 @@ export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
 export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
   teacher: User
   course: Course
-  lessons: Lesson[]
+  lessons: Prisma.LessonGetPayload<{
+    include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
+  }>[]
   students: Student[]
 }
 
@@ -28,7 +31,10 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
       teacher: true,
       course: true,
       students: { include: { student: true } },
-      lessons: { orderBy: [{ date: 'asc' }, { time: 'asc' }] },
+      lessons: {
+        orderBy: [{ date: 'asc' }, { time: 'asc' }],
+        include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } },
+      },
     },
   })
   const groupWithStudents: AllGroupData = {
@@ -39,8 +45,19 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
   return groupWithStudents
 }
 
-export const createGroup = async (data: Prisma.GroupCreateInput) => {
-  await prisma.group.create({ data })
+export const createGroup = async (data: Prisma.GroupUncheckedCreateInput) => {
+  const group = await prisma.group.create({ data })
+
+  if (data.lessonCount) {
+    const lessonDate = group.startDate
+    for (let i = 0; i < data.lessonCount; i++) {
+      if (lessonDate) {
+        lessonDate.setDate(lessonDate.getDate() + 7)
+      }
+      await createLesson({ groupId: group.id, time: group.time, date: lessonDate })
+    }
+  }
+
   revalidatePath('dashboard/groups')
 }
 
@@ -51,6 +68,18 @@ export const deleteGroup = async (id: number) => {
 
 export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
   await prisma.studentGroup.create({ data })
+  const lessons = await prisma.lesson.findMany({ where: { groupId: data.groupId } })
+  lessons.forEach(
+    async (lesson) =>
+      await prisma.attendance.create({
+        data: {
+          lessonId: lesson.id,
+          studentId: data.studentId,
+          comment: '',
+          status: 'UNSPECIFIED',
+        },
+      })
+  )
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
 

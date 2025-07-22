@@ -1,9 +1,9 @@
+import { AllGroupData } from '@/actions/groups'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { BookOpen, ExternalLink, User, Users, CalendarDays, Clock, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
-import { AllGroupData } from '@/actions/groups'
+import { BookOpen, Calendar, Clock, ExternalLink, User, Users } from 'lucide-react'
 
 export default async function InfoSection({ group }: { group: AllGroupData }) {
   return (
@@ -52,7 +52,7 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
             </div>
             <div>
               <Badge variant="secondary" className="px-2 py-0.5 text-xs">
-                {group.type}
+                {group.type ?? 'Не указано'}
               </Badge>
             </div>
           </div>
@@ -60,18 +60,10 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
           {/* Class Schedule */}
           <div className="space-y-1">
             <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
-              <CalendarDays className="h-3 w-3" />
-              День недели
-            </div>
-            <p className="text-sm font-semibold">{group.startDate.getDay()}</p>
-          </div>
-
-          <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <Clock className="h-3 w-3" />
               Время
             </div>
-            <p className="text-sm font-semibold">{group.time}</p>
+            <p className="text-sm font-semibold">{group.time ?? 'Не указано'}</p>
           </div>
 
           {/* Start Date */}
@@ -80,7 +72,9 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
               <Calendar className="h-3 w-3" />
               Дата старта
             </div>
-            <p className="text-sm font-semibold">{format(group.startDate, 'dd-MM-yyyy')}</p>
+            <p className="text-sm font-semibold">
+              {group.startDate ? format(group.startDate, 'dd-MM-yyyy') : 'Не указано'}
+            </p>
           </div>
         </div>
       </CardContent>

@@ -1,8 +1,9 @@
 'use client'
 import React, { useId, useMemo, useRef, useState } from 'react'
 
+import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
 import { cn } from '@/lib/utils'
-import { AttendanceStatus, Prisma } from '@prisma/client'
+import { AttendanceStatus } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -18,6 +19,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Input } from '../ui/input'
@@ -26,10 +28,6 @@ import { Pagination, PaginationContent, PaginationItem } from '../ui/pagination'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
-import { toast } from 'sonner'
-import { updateLesson } from '@/actions/lessons'
-
 
 function useSkipper() {
   const shouldSkipRef = React.useRef(true)
@@ -197,7 +195,11 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
 
   const handleSave = () => {
     const ok = updateAttendance(editedData).then(() => setData(editedData))
-    toast.promise(ok, {loading: 'Загрузка...', success: 'Посещаемость успешно обновлена', error: (e) => e.message})
+    toast.promise(ok, {
+      loading: 'Загрузка...',
+      success: 'Посещаемость успешно обновлена',
+      error: (e) => e.message,
+    })
   }
 
   return (
@@ -423,11 +425,11 @@ function StatusAction({
 }) {
   return (
     <Select
-      defaultValue={value != 'UNSPECIFIED' ? value : undefined}
+      value={value != 'UNSPECIFIED' ? value : undefined}
       onValueChange={(e: AttendanceStatus) => onChange(e)}
     >
       <SelectTrigger size="sm" className="data-[size=sm]:h-7">
-        <SelectValue placeholder={StatusMap[value]} />
+        <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={AttendanceStatus.PRESENT}>
