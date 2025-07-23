@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 
-import { PaymentsWithStudentAndGroup } from '@/actions/payments'
+import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
+import { UserData } from '@/actions/users'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
@@ -31,6 +32,7 @@ import {
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
   PaginationState,
   SortingState,
   VisibilityState,
@@ -43,63 +45,116 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
+import Link from 'next/link'
 import { useId, useMemo, useRef, useState } from 'react'
 
-const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
+const userFilter: FilterFn<LessonWithAttendanceAndGroup> = (
+  row,
+  columnId,
+  filterValue: string[]
+) => {
+  if (!filterValue?.length) return true
+  const user = row.getValue(columnId) as string
+  return filterValue.includes(user)
+}
+
+const getColumns = (): ColumnDef<LessonWithAttendanceAndGroup>[] => [
   {
-    header: 'Ученик',
-    accessorKey: 'student',
+    header: 'Дата',
+    accessorKey: 'date',
     accessorFn: (item) =>
-      item.student ? `${item.student.firstName} ${item.student.lastName}` : 'Удаленный ученик',
+      item.date.toLocaleDateString('ru', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }),
     cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <div className="font-medium">{row.getValue('student')}</div>
-      </div>
+      <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+        <Link href={`/dashboard/lessons/${row.original.id}`} className="font-medium">
+          {row.getValue('date')}
+        </Link>
+      </Button>
     ),
-    size: 180,
     enableHiding: false,
   },
   {
     header: 'Группа',
     accessorKey: 'group',
-    accessorFn: (item) => (item.group ? item.group.name : 'Удаленная группа'),
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('group')}</span>,
-    size: 110,
+    accessorFn: (item) => item.group.name,
+    cell: ({ row }) => (
+      <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+        <Link href={`/dashboard/groups/${row.original.groupId}`} className="font-medium">
+          {row.getValue('group')}
+        </Link>
+      </Button>
+    ),
   },
   {
-    header: 'Всего занятий оплачено',
-    accessorKey: 'lessonsPaid',
-    cell: ({ row }) => <span className="text-muted-foreground">{row.original.lessonsPaid}</span>,
-    size: 110,
+    header: 'Учитель',
+    accessorKey: 'teacher',
+    accessorFn: (item) => item.group.teacher.firstName,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('teacher')}</span>,
+    filterFn: userFilter,
   },
   {
-    header: 'Осталось занятий',
-    accessorKey: 'remainingLessons',
+    header: 'Количество учеников',
+    accessorKey: 'totalStudents',
+    accessorFn: (item) => item.attendance.length,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.getValue('totalStudents')}</span>
+    ),
+  },
+  {
+    header: 'Пропустившие',
+    accessorKey: 'totalAbsents',
+    accessorFn: (item) => item.attendance.filter((a) => a.status == 'ABSENT').length,
     cell: ({ row }) => {
-      const value = row.getValue('remainingLessons') as number
+      const value = row.getValue('totalAbsents') as number
       return (
         <div className="flex items-center gap-2">
-          {value == 0 ? (
+          {value > 0 && (
             <div
               className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
               aria-hidden="true"
             ></div>
-          ) : (
-            value <= 3 && (
-              <div className="size-1.5 rounded-full bg-amber-500" aria-hidden="true"></div>
-            )
           )}
           <span className="text-muted-foreground">{value}</span>
         </div>
       )
     },
-    size: 110,
+  },
+  {
+    header: 'Не отмеченные',
+    accessorKey: 'totalUnspecified',
+    accessorFn: (item) => item.attendance.filter((a) => a.status == 'UNSPECIFIED').length,
+    cell: ({ row }) => {
+      const value = row.getValue('totalUnspecified') as number
+      return (
+        <div className="flex items-center gap-2">
+          {value > 0 && row.original.date < new Date() && (
+            <div
+              className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
+              aria-hidden="true"
+            ></div>
+          )}
+          <span className="text-muted-foreground">{value}</span>
+        </div>
+      )
+    },
   },
 ]
 
-export default function PaymentsTable({ payments }: { payments: PaymentsWithStudentAndGroup[] }) {
+export default function LessonsTable({
+  user,
+  lessons,
+}: {
+  user: UserData
+  lessons: LessonWithAttendanceAndGroup[]
+}) {
   const id = useId()
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: 'teacher', value: [user.firstName] },
+  ])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -107,12 +162,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
   })
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'student',
-      desc: false,
-    },
-  ])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const columns = getColumns()
 
@@ -121,7 +171,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
   }
 
   const table = useReactTable({
-    data: payments,
+    data: lessons,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -142,7 +192,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
   })
 
   // Extract complex expressions into separate variables
-  const statusColumn = table.getColumn('group')
+  const statusColumn = table.getColumn('teacher')
   const statusFacetedValues = statusColumn?.getFacetedUniqueValues()
   const statusFilterValue = statusColumn?.getFilterValue()
 
@@ -163,7 +213,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
   }, [statusFilterValue])
 
   const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn('group')?.getFilterValue() as string[]
+    const filterValue = table.getColumn('teacher')?.getFilterValue() as string
     const newFilterValue = filterValue ? [...filterValue] : []
 
     if (checked) {
@@ -175,7 +225,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
       }
     }
 
-    table.getColumn('group')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
+    table.getColumn('teacher')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
   }
 
   return (
@@ -190,10 +240,10 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
               ref={inputRef}
               className={cn(
                 'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
-                Boolean(table.getColumn('student')?.getFilterValue()) && 'pe-9'
+                Boolean(table.getColumn('group')?.getFilterValue()) && 'pe-9'
               )}
-              value={(table.getColumn('student')?.getFilterValue() ?? '') as string}
-              onChange={(e) => table.getColumn('student')?.setFilterValue(e.target.value)}
+              value={(table.getColumn('group')?.getFilterValue() ?? '') as string}
+              onChange={(e) => table.getColumn('group')?.setFilterValue(e.target.value)}
               placeholder="Search by name"
               type="text"
               aria-label="Search by name"
@@ -201,12 +251,12 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
             <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
               <Search size={20} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('student')?.getFilterValue()) && (
+            {Boolean(table.getColumn('group')?.getFilterValue()) && (
               <button
                 className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn('student')?.setFilterValue('')
+                  table.getColumn('group')?.setFilterValue('')
                   if (inputRef.current) {
                     inputRef.current.focus()
                   }

@@ -130,7 +130,7 @@ export default function GroupsTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     {
       id: 'teacher',
-      value: [user?.firstName],
+      value: [user.firstName],
     },
   ])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

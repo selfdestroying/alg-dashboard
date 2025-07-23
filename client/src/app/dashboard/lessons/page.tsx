@@ -1,8 +1,18 @@
-import { getLessons } from "@/actions/lessons"
-import { format } from "date-fns"
+import { getLessons } from '@/actions/lessons'
+import { getUser } from '@/actions/users'
+import LessonsTable from '@/components/tables/lessons-table'
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
-    const lessons = await getLessons()
+  const user = await getUser()
+  if (!user) {
+    return redirect('/auth')
+  }
+  const lessons = await getLessons()
 
-    return lessons.map(lesson => <div key={lesson.id}>{format(lesson.date, 'dd/MM/yyyy')} - {lesson.group.name} - {lesson.group.teacher.firstName} - Количество учеников: {lesson.attendance.length} - Пропустившие: {lesson.attendance.filter(a => a.status == 'ABSENT').length} - Не отмеченные: {lesson.attendance.filter(a => a.status == 'UNSPECIFIED').length}</div>)
+  return (
+    <div>
+      <LessonsTable lessons={lessons} user={user} />
+    </div>
+  )
 }

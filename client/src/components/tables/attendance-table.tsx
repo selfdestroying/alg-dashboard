@@ -1,9 +1,10 @@
 'use client'
 import React, { useId, useMemo, useRef, useState } from 'react'
 
-import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
+import { AttendanceWithStudents, createAttendance, updateAttendance } from '@/actions/attendance'
+import { createMakeUp } from '@/actions/makeup'
 import { cn } from '@/lib/utils'
-import { AttendanceStatus } from '@prisma/client'
+import { Attendance, AttendanceStatus } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -20,6 +21,7 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
 import { toast } from 'sonner'
+import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Input } from '../ui/input'
@@ -55,8 +57,9 @@ const getColumns = (
     accessorFn: (value) => `${value.student.firstName} ${value.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <div className="font-medium">
+        <div className="flex gap-2 font-medium">
           {row.original.student.firstName} {row.original.student.lastName}
+          {row.original.asMakeupFor && <Badge variant={'secondary'}>Отработка</Badge>}
         </div>
       </div>
     ),
@@ -65,9 +68,9 @@ const getColumns = (
   {
     header: 'Статус',
     accessorKey: 'status',
-    cell: ({ row, getValue }) => (
+    cell: ({ row }) => (
       <StatusAction
-        value={getValue() as AttendanceStatus}
+        value={row.original}
         onChange={(val: AttendanceStatus) => {
           skipAutoResetPageIndex()
           setData((prev) => {
@@ -420,28 +423,41 @@ function StatusAction({
   value,
   onChange,
 }: {
-  value: AttendanceStatus
+  value: Attendance
   onChange: (val: AttendanceStatus) => void
 }) {
+  const onCreateMakeUp = () => {
+    createAttendance({
+      studentId: value.studentId,
+      lessonId: 107,
+      comment: '',
+      status: 'UNSPECIFIED',
+    }).then((res) => createMakeUp({ missedAttendanceId: value.id, makeUpAttendaceId: res.id }))
+  }
   return (
-    <Select
-      value={value != 'UNSPECIFIED' ? value : undefined}
-      onValueChange={(e: AttendanceStatus) => onChange(e)}
-    >
-      <SelectTrigger size="sm" className="data-[size=sm]:h-7">
-        <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={AttendanceStatus.PRESENT}>
-          <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.PRESENT}
-        </SelectItem>
-        <SelectItem value={AttendanceStatus.ABSENT}>
-          <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.ABSENT}
-        </SelectItem>
-      </SelectContent>
-    </Select>
+    <div className="flex gap-2">
+      <Select
+        value={value.status != 'UNSPECIFIED' ? value.status : undefined}
+        onValueChange={(e: AttendanceStatus) => onChange(e)}
+      >
+        <SelectTrigger size="sm" className="">
+          <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={AttendanceStatus.PRESENT}>
+            <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
+            {StatusMap.PRESENT}
+          </SelectItem>
+          <SelectItem value={AttendanceStatus.ABSENT}>
+            <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
+            {StatusMap.ABSENT}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+      <Button size={'sm'} variant={'outline'} onClick={onCreateMakeUp}>
+        Назначить отработку
+      </Button>
+    </div>
   )
 }
 

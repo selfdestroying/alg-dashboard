@@ -82,14 +82,27 @@ model Lesson {
 
 model Attendance {
     id        Int              @id @default(autoincrement())
-    lesson    Lesson           @relation(fields: [lessonId], references: [id])
-    lessonId  Int
+    lesson    Lesson?          @relation(fields: [lessonId], references: [id])
+    lessonId  Int?
     student   Student          @relation(fields: [studentId], references: [id])
     studentId Int
     status    AttendanceStatus
     comment   String
 
+    missedMakeup MakeUp? @relation("MissedAttendance")
+    asMakeupFor  MakeUp? @relation("MakeUpAttendace")
+
     @@unique([studentId, lessonId])
+}
+
+model MakeUp {
+    id Int @id @default(autoincrement())
+
+    missedAttendanceId Int        @unique
+    missedAttendance   Attendance @relation("MissedAttendance", fields: [missedAttendanceId], references: [id])
+
+    makeUpAttendaceId Int        @unique
+    makeUpAttendance  Attendance @relation("MakeUpAttendace", fields: [makeUpAttendaceId], references: [id])
 }
 
 model Payment {

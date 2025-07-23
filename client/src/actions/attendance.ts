@@ -1,13 +1,17 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Attendance, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
-export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{ include: { student: true } }>
+export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
+  include: { student: true; missedMakeup: true; asMakeupFor: true }
+}>
 
-export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInput) => {
-  await prisma.attendance.create({ data })
+export const createAttendance = async (
+  data: Prisma.AttendanceUncheckedCreateInput
+): Promise<Attendance> => {
+  return await prisma.attendance.create({ data })
 }
 
 export const updateAttendance = async (data: AttendanceWithStudents[]) => {

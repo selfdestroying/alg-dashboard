@@ -4,7 +4,6 @@ import PaymentsTable from '@/components/tables/payments-table'
 
 export default async function Page() {
   const payments = await getPayments()
-  console.log(payments)
 
   return (
     <>

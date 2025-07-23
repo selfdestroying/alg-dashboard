@@ -9,26 +9,29 @@ export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
   include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
 }>
 export type LessonWithAttendance = Prisma.LessonGetPayload<{
-  include: { attendance: { include: { student: true } } }
+  include: { attendance: { include: { student: true; asMakeupFor: true; missedMakeup: true } } }
 }>
 
 export type LessonWithAttendanceAndGroup = Prisma.LessonGetPayload<{
-  include: { attendance: { include: { student: true } }, group: {include: {teacher: true}} }
+  include: { attendance: { include: { student: true } }; group: { include: { teacher: true } } }
 }>
 
-export const getLessons = async(): Promise<LessonWithAttendanceAndGroup[]> => {
-  const lessons = await prisma.lesson.findMany({include: {attendance: {include: {student: true}}, group: {include: {teacher: true}}}})
+export const getLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
+  const lessons = await prisma.lesson.findMany({
+    include: { attendance: { include: { student: true } }, group: { include: { teacher: true } } },
+    orderBy: { date: 'asc' },
+  })
   return lessons
 }
 
-export const getLessonsByTeacherId = async(id: number) => {
-  const lessons = await prisma.lesson.findMany({where: {group: {teacherId: id}}})
+export const getLessonsByTeacherId = async (id: number) => {
+  const lessons = await prisma.lesson.findMany({ where: { group: { teacherId: id } } })
 }
 
 export const getLesson = async (id: number): Promise<LessonWithAttendance | null> => {
   const lesson = await prisma.lesson.findFirst({
     where: { id },
-    include: { attendance: { include: { student: true } } },
+    include: { attendance: { include: { student: true, asMakeupFor: true, missedMakeup: true } } },
   })
   return lesson
 }
