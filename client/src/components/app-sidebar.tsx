@@ -19,6 +19,7 @@ import {
   House,
   LayoutDashboard,
   LucideProps,
+  Presentation,
   User as UserIcon,
   Users,
 } from 'lucide-react'
@@ -55,6 +56,13 @@ const data: NavData[] = [
         items: [],
         roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
       },
+      {
+        title: 'Уроки',
+        url: '/dashboard/lessons ',
+        icon: Presentation,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER']
+      }
     ],
     roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
   },
