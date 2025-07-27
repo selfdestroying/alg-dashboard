@@ -3,7 +3,6 @@ import { GroupTypeEnum } from './enums'
 
 export const GroupSchema = z.object({
   // required
-  name: z.string().min(2, 'Укажите название группы'),
   teacherId: z.number().int().positive(),
   courseId: z.number().int().positive(),
   startDate: z.date({ error: 'Неверная дата начала' }),

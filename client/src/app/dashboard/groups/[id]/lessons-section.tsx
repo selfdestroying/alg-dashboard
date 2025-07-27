@@ -1,12 +1,9 @@
 import { AllGroupData } from '@/actions/groups'
 import { LessonWithCountUnspecified } from '@/actions/lessons'
-import { getUser } from '@/actions/users'
 import LessonDialog from '@/components/dialogs/lesson-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { format } from 'date-fns'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 
 function isToday(d1: Date, d2: Date) {
   return (
@@ -38,11 +35,6 @@ function getLessonStatus(lesson: LessonWithCountUnspecified) {
 }
 
 export default async function LessonsSection({ group }: { group: AllGroupData }) {
-  const user = await getUser()
-
-  if (!user) {
-    return redirect('/auth')
-  }
   return (
     <Card className="gap-2">
       <CardHeader>
@@ -61,7 +53,7 @@ export default async function LessonsSection({ group }: { group: AllGroupData })
             >
               <Link href={`/dashboard/lessons/${lesson.id}`}>
                 {getLessonStatus(lesson)}
-                {format(lesson.date.toString(), 'dd.MM')}
+                {lesson.date.toLocaleDateString('ru-RU')}
               </Link>
             </Button>
           ))}

@@ -50,7 +50,6 @@ export default function LessonForm({ groupId }: { groupId: number }) {
   })
 
   function onSubmit(values: LessonSchemaType) {
-    console.log('asdf')
     const ok = createLesson({ date: values.date, time: values.time, groupId })
     toast.promise(ok, {
       loading: 'Загрузка...',

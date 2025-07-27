@@ -1,8 +1,8 @@
 'use client'
 import React, { useId, useMemo, useRef, useState } from 'react'
 
-import { AttendanceWithStudents, createAttendance, updateAttendance } from '@/actions/attendance'
-import { createMakeUp } from '@/actions/makeup'
+import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
+import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { cn } from '@/lib/utils'
 import { Attendance, AttendanceStatus } from '@prisma/client'
 import {
@@ -21,6 +21,7 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
 import { toast } from 'sonner'
+import MakeUpDialog from '../dialogs/makeup-dialog'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
@@ -49,7 +50,8 @@ function useSkipper() {
 
 const getColumns = (
   setData: React.Dispatch<React.SetStateAction<AttendanceWithStudents[]>>,
-  skipAutoResetPageIndex: () => void
+  skipAutoResetPageIndex: () => void,
+  upcomingLessons: LessonWithAttendanceAndGroup[]
 ): ColumnDef<AttendanceWithStudents>[] => [
   {
     header: 'Полное имя',
@@ -57,9 +59,18 @@ const getColumns = (
     accessorFn: (value) => `${value.student.firstName} ${value.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <div className="flex gap-2 font-medium">
+        <div className="flex flex-wrap gap-2 font-medium">
           {row.original.student.firstName} {row.original.student.lastName}
-          {row.original.asMakeupFor && <Badge variant={'secondary'}>Отработка</Badge>}
+          {row.original.asMakeupFor && (
+            <Badge variant={'outline'}>
+              Отработка за{' '}
+              {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit',
+              })}
+            </Badge>
+          )}
         </div>
       </div>
     ),
@@ -69,23 +80,42 @@ const getColumns = (
     header: 'Статус',
     accessorKey: 'status',
     cell: ({ row }) => (
-      <StatusAction
-        value={row.original}
-        onChange={(val: AttendanceStatus) => {
-          skipAutoResetPageIndex()
-          setData((prev) => {
-            return prev.map((item) => {
-              if (item.id === row.original.id) {
-                return {
-                  ...item,
-                  status: val,
+      <div className="flex flex-wrap items-center gap-2">
+        <StatusAction
+          value={row.original}
+          onChange={(val: AttendanceStatus) => {
+            skipAutoResetPageIndex()
+
+            setData((prev) => {
+              return prev.map((item) => {
+                if (item.id === row.original.id) {
+                  return {
+                    ...item,
+                    status: val,
+                  }
                 }
-              }
-              return item
+                return item
+              })
             })
-          })
-        }}
-      />
+          }}
+        />
+        {row.original.asMakeupFor ? null : row.original.missedMakeup ? (
+          <Badge variant={'outline'}>
+            Отработка{' '}
+            {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
+              year: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+            })}
+          </Badge>
+        ) : (
+          <MakeUpDialog
+            upcomingLessons={upcomingLessons}
+            studentId={row.original.studentId}
+            missedAttendanceId={row.original.id}
+          />
+        )}
+      </div>
     ),
   },
   {
@@ -113,7 +143,13 @@ const getColumns = (
   },
 ]
 
-export function AttendanceTable({ attendance }: { attendance: AttendanceWithStudents[] }) {
+export function AttendanceTable({
+  attendance,
+  upcomingLessons,
+}: {
+  attendance: AttendanceWithStudents[]
+  upcomingLessons: LessonWithAttendanceAndGroup[]
+}) {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -133,7 +169,7 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
   const columns = useMemo<ColumnDef<AttendanceWithStudents>[]>(
-    () => getColumns(setEditedData, skipAutoResetPageIndex),
+    () => getColumns(setEditedData, skipAutoResetPageIndex, upcomingLessons),
     []
   )
 
@@ -426,38 +462,25 @@ function StatusAction({
   value: Attendance
   onChange: (val: AttendanceStatus) => void
 }) {
-  const onCreateMakeUp = () => {
-    createAttendance({
-      studentId: value.studentId,
-      lessonId: 107,
-      comment: '',
-      status: 'UNSPECIFIED',
-    }).then((res) => createMakeUp({ missedAttendanceId: value.id, makeUpAttendaceId: res.id }))
-  }
   return (
-    <div className="flex gap-2">
-      <Select
-        value={value.status != 'UNSPECIFIED' ? value.status : undefined}
-        onValueChange={(e: AttendanceStatus) => onChange(e)}
-      >
-        <SelectTrigger size="sm" className="">
-          <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={AttendanceStatus.PRESENT}>
-            <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
-            {StatusMap.PRESENT}
-          </SelectItem>
-          <SelectItem value={AttendanceStatus.ABSENT}>
-            <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
-            {StatusMap.ABSENT}
-          </SelectItem>
-        </SelectContent>
-      </Select>
-      <Button size={'sm'} variant={'outline'} onClick={onCreateMakeUp}>
-        Назначить отработку
-      </Button>
-    </div>
+    <Select
+      value={value.status != 'UNSPECIFIED' ? value.status : undefined}
+      onValueChange={(e: AttendanceStatus) => onChange(e)}
+    >
+      <SelectTrigger size="sm" className="">
+        <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={AttendanceStatus.PRESENT}>
+          <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
+          {StatusMap.PRESENT}
+        </SelectItem>
+        <SelectItem value={AttendanceStatus.ABSENT}>
+          <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
+          {StatusMap.ABSENT}
+        </SelectItem>
+      </SelectContent>
+    </Select>
   )
 }
 

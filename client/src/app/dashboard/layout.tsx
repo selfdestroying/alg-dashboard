@@ -1,13 +1,19 @@
+import { getUser } from '@/actions/users'
 import { AppSidebar } from '@/components/app-sidebar'
-import FeedbackDialog from '@/components/dialogs/feedback-dialog'
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import MyBreadCrumbs from '@/components/breadcrumbs'
+import FeedbackDialog from '@/components/dialogs/feedback-dialog'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { redirect } from 'next/navigation'
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await getUser()
+  if (!user) {
+    return redirect('/auth')
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -18,7 +24,7 @@ export default function Layout({
             <MyBreadCrumbs />
           </div>
           <div className="ml-auto flex gap-3">
-            <FeedbackDialog />
+            <FeedbackDialog user={user} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>

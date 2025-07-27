@@ -77,28 +77,6 @@ export default function GroupForm() {
           {/* Required */}
           <FormField
             control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">
-                  Название<span className="text-destructive">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    key="text-input-0"
-                    placeholder=""
-                    type="text"
-                    className=" "
-                    name={field.name}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="courseId"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">

@@ -29,11 +29,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useData } from '@/providers/data-provider'
 import {
   ColumnDef,
   ColumnFiltersState,
   FilterFn,
   PaginationState,
+  SortingFn,
   SortingState,
   VisibilityState,
   flexRender,
@@ -58,16 +60,21 @@ const userFilter: FilterFn<LessonWithAttendanceAndGroup> = (
   return filterValue.includes(user)
 }
 
+const dateSortingFn: SortingFn<LessonWithAttendanceAndGroup> = (rowA, rowB, columnId) => {
+  const dateA = rowA.original.date
+  const dateB = rowB.original.date
+  if (dateA === null && dateB === null) return 0
+  if (dateA === null) return 1 // Put nulls at the end
+  if (dateB === null) return -1 // Put nulls at the end
+
+  return dateA.getTime() - dateB.getTime()
+}
+
 const getColumns = (): ColumnDef<LessonWithAttendanceAndGroup>[] => [
   {
     header: 'Дата',
     accessorKey: 'date',
-    accessorFn: (item) =>
-      item.date.toLocaleDateString('ru', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
+    accessorFn: (item) => item.date.toLocaleDateString('ru-RU'),
     cell: ({ row }) => (
       <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
         <Link href={`/dashboard/lessons/${row.original.id}`} className="font-medium">
@@ -76,6 +83,7 @@ const getColumns = (): ColumnDef<LessonWithAttendanceAndGroup>[] => [
       </Button>
     ),
     enableHiding: false,
+    sortingFn: dateSortingFn,
   },
   {
     header: 'Группа',
@@ -118,7 +126,9 @@ const getColumns = (): ColumnDef<LessonWithAttendanceAndGroup>[] => [
               aria-hidden="true"
             ></div>
           )}
-          <span className="text-muted-foreground">{value}</span>
+          <span className="text-muted-foreground">
+            {row.original.date <= new Date() ? value : '-'}
+          </span>
         </div>
       )
     },
@@ -131,13 +141,19 @@ const getColumns = (): ColumnDef<LessonWithAttendanceAndGroup>[] => [
       const value = row.getValue('totalUnspecified') as number
       return (
         <div className="flex items-center gap-2">
-          {value > 0 && row.original.date < new Date() && (
-            <div
-              className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
-              aria-hidden="true"
-            ></div>
-          )}
-          <span className="text-muted-foreground">{value}</span>
+          {value > 0
+            ? row.original.date < new Date() && (
+                <div
+                  className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
+                  aria-hidden="true"
+                ></div>
+              )
+            : row.original.date <= new Date() && (
+                <div className="bg-primary/90 size-1.5 rounded-full" aria-hidden="true"></div>
+              )}
+          <span className="text-muted-foreground">
+            {row.original.date <= new Date() ? value : '-'}
+          </span>
         </div>
       )
     },
@@ -152,6 +168,7 @@ export default function LessonsTable({
   lessons: LessonWithAttendanceAndGroup[]
 }) {
   const id = useId()
+  const { users } = useData()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: 'teacher', value: [user.firstName] },
   ])
@@ -199,7 +216,7 @@ export default function LessonsTable({
   // Update useMemo hooks with simplified dependencies
   const uniqueStatusValues = useMemo(() => {
     if (!statusColumn) return []
-    const values = Array.from(statusFacetedValues?.keys() ?? [])
+    const values = users.map((value) => value.firstName)
     return values.sort()
   }, [statusColumn, statusFacetedValues])
 
@@ -313,7 +330,7 @@ export default function LessonsTable({
                   size={20}
                   aria-hidden="true"
                 />
-                Группа
+                Учитель
                 {selectedStatuses.length > 0 && (
                   <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {selectedStatuses.length}

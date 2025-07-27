@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -41,12 +41,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
+import { AllGroupData, removeFromGroup } from '@/actions/groups'
+import { Student } from '@prisma/client'
+import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Minus, Search } from 'lucide-react'
 import { useId, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Minus, Search } from 'lucide-react'
-import GroupStudentDialog from '../dialogs/group-student-dialog'
-import { Student } from '@prisma/client'
-import { AllGroupData, removeFromGroup } from '@/actions/groups'
 
 const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
   if (!filterValue?.length) return true
@@ -103,17 +102,17 @@ const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<St
     size: 110,
     filterFn: ageFilterFn,
   },
-  {
-    id: 'actions',
-    header: () => (
-      <div className="flex items-center justify-end">
-        <GroupStudentDialog students={studentsNotInGroup} groupId={data.id} />
-      </div>
-    ),
-    cell: ({ row }) => <RowActions group={data} item={row.original} />,
-    size: 60,
-    enableHiding: false,
-  },
+  // {
+  //   id: 'actions',
+  //   header: () => (
+  //     <div className="flex items-center justify-end">
+  //       <GroupStudentDialog students={studentsNotInGroup} groupId={data.id} />
+  //     </div>
+  //   ),
+  //   cell: ({ row }) => <RowActions group={data} item={row.original} />,
+  //   size: 60,
+  //   enableHiding: false,
+  // },
 ]
 
 export default function GroupStudentsTable({

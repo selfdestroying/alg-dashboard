@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useData } from '@/providers/data-provider'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -49,7 +50,11 @@ import Link from 'next/link'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-const userFilter: FilterFn<GroupWithTeacherAndCourse> = (row, columnId, filterValue: string[]) => {
+const userFilterFn: FilterFn<GroupWithTeacherAndCourse> = (
+  row,
+  columnId,
+  filterValue: string[]
+) => {
   if (!filterValue?.length) return true
   const user = row.getValue(columnId) as string
   return filterValue.includes(user)
@@ -108,7 +113,7 @@ const getColumns = (): ColumnDef<GroupWithTeacherAndCourse>[] => [
       <span className="text-muted-foreground">{row.original.teacher.firstName}</span>
     ),
     size: 110,
-    filterFn: userFilter,
+    filterFn: userFilterFn,
   },
   {
     id: 'actions',
@@ -127,6 +132,7 @@ export default function GroupsTable({
   groups: GroupWithTeacherAndCourse[]
 }) {
   const id = useId()
+  const { users, courses } = useData()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     {
       id: 'teacher',
@@ -194,12 +200,12 @@ export default function GroupsTable({
   // Update useMemo hooks with simplified dependencies
   const uniqueUserValues = useMemo(() => {
     if (!userColumn) return []
-    const values = Array.from(userFacetedValues?.keys() ?? [])
+    const values = users.map((value) => value.firstName)
     return values.sort()
   }, [userColumn, userFacetedValues])
   const uniqueCourseValues = useMemo(() => {
     if (!courseColumn) return []
-    const values = Array.from(courseFacetedValues?.keys() ?? [])
+    const values = courses.map((value) => value.name)
     return values.sort()
   }, [courseColumn, courseFacetedValues])
 

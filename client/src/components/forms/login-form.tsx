@@ -8,14 +8,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod/v4'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod/v4'
 
+import { sigin } from '@/actions/auth'
 import { Input } from '@/components/ui/input'
+import { useData } from '@/providers/data-provider'
+import { signInFormSchema } from '@/schemas/auth'
+import { User } from '@prisma/client'
 import { LogIn } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card'
-import { Button } from '../ui/button'
 import { useActionState, useState } from 'react'
+import { Button } from '../ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import {
   Select,
   SelectContent,
@@ -25,12 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
-import { sigin } from '@/actions/auth'
-import { signInFormSchema } from '@/schemas/auth'
-import { UserData } from '@/actions/users'
-import { User } from '@prisma/client'
 
-export default function LoginForm({ users }: { users: UserData[] }) {
+export default function LoginForm() {
+  const { users } = useData()
   const [selectedUserRole, setSelectedUserRole] = useState<User['role']>()
   const [state, action] = useActionState(sigin, undefined)
 

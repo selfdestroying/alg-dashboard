@@ -1,8 +1,10 @@
 'use server'
 
 import prisma from '@/lib/prisma'
+import { DayOfWeek } from '@/lib/utils'
 import { Course, Group, Prisma, Student, User } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { getCourses } from './courses'
 import { createLesson } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
@@ -45,8 +47,10 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
   return groupWithStudents
 }
 
-export const createGroup = async (data: Prisma.GroupUncheckedCreateInput) => {
-  const group = await prisma.group.create({ data })
+export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
+  const courses = await getCourses()
+  const groupName = `${courses[data.courseId].name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
+  const group = await prisma.group.create({ data: { ...data, name: groupName } })
 
   if (data.lessonCount) {
     const lessonDate = group.startDate

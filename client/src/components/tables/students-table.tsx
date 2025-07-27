@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -42,11 +42,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
+import { deleteStudent } from '@/actions/students'
+import { Student } from '@prisma/client'
+import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
+import Link from 'next/link'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
-import { Student } from '@prisma/client'
-import { deleteStudent } from '@/actions/students'
 
 const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
   if (!filterValue?.length) return true
@@ -84,7 +85,11 @@ const getColumns = (): ColumnDef<Student>[] => [
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
-          {row.original.firstName} {row.original.lastName}
+          <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+            <Link href={`/dashboard/students/${row.original.id}`}>
+              {row.original.firstName} {row.original.lastName}
+            </Link>
+          </Button>
         </div>
       </div>
     ),

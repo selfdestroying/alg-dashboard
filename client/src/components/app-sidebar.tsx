@@ -13,6 +13,8 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 
+import { getUser } from '@/actions/users'
+import { User } from '@prisma/client'
 import {
   FolderKanban,
   HandCoins,
@@ -23,10 +25,8 @@ import {
   User as UserIcon,
   Users,
 } from 'lucide-react'
-import { NavUser } from './nav-user'
 import { redirect } from 'next/navigation'
-import { getUser } from '@/actions/users'
-import { User } from '@prisma/client'
+import { NavUser } from './nav-user'
 
 interface NavData {
   title: string
@@ -58,11 +58,11 @@ const data: NavData[] = [
       },
       {
         title: 'Уроки',
-        url: '/dashboard/lessons ',
+        url: '/dashboard/lessons',
         icon: Presentation,
         items: [],
-        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER']
-      }
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
     ],
     roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
   },

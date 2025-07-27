@@ -43,6 +43,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
+import Link from 'next/link'
 import { useId, useMemo, useRef, useState } from 'react'
 
 const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
@@ -56,21 +57,26 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
         <div className="font-medium">{row.getValue('student')}</div>
       </div>
     ),
-    size: 180,
     enableHiding: false,
   },
   {
     header: 'Группа',
     accessorKey: 'group',
     accessorFn: (item) => (item.group ? item.group.name : 'Удаленная группа'),
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('group')}</span>,
-    size: 110,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <div className="font-medium">
+          <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+            <Link href={`/dashboard/groups/${row.original.groupId}`}>{row.getValue('group')}</Link>
+          </Button>
+        </div>
+      </div>
+    ),
   },
   {
     header: 'Всего занятий оплачено',
     accessorKey: 'lessonsPaid',
     cell: ({ row }) => <span className="text-muted-foreground">{row.original.lessonsPaid}</span>,
-    size: 110,
   },
   {
     header: 'Осталось занятий',
@@ -79,7 +85,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
       const value = row.getValue('remainingLessons') as number
       return (
         <div className="flex items-center gap-2">
-          {value == 0 ? (
+          {value <= 0 ? (
             <div
               className="bg-destructive/90 size-1.5 animate-pulse rounded-full"
               aria-hidden="true"
@@ -93,7 +99,6 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
         </div>
       )
     },
-    size: 110,
   },
 ]
 

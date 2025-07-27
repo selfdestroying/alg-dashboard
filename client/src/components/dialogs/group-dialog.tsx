@@ -10,8 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '../ui/button'
 import GroupForm from '../forms/group-form'
+import { Button } from '../ui/button'
 
 export default function GroupDialog() {
   return (
