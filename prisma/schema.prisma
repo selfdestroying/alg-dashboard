@@ -23,6 +23,8 @@ model Student {
     id        Int       @id @default(autoincrement())
     firstName String
     lastName  String?
+    login     String
+    password  String
     age       Int
     birthDate DateTime?
     phone     String?
