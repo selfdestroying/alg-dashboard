@@ -9,9 +9,12 @@ export type UserData = Prisma.UserGetPayload<{
 }>
 
 export const getUser = cache(async (): Promise<UserData | null> => {
-  const session = await verifySession()
+  const { isAuth, userId } = await verifySession()
+  if (!isAuth || userId === null) {
+    return null
+  }
   const user = await prisma.user.findFirst({
-    where: { id: session.userId },
+    where: { id: userId },
     omit: { password: true, passwordRequired: true, createdAt: true },
   })
   return user

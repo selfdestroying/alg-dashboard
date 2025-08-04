@@ -7,9 +7,6 @@ export default function Home() {
       <Button asChild variant={'outline'} size={'lg'}>
         <Link href="/dashboard">Я учитель</Link>
       </Button>
-      <Button asChild variant={'outline'} size={'lg'}>
-        <Link href="/shop">Я ученик</Link>
-      </Button>
     </div>
   )
 }

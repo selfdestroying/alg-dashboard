@@ -1,7 +1,8 @@
 import { getUser } from '@/actions/users'
 import { AppSidebar } from '@/components/app-sidebar'
 import MyBreadCrumbs from '@/components/breadcrumbs'
-import FeedbackDialog from '@/components/dialogs/feedback-dialog'
+import ButtonDialog from '@/components/button-dialog'
+import FeedbackForm from '@/components/forms/feedback-form'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { redirect } from 'next/navigation'
 
@@ -14,6 +15,7 @@ export default async function Layout({
   if (!user) {
     return redirect('/auth')
   }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -24,7 +26,14 @@ export default async function Layout({
             <MyBreadCrumbs />
           </div>
           <div className="ml-auto flex gap-3">
-            <FeedbackDialog user={user} />
+            <ButtonDialog
+              title="Отправить отзыв"
+              description="Пожелания по улучшению, описание ошибок или багов"
+              triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+              submitButtonProps={{ form: 'feedback-form' }}
+            >
+              <FeedbackForm user={user} />
+            </ButtonDialog>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>

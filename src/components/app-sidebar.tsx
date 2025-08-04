@@ -16,12 +16,15 @@ import {
 import { getUser } from '@/actions/users'
 import { User } from '@prisma/client'
 import {
+  Box,
+  Boxes,
   FolderKanban,
   HandCoins,
   House,
   LayoutDashboard,
   LucideProps,
   Presentation,
+  Store,
   User as UserIcon,
   Users,
 } from 'lucide-react'
@@ -80,6 +83,28 @@ const data: NavData[] = [
       },
     ],
     roles: ['ADMIN', 'OWNER', 'MANAGER'],
+  },
+  {
+    title: 'Магазин',
+    url: '#',
+    icon: Store,
+    items: [
+      {
+        title: 'Товары',
+        url: '/dashboard/products',
+        icon: Boxes,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+      {
+        title: 'Категории',
+        url: '/dashboard/categories',
+        icon: Box,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+    ],
+    roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
   },
 ]
 

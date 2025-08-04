@@ -343,22 +343,22 @@ export async function main() {
   if ((await prisma.course.count()) == 0)
     await prisma.course.createMany({ data: await getCourses() })
 
-  if ((await prisma.student.count()) == 0)
-    await prisma.student.createMany({ data: await getStudents() })
+  // if ((await prisma.student.count()) == 0)
+  //   await prisma.student.createMany({ data: await getStudents() })
 
-  if ((await prisma.group.count()) == 0) await prisma.group.createMany({ data: await getGroups() })
+  // if ((await prisma.group.count()) == 0) await prisma.group.createMany({ data: await getGroups() })
 
-  if ((await prisma.studentGroup.count()) == 0)
-    for (let sg of await getStudentGroups()) {
-      try {
-        await prisma.studentGroup.create({ data: sg })
-      } catch {
-        console.log('duplicate')
-      }
-    }
+  // if ((await prisma.studentGroup.count()) == 0)
+  //   for (let sg of await getStudentGroups()) {
+  //     try {
+  //       await prisma.studentGroup.create({ data: sg })
+  //     } catch {
+  //       console.log('duplicate')
+  //     }
+  //   }
 
-  if ((await prisma.payment.count()) == 0)
-    await prisma.payment.createMany({ data: await getPayments() })
+  // if ((await prisma.payment.count()) == 0)
+  //   await prisma.payment.createMany({ data: await getPayments() })
 
   // for (let i = 1; i <= 33; i++) {
   //   const date = new Date()
@@ -366,13 +366,13 @@ export async function main() {
   //   await prisma.lesson.create({ data: { date, time: '15:00', groupId: 7 } })
   // }
 
-  const students = await prisma.student.findMany({ where: { groups: { some: { groupId: 7 } } } })
-  students.forEach(
-    async (student) =>
-      await prisma.attendance.create({
-        data: { lessonId: 37, studentId: student.id, status: 'UNSPECIFIED', comment: '' },
-      })
-  )
+  // const students = await prisma.student.findMany({ where: { groups: { some: { groupId: 7 } } } })
+  // students.forEach(
+  //   async (student) =>
+  //     await prisma.attendance.create({
+  //       data: { lessonId: 37, studentId: student.id, status: 'UNSPECIFIED', comment: '' },
+  //     })
+  // )
 }
 
 main()

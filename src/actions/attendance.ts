@@ -14,13 +14,10 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
 
 export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInput) => {
   const attendance = await prisma.attendance.create({ data })
+  revalidatePath(`dashboard/lessons/${data.lessonId}`)
   return attendance
 }
 
-/**
- * Определяет необходимые операции начисления/списания коинов
- * на основе изменения статуса посещаемости.
- */
 const getCoinUpdateOperations = (
   newStatus: AttendanceStatus,
   oldStatus: AttendanceStatus,
@@ -28,7 +25,6 @@ const getCoinUpdateOperations = (
 ): Prisma.PrismaPromise<Student>[] => {
   const coinUpdates: Prisma.PrismaPromise<Student>[] = []
 
-  // Начисление коинов: новый статус PRESENT, а старый не был PRESENT
   if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
     coinUpdates.push(
       prisma.student.update({
@@ -37,9 +33,7 @@ const getCoinUpdateOperations = (
       })
     )
     console.log(`Начислено 10 коинов студенту ${studentId} за посещение.`)
-  }
-  // Списание коинов: новый статус НЕ PRESENT, а старый был PRESENT
-  else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
+  } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
     coinUpdates.push(
       prisma.student.update({
         where: { id: studentId },
@@ -53,16 +47,13 @@ const getCoinUpdateOperations = (
 }
 
 export const updateAttendance = async (data: AttendanceWithStudents[]) => {
-  // Проверяем, что data не пустая и lessonId существует
   if (data.length === 0 || !data[0].lessonId) {
     console.warn('Нет данных для обновления или отсутствует lessonId.')
-    return // Или выбросить ошибку
+    return
   }
 
   const updates: Prisma.PrismaPromise<Attendance | Student>[] = []
 
-  // Предварительно получаем все старые статусы посещаемости
-  // Это более эффективно, чем делать N запросов findUniqueOrThrow в цикле.
   const oldAttendances = await prisma.attendance.findMany({
     where: {
       id: {
@@ -72,7 +63,6 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
     select: { id: true, status: true, studentId: true },
   })
 
-  // Преобразуем массив в Map для быстрого доступа по ID
   const oldAttendanceMap = new Map(oldAttendances.map((att) => [att.id, att]))
 
   for (const item of data) {
@@ -83,7 +73,6 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
       continue
     }
 
-    // 1. Операция обновления самой записи посещаемости
     updates.push(
       prisma.attendance.update({
         where: { id: item.id },
@@ -94,11 +83,7 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
       })
     )
 
-    // 2. Операции для отработки пропущенных занятий
     if (item.asMakeupFor) {
-      // Здесь статус отработки тоже обновляется согласно новому статусу текущего посещения
-      // Можно рассмотреть, должно ли это также влиять на коины,
-      // но в текущей логике коины привязаны только к 'PRESENT' фактического посещения.
       updates.push(
         prisma.attendance.update({
           where: { id: item.asMakeupFor.missedAttendanceId },
@@ -109,24 +94,21 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
       )
     }
 
-    // 3. Операции начисления/списания коинов, используя вынесенную функцию
     const coinOperations = getCoinUpdateOperations(
       item.status,
       oldAttendance.status,
       oldAttendance.studentId
     )
-    updates.push(...coinOperations) // Добавляем все операции с коинами в общий массив
+    updates.push(...coinOperations)
   }
 
-  // Выполняем все собранные операции в одной транзакции
   try {
     await prisma.$transaction(updates)
     console.log('Все обновления посещаемости и операции с коинами выполнены успешно.')
   } catch (error) {
     console.error('Ошибка при выполнении транзакции обновления посещаемости и коинов:', error)
-    throw error // Перебрасываем ошибку для обработки на верхнем уровне
+    throw error
   }
 
-  // Ревалидация пути
   revalidatePath(`dashboard/lessons/${data[0].lessonId}`)
 }

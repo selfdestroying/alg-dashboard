@@ -55,6 +55,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
             <p>{student.coins}</p>
           </div>
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Coins size={16} />
+              <Label className="text-muted-foreground">Логин</Label>
+            </div>
+            <p>{student.login}</p>
+          </div>
         </div>
 
         <Separator />

@@ -30,32 +30,32 @@ import {
   ColumnDef,
   ColumnFiltersState,
   FilterFn,
-  PaginationState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table'
 
-import { deleteStudent } from '@/actions/students'
-import { Student } from '@prisma/client'
+import { deleteProduct, ProductWithCategory } from '@/actions/products'
+import { Product } from '@prisma/client'
 import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
+const ageFilterFn: FilterFn<ProductWithCategory> = (row, columnId, filterValue: number[]) => {
   if (!filterValue?.length) return true
   const age = row.getValue(columnId) as number
   return filterValue.includes(age)
 }
 
-const getColumns = (): ColumnDef<Student>[] => [
+const getColumns = (): ColumnDef<ProductWithCategory>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -79,29 +79,41 @@ const getColumns = (): ColumnDef<Student>[] => [
     enableHiding: false,
   },
   {
-    header: 'Полное имя',
-    accessorKey: 'fullName',
-    accessorFn: (value) => `${value.firstName} ${value.lastName}`,
+    header: 'Название',
+    accessorKey: 'name',
+
+    cell: ({ row }) => <span>{row.original.name}</span>,
+  },
+  {
+    header: 'Цена',
+    accessorKey: 'price',
+    cell: ({ row }) => (
+      <div className="space-x-2">
+        <span className="text-muted-foreground">{row.original.price}</span>
+        {row.original.originalPrice && (
+          <span className="text-muted-foreground line-through">{row.original.originalPrice}</span>
+        )}
+      </div>
+    ),
+  },
+  {
+    header: 'Картинка',
+    accessorKey: 'image',
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
           <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
-            <Link href={`/dashboard/students/${row.original.id}`}>
-              {row.original.firstName} {row.original.lastName}
-            </Link>
+            <Link href={`/uploads/${row.original.image}`}>{row.original.image}</Link>
           </Button>
         </div>
       </div>
     ),
-    size: 180,
-    enableHiding: false,
   },
   {
-    header: 'Возраст',
-    accessorKey: 'age',
-    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('age')}</span>,
-    size: 110,
-    filterFn: ageFilterFn,
+    header: 'Категория',
+    accessorKey: 'category',
+    accessorFn: (row) => row.category.name,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.original.category.name}</span>,
   },
   {
     id: 'actions',
@@ -112,7 +124,7 @@ const getColumns = (): ColumnDef<Student>[] => [
   },
 ]
 
-export default function StudentsTable({ students }: { students: Student[] }) {
+export default function ProductsTable({ products }: { products: ProductWithCategory[] }) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -122,30 +134,24 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   })
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'fullName',
-      desc: false,
-    },
-  ])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const columns = getColumns()
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
-    const promises = selectedRows.map((row) => deleteStudent(row.original.id))
+    const promises = selectedRows.map((row) => deleteProduct(row.original.id))
     const ok = Promise.all(promises)
     table.resetRowSelection()
-
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: 'Ученики успешно удалены',
-      error: 'Ошибка при удалении учеников',
+      success: 'Товары успешно удалены',
+      error: 'Ошибка при удалении товаров',
     })
   }
 
   const table = useReactTable({
-    data: students,
+    data: products,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -166,7 +172,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   })
 
   // Extract complex expressions into separate variables
-  const statusColumn = table.getColumn('age')
+  const statusColumn = table.getColumn('category')
   const statusFacetedValues = statusColumn?.getFacetedUniqueValues()
   const statusFilterValue = statusColumn?.getFilterValue()
 
@@ -187,7 +193,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   }, [statusFilterValue])
 
   const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn('age')?.getFilterValue() as string[]
+    const filterValue = table.getColumn('category')?.getFilterValue() as string[]
     const newFilterValue = filterValue ? [...filterValue] : []
     if (checked) {
       newFilterValue.push(value)
@@ -198,7 +204,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
       }
     }
 
-    table.getColumn('age')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
+    table.getColumn('category')?.setFilterValue(newFilterValue.length ? newFilterValue : undefined)
   }
 
   return (
@@ -214,10 +220,10 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               ref={inputRef}
               className={cn(
                 'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
-                Boolean(table.getColumn('fullName')?.getFilterValue()) && 'pe-9'
+                Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9'
               )}
-              value={(table.getColumn('fullName')?.getFilterValue() ?? '') as string}
-              onChange={(e) => table.getColumn('fullName')?.setFilterValue(e.target.value)}
+              value={(table.getColumn('name')?.getFilterValue() ?? '') as string}
+              onChange={(e) => table.getColumn('name')?.setFilterValue(e.target.value)}
               placeholder="Search by name"
               type="text"
               aria-label="Search by name"
@@ -225,12 +231,12 @@ export default function StudentsTable({ students }: { students: Student[] }) {
             <div className="text-muted-foreground/60 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
               <Search size={20} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn('fullName')?.getFilterValue()) && (
+            {Boolean(table.getColumn('name')?.getFilterValue()) && (
               <button
                 className="text-muted-foreground/60 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn('fullName')?.setFilterValue('')
+                  table.getColumn('name')?.setFilterValue('')
                   if (inputRef.current) {
                     inputRef.current.focus()
                   }
@@ -288,7 +294,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
                   size={20}
                   aria-hidden="true"
                 />
-                Возраст
+                Категория
                 {selectedStatuses.length > 0 && (
                   <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                     {selectedStatuses.length}
@@ -406,8 +412,8 @@ export default function StudentsTable({ students }: { students: Student[] }) {
       {table.getRowModel().rows.length > 0 && (
         <div className="flex items-center justify-between gap-3">
           <p className="text-muted-foreground flex-1 text-sm whitespace-nowrap" aria-live="polite">
-            Страница{' '}
-            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из{' '}
+            Страница
+            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из
             <span className="text-foreground">{table.getPageCount()}</span>
           </p>
           <Pagination className="w-auto">
@@ -442,16 +448,16 @@ export default function StudentsTable({ students }: { students: Student[] }) {
   )
 }
 
-function RowActions({ item }: { item: Student }) {
+function RowActions({ item }: { item: Product }) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleDelete = () => {
     startUpdateTransition(() => {
-      const ok = deleteStudent(item.id)
+      const ok = deleteProduct(item.id)
       toast.promise(ok, {
         loading: 'Загрузка...',
-        success: 'Ученик успешно удален',
+        success: 'Товар успешно удален',
         error: (e) => e.message,
       })
     })

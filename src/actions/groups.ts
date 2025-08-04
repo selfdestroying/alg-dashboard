@@ -49,16 +49,18 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
 
 export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
   const courses = await getCourses()
-  const groupName = `${courses[data.courseId].name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
+  console.log(courses)
+  console.log(data.courseId)
+  const groupName = `${courses[data.courseId - 1].name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...data, name: groupName } })
 
   if (data.lessonCount) {
     const lessonDate = group.startDate
     for (let i = 0; i < data.lessonCount; i++) {
+      await createLesson({ groupId: group.id, time: group.time, date: lessonDate })
       if (lessonDate) {
         lessonDate.setDate(lessonDate.getDate() + 7)
       }
-      await createLesson({ groupId: group.id, time: group.time, date: lessonDate })
     }
   }
 

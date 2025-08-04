@@ -33,8 +33,10 @@ export const getLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
 }
 
 export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const lessons = await prisma.lesson.findMany({
-    where: { date: { gt: new Date() } },
+    where: { date: { gte: today } },
     include: { attendance: { include: { student: true } }, group: { include: { teacher: true } } },
     orderBy: { date: 'asc' },
   })

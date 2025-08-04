@@ -21,7 +21,8 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
 import { toast } from 'sonner'
-import MakeUpDialog from '../dialogs/makeup-dialog'
+import ButtonDialog from '../button-dialog'
+import MakeUpForm from '../forms/makeup-form'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
@@ -109,11 +110,17 @@ const getColumns = (
             })}
           </Badge>
         ) : (
-          <MakeUpDialog
-            upcomingLessons={upcomingLessons}
-            studentId={row.original.studentId}
-            missedAttendanceId={row.original.id}
-          />
+          <ButtonDialog
+            title="Назначить отработку"
+            triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+            submitButtonProps={{ form: 'makeup-form' }}
+          >
+            <MakeUpForm
+              upcomingLessons={upcomingLessons}
+              studentId={row.original.studentId}
+              missedAttendanceId={row.original.id}
+            />
+          </ButtonDialog>
         )}
       </div>
     ),
@@ -291,7 +298,7 @@ export function AttendanceTable({
                     size={20}
                     aria-hidden="true"
                   />
-                  Группа
+                  Статус
                   {selectedStatuses.length > 0 && (
                     <span className="border-border bg-background text-muted-foreground/70 ms-3 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
                       {selectedStatuses.length}
