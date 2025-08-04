@@ -1,37 +1,44 @@
+version: '3.8'
+
 services:
-  frontend:
-    build: ./client
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:5000/api
-      - API_URL=http://backend:5000/api
-      - EMAIL_USER=max.f99@yandex.ru
-      - EMAIL_PASS=ybzyymlpifktejli
-    depends_on:
-      - backend
-  backend:
-    build: ./server
-    ports:
-      - "5000:5000"
-    environment:
-      - ASPNETCORE_URLS=http://+:5000
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres
-    depends_on:
-      - db
+  # Сервис для базы данных PostgreSQL
   db:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  # Сервис для Next.js-приложения
+  next-app:
+    build:
+      context: ./alg
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./alg:/app
+      # Исключаем node_modules, чтобы избежать конфликтов
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-postgres}?schema=public
+      # Указываем, что Prisma будет запускаться в контейнере
+      # Это важно для миграций и генерации клиента
+      PRISMA_CLI_PATH: /app/node_modules/.bin/prisma
+    
 volumes:
-  pgdata:
-
+  postgres_data:

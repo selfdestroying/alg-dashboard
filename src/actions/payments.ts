@@ -18,7 +18,7 @@ export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
             select: {
               id: true,
               attendance: {
-                where: { AND: [{ asMakeupFor: null }, { missedMakeup: null }] },
+                where: { asMakeupFor: null },
                 select: {
                   studentId: true,
                   status: true,
