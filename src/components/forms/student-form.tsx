@@ -7,13 +7,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
 import { createStudent } from '@/actions/students'
 import { StudentSchema, StudentSchemaType } from '@/schemas/student'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 
 export default function StudentForm() {
   const form = useForm<StudentSchemaType>({
