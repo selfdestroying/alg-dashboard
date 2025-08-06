@@ -10,11 +10,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./alg:/app
       # Исключаем node_modules, чтобы избежать конфликтов
@@ -39,6 +39,6 @@ services:
       # Указываем, что Prisma будет запускаться в контейнере
       # Это важно для миграций и генерации клиента
       PRISMA_CLI_PATH: /app/node_modules/.bin/prisma
-    
+
 volumes:
   postgres_data:

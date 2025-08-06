@@ -20,7 +20,7 @@ export const getStudent = async (id: number) => {
 }
 
 export const createStudent = async (
-  data: Omit<Omit<Prisma.StudentCreateInput, 'login'>, 'password'>
+  data: Omit<Prisma.StudentCreateInput, 'login' | 'password'>
 ) => {
   await prisma.student.create({
     data: {
