@@ -44,74 +44,104 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-info: var(--info);
 }
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --background: hsl(228 100% 98%); /* #F9FAFC - Основной фон */
+  --foreground: hsl(0 0% 13%); /* #222222 - Основной цвет текста */
+
+  --card: hsl(228 100% 98%); /* #F9FAFC - Фон карточек */
+  --card-foreground: hsl(0 0% 13%); /* #222222 - Текст на карточках */
+
+  --popover: hsl(228 100% 98%); /* #F9FAFC - Фон всплывающих окон */
+  --popover-foreground: hsl(0 0% 13%); /* #222222 - Текст во всплывающих окнах */
+
+  --primary: hsl(259 73% 55%); /* #833ae0 - Основной акцентный цвет */
+  --primary-foreground: hsl(0 0% 100%); /* #FFFFFF - Текст на основном цвете */
+
+  --secondary: hsl(216 2% 82%); /* #D0D1D2 - Вторичный фон */
+  --secondary-foreground: hsl(215 28% 17%); /* #293139 - Текст на вторичном фоне */
+
+  --muted: hsl(216 2% 82%); /* #D0D1D2 - Приглушённый фон */
+  --muted-foreground: hsl(215 14% 50%); /* #6F7881 - Приглушённый текст */
+
+  --accent: hsl(262, 100%, 86%); /* #D0D1D2 - Фон при наведении */
+  --accent-foreground: hsl(240, 22%, 15%); /* #293139 - Текст при наведении */
+
+  --destructive: hsl(0 84% 60%); /* #E53E3E - Цвет для ошибок */
+  --destructive-foreground: hsl(0 0% 98%); /* #F9FAFC - Текст на фоне ошибок */
+
+  --border: hsl(216 2% 82%); /* #D0D1D2 - Цвет рамок и разделителей */
+  --input: hsl(216 2% 82%); /* #D0D1D2 - Цвет полей ввода */
+  --ring: hsl(259 73% 55%); /* #833ae0 - Цвет обводки при фокусе */
+
+  --radius: 0.5rem; /* Радиус скругления углов */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: hsl(228 100% 98%); /* #F9FAFC - Фон сайдбара */
+  --sidebar-foreground: hsl(0 0% 13%); /* #222222 - Текст сайдбара */
+  --sidebar-primary: hsl(259 73% 55%); /* #833ae0 - Активный пункт сайдбара */
+  --sidebar-primary-foreground: hsl(0 0% 100%); /* #FFFFFF - Текст активного пункта */
+  --sidebar-accent: hsl(262, 100%, 86%); /* #D0D1D2 - Фон при наведении */
+  --sidebar-accent-foreground: hsl(240, 22%, 15%); /* #293139 - Текст при наведении */
+  --sidebar-border: hsl(216 2% 82%); /* #D0D1D2 - Граница сайдбара */
+  --sidebar-ring: hsl(259 73% 55%); /* #833ae0 - Обводка при фокусе */
+  --success: hsl(155, 60%, 45%);
+  --warning: hsl(37, 91%, 55%);
+  --error: hsl(6, 78%, 57%);
+  --info: hsl(210, 90%, 40%)
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: hsl(236 7% 11%); /* #1C1C1E - Основной фон */
+  --foreground: hsl(228 100% 98%); /* #F9FAFC - Основной цвет текста */
+
+  --card: hsl(236 7% 11%); /* #1C1C1E - Фон карточек */
+  --card-foreground: 228 100% 98%; /* #F9FAFC - Текст на карточках */
+
+  --popover: hsl(236 7% 11%); /* #1C1C1E - Фон всплывающих окон */
+  --popover-foreground: hsl(228 100% 98%); /* #F9FAFC - Текст во всплывающих окнах */
+
+  --primary: hsl(259 73% 55%); /* #833ae0 - Основной акцентный цвет */
+  --primary-foreground: hsl(228 100% 98%); /* #F9FAFC - Текст на основном цвете */
+
+  --secondary: hsl(222 2% 30%); /* #4A4B4D - Вторичный фон */
+  --secondary-foreground: hsl(228 100% 98%); /* #F9FAFC - Текст на вторичном фоне */
+
+  --muted: hsl(222 2% 30%); /* #4A4B4D - Приглушённый фон */
+  --muted-foreground: hsl(215 14% 65%); /* #A6ADB6 - Приглушённый текст */
+
+  --accent: hsl(262, 59%, 43%); /* #4A4B4D - Фон при наведении */
+  --accent-foreground: hsl(240, 29%, 97%); /* #F9FAFC - Текст при наведении */
+
+  --destructive: hsl(0 72% 51%); /* #B91C1C - Цвет для ошибок */
+  --destructive-foreground: hsl(0 0% 98%); /* #F9FAFC - Текст на фоне ошибок */
+
+  --border: hsl(222 2% 30%); /* #4A4B4D - Цвет рамок и разделителей */
+  --input: hsl(222 2% 30%); /* #4A4B4D - Цвет полей ввода */
+  --ring: hsl(259 73% 55%); /* #833ae0 - Цвет обводки при фокусе */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: hsl(236 7% 11%); /* #1C1C1E - Фон сайдбара */
+  --sidebar-foreground: hsl(228 100% 98%); /* #F9FAFC - Текст сайдбара */
+  --sidebar-primary: hsl(259 73% 55%); /* #833ae0 - Активный пункт сайдбара */
+  --sidebar-primary-foreground: hsl(228 100% 98%); /* #F9FAFC - Текст активного пункта */
+  --sidebar-accent: hsl(262, 59%, 43%); /* #4A4B4D - Фон при наведении */
+  --sidebar-accent-foreground: hsl(240, 29%, 97%); /* #F9FAFC - Текст при наведении */
+  --sidebar-border: hsl(222 2% 30%); /* #4A4B4D - Граница сайдбара */
+  --sidebar-ring: hsl(259 73% 55%); /* #833ae0 - Обводка при фокусе */
+  --success: hsl(155, 60%, 45%);
+  --warning: hsl(37, 91%, 55%);
+  --error: hsl(6, 78%, 57%);
 }
 
 @layer base {

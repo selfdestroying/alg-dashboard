@@ -43,7 +43,7 @@ export async function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="dark bg-sidebar w-(--radix-dropdown-menu-trigger-width)"
+            className="w-(--radix-dropdown-menu-trigger-width)"
             side="top"
             align="start"
           >

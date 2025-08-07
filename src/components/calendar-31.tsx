@@ -83,11 +83,11 @@ export default function Calendar31() {
                 let bg = ''
                 if (isLessonDay) {
                   if (todayTimestamp === dayTimestamp) {
-                    bg = 'bg-red-500/35'
+                    bg = 'bg-error'
                   } else if (todayTimestamp > dayTimestamp) {
-                    bg = 'bg-green-500/35'
+                    bg = 'bg-success'
                   } else {
-                    bg = 'bg-blue-500/35'
+                    bg = 'bg-info'
                   }
                 }
 
@@ -106,7 +106,7 @@ export default function Calendar31() {
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-green-500/35"
+                    className="inline-block size-2 rounded-full bg-success"
                     aria-hidden="true"
                   ></span>{' '}
                   Прошедшие уроки
@@ -117,7 +117,7 @@ export default function Calendar31() {
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-red-500/35"
+                    className="inline-block size-2 rounded-full bg-error"
                     aria-hidden="true"
                   ></span>{' '}
                   Не отмеченные уроки
@@ -128,7 +128,7 @@ export default function Calendar31() {
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-blue-500/35"
+                    className="inline-block size-2 rounded-full bg-info"
                     aria-hidden="true"
                   ></span>{' '}
                   Будущие уроки

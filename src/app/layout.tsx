@@ -4,6 +4,7 @@ import { Toaster } from '@/components/toaster'
 import { DataProvider } from '@/providers/data-provider'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '@/providers/theme-provider'
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -18,12 +19,14 @@ export default async function RootLayout({
   const courses = await getCourses()
   const users = await getUsers()
   return (
-    <html lang="en" className="dark scheme-only-dark">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${fontSans.variable} font-sans antialiased`}>
-        <DataProvider courses={courses} users={users}>
-          {children}
-          <Toaster />
-        </DataProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+          <DataProvider courses={courses} users={users}>
+            {children}
+            <Toaster />
+          </DataProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

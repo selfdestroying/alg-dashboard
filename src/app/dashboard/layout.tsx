@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar'
 import MyBreadCrumbs from '@/components/breadcrumbs'
 import ButtonDialog from '@/components/button-dialog'
 import FeedbackForm from '@/components/forms/feedback-form'
+import { ModeToggle } from '@/components/mode-toggle'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { redirect } from 'next/navigation'
 
@@ -23,9 +24,10 @@ export default async function Layout({
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
           <div className="flex flex-1 items-center gap-2">
             <SidebarTrigger />
-            <MyBreadCrumbs />
+            {/* <MyBreadCrumbs /> */}
           </div>
           <div className="ml-auto flex gap-3">
+            <ModeToggle />
             <ButtonDialog
               title="Отправить отзыв"
               description="Пожелания по улучшению, описание ошибок или багов"
