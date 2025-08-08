@@ -120,11 +120,11 @@ function StatusAction({
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={AttendanceStatus.PRESENT}>
-          <div className="bg-primary/90 size-2 rounded-full" aria-hidden="true"></div>
+          <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
           {StatusMap.PRESENT}
         </SelectItem>
         <SelectItem value={AttendanceStatus.ABSENT}>
-          <div className="bg-destructive/90 size-2 rounded-full" aria-hidden="true"></div>
+          <div className="bg-error size-2 rounded-full" aria-hidden="true"></div>
           {StatusMap.ABSENT}
         </SelectItem>
       </SelectContent>

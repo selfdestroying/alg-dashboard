@@ -95,7 +95,7 @@
   --success: hsl(155, 60%, 45%);
   --warning: hsl(37, 91%, 55%);
   --error: hsl(6, 78%, 57%);
-  --info: hsl(210, 90%, 40%)
+  --info: hsl(217, 91%, 60%);
 }
 
 .dark {
@@ -142,6 +142,7 @@
   --success: hsl(155, 60%, 45%);
   --warning: hsl(37, 91%, 55%);
   --error: hsl(6, 78%, 57%);
+  --info: hsl(217, 91%, 60%);
 }
 
 @layer base {

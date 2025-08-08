@@ -64,8 +64,8 @@ model Course {
 model StudentGroup {
   studentId Int
   groupId   Int
-  group     Group   @relation(fields: [groupId], references: [id])
-  student   Student @relation(fields: [studentId], references: [id])
+  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@id([studentId, groupId])
 }
@@ -77,17 +77,17 @@ model Lesson {
   time       String?
   createdAt  DateTime     @default(now())
   attendance Attendance[]
-  group      Group        @relation(fields: [groupId], references: [id])
+  group      Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 model Attendance {
   id           Int              @id @default(autoincrement())
-  lessonId     Int?
+  lessonId     Int
   studentId    Int
   status       AttendanceStatus
   comment      String
-  lesson       Lesson?          @relation(fields: [lessonId], references: [id])
-  student      Student          @relation(fields: [studentId], references: [id])
+  lesson       Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   asMakeupFor  MakeUp?          @relation("MakeUpAttendace")
   missedMakeup MakeUp?          @relation("MissedAttendance")
 
@@ -98,19 +98,19 @@ model MakeUp {
   id                 Int        @id @default(autoincrement())
   missedAttendanceId Int        @unique
   makeUpAttendaceId  Int        @unique
-  makeUpAttendance   Attendance @relation("MakeUpAttendace", fields: [makeUpAttendaceId], references: [id])
-  missedAttendance   Attendance @relation("MissedAttendance", fields: [missedAttendanceId], references: [id])
+  makeUpAttendance   Attendance @relation("MakeUpAttendace", fields: [makeUpAttendaceId], references: [id], onDelete: Cascade)
+  missedAttendance   Attendance @relation("MissedAttendance", fields: [missedAttendanceId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
   id          Int      @id @default(autoincrement())
-  studentId   Int?
-  groupId     Int?
+  studentId   Int
+  groupId     Int
   lessonsPaid Int
   amount      Int?
   createdAt   DateTime @default(now())
-  group       Group?   @relation(fields: [groupId], references: [id])
-  student     Student? @relation(fields: [studentId], references: [id])
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, groupId])
 }
@@ -120,7 +120,7 @@ model Cart {
   studentId Int        @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime
-  Student   Student    @relation(fields: [studentId], references: [id])
+  Student   Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   CartItem  CartItem[]
 }
 
@@ -131,8 +131,8 @@ model CartItem {
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime
-  Cart      Cart     @relation(fields: [cartId], references: [id])
-  Product   Product  @relation(fields: [productId], references: [id])
+  Cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
 }
@@ -155,7 +155,7 @@ model Product {
   reviews       Int        @default(0)
   popular       Boolean    @default(false)
   cartItem      CartItem[]
-  category      Category   @relation(fields: [categoryId], references: [id])
+  category      Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

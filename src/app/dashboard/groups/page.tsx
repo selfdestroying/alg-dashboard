@@ -32,9 +32,11 @@ export default async function Page() {
         <ButtonDialog title="Добавить группу" submitButtonProps={{ form: 'group-form' }}>
           <GroupForm />
         </ButtonDialog>
-        <Button size={'icon'} onClick={generateGroup}>
-          <Dices />
-        </Button>
+        {user.role == 'ADMIN' && (
+          <Button size={'icon'} onClick={generateGroup}>
+            <Dices />
+          </Button>
+        )}
       </div>
       <div>
         <GroupsTable groups={groups} user={user} />

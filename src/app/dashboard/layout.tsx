@@ -1,6 +1,5 @@
 import { getUser } from '@/actions/users'
 import { AppSidebar } from '@/components/app-sidebar'
-import MyBreadCrumbs from '@/components/breadcrumbs'
 import ButtonDialog from '@/components/button-dialog'
 import FeedbackForm from '@/components/forms/feedback-form'
 import { ModeToggle } from '@/components/mode-toggle'
@@ -23,15 +22,15 @@ export default async function Layout({
       <SidebarInset className="overflow-hidden px-4 md:px-6 lg:px-8">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
           <div className="flex flex-1 items-center gap-2">
-            <SidebarTrigger />
+            <SidebarTrigger variant={'outline'} />
             {/* <MyBreadCrumbs /> */}
           </div>
-          <div className="ml-auto flex gap-3">
+          <div className="ml-auto flex items-center gap-3">
             <ModeToggle />
             <ButtonDialog
               title="Отправить отзыв"
               description="Пожелания по улучшению, описание ошибок или багов"
-              triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+              triggerButtonProps={{ variant: 'outline', size: 'sm', className: 'h-7' }}
               submitButtonProps={{ form: 'feedback-form' }}
             >
               <FeedbackForm user={user} />

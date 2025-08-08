@@ -213,7 +213,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
-                'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
+                'peer min-w-60 bg-gradient-to-br ps-9',
                 Boolean(table.getColumn('fullName')?.getFilterValue()) && 'pe-9'
               )}
               value={(table.getColumn('fullName')?.getFilterValue() ?? '') as string}
@@ -382,7 +382,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="data-[state=selected]:bg-accent/50 hover:bg-accent/50 data-[state=selected]:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="h-[inherit] last:py-0">
@@ -392,7 +392,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               </TableRow>
             ))
           ) : (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow className="data-[state=selected]:bg-accent/50 hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
@@ -445,6 +445,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
 function RowActions({ item }: { item: Student }) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [studentName, setStudentName] = useState('')
 
   const handleDelete = () => {
     startUpdateTransition(() => {
@@ -467,16 +468,33 @@ function RowActions({ item }: { item: Student }) {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Вы уверены, что хотите удалить ученика{' '}
+              <strong>
+                {item.firstName} {item.lastName}
+              </strong>
+              ?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this contact.
+              При удалении ученика, будут удалены все связанные с ним сущности: посещаемость,{' '}
+              <strong>оплаты</strong>. Это действие нельзя будет отменить.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div>
+            <Label className="text-muted-foreground text-sm font-medium">
+              Введите полное имя ученика для подтверждения удаления:
+            </Label>
+            <Input
+              placeholder={`${item.firstName} ${item.lastName}`}
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+            />
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={isUpdatePending}
+              disabled={isUpdatePending || studentName !== `${item.firstName} ${item.lastName}`}
               className="bg-destructive hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-white shadow-xs"
             >
               Delete

@@ -26,8 +26,8 @@ function getLessonStatus(lesson: LessonWithCountUnspecified) {
   if (isPastLesson) {
     const hasAttendance = lesson._count.attendance > 0
     const className = hasAttendance
-      ? 'bg-destructive/90 size-2 animate-pulse rounded-full'
-      : 'bg-primary/90 size-2 rounded-full'
+      ? 'bg-error size-2 animate-pulse rounded-full'
+      : 'bg-success size-2 rounded-full'
 
     return <div className={className} aria-hidden="true" />
   }

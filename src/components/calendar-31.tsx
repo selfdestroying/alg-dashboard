@@ -3,62 +3,76 @@
 import { getLessons, LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { isToday } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
-const events = [
-  {
-    title: 'Team Sync Meeting',
-    from: '2025-06-12T09:00:00',
-    to: '2025-06-12T10:00:00',
-  },
-  {
-    title: 'Design Review',
-    from: '2025-06-12T11:30:00',
-    to: '2025-06-12T12:30:00',
-  },
-  {
-    title: 'Client Presentation',
-    from: '2025-06-12T14:00:00',
-    to: '2025-06-12T15:00:00',
-  },
-]
+import { Day } from 'react-day-picker'
+import { Button } from './ui/button'
 
 const getDayTimestamp = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
 export default function Calendar31() {
-  const [date, setDate] = useState<Date | undefined>()
-  const [month, setMonth] = useState<Date | undefined>(new Date())
-  const [lessonsTimestamps, setlessonsTimestamps] = useState<number[]>([])
+  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [month, setMonth] = useState<Date>(new Date())
+  const [lessonsByDay, setLessonsByDay] = useState<Record<number, LessonWithAttendanceAndGroup[]>>(
+    {}
+  )
   const [selectedDayLessons, setSelectedDayLessons] = useState<LessonWithAttendanceAndGroup[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const todayTimestamp = getDayTimestamp(new Date())
 
+  const getLessonStatus = (lesson: LessonWithAttendanceAndGroup) => {
+    const now = new Date()
+    const isTodayLesson = isToday(lesson.date)
+    const isPastLesson = now > lesson.date
+
+    if (isPastLesson || isTodayLesson) {
+      const hasAttendance = lesson.attendance.some((a) => a.status === 'UNSPECIFIED')
+      return hasAttendance ? 'bg-error' : 'bg-success'
+    }
+    return 'bg-info'
+  }
+
+  const fetchLessonsForMonth = async (month: Date) => {
+    setIsLoading(true)
+    const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1)
+    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0)
+    const lessons = await getLessons({ where: { date: { gte: startOfMonth, lte: endOfMonth } } })
+
+    const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}
+    lessons.forEach((lesson) => {
+      const dayTimestamp = getDayTimestamp(lesson.date)
+      if (!newLessonsByDay[dayTimestamp]) {
+        newLessonsByDay[dayTimestamp] = []
+      }
+      newLessonsByDay[dayTimestamp].push(lesson)
+    })
+    setLessonsByDay(newLessonsByDay)
+    setIsLoading(false)
+  }
+
   useEffect(() => {
-    const value = new Date()
-    const startOfMonth = new Date(value.getFullYear(), value.getMonth(), 1)
-    const endOfMonth = new Date(value.getFullYear(), value.getMonth() + 1, 0)
-    getLessons({ where: { date: { gte: startOfMonth, lte: endOfMonth } } }).then((res) =>
-      setlessonsTimestamps(res.flatMap((lesson) => lesson.date.getTime()))
-    )
-  }, [])
+    fetchLessonsForMonth(month)
+  }, [month])
+
+  useEffect(() => {
+    if (date) {
+      const dayTimestamp = getDayTimestamp(date)
+      setSelectedDayLessons(lessonsByDay[dayTimestamp] || [])
+    } else {
+      setSelectedDayLessons([])
+    }
+  }, [date, lessonsByDay])
 
   const onSelect = (value: Date | undefined) => {
-    if (value) {
-      getLessons({
-        where: {
-          date: { equals: new Date(value.getFullYear(), value.getMonth(), value.getDate()) },
-        },
-      }).then((res) => setSelectedDayLessons(res))
-      setDate(value)
-    }
+    setDate(value)
   }
+
   const onMonthChange = (value: Date) => {
-    const startOfMonth = new Date(value.getFullYear(), value.getMonth(), 1)
-    const endOfMonth = new Date(value.getFullYear(), value.getMonth() + 1, 0)
-    getLessons({ where: { date: { gte: startOfMonth, lte: endOfMonth } } }).then((res) =>
-      setlessonsTimestamps(res.flatMap((lesson) => lesson.date.getTime()))
-    )
     setMonth(value)
   }
 
@@ -76,62 +90,73 @@ export default function Calendar31() {
             locale={ru}
             showOutsideDays={false}
             components={{
-              DayButton: ({ children, modifiers, day, ...props }) => {
+              Day: ({ ...props }) => (
+                <Day {...props} className={cn(props.className, 'bg-transparent')} />
+              ),
+              DayButton: ({ children, day, ...props }) => {
                 const dayTimestamp = getDayTimestamp(day.date)
-                const isLessonDay = lessonsTimestamps.includes(dayTimestamp)
+                const lessonsForDay = lessonsByDay[dayTimestamp]
+                const hasUnspecifiedAttendance = lessonsForDay?.some((lesson) =>
+                  lesson.attendance.some((a) => a.status === 'UNSPECIFIED')
+                )
 
                 let bg = ''
-                if (isLessonDay) {
-                  if (todayTimestamp === dayTimestamp) {
-                    bg = 'bg-error'
-                  } else if (todayTimestamp > dayTimestamp) {
-                    bg = 'bg-success'
+                if (lessonsForDay) {
+                  if (todayTimestamp >= dayTimestamp && hasUnspecifiedAttendance) {
+                    bg = 'bg-error text-primary-foreground'
+                  } else if (todayTimestamp >= dayTimestamp) {
+                    bg = 'bg-success text-primary-foreground'
                   } else {
-                    bg = 'bg-info'
+                    bg = 'bg-info text-primary-foreground'
                   }
                 }
 
                 return (
-                  <CalendarDayButton day={day} modifiers={modifiers} {...props} className={bg}>
-                    {children}
+                  <CalendarDayButton
+                    day={day}
+                    {...props}
+                    className={cn(props.className, bg, 'transition-none')}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <Loader2 className="animate-spin" /> : children}
                   </CalendarDayButton>
                 )
               },
             }}
             footer={
-              <div className="grid grid-cols-3">
+              <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
                 <div
-                  className="text-muted-foreground text-center text-xs"
+                  className="flex items-center justify-center space-x-1"
                   role="region"
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-success"
+                    className="bg-success inline-block size-2 rounded-full"
                     aria-hidden="true"
-                  ></span>{' '}
-                  Прошедшие уроки
+                  ></span>
+                  <span>Завершённые уроки</span>
                 </div>
                 <div
-                  className="text-muted-foreground text-center text-xs"
+                  className="flex items-center justify-center space-x-1"
                   role="region"
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-error"
+                    className="bg-error inline-block size-2 rounded-full"
                     aria-hidden="true"
-                  ></span>{' '}
-                  Не отмеченные уроки
+                  ></span>
+                  <span>Неотмеченные уроки</span>
                 </div>
                 <div
-                  className="text-muted-foreground text-center text-xs"
+                  className="flex items-center justify-center space-x-1"
                   role="region"
                   aria-live="polite"
                 >
                   <span
-                    className="inline-block size-2 rounded-full bg-info"
+                    className="bg-info inline-block size-2 rounded-full"
                     aria-hidden="true"
-                  ></span>{' '}
-                  Будущие уроки
+                  ></span>
+                  <span>Будущие уроки</span>
                 </div>
               </div>
             }
@@ -148,17 +173,30 @@ export default function Calendar31() {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            {selectedDayLessons.map((lesson) => (
-              <div
-                key={lesson.id}
-                className="bg-muted relative rounded-md p-2 pl-6 text-sm after:absolute after:inset-y-2 after:left-2 after:w-1 after:rounded-full after:bg-red-500/70"
-              >
-                <div className="font-medium">{lesson.group.name}</div>
-                <div className="text-muted-foreground text-xs">
-                  {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}
-                </div>
-              </div>
-            ))}
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              selectedDayLessons.map((lesson) => {
+                const lessonStatus = getLessonStatus(lesson)
+                return (
+                  <Button
+                    key={lesson.id}
+                    variant={'outline'}
+                    asChild
+                    className={`relative h-fit flex-col items-start justify-start rounded-md border p-2 pl-6 text-sm after:absolute after:inset-y-2 after:left-2 after:w-1 after:rounded-full ${lessonStatus === 'bg-error' ? 'after:bg-error' : ''} ${
+                      lessonStatus === 'bg-success' ? 'after:bg-success' : ''
+                    } ${lessonStatus === 'bg-info' ? 'after:bg-info' : ''}`}
+                  >
+                    <Link href={`/dashboard/lessons/${lesson.id}`}>
+                      <span className="font-medium">{lesson.group.name}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}
+                      </span>
+                    </Link>
+                  </Button>
+                )
+              })
+            )}
           </div>
         </div>
       </CardContent>
