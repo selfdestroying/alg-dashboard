@@ -17,6 +17,8 @@ export default async function Page() {
     await createStudent({
       firstName: firstNames[getRandomInteger(0, firstNames.length - 1)],
       lastName: lastNames[getRandomInteger(0, lastNames.length - 1)],
+      parentsName: firstNames[getRandomInteger(0, firstNames.length - 1)],
+      crmUrl: `https://crm.example.com/${getRandomInteger(1000, 9999)}`,
       age: getRandomInteger(6, 17),
     })
   }

@@ -19,20 +19,22 @@ model User {
 }
 
 model Student {
-  id          Int            @id @default(autoincrement())
-  firstName   String
-  lastName    String?
-  login       String
-  password    String
-  age         Int
-  birthDate   DateTime?
-  phone       String?
-  createdAt   DateTime       @default(now())
-  coins       Int            @default(0)
-  attendances Attendance[]
-  Cart        Cart?
-  payments    Payment[]
-  groups      StudentGroup[]
+  id           Int            @id @default(autoincrement())
+  firstName    String
+  lastName     String?
+  login        String
+  password     String
+  age          Int
+  birthDate    DateTime?
+  parentsName  String?
+  parentsPhone String?
+  crmUrl       String?
+  createdAt    DateTime       @default(now())
+  coins        Int            @default(0)
+  attendances  Attendance[]
+  Cart         Cart?
+  payments     Payment[]
+  groups       StudentGroup[]
 }
 
 model Group {

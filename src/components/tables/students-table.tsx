@@ -49,13 +49,17 @@ import Link from 'next/link'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) => {
+const ageFilterFn: FilterFn<Student & { _count: { groups: number } }> = (
+  row,
+  columnId,
+  filterValue: number[]
+) => {
   if (!filterValue?.length) return true
   const age = row.getValue(columnId) as number
   return filterValue.includes(age)
 }
 
-const getColumns = (): ColumnDef<Student>[] => [
+const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -93,26 +97,54 @@ const getColumns = (): ColumnDef<Student>[] => [
         </div>
       </div>
     ),
-    size: 180,
     enableHiding: false,
   },
   {
     header: 'Возраст',
     accessorKey: 'age',
     cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('age')}</span>,
-    size: 110,
+    filterFn: ageFilterFn,
+  },
+  {
+    header: 'ФИО Родителя',
+    accessorKey: 'parentsName',
+    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('parentsName')}</span>,
+    filterFn: ageFilterFn,
+  },
+  {
+    header: 'Ссылка в amoCRM',
+    accessorKey: 'crmUrl',
+    cell: ({ row }) => (
+      <div className="flex items-center">
+        <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+          <a target="_blank" href={row.getValue('crmUrl')}>
+            {row.getValue('crmUrl') || 'Нет ссылки'}
+          </a>
+        </Button>
+      </div>
+    ),
+    filterFn: ageFilterFn,
+  },
+  {
+    header: 'Количество групп',
+    accessorKey: 'groups',
+    accessorFn: (value) => value._count.groups,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('groups')}</span>,
     filterFn: ageFilterFn,
   },
   {
     id: 'actions',
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <RowActions item={row.original} />,
-    size: 60,
     enableHiding: false,
   },
 ]
 
-export default function StudentsTable({ students }: { students: Student[] }) {
+export default function StudentsTable({
+  students,
+}: {
+  students: (Student & { _count: { groups: number } })[]
+}) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -382,7 +414,7 @@ export default function StudentsTable({ students }: { students: Student[] }) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="data-[state=selected]:bg-accent/50 hover:bg-accent/50 data-[state=selected]:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="hover:bg-accent/50 data-[state=selected]:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="h-[inherit] last:py-0">

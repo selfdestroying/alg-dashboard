@@ -15,7 +15,7 @@ import { Button } from './ui/button'
 const getDayTimestamp = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
-export default function Calendar31() {
+export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: number }) {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [month, setMonth] = useState<Date>(new Date())
   const [lessonsByDay, setLessonsByDay] = useState<Record<number, LessonWithAttendanceAndGroup[]>>(
@@ -41,7 +41,12 @@ export default function Calendar31() {
     setIsLoading(true)
     const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1)
     const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0)
-    const lessons = await getLessons({ where: { date: { gte: startOfMonth, lte: endOfMonth } } })
+    const lessons = await getLessons({
+      where: {
+        date: { gte: startOfMonth, lte: endOfMonth },
+        group: { teacherId: selectedTeacherId == -1 ? undefined : selectedTeacherId },
+      },
+    })
 
     const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}
     lessons.forEach((lesson) => {
@@ -57,7 +62,8 @@ export default function Calendar31() {
 
   useEffect(() => {
     fetchLessonsForMonth(month)
-  }, [month])
+    console.log(selectedTeacherId)
+  }, [month, selectedTeacherId])
 
   useEffect(() => {
     if (date) {
@@ -188,7 +194,9 @@ export default function Calendar31() {
                     } ${lessonStatus === 'bg-info' ? 'after:bg-info' : ''}`}
                   >
                     <Link href={`/dashboard/lessons/${lesson.id}`}>
-                      <span className="font-medium">{lesson.group.name}</span>
+                      <span className="font-medium">
+                        {lesson.group.name} - {lesson.group.teacher.firstName}
+                      </span>
                       <span className="text-muted-foreground text-xs">
                         {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}
                       </span>

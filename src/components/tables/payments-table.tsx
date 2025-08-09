@@ -39,8 +39,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
     header: 'Ученик',
     accessorKey: 'student',
-    accessorFn: (item) =>
-      item.student ? `${item.student.firstName} ${item.student.lastName}` : 'Удаленный ученик',
+    accessorFn: (item) => `${item.student.firstName} ${item.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
@@ -57,7 +56,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
     header: 'Группа',
     accessorKey: 'group',
-    accessorFn: (item) => (item.group ? item.group.name : 'Удаленная группа'),
+    accessorFn: (item) => item.group.name,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">

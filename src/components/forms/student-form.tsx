@@ -24,16 +24,14 @@ export default function StudentForm() {
       age: 0,
     },
   })
-  function onReset() {
-    form.reset()
-    form.clearErrors()
-  }
 
   function onSubmit(values: StudentSchemaType) {
     const ok = createStudent({
       age: values.age,
       firstName: values.firstName,
       lastName: values.lastName,
+      parentsName: values.parentsName,
+      crmUrl: values.crmUrl,
     })
     toast.promise(ok, {
       loading: 'Загрузка...',
@@ -45,7 +43,6 @@ export default function StudentForm() {
   return (
     <Form {...form}>
       <form
-        onReset={onReset}
         className="@container space-y-8"
         onSubmit={form.handleSubmit(onSubmit)}
         id="student-form"
@@ -102,6 +99,32 @@ export default function StudentForm() {
                   />
                 </FormControl>
 
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="parentsName"
+            render={({ field }) => (
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+                <FormLabel className="flex shrink-0">ФИО Родителя</FormLabel>
+                <FormControl>
+                  <Input placeholder="" type="text" className=" " {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="crmUrl"
+            render={({ field }) => (
+              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+                <FormLabel className="flex shrink-0">Ссылка в amoCRM</FormLabel>
+                <FormControl>
+                  <Input placeholder="" type="url" className=" " {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

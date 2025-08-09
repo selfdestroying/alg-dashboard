@@ -1,12 +1,15 @@
 'use server'
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
-import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 import { revalidatePath } from 'next/cache'
 
 export const getStudents = async () => {
-  const students = await prisma.student.findMany()
+  const students = await prisma.student.findMany({
+    include: {
+      _count: { select: { groups: true } },
+    },
+  })
   return students
 }
 
@@ -25,7 +28,7 @@ export const createStudent = async (
   await prisma.student.create({
     data: {
       ...data,
-      password: await bcrypt.hash('student', 10),
+      password: 'student',
       login: `student-${randomUUID().slice(0, 4)}`,
     },
   })
