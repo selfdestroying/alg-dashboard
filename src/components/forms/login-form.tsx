@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { useData } from '@/providers/data-provider'
 import { signInFormSchema } from '@/schemas/auth'
 import { User } from '@prisma/client'
-import { LogIn } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
 import { useActionState, useState } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
@@ -33,7 +33,7 @@ import {
 export default function LoginForm() {
   const { users } = useData()
   const [selectedUserRole, setSelectedUserRole] = useState<User['role']>()
-  const [state, action] = useActionState(sigin, undefined)
+  const [state, action, isPending] = useActionState(sigin, undefined)
 
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
@@ -147,10 +147,17 @@ export default function LoginForm() {
               <Button
                 type="submit"
                 className="w-full cursor-pointer"
-                disabled={form.formState.isSubmitting}
+                size={isPending ? 'icon' : 'default'}
+                disabled={form.formState.isSubmitting || isPending}
               >
-                <LogIn className="mr-2 h-4 w-4" />
-                Войти
+                {isPending ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <LogIn />
+                    Войти
+                  </>
+                )}
               </Button>
               {!state?.success && <p>{state?.message}</p>}
             </form>

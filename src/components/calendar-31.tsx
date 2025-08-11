@@ -85,7 +85,7 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
   return (
     <Card className="h-full w-full py-4">
       <CardContent className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3">
-        <div className="col-span-1 space-y-2">
+        <div className="col-span-1 space-y-4">
           <Calendar
             mode="single"
             selected={date}
@@ -129,46 +129,38 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
                 )
               },
             }}
-            footer={
-              <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
-                <div
-                  className="flex items-center justify-center space-x-1"
-                  role="region"
-                  aria-live="polite"
-                >
-                  <span
-                    className="bg-success inline-block size-2 rounded-full"
-                    aria-hidden="true"
-                  ></span>
-                  <span>Завершённые уроки</span>
-                </div>
-                <div
-                  className="flex items-center justify-center space-x-1"
-                  role="region"
-                  aria-live="polite"
-                >
-                  <span
-                    className="bg-error inline-block size-2 rounded-full"
-                    aria-hidden="true"
-                  ></span>
-                  <span>Неотмеченные уроки</span>
-                </div>
-                <div
-                  className="flex items-center justify-center space-x-1"
-                  role="region"
-                  aria-live="polite"
-                >
-                  <span
-                    className="bg-info inline-block size-2 rounded-full"
-                    aria-hidden="true"
-                  ></span>
-                  <span>Будущие уроки</span>
-                </div>
-              </div>
-            }
           />
+          <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
+            <div
+              className="flex items-center justify-center space-x-1"
+              role="region"
+              aria-live="polite"
+            >
+              <span
+                className="bg-success inline-block size-2 rounded-full"
+                aria-hidden="true"
+              ></span>
+              <span>Завершённые уроки</span>
+            </div>
+            <div
+              className="flex items-center justify-center space-x-1"
+              role="region"
+              aria-live="polite"
+            >
+              <span className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></span>
+              <span>Неотмеченные уроки</span>
+            </div>
+            <div
+              className="flex items-center justify-center space-x-1"
+              role="region"
+              aria-live="polite"
+            >
+              <span className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></span>
+              <span>Будущие уроки</span>
+            </div>
+          </div>
         </div>
-        <div className="col-span-2 space-y-2">
+        <div className="col-span-1 space-y-2">
           <div className="flex w-full items-center justify-between px-1">
             <div className="text-sm font-medium">
               {date?.toLocaleDateString('ru-RU', {
