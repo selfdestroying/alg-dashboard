@@ -46,3 +46,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres\
+        
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
