@@ -19,7 +19,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no user@77.233.221.105 "
+          ssh -o StrictHostKeyChecking=no root@77.233.221.105 "
           cd /path/to/project &&
           git pull &&
           docker compose down &&
