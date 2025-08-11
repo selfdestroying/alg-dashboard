@@ -29,7 +29,6 @@ import { cn } from '@/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
-  FilterFn,
   flexRender,
   getCoreRowModel,
   getFacetedUniqueValues,
@@ -48,12 +47,6 @@ import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 
 import Link from 'next/link'
 import { useId, useMemo, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-
-const ageFilterFn: FilterFn<ProductWithCategory> = (row, columnId, filterValue: number[]) => {
-  if (!filterValue?.length) return true
-  const age = row.getValue(columnId) as number
-  return filterValue.includes(age)
-}
 
 const getColumns = (): ColumnDef<ProductWithCategory>[] => [
   {

@@ -55,10 +55,6 @@ export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup
   return lessons
 }
 
-export const getLessonsByTeacherId = async (id: number) => {
-  const lessons = await prisma.lesson.findMany({ where: { group: { teacherId: id } } })
-}
-
 export const getLesson = async (id: number): Promise<LessonWithAttendance | null> => {
   const lesson = await prisma.lesson.findFirst({
     where: { id },

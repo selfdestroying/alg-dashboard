@@ -7,8 +7,8 @@ import { Separator } from '@/components/ui/separator'
 import { Calendar, Coins, Link as LinkIcon, Lock, User, Users } from 'lucide-react'
 import Link from 'next/link'
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const student = await getStudent(+id)
 
   if (!student) return <div>Ошибка при получении ученика</div>
@@ -109,7 +109,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     </Card>
   )
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function InfoGrid({ items }: { items: { icon: any; label: string; value: React.ReactNode }[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -119,12 +119,12 @@ function InfoGrid({ items }: { items: { icon: any; label: string; value: React.R
     </div>
   )
 }
-
 function InfoItem({
   icon: Icon,
   label,
   value,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any
   label: string
   value: React.ReactNode

@@ -3,6 +3,7 @@
 import { AlertCircleIcon, ImageUpIcon, XIcon } from 'lucide-react'
 
 import { useFileUpload } from '@/hooks/use-file-upload'
+import Image from 'next/image'
 import { ControllerRenderProps } from 'react-hook-form'
 
 export default function FileUploader({
@@ -26,7 +27,6 @@ export default function FileUploader({
   const [
     { files, isDragging, errors },
     {
-      addFiles,
       handleDragEnter,
       handleDragLeave,
       handleDragOver,
@@ -64,7 +64,7 @@ export default function FileUploader({
           />
           {previewUrl ? (
             <div className="absolute inset-0">
-              <img
+              <Image
                 src={previewUrl}
                 alt={files[0]?.file?.name || 'Uploaded image'}
                 className="size-full object-cover"

@@ -1,10 +1,8 @@
 import { getUpcomingLessons } from '@/actions/lessons'
 import { getUser } from '@/actions/users'
 import prisma from '@/lib/prisma'
-import { Attendance, AttendanceStatus } from '@prisma/client'
 import { AttendanceTable } from './tables/attendance-table'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 export async function CurrentLessons() {
   const now = new Date()
@@ -94,40 +92,5 @@ export async function CurrentLessons() {
         </div>
       ))}
     </div>
-  )
-}
-
-const StatusMap: { [key in AttendanceStatus]: string } = {
-  ABSENT: 'Пропустил',
-  PRESENT: 'Пришел',
-  UNSPECIFIED: 'Не отмечен',
-}
-
-function StatusAction({
-  value,
-  onChange,
-}: {
-  value: Attendance
-  onChange: (val: AttendanceStatus) => void
-}) {
-  return (
-    <Select
-      value={value.status != 'UNSPECIFIED' ? value.status : undefined}
-      onValueChange={(e: AttendanceStatus) => onChange(e)}
-    >
-      <SelectTrigger size="sm" className="">
-        <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={AttendanceStatus.PRESENT}>
-          <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.PRESENT}
-        </SelectItem>
-        <SelectItem value={AttendanceStatus.ABSENT}>
-          <div className="bg-error size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.ABSENT}
-        </SelectItem>
-      </SelectContent>
-    </Select>
   )
 }

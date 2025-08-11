@@ -1,55 +1,5 @@
-import { getRandomDate, getRandomInteger, getRandomTime } from '@/utils/random'
-import { GroupType, Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
-
-const prisma = new PrismaClient()
-
-async function getUsers(): Promise<Prisma.UserCreateManyInput[]> {
-  return [
-    {
-      firstName: 'Максим',
-      password: await bcrypt.hash('admin', 10),
-      role: 'ADMIN',
-      passwordRequired: true,
-    },
-    {
-      firstName: 'Саша',
-      password: await bcrypt.hash('owner', 10),
-      role: 'OWNER',
-      passwordRequired: true,
-    },
-    {
-      firstName: 'Настя',
-      password: await bcrypt.hash('owner', 10),
-      role: 'OWNER',
-      passwordRequired: true,
-    },
-    {
-      firstName: 'Рита',
-      password: await bcrypt.hash('manager', 10),
-      role: 'MANAGER',
-      passwordRequired: true,
-    },
-    {
-      firstName: 'Маша',
-      password: await bcrypt.hash('manager', 10),
-      role: 'MANAGER',
-      passwordRequired: true,
-    },
-    {
-      firstName: 'Наташа',
-      password: await bcrypt.hash('teacher', 10),
-      role: 'TEACHER',
-      passwordRequired: false,
-    },
-    {
-      firstName: 'Федя',
-      password: await bcrypt.hash('teacher', 10),
-      role: 'TEACHER',
-      passwordRequired: false,
-    },
-  ]
-}
 
 export const firstNames = [
   'Алексей',
@@ -255,64 +205,55 @@ export const lastNames = [
   'Прохоров',
   'Наумов',
 ]
-async function getStudents(): Promise<Prisma.StudentCreateManyInput[]> {
-  return firstNames.map((name) => ({
-    firstName: name,
-    lastName: lastNames[getRandomInteger(0, lastNames.length - 1)],
-    age: getRandomInteger(6, 17),
-  }))
+
+const prisma = new PrismaClient()
+
+async function getUsers(): Promise<Prisma.UserCreateManyInput[]> {
+  return [
+    {
+      firstName: 'Максим',
+      password: await bcrypt.hash('admin', 10),
+      role: 'ADMIN',
+      passwordRequired: true,
+    },
+    {
+      firstName: 'Саша',
+      password: await bcrypt.hash('owner', 10),
+      role: 'OWNER',
+      passwordRequired: true,
+    },
+    {
+      firstName: 'Настя',
+      password: await bcrypt.hash('owner', 10),
+      role: 'OWNER',
+      passwordRequired: true,
+    },
+    {
+      firstName: 'Рита',
+      password: await bcrypt.hash('manager', 10),
+      role: 'MANAGER',
+      passwordRequired: true,
+    },
+    {
+      firstName: 'Маша',
+      password: await bcrypt.hash('manager', 10),
+      role: 'MANAGER',
+      passwordRequired: true,
+    },
+    {
+      firstName: 'Наташа',
+      password: await bcrypt.hash('teacher', 10),
+      role: 'TEACHER',
+      passwordRequired: false,
+    },
+    {
+      firstName: 'Федя',
+      password: await bcrypt.hash('teacher', 10),
+      role: 'TEACHER',
+      passwordRequired: false,
+    },
+  ]
 }
-
-async function getGroups() {
-  const groups: Prisma.GroupCreateManyInput[] = []
-  for (let i = 1; i <= 10; i++) {
-    const date = getRandomDate()
-    const group = {
-      name: `Группа №${i}`,
-      type: ['GROUP', 'INDIVIDUAL', 'INTENSIVE'][getRandomInteger(0, 2)] as GroupType,
-      teacherId: getRandomInteger(1, 7),
-      startDate: date,
-      time: getRandomTime(),
-      courseId: getRandomInteger(1, 6),
-    }
-    groups.push(group)
-  }
-  return groups
-}
-
-async function getStudentGroups() {
-  const studentGroups: Prisma.StudentGroupCreateManyInput[] = []
-  const studentsCount = await prisma.student.count()
-  const firstStudentId = (await prisma.student.findFirst())?.id as number
-  const firstGroupId = (await prisma.group.findFirst())?.id as number
-  const groupsCount = await prisma.group.count()
-  for (let i = 1; i <= 100; i++) {
-    const studentGroup = {
-      studentId: getRandomInteger(firstStudentId, firstStudentId + studentsCount - 1),
-      groupId: getRandomInteger(firstGroupId, firstGroupId + groupsCount - 1),
-    }
-    studentGroups.push(studentGroup)
-  }
-
-  return studentGroups
-}
-
-async function getPayments() {
-  const payments: Prisma.PaymentCreateManyInput[] = []
-  const studentsCount = await prisma.student.count()
-  const firstStudentId = (await prisma.student.findFirst())?.id as number
-  const firstGroupId = (await prisma.group.findFirst())?.id as number
-  const groupsCount = await prisma.group.count()
-  for (let i = 1; i <= 10; i++) {
-    payments.push({
-      studentId: getRandomInteger(firstStudentId, firstStudentId + studentsCount - 1),
-      groupId: getRandomInteger(firstGroupId, firstGroupId + groupsCount - 1),
-      lessonsPaid: getRandomInteger(0, 32),
-    })
-  }
-  return payments
-}
-
 async function getCourses() {
   const courses: Prisma.CourseCreateManyInput[] = [
     {
@@ -342,37 +283,6 @@ export async function main() {
 
   if ((await prisma.course.count()) == 0)
     await prisma.course.createMany({ data: await getCourses() })
-
-  // if ((await prisma.student.count()) == 0)
-  //   await prisma.student.createMany({ data: await getStudents() })
-
-  // if ((await prisma.group.count()) == 0) await prisma.group.createMany({ data: await getGroups() })
-
-  // if ((await prisma.studentGroup.count()) == 0)
-  //   for (let sg of await getStudentGroups()) {
-  //     try {
-  //       await prisma.studentGroup.create({ data: sg })
-  //     } catch {
-  //       console.log('duplicate')
-  //     }
-  //   }
-
-  // if ((await prisma.payment.count()) == 0)
-  //   await prisma.payment.createMany({ data: await getPayments() })
-
-  // for (let i = 1; i <= 33; i++) {
-  //   const date = new Date()
-  //   date.setDate(date.getDate() + 7 * i)
-  //   await prisma.lesson.create({ data: { date, time: '15:00', groupId: 7 } })
-  // }
-
-  // const students = await prisma.student.findMany({ where: { groups: { some: { groupId: 7 } } } })
-  // students.forEach(
-  //   async (student) =>
-  //     await prisma.attendance.create({
-  //       data: { lessonId: 37, studentId: student.id, status: 'UNSPECIFIED', comment: '' },
-  //     })
-  // )
 }
 
 main()

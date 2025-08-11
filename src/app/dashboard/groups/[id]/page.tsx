@@ -1,5 +1,4 @@
 import { getGroup } from '@/actions/groups'
-import { getStudents } from '@/actions/students'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import InfoSection from './info-section'
@@ -9,7 +8,6 @@ import StudentsSection from './students-section'
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const group = await getGroup(+id)
-  const students = await getStudents()
   if (!group) {
     return (
       <Card>
@@ -26,7 +24,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <TabsTrigger value="attendance">Расписание</TabsTrigger>
         </TabsList>
         <TabsContent value="students">
-          <StudentsSection group={group} students={students} />
+          <StudentsSection group={group} />
         </TabsContent>
         <TabsContent value="attendance">
           <LessonsSection group={group} />

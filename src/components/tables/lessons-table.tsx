@@ -49,7 +49,8 @@ const userFilter: FilterFn<LessonWithAttendanceAndGroup> = (
   return filterValue.includes(user)
 }
 
-const dateSortingFn: SortingFn<LessonWithAttendanceAndGroup> = (rowA, rowB, columnId) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const dateSortingFn: SortingFn<LessonWithAttendanceAndGroup> = (rowA, rowB, _columnId) => {
   const dateA = rowA.original.date
   const dateB = rowB.original.date
   if (dateA === null && dateB === null) return 0
@@ -171,10 +172,6 @@ export default function LessonsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const columns = getColumns()
-
-  const handleDeleteRows = () => {
-    table.resetRowSelection()
-  }
 
   const table = useReactTable({
     data: lessons,

@@ -115,10 +115,6 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
 
   const columns = getColumns()
 
-  const handleDeleteRows = () => {
-    table.resetRowSelection()
-  }
-
   const table = useReactTable({
     data: payments,
     columns,

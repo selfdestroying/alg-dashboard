@@ -53,12 +53,7 @@ const ageFilterFn: FilterFn<Student> = (row, columnId, filterValue: number[]) =>
   return filterValue.includes(age)
 }
 
-interface GetColumnsProps {
-  data: AllGroupData
-  studentsNotInGroup: Student[]
-}
-
-const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<Student>[] => [
+const getColumns = (): ColumnDef<Student>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -115,13 +110,7 @@ const getColumns = ({ data, studentsNotInGroup }: GetColumnsProps): ColumnDef<St
   // },
 ]
 
-export default function GroupStudentsTable({
-  group,
-  studentsNotInGroup,
-}: {
-  group: AllGroupData
-  studentsNotInGroup: Student[]
-}) {
+export default function GroupStudentsTable({ group }: { group: AllGroupData }) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState<PaginationState>({
@@ -131,7 +120,7 @@ export default function GroupStudentsTable({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [sorting, setSorting] = useState<SortingState>([])
-  const columns = getColumns({ data: group, studentsNotInGroup })
+  const columns = getColumns()
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
@@ -434,47 +423,6 @@ export default function GroupStudentsTable({
           </Pagination>
         </div>
       )}
-    </div>
-  )
-}
-
-function RowActions({ group, item }: { group: AllGroupData; item: Student }) {
-  const handleDelete = () => {
-    const ok = removeFromGroup({ groupId: group.id, studentId: item.id })
-
-    toast.promise(ok, {
-      loading: 'Загрузка...',
-      success: 'Ученик удален из группы',
-      error: (e) => e.message,
-    })
-  }
-
-  return (
-    <div className="flex items-center justify-end">
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size={'icon'}>
-            <Minus className="stroke-rose-400" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this contact.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-white shadow-xs"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
