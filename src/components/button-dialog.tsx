@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { VariantProps } from 'class-variance-authority'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
 
@@ -34,8 +34,9 @@ export default function ButtonDialog({
   triggerButtonProps,
   submitButtonProps,
 }: ButtonDialogProps) {
+  const [open, setOpen] = useState(false)
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button {...triggerButtonProps}>{title}</Button>
       </DialogTrigger>
@@ -55,7 +56,9 @@ export default function ButtonDialog({
               Cancel
             </Button>
           </DialogClose>
-          <Button {...submitButtonProps}>Подтвердить</Button>
+          <Button {...submitButtonProps} onClick={() => setOpen(false)}>
+            Подтвердить
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

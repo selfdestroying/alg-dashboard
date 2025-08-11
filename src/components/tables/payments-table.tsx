@@ -1,16 +1,5 @@
 'use client'
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
@@ -42,7 +31,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, CircleAlert, CircleX, Funnel, Search, Trash } from 'lucide-react'
+import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useMemo, useRef, useState } from 'react'
 
@@ -50,11 +39,16 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
     header: 'Ученик',
     accessorKey: 'student',
-    accessorFn: (item) =>
-      item.student ? `${item.student.firstName} ${item.student.lastName}` : 'Удаленный ученик',
+    accessorFn: (item) => `${item.student.firstName} ${item.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <div className="font-medium">{row.getValue('student')}</div>
+        <div className="font-medium">
+          <Button asChild variant={'link'} size={'sm'} className="h-fit p-0">
+            <Link href={`/dashboard/students/${row.original.studentId}`}>
+              {row.getValue('student')}
+            </Link>
+          </Button>
+        </div>
       </div>
     ),
     enableHiding: false,
@@ -62,7 +56,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
     header: 'Группа',
     accessorKey: 'group',
-    accessorFn: (item) => (item.group ? item.group.name : 'Удаленная группа'),
+    accessorFn: (item) => item.group.name,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="font-medium">
@@ -194,7 +188,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
-                'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
+                'peer min-w-60 bg-gradient-to-br ps-9',
                 Boolean(table.getColumn('student')?.getFilterValue()) && 'pe-9'
               )}
               value={(table.getColumn('student')?.getFilterValue() ?? '') as string}
@@ -224,42 +218,6 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
         </div>
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Delete button */}
-          {table.getSelectedRowModel().rows.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="outline">
-                  <Trash className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-                  Delete
-                  <span className="border-border bg-background text-muted-foreground/70 ms-1 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {table.getSelectedRowModel().rows.length}
-                  </span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div
-                    className="border-border flex size-9 shrink-0 items-center justify-center rounded-full border"
-                    aria-hidden="true"
-                  >
-                    <CircleAlert className="opacity-80" size={16} />
-                  </div>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{' '}
-                      {table.getSelectedRowModel().rows.length} selected{' '}
-                      {table.getSelectedRowModel().rows.length === 1 ? 'row' : 'rows'}.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
@@ -362,7 +320,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="data-[state=selected]:bg-accent/50 hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="h-[inherit] last:py-0">
@@ -372,7 +330,7 @@ export default function PaymentsTable({ payments }: { payments: PaymentsWithStud
               </TableRow>
             ))
           ) : (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow className="data-[state=selected]:bg-accent/50 hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>

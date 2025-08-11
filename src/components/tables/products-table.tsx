@@ -219,7 +219,7 @@ export default function ProductsTable({ products }: { products: ProductWithCateg
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
-                'peer bg-background from-accent/60 to-accent min-w-60 bg-gradient-to-br ps-9',
+                'peer min-w-60 bg-gradient-to-br ps-9',
                 Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9'
               )}
               value={(table.getColumn('name')?.getFilterValue() ?? '') as string}
@@ -388,7 +388,7 @@ export default function ProductsTable({ products }: { products: ProductWithCateg
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="data-[state=selected]:bg-accent/50 hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="h-[inherit] last:py-0">
@@ -398,7 +398,7 @@ export default function ProductsTable({ products }: { products: ProductWithCateg
               </TableRow>
             ))
           ) : (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow className="data-[state=selected]:bg-accent/50 hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>

@@ -24,9 +24,21 @@ export type LessonWithAttendanceAndGroup = Prisma.LessonGetPayload<{
   include: { attendance: { include: { student: true } }; group: { include: { teacher: true } } }
 }>
 
-export const getLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
+export const getLessons = async (
+  data?: Prisma.LessonFindManyArgs
+): Promise<LessonWithAttendanceAndGroup[]> => {
   const lessons = await prisma.lesson.findMany({
-    include: { attendance: { include: { student: true } }, group: { include: { teacher: true } } },
+    ...data,
+    include: {
+      attendance: {
+        include: {
+          student: true,
+          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        },
+      },
+      group: { include: { teacher: true } },
+    },
     orderBy: { date: 'asc' },
   })
   return lessons

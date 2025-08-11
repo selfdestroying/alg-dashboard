@@ -1,3 +1,5 @@
+import { signout } from '@/actions/auth'
+import { getUser } from '@/actions/users'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -8,10 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { ArrowLeftRight, ChevronsUpDown } from 'lucide-react'
-import { Badge } from './ui/badge'
 import { redirect } from 'next/navigation'
-import { getUser } from '@/actions/users'
-import { signout } from '@/actions/auth'
+import { Badge } from './ui/badge'
 
 export async function NavUser() {
   const user = await getUser()
@@ -33,7 +33,9 @@ export async function NavUser() {
             >
               <Avatar className="size-8">
                 <AvatarImage alt={user.firstName} />
-                <AvatarFallback className="rounded-lg">{user.firstName[0]}</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground rounded-lg text-lg font-medium">
+                  {user.firstName[0]}
+                </AvatarFallback>
               </Avatar>
               <div className="flex items-center gap-2 text-left text-sm">
                 <span className="truncate font-medium">{user.firstName}</span>
@@ -43,7 +45,7 @@ export async function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="dark bg-sidebar w-(--radix-dropdown-menu-trigger-width)"
+            className="w-(--radix-dropdown-menu-trigger-width)"
             side="top"
             align="start"
           >
