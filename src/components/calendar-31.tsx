@@ -2,7 +2,7 @@
 
 import { getLessons, LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { isToday } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -62,7 +62,6 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
 
   useEffect(() => {
     fetchLessonsForMonth(month)
-    console.log(selectedTeacherId)
   }, [month, selectedTeacherId])
 
   useEffect(() => {
@@ -74,93 +73,55 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
     }
   }, [date, lessonsByDay])
 
-  const onSelect = (value: Date | undefined) => {
-    setDate(value)
-  }
-
-  const onMonthChange = (value: Date) => {
-    setMonth(value)
-  }
-
   return (
     <Card className="h-full w-full py-4">
-      <CardContent className="grid grid-cols-1 gap-4 px-4 lg:grid-cols-3">
-        <div className="col-span-1 space-y-4">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={onSelect}
-            month={month}
-            onMonthChange={onMonthChange}
-            className="w-full space-y-4 p-0"
-            locale={ru}
-            showOutsideDays={false}
-            components={{
-              Day: ({ ...props }) => (
-                <Day {...props} className={cn(props.className, 'bg-transparent')} />
-              ),
-              DayButton: ({ children, day, ...props }) => {
-                const dayTimestamp = getDayTimestamp(day.date)
-                const lessonsForDay = lessonsByDay[dayTimestamp]
-                const hasUnspecifiedAttendance = lessonsForDay?.some((lesson) =>
-                  lesson.attendance.some((a) => a.status === 'UNSPECIFIED')
-                )
+      <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-[max-content_1fr]">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          month={month}
+          onMonthChange={setMonth}
+          className="place-self-center p-0 [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
+          locale={ru}
+          showOutsideDays={false}
+          components={{
+            Day: ({ ...props }) => (
+              <Day {...props} className={cn(props.className, 'bg-transparent')} />
+            ),
+            DayButton: ({ children, day, ...props }) => {
+              const dayTimestamp = getDayTimestamp(day.date)
+              const lessonsForDay = lessonsByDay[dayTimestamp]
+              const hasUnspecifiedAttendance = lessonsForDay?.some((lesson) =>
+                lesson.attendance.some((a) => a.status === 'UNSPECIFIED')
+              )
 
-                let bg = ''
-                if (lessonsForDay) {
-                  if (todayTimestamp >= dayTimestamp && hasUnspecifiedAttendance) {
-                    bg = 'bg-error text-primary-foreground'
-                  } else if (todayTimestamp >= dayTimestamp) {
-                    bg = 'bg-success text-primary-foreground'
-                  } else {
-                    bg = 'bg-info text-primary-foreground'
-                  }
+              let bg = ''
+              if (lessonsForDay) {
+                if (todayTimestamp >= dayTimestamp && hasUnspecifiedAttendance) {
+                  bg = 'bg-error text-primary-foreground'
+                } else if (todayTimestamp >= dayTimestamp) {
+                  bg = 'bg-success text-primary-foreground'
+                } else {
+                  bg = 'bg-info text-primary-foreground'
                 }
+              }
 
-                return (
-                  <CalendarDayButton
-                    day={day}
-                    {...props}
-                    className={cn(props.className, bg, 'transition-none')}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? <Loader2 className="animate-spin" /> : children}
-                  </CalendarDayButton>
-                )
-              },
-            }}
-          />
-          <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
-            <div
-              className="flex items-center justify-center space-x-1"
-              role="region"
-              aria-live="polite"
-            >
-              <span
-                className="bg-success inline-block size-2 rounded-full"
-                aria-hidden="true"
-              ></span>
-              <span>Завершённые уроки</span>
-            </div>
-            <div
-              className="flex items-center justify-center space-x-1"
-              role="region"
-              aria-live="polite"
-            >
-              <span className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></span>
-              <span>Неотмеченные уроки</span>
-            </div>
-            <div
-              className="flex items-center justify-center space-x-1"
-              role="region"
-              aria-live="polite"
-            >
-              <span className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></span>
-              <span>Будущие уроки</span>
-            </div>
-          </div>
-        </div>
-        <div className="col-span-1 space-y-2">
+              return (
+                <CalendarDayButton
+                  day={day}
+                  {...props}
+                  className={cn(props.className, bg, 'transition-none')}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Loader2 className="animate-spin" /> : children}
+                </CalendarDayButton>
+              )
+            },
+          }}
+        />
+
+        <div className="space-y-2">
           <div className="flex w-full items-center justify-between px-1">
             <div className="text-sm font-medium">
               {date?.toLocaleDateString('ru-RU', {
@@ -200,6 +161,34 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
           </div>
         </div>
       </CardContent>
+      <CardFooter>
+        <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
+          <div
+            className="flex items-center justify-center space-x-1"
+            role="region"
+            aria-live="polite"
+          >
+            <span className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></span>
+            <span>Завершённые уроки</span>
+          </div>
+          <div
+            className="flex items-center justify-center space-x-1"
+            role="region"
+            aria-live="polite"
+          >
+            <span className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></span>
+            <span>Неотмеченные уроки</span>
+          </div>
+          <div
+            className="flex items-center justify-center space-x-1"
+            role="region"
+            aria-live="polite"
+          >
+            <span className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></span>
+            <span>Будущие уроки</span>
+          </div>
+        </div>
+      </CardFooter>
     </Card>
   )
 }
