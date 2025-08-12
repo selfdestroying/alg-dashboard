@@ -22,13 +22,13 @@ services:
   # Сервис для Next.js-приложения
   next-app:
     build:
-      context: ./alg
+      context: ./
       dockerfile: Dockerfile
     restart: always
     ports:
       - '3000:3000'
     volumes:
-      - ./alg:/app
+      - ./:/app
       # Исключаем node_modules, чтобы избежать конфликтов
       - /app/node_modules
     depends_on:
