@@ -44,24 +44,31 @@ const timeSlots = [
   { time: '17:00', available: true },
   { time: '17:30', available: true },
 ]
-export default function LessonForm({ groupId }: { groupId: number }) {
+export default function LessonForm({
+  groupId,
+  onSubmit,
+}: {
+  groupId: number
+  onSubmit?: () => void
+}) {
   const form = useForm<LessonSchemaType>({
     resolver: zodResolver(LessonSchema),
   })
 
-  function onSubmit(values: LessonSchemaType) {
+  function handleSubmit(values: LessonSchemaType) {
     const ok = createLesson({ date: values.date, time: values.time, groupId })
     toast.promise(ok, {
       loading: 'Загрузка...',
       success: 'Урок успешно создан',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="@container space-y-8"
         id="lesson-form"
       >

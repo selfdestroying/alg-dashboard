@@ -53,7 +53,7 @@ const timeSlots = [
   { time: '17:30', available: true },
 ]
 
-export default function GroupForm() {
+export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
   const [endDateCheck, setEndDateCheck] = useState<boolean>(false)
   const { courses, users } = useData()
 
@@ -61,18 +61,23 @@ export default function GroupForm() {
     resolver: zodResolver(GroupSchema),
   })
 
-  function onSubmit(values: GroupSchemaType) {
+  function handleSubmit(values: GroupSchemaType) {
     const ok = createGroup(values)
     toast.promise(ok, {
       loading: 'Загрузка...',
       success: 'Группа успешно создана',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="@container space-y-8" id="group-form">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="@container space-y-8"
+        id="group-form"
+      >
         <div className="grid grid-cols-12 gap-4">
           {/* Required */}
           <FormField

@@ -27,16 +27,18 @@ import { Checkbox } from '../ui/checkbox'
 export default function PaymentForm({
   students,
   groups,
+  onSubmit,
 }: {
   students: Student[]
   groups: GroupWithTeacherAndCourse[]
+  onSubmit?: () => void
 }) {
   const form = useForm<PaymentSchemaType>({
     resolver: zodResolver(PaymentSchema),
     defaultValues: { isAddToGroup: true },
   })
 
-  function onSubmit(values: PaymentSchemaType) {
+  function handleSubmit(values: PaymentSchemaType) {
     const ok = createPayment(
       {
         studentId: values.studentId,
@@ -51,6 +53,7 @@ export default function PaymentForm({
       success: 'Оплата успешно создана',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   function onReset() {
@@ -61,7 +64,7 @@ export default function PaymentForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         onReset={onReset}
         className="@container space-y-8"
         id="payment-form"

@@ -109,7 +109,6 @@ const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => 
     header: 'ФИО Родителя',
     accessorKey: 'parentsName',
     cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('parentsName')}</span>,
-    filterFn: ageFilterFn,
   },
   {
     header: 'Ссылка в amoCRM',
@@ -123,14 +122,12 @@ const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => 
         </Button>
       </div>
     ),
-    filterFn: ageFilterFn,
   },
   {
     header: 'Количество групп',
     accessorKey: 'groups',
     accessorFn: (value) => value._count.groups,
     cell: ({ row }) => <span className="text-muted-foreground">{row.getValue('groups')}</span>,
-    filterFn: ageFilterFn,
   },
   {
     id: 'actions',
@@ -235,11 +232,8 @@ export default function StudentsTable({
 
   return (
     <div className="space-y-4">
-      {/* Actions */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Left side */}
         <div className="flex items-center gap-3">
-          {/* Filter by name */}
           <div className="relative">
             <Input
               id={`${id}-input`}

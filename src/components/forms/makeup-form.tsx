@@ -21,16 +21,18 @@ export default function MakeUpForm({
   upcomingLessons,
   studentId,
   missedAttendanceId,
+  onSubmit,
 }: {
   upcomingLessons: LessonWithAttendanceAndGroup[]
   studentId: number
   missedAttendanceId: number
+  onSubmit?: () => void
 }) {
   const form = useForm<MakeUpSchemaType>({
     resolver: zodResolver(MakeUpSchema),
   })
 
-  function onSubmit(values: MakeUpSchemaType) {
+  function handleSubmit(values: MakeUpSchemaType) {
     const ok = createAttendance({
       studentId,
       lessonId: values.makeUpLessonId,
@@ -42,13 +44,14 @@ export default function MakeUpForm({
       success: 'Ученик успешно создан',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   return (
     <Form {...form}>
       <form
         className="@container space-y-8"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         id="makeup-form"
       >
         <div className="grid grid-cols-12 gap-4">

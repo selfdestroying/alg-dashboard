@@ -15,17 +15,19 @@ import { StudentSchema, StudentSchemaType } from '@/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
-export default function StudentForm() {
+export default function StudentForm({ onSubmit }: { onSubmit?: () => void }) {
   const form = useForm<StudentSchemaType>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
       age: 0,
+      parentsName: '',
+      crmUrl: '',
     },
   })
 
-  function onSubmit(values: StudentSchemaType) {
+  function handleSubmit(values: StudentSchemaType) {
     const ok = createStudent({
       age: values.age,
       firstName: values.firstName,
@@ -35,16 +37,17 @@ export default function StudentForm() {
     })
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: 'Ученик успешно создан',
+      success: 'Ученик успешно добавлен',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   return (
     <Form {...form}>
       <form
         className="@container space-y-8"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         id="student-form"
       >
         <div className="grid grid-cols-12 gap-4">

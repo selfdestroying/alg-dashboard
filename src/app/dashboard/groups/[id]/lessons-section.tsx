@@ -1,6 +1,6 @@
 import { AllGroupData } from '@/actions/groups'
 import { LessonWithCountUnspecified } from '@/actions/lessons'
-import ButtonDialog from '@/components/button-dialog'
+import FormDialog from '@/components/button-dialog'
 import LessonForm from '@/components/forms/lesson-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -40,9 +40,12 @@ export default async function LessonsSection({ group }: { group: AllGroupData })
     <Card className="gap-2">
       <CardHeader>
         <div>
-          <ButtonDialog title="Добавить занятие" submitButtonProps={{ form: 'lesson-form' }}>
-            <LessonForm groupId={group.id} />
-          </ButtonDialog>
+          <FormDialog
+            title="Добавить занятие"
+            submitButtonProps={{ form: 'lesson-form' }}
+            FormComponent={LessonForm}
+            formComponentProps={{ groupId: group.id }}
+          />
         </div>
       </CardHeader>
       <CardContent>
