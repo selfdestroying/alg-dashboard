@@ -1,6 +1,6 @@
 import { getUser } from '@/actions/users'
 import { AppSidebar } from '@/components/app-sidebar'
-import ButtonDialog from '@/components/button-dialog'
+import FormDialog from '@/components/button-dialog'
 import FeedbackForm from '@/components/forms/feedback-form'
 import { ModeToggle } from '@/components/mode-toggle'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -27,14 +27,14 @@ export default async function Layout({
           </div>
           <div className="ml-auto flex items-center gap-3">
             <ModeToggle />
-            <ButtonDialog
+            <FormDialog
               title="Отправить отзыв"
               description="Пожелания по улучшению, описание ошибок или багов"
               triggerButtonProps={{ variant: 'outline', size: 'sm', className: 'h-7' }}
               submitButtonProps={{ form: 'feedback-form' }}
-            >
-              <FeedbackForm user={user} />
-            </ButtonDialog>
+              FormComponent={FeedbackForm}
+              formComponentProps={{ user }}
+            />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>

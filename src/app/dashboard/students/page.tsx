@@ -1,6 +1,6 @@
 import { createStudent, getStudents } from '@/actions/students'
 import { getUser } from '@/actions/users'
-import ButtonDialog from '@/components/button-dialog'
+import FormDialog from '@/components/button-dialog'
 import StudentForm from '@/components/forms/student-form'
 import StudentsTable from '@/components/tables/students-table'
 import { Button } from '@/components/ui/button'
@@ -26,9 +26,11 @@ export default async function Page() {
   return (
     <>
       <div className="flex items-center gap-2">
-        <ButtonDialog title="Добавить ученика" submitButtonProps={{ form: 'student-form' }}>
-          <StudentForm />
-        </ButtonDialog>
+        <FormDialog
+          title="Добавить ученика"
+          submitButtonProps={{ form: 'student-form' }}
+          FormComponent={StudentForm}
+        />
         {user?.role == 'ADMIN' && (
           <Button size={'icon'} onClick={generateStudent}>
             <Dices />

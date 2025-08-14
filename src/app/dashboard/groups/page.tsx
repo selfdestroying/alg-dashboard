@@ -1,6 +1,6 @@
 import { createGroup, getGroups } from '@/actions/groups'
 import { getUser } from '@/actions/users'
-import ButtonDialog from '@/components/button-dialog'
+import FormDialog from '@/components/button-dialog'
 import GroupForm from '@/components/forms/group-form'
 import GroupsTable from '@/components/tables/groups-table'
 import { Button } from '@/components/ui/button'
@@ -29,9 +29,11 @@ export default async function Page() {
   return (
     <GroupsProvider groups={groups}>
       <div className="flex items-center gap-2">
-        <ButtonDialog title="Добавить группу" submitButtonProps={{ form: 'group-form' }}>
-          <GroupForm />
-        </ButtonDialog>
+        <FormDialog
+          title="Добавить группу"
+          submitButtonProps={{ form: 'group-form' }}
+          FormComponent={GroupForm}
+        />
         {user.role == 'ADMIN' && (
           <Button size={'icon'} onClick={generateGroup}>
             <Dices />

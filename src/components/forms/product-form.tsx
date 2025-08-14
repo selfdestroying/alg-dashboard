@@ -11,13 +11,19 @@ import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
 
-export default function ProductForm({ categories }: { categories: Category[] }) {
+export default function ProductForm({
+  categories,
+  onSubmit,
+}: {
+  categories: Category[]
+  onSubmit?: () => void
+}) {
   const form = useForm<ProductSchemaType>({
     resolver: zodResolver(ProductSchema),
     defaultValues: { name: '', description: '', price: 0 },
   })
 
-  const onSubmit = (values: ProductSchemaType) => {
+  const handleSubmit = (values: ProductSchemaType) => {
     const ok = createProduct(values)
 
     toast.promise(ok, {
@@ -25,13 +31,14 @@ export default function ProductForm({ categories }: { categories: Category[] }) 
       success: 'Категория успешно создана',
       error: (e) => e.message,
     })
+    onSubmit?.()
   }
 
   return (
     <Form {...form}>
       <form
         className="@container space-y-8"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         id="product-form"
       >
         <div className="grid grid-cols-12 gap-4">

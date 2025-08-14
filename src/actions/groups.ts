@@ -49,8 +49,6 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
 
 export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
   const courses = await getCourses()
-  console.log(courses)
-  console.log(data.courseId)
   const groupName = `${courses[data.courseId - 1].name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...data, name: groupName } })
 
@@ -74,7 +72,11 @@ export const deleteGroup = async (id: number) => {
 
 export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
   await prisma.studentGroup.create({ data })
-  const lessons = await prisma.lesson.findMany({ where: { groupId: data.groupId } })
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const lessons = await prisma.lesson.findMany({
+    where: { groupId: data.groupId, date: { gte: today } },
+  })
   lessons.forEach(
     async (lesson) =>
       await prisma.attendance.create({

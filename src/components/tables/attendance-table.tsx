@@ -21,7 +21,7 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, CircleX, Funnel, Search } from 'lucide-react'
 import { toast } from 'sonner'
-import ButtonDialog from '../button-dialog'
+import FormDialog from '../button-dialog'
 import MakeUpForm from '../forms/makeup-form'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -110,17 +110,17 @@ const getColumns = (
             })}
           </Badge>
         ) : (
-          <ButtonDialog
+          <FormDialog
             title="Назначить отработку"
             triggerButtonProps={{ variant: 'outline', size: 'sm' }}
             submitButtonProps={{ form: 'makeup-form' }}
-          >
-            <MakeUpForm
-              upcomingLessons={upcomingLessons}
-              studentId={row.original.studentId}
-              missedAttendanceId={row.original.id}
-            />
-          </ButtonDialog>
+            FormComponent={MakeUpForm}
+            formComponentProps={{
+              upcomingLessons,
+              studentId: row.original.studentId,
+              missedAttendanceId: row.original.id,
+            }}
+          />
         )}
       </div>
     ),

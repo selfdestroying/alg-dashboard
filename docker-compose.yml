@@ -1,44 +1,30 @@
-version: '3.8'
 
 services:
-  # Сервис для базы данных PostgreSQL
-  db:
+  postgres:
     image: postgres:latest
-    restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - 5432:5432
+    expose:
+      - 5432
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ["CMD-SHELL", "pg_isready -U user"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # Сервис для Next.js-приложения
-  next-app:
-    build:
-      context: ./
-      dockerfile: Dockerfile
+  frontend:
+    container_name: frontend
+    build: .
     restart: always
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./:/app
-      # Исключаем node_modules, чтобы избежать конфликтов
-      - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-postgres}?schema=public
-      # Указываем, что Prisma будет запускаться в контейнере
-      # Это важно для миграций и генерации клиента
-      PRISMA_CLI_PATH: /app/node_modules/.bin/prisma
-
-volumes:
-  postgres_data:
+      - NODE_ENV=production
+    ports:
+      - 3000:3000
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy

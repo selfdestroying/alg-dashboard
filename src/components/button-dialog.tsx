@@ -9,14 +9,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { VariantProps } from 'class-variance-authority'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
 
-interface ButtonDialogProps {
+interface FormDialogProps<T extends object = object> {
   title: string
   description?: string
-  children: ReactNode
+  FormComponent: React.ComponentType<T & { onSubmit: () => void }>
+  formComponentProps?: T
   triggerButtonProps?: React.ComponentProps<'button'> &
     VariantProps<typeof buttonVariants> & {
       asChild?: boolean
@@ -27,13 +28,14 @@ interface ButtonDialogProps {
     }
 }
 
-export default function ButtonDialog({
+export default function FormDialog<T extends object = object>({
   title,
-  children,
+  FormComponent,
+  formComponentProps,
   description,
   triggerButtonProps,
   submitButtonProps,
-}: ButtonDialogProps) {
+}: FormDialogProps<T>) {
   const [open, setOpen] = useState(false)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -48,7 +50,9 @@ export default function ButtonDialog({
           {description}
         </DialogDescription>
         <div className="overflow-y-auto">
-          <div className="px-6 pt-4 pb-6">{children}</div>
+          <div className="px-6 pt-4 pb-6">
+            <FormComponent {...(formComponentProps as T)} onSubmit={() => setOpen(false)} />
+          </div>
         </div>
         <DialogFooter className="border-t px-6 py-4">
           <DialogClose asChild>
@@ -56,9 +60,7 @@ export default function ButtonDialog({
               Cancel
             </Button>
           </DialogClose>
-          <Button {...submitButtonProps} onClick={() => setOpen(false)}>
-            Подтвердить
-          </Button>
+          <Button {...submitButtonProps}>Подтвердить</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

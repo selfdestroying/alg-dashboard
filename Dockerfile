@@ -1,24 +1,49 @@
-# Используем официальный образ Node.js
-FROM node:latest
-
-# Устанавливаем рабочую директорию
+# Базовый образ Node.js
+FROM node:20.10-alpine AS base
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Копируем package.json и package-lock.json (если есть)
-COPY package*.json ./
+# -----------------------------
+# Стадия: deps — установка зависимостей
+# -----------------------------
+FROM base AS deps
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Устанавливаем зависимости
-RUN npm install
 
-# Копируем остальной код приложения
+# -----------------------------
+# Стадия: prod — финальный образ
+# -----------------------------
+FROM base AS prod
+WORKDIR /app
+
+# Копируем зависимости
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /root/.npm /root/.npm
+
+# Копируем код приложения
 COPY . .
 
-# Генерируем Prisma клиент и выполняем миграции
-# Эта команда важна для того, чтобы Prisma-клиент был сгенерирован
-# перед запуском приложения
+# Генерим Prisma клиент
 RUN npx prisma generate
-# Это может быть опционально, если ты хочешь выполнять миграции вручную
-# RUN npx prisma migrate deploy
 
-# Запускаем приложение
-CMD ["npm", "run", "dev"]
+# Создаём пользователя без root-доступа
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+
+# Даём права пользователю на рабочую папку и .next (для билда)
+RUN mkdir -p /app/.next && chown -R nextjs:nodejs /app
+
+# Переходим на пользователя nextjs
+USER nextjs
+
+# Переменные окружения
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+EXPOSE 3000
+
+# Билдим и запускаем при старте контейнера, когда база уже готова
+# Если хочешь автоматом накатывать миграции — раскомментируй prisma migrate deploy
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run build && npm run start"]
