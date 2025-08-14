@@ -114,13 +114,13 @@ const getColumns = (
             title="Назначить отработку"
             triggerButtonProps={{ variant: 'outline', size: 'sm' }}
             submitButtonProps={{ form: 'makeup-form' }}
-          >
-            <MakeUpForm
-              upcomingLessons={upcomingLessons}
-              studentId={row.original.studentId}
-              missedAttendanceId={row.original.id}
-            />
-          </FormDialog>
+            FormComponent={MakeUpForm}
+            formComponentProps={{
+              upcomingLessons,
+              studentId: row.original.studentId,
+              missedAttendanceId: row.original.id,
+            }}
+          />
         )}
       </div>
     ),

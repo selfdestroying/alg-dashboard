@@ -32,9 +32,9 @@ export default async function Layout({
               description="Пожелания по улучшению, описание ошибок или багов"
               triggerButtonProps={{ variant: 'outline', size: 'sm', className: 'h-7' }}
               submitButtonProps={{ form: 'feedback-form' }}
-            >
-              <FeedbackForm user={user} />
-            </FormDialog>
+              FormComponent={FeedbackForm}
+              formComponentProps={{ user }}
+            />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>

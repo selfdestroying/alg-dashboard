@@ -13,7 +13,7 @@ import { useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
 
-interface FormDialogProps<T extends object = {}> {
+interface FormDialogProps<T extends object = object> {
   title: string
   description?: string
   FormComponent: React.ComponentType<T & { onSubmit: () => void }>
@@ -28,7 +28,7 @@ interface FormDialogProps<T extends object = {}> {
     }
 }
 
-export default function FormDialog<T extends object = {}>({
+export default function FormDialog<T extends object = object>({
   title,
   FormComponent,
   formComponentProps,

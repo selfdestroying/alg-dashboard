@@ -8,9 +8,12 @@ export default async function Page() {
 
   return (
     <div className="space-y-2">
-      <FormDialog title="Добавить категорию" submitButtonProps={{ form: 'category-form' }}>
-        <CategoryForm />
-      </FormDialog>
+      <FormDialog
+        title="Добавить категорию"
+        submitButtonProps={{ form: 'category-form' }}
+        FormComponent={CategoryForm}
+      />
+
       <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
         {categories.map((category) => (
           <Card key={category.id}>
