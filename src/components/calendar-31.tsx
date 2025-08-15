@@ -162,7 +162,7 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
         </div>
       </CardContent>
       <CardFooter>
-        <div className="text-muted-foreground grid grid-cols-3 text-center text-xs">
+        <div className="text-muted-foreground grid grid-cols-3 gap-2 text-xs">
           <div
             className="flex items-center justify-center space-x-1"
             role="region"
