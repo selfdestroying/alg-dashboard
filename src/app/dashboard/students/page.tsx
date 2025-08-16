@@ -2,7 +2,7 @@ import { createStudent, getStudents } from '@/actions/students'
 import { getUser } from '@/actions/users'
 import FormDialog from '@/components/button-dialog'
 import StudentForm from '@/components/forms/student-form'
-import StudentsTable from '@/components/tables/students-table'
+import { StudentsTable } from '@/components/tables/students-table'
 import { Button } from '@/components/ui/button'
 import { getRandomInteger } from '@/utils/random'
 import { Dices } from 'lucide-react'
@@ -38,7 +38,7 @@ export default async function Page() {
         )}
       </div>
       <div>
-        <StudentsTable students={students} />
+        <StudentsTable data={students} />
       </div>
     </>
   )
