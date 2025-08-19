@@ -8,7 +8,16 @@ import { getCourses } from './courses'
 import { createLesson } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
-  include: { teacher: true; course: true }
+  include: {
+    teacher: {
+      omit: {
+        password: true
+        passwordRequired: true
+        createdAt: true
+      }
+    }
+    course: true
+  }
 }>
 export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
   teacher: User

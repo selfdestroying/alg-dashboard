@@ -11,8 +11,12 @@ export default async function Page() {
   return (
     <>
       <div className="flex items-center gap-2">
-        <FormDialog title="Добавить товар" submitButtonProps={{ form: 'product-form' }} FormComponent={ProductForm} formComponentProps={{categories}} />
-          
+        <FormDialog
+          title="Добавить товар"
+          submitButtonProps={{ form: 'product-form' }}
+          FormComponent={ProductForm}
+          formComponentProps={{ categories }}
+        />
       </div>
       <ProductsTable products={products} />
     </>

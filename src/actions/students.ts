@@ -25,11 +25,16 @@ export const getStudent = async (id: number) => {
 export const createStudent = async (
   data: Omit<Prisma.StudentCreateInput, 'login' | 'password'>
 ) => {
-  await prisma.student.create({
+  const student = await prisma.student.create({
     data: {
       ...data,
       password: 'student',
       login: `student-${randomUUID().slice(0, 4)}`,
+    },
+  })
+  await prisma.cart.create({
+    data: {
+      studentId: student.id,
     },
   })
   revalidatePath('dashboard/students')
