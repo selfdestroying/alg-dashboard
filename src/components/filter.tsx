@@ -1,20 +1,42 @@
 import { Label } from '@/components/ui/label'
 import { Column } from '@tanstack/react-table'
-import { useMemo } from 'react'
+import { X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import DebouncedInput from './DebouncedInput'
+import { Button } from './ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
-export default function Filter({ column }: { column: Column<any, unknown> }) {
-  const { filterVariant } = column.columnDef.meta ?? {}
+export default function Filter<T>({ column }: { column: Column<T, unknown> }) {
+  const { filterVariant, allFilterVariants } = column.columnDef.meta ?? {}
+  const [selected, setSelected] = useState<string>('')
 
-  const columnFilterValue = column.getFilterValue()
+  useEffect(() => {
+    const v = column.getFilterValue()
+    setSelected(typeof v === 'string' ? v : '')
+  }, [column.getIsFiltered()])
 
+  const columnFilterValue = column.getFilterValue() as string | [number, number] | undefined
+
+  const facetedValues = column.getFacetedUniqueValues()
   const sortedUniqueValues = useMemo(
     () =>
       filterVariant === 'range'
         ? []
-        : Array.from(column.getFacetedUniqueValues().keys()).sort().slice(0, 5000),
-    [column.getFacetedUniqueValues(), filterVariant]
+        : allFilterVariants
+          ? allFilterVariants.sort()
+          : Array.from(column.getFacetedUniqueValues().keys()).sort().slice(0, 5000),
+    [facetedValues, filterVariant]
   )
+
+  const handleChange = (value: string) => {
+    setSelected(value)
+    column.setFilterValue(value)
+  }
+
+  const handleClear = () => {
+    setSelected('')
+    column.setFilterValue(undefined)
+  }
 
   return filterVariant === 'range' ? (
     <div>
@@ -48,36 +70,33 @@ export default function Filter({ column }: { column: Column<any, unknown> }) {
         />
       </div>
     </div>
-  ) : filterVariant === 'select' ? (
-    <select
-      onChange={(e) => column.setFilterValue(e.target.value)}
-      value={columnFilterValue?.toString()}
-    >
-      <option value="">All</option>
-      {sortedUniqueValues.map((value) => (
-        //dynamically generated select options from faceted values feature
-        <option value={value} key={value}>
-          {value}
-        </option>
-      ))}
-    </select>
   ) : (
-    <>
-      {/* Autocomplete suggestions from faceted values feature */}
-      <datalist id={column.id + 'list'}>
-        {sortedUniqueValues.map((value: any) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-      <DebouncedInput
-        type="text"
-        value={(columnFilterValue ?? '') as string}
-        onChange={(value) => column.setFilterValue(value)}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className="w-36 rounded border shadow"
-        list={column.id + 'list'}
-      />
-      <div className="h-1" />
-    </>
+    filterVariant === 'select' && (
+      <div>
+        <Label className="text-muted-foreground text-sm font-medium">
+          {typeof column.columnDef.header == 'string' ? column.columnDef.header : column.id}
+        </Label>
+        <div className="flex gap-2">
+          <Select value={selected} onValueChange={handleChange}>
+            <SelectTrigger className="font-lg border-block w-full border p-2 shadow">
+              <SelectValue placeholder="..." />
+            </SelectTrigger>
+            <SelectContent>
+              {sortedUniqueValues.map((value) => (
+                //dynamically generated select options from faceted values feature
+                <SelectItem value={value} key={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {column.getIsFiltered() && (
+            <Button variant={'outline'} size={'icon'} onClick={handleClear}>
+              <X />
+            </Button>
+          )}
+        </div>
+      </div>
+    )
   )
 }

@@ -17,6 +17,7 @@ import {
   PaginationState,
   RowData,
   SortingState,
+  TableOptions,
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -40,9 +41,10 @@ import DebouncedInput from './DebouncedInput'
 import Filter from './filter'
 
 declare module '@tanstack/react-table' {
-  //allows us to define custom properties for our columns
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: 'text' | 'range' | 'select'
+    allFilterVariants?: string[] | number[]
   }
 }
 
@@ -53,10 +55,17 @@ interface DataObject {
 interface DataTableProps<T> {
   data: T[]
   columns: ColumnDef<T>[]
+  defaultValues?: ColumnFiltersState
+  tableOptions?: Partial<TableOptions<T>>
 }
 
-export default function DataTable<T extends DataObject>({ data, columns }: DataTableProps<T>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+export default function DataTable<T extends DataObject>({
+  data,
+  columns,
+  defaultValues = [],
+  tableOptions,
+}: DataTableProps<T>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultValues)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -87,6 +96,7 @@ export default function DataTable<T extends DataObject>({ data, columns }: DataT
       columnVisibility,
       globalFilter,
     },
+    ...tableOptions,
   })
 
   return (
@@ -206,7 +216,7 @@ export default function DataTable<T extends DataObject>({ data, columns }: DataT
                 className="hover:bg-accent/50 data-[state=selected]:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="h-[inherit] overflow-hidden last:py-0">
+                  <TableCell key={cell.id} className="h-[inherit] overflow-hidden">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
