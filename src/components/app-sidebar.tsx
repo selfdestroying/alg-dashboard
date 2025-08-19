@@ -16,14 +16,15 @@ import {
 import { getUser } from '@/actions/users'
 import { User } from '@prisma/client'
 import {
-  Box,
   Boxes,
   FolderKanban,
   HandCoins,
   House,
   LayoutDashboard,
   LucideProps,
+  PackageOpen,
   Presentation,
+  ShoppingCart,
   Store,
   User as UserIcon,
   Users,
@@ -99,7 +100,14 @@ const data: NavData[] = [
       {
         title: 'Категории',
         url: '/dashboard/categories',
-        icon: Box,
+        icon: PackageOpen,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+      {
+        title: 'Заказы',
+        url: '/dashboard/orders',
+        icon: ShoppingCart,
         items: [],
         roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
       },

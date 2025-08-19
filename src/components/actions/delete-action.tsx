@@ -22,7 +22,7 @@ interface RowActionsProps {
   action: (id: number) => Promise<void>
 }
 
-export default function DeleteAction<T>({ id, action, confirmationText }: RowActionsProps) {
+export default function DeleteAction({ id, action, confirmationText }: RowActionsProps) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [studentName, setStudentName] = useState('')

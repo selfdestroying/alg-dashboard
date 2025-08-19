@@ -121,7 +121,6 @@ model Cart {
   id        Int        @id @default(autoincrement())
   studentId Int        @unique
   createdAt DateTime   @default(now())
-  updatedAt DateTime
   Student   Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   CartItem  CartItem[]
 }
@@ -132,7 +131,6 @@ model CartItem {
   productId Int
   quantity  Int
   createdAt DateTime @default(now())
-  updatedAt DateTime
   Cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
