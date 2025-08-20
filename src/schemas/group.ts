@@ -21,5 +21,12 @@ export const StudentGroupSchema = z.object({
   }),
 })
 
+export const GroupsStudentSchema = z.object({
+  groupId: z.number({
+    error: 'Please select a student.',
+  }),
+})
+
 export type GroupSchemaType = z.infer<typeof GroupSchema>
 export type StudentGroupSchemaType = z.infer<typeof StudentGroupSchema>
+export type GroupStudentSchemaType = z.infer<typeof GroupsStudentSchema>

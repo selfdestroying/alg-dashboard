@@ -69,6 +69,6 @@ export const createPayment = async (
     create: data,
   })
   if (isAddToGroup)
-    addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number })
+    addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number }, false)
   revalidatePath('dashboard/payments')
 }

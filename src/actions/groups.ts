@@ -6,6 +6,7 @@ import { Course, Group, Prisma, Student, User } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { getCourses } from './courses'
 import { createLesson } from './lessons'
+import { createPayment } from './payments'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: {
@@ -25,7 +26,7 @@ export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
   lessons: Prisma.LessonGetPayload<{
     include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
   }>[]
-  students: Student[]
+  students: (Student & { _count: { groups: number } })[]
 }
 
 export const getGroups = async (): Promise<GroupWithTeacherAndCourse[]> => {
@@ -41,7 +42,7 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
     include: {
       teacher: true,
       course: true,
-      students: { include: { student: true } },
+      students: { include: { student: { include: { _count: { select: { groups: true } } } } } },
       lessons: {
         orderBy: [{ date: 'asc' }, { time: 'asc' }],
         include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } },
@@ -79,7 +80,10 @@ export const deleteGroup = async (id: number) => {
   revalidatePath('dashboard/groups')
 }
 
-export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
+export const addToGroup = async (
+  data: Prisma.StudentGroupUncheckedCreateInput,
+  isCreatePayment: boolean
+) => {
   await prisma.studentGroup.create({ data })
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -97,6 +101,16 @@ export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) 
         },
       })
   )
+  if (isCreatePayment)
+    await createPayment(
+      {
+        groupId: data.groupId,
+        lessonsPaid: 0,
+        studentId: data.studentId,
+        amount: 0,
+      },
+      false
+    )
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
 

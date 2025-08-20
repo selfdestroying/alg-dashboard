@@ -1,4 +1,7 @@
+import { getGroups } from '@/actions/groups'
 import { getStudent } from '@/actions/students'
+import FormDialog from '@/components/button-dialog'
+import { StudentGroupForm } from '@/components/forms/student-group-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,6 +13,7 @@ import Link from 'next/link'
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const student = await getStudent(+id)
+  const groups = await getGroups()
 
   if (!student) return <div>Ошибка при получении ученика</div>
 
@@ -84,10 +88,26 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
         {/* Groups */}
         <div className="space-y-4">
-          <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
-            <Users size={20} />
-            Группы
-          </h3>
+          <div className="flex flex-wrap gap-2">
+            <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
+              <Users size={20} />
+              Группы
+            </h3>
+            <FormDialog
+              title="Добавить в группу"
+              FormComponent={StudentGroupForm}
+              formComponentProps={{
+                groups,
+                studentId: student.id,
+              }}
+              triggerButtonProps={{
+                size: 'sm',
+              }}
+              submitButtonProps={{
+                form: 'student-group-form',
+              }}
+            />
+          </div>
           {student.groups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {student.groups.map((group) => (
