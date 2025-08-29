@@ -23,29 +23,29 @@ import { useData } from '@/providers/data-provider'
 import { GroupSchema, GroupSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GroupType } from '@prisma/client'
-import { format } from 'date-fns'
+import { differenceInWeeks, format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import { Checkbox } from '../ui/checkbox'
+import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 
 const timeSlots = [
-  { time: '09:00', available: false },
-  { time: '09:30', available: false },
+  { time: '09:00', available: true },
+  { time: '09:30', available: true },
   { time: '10:00', available: true },
   { time: '10:30', available: true },
   { time: '11:00', available: true },
   { time: '11:30', available: true },
-  { time: '12:00', available: false },
+  { time: '12:00', available: true },
   { time: '12:30', available: true },
   { time: '13:00', available: true },
   { time: '13:30', available: true },
   { time: '14:00', available: true },
-  { time: '14:30', available: false },
-  { time: '15:00', available: false },
+  { time: '14:30', available: true },
+  { time: '15:00', available: true },
   { time: '15:30', available: true },
   { time: '16:00', available: true },
   { time: '16:30', available: true },
@@ -54,7 +54,9 @@ const timeSlots = [
 ]
 
 export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
-  const [endDateCheck, setEndDateCheck] = useState<boolean>(false)
+  const id = useId()
+
+  const [hasEndDate, setHasEndDate] = useState(false)
   const { courses, users } = useData()
 
   const form = useForm<GroupSchemaType>({
@@ -62,9 +64,9 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
   })
 
   function handleSubmit(values: GroupSchemaType) {
-    const ok = createGroup(values)
-    toast.promise(ok, {
-      loading: 'Загрузка...',
+    const promise = createGroup(values)
+    toast.promise(promise, {
+      loading: 'Создание группы...',
       success: 'Группа успешно создана',
       error: (e) => e.message,
     })
@@ -73,25 +75,20 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="@container space-y-8"
-        id="group-form"
-      >
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8" id="group-form">
         <div className="grid grid-cols-12 gap-4">
-          {/* Required */}
           <FormField
             control={form.control}
             name="courseId"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">
-                  Курс<span className="text-destructive">*</span>
+              <FormItem className="col-span-12">
+                <FormLabel>
+                  Курс <span className="text-destructive">*</span>
                 </FormLabel>
-                <Select key="select-0" onValueChange={(value) => field.onChange(+value)}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="" />
+                <Select onValueChange={(v) => field.onChange(+v)} value={field.value?.toString()}>
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите курс" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -102,24 +99,23 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     ))}
                   </SelectContent>
                 </Select>
-
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="teacherId"
             render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">
-                  Учитель<span className="text-destructive">*</span>
+              <FormItem className="col-span-12">
+                <FormLabel>
+                  Учитель <span className="text-destructive">*</span>
                 </FormLabel>
-
-                <Select key="select-1" onValueChange={(value) => field.onChange(+value)}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="" />
+                <Select onValueChange={(v) => field.onChange(+v)} value={field.value?.toString()}>
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите учителя" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -130,25 +126,23 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     ))}
                   </SelectContent>
                 </Select>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="col-span-12 col-start-auto flex flex-row items-start gap-2 space-y-0 self-end">
+          <div className="col-span-12 flex gap-4">
             <FormField
               control={form.control}
               name="startDate"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <p className="data-[error=true]:text-destructive flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
-                    Дата начала<span className="text-destructive">*</span>
-                  </p>
-
+                  <FormLabel>
+                    Дата начала <span className="text-destructive">*</span>
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
-                        variant={'outline'}
+                        variant="outline"
                         className="w-full justify-start text-left font-normal"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -156,31 +150,35 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" onSelect={field.onChange} />
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
                     </PopoverContent>
                   </Popover>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="endDate"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <p className="data-[error=true]:text-destructive flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+                  <FormLabel className="flex items-center gap-2">
                     <Checkbox
-                      defaultChecked={endDateCheck}
-                      onCheckedChange={(checked) => setEndDateCheck(checked.valueOf() as boolean)}
+                      checked={hasEndDate}
+                      onCheckedChange={(checked) => {
+                        setHasEndDate(Boolean(checked))
+                        if (!checked) {
+                          form.setValue('lessonCount', undefined)
+                        }
+                      }}
                     />
                     Дата конца
-                  </p>
-
+                  </FormLabel>
                   <Popover>
-                    <PopoverTrigger asChild disabled={!endDateCheck}>
+                    <PopoverTrigger asChild disabled={!hasEndDate}>
                       <Button
-                        variant={'outline'}
+                        variant="outline"
                         className="w-full justify-start text-left font-normal"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -190,138 +188,140 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
-                        onSelect={field.onChange}
+                        selected={field.value}
+                        onSelect={(date) => {
+                          field.onChange(date)
+                          const start = form.getValues('startDate')
+                          if (start && date) {
+                            const weeks = differenceInWeeks(date, start) + 1
+                            form.setValue('lessonCount', weeks)
+                          }
+                        }}
                         disabled={(date) => {
-                          const startDate = form.getValues('startDate')
-                          return startDate != undefined && date < startDate
+                          const start = form.getValues('startDate')
+                          return start && date < start
                         }}
                       />
                     </PopoverContent>
                   </Popover>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
 
-          {/* Optional */}
-          <Accordion
-            type="single"
-            collapsible
-            className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end"
-          >
-            <AccordionItem
-              value="optional"
-              className="col-span-12 col-start-auto w-full gap-2 space-y-2 self-end"
-            >
-              <AccordionTrigger className="w-full py-0">Дополнительные параметры</AccordionTrigger>
-              <AccordionContent className="w-full space-y-4">
-                {/* Dates */}
+          <FormField
+            control={form.control}
+            name="time"
+            render={({ field }) => (
+              <FormItem className="col-span-12">
+                <FormLabel>Время занятия</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value || ''}>
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите время" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {timeSlots.map((slot) => (
+                      <SelectItem key={slot.time} value={slot.time} disabled={!slot.available}>
+                        {slot.time} {!slot.available && '(недоступно)'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                <FormField
-                  control={form.control}
-                  name="time"
-                  render={({ field }) => (
-                    <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                      <FormLabel className="flex shrink-0">Время занятия</FormLabel>
-
-                      <Select {...field} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {timeSlots.map((timeSlot) => (
-                            <SelectItem key={timeSlot.time} value={timeSlot.time}>
-                              {timeSlot.time}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                      <p className="data-[error=true]:text-destructive flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
-                        Тип группы
-                      </p>
-                      <FormControl>
-                        <RadioGroup onValueChange={field.onChange}>
-                          <FormItem className="flex items-center gap-3">
-                            <FormControl>
-                              <RadioGroupItem value={GroupType.GROUP} />
-                            </FormControl>
-                            <FormLabel className="font-normal">Группа</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center gap-3">
-                            <FormControl>
-                              <RadioGroupItem value={GroupType.INDIVIDUAL} />
-                            </FormControl>
-                            <FormLabel className="font-normal">Индивидуальные занятия</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center gap-3">
-                            <FormControl>
-                              <RadioGroupItem value={GroupType.INTENSIVE} />
-                            </FormControl>
-                            <FormLabel className="font-normal">Интенсив</FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lessonCount"
-                  render={({ field }) => (
-                    <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                      <FormLabel className="flex shrink-0">Количество занятий</FormLabel>
-
-                      <FormControl>
-                        <Input
-                          name={field.name}
-                          onChange={(e) => field.onChange(+e.target.value)}
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem className="col-span-12">
+                <FormLabel>Тип группы</FormLabel>
+                <FormControl>
+                  <RadioGroup className="grid grid-cols-1 md:grid-cols-3" defaultValue="1">
+                    <div
+                      key={`${id}-${GroupType.GROUP}`}
+                      className="border-input has-data-[state=checked]:border-primary/50 relative flex flex-col items-start gap-4 rounded-md border p-3 shadow-xs outline-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem
+                          id={`${id}-${GroupType.GROUP}`}
+                          value={GroupType.GROUP}
+                          className="after:absolute after:inset-0"
                         />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="backOfficeUrl"
-                  render={({ field }) => (
-                    <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                      <FormLabel className="flex shrink-0">Ссылка на backoffice</FormLabel>
-
-                      <FormControl>
-                        <Input
-                          key="url-input-0"
-                          placeholder=""
-                          type="url"
-                          className=" "
-                          {...field}
+                        <Label htmlFor={`${id}-${GroupType.GROUP}`}>Группа</Label>
+                      </div>
+                    </div>
+                    <div
+                      key={`${id}-${GroupType.INDIVIDUAL}`}
+                      className="border-input has-data-[state=checked]:border-primary/50 relative flex flex-col items-start gap-4 rounded-md border p-3 shadow-xs outline-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem
+                          id={`${id}-${GroupType.INDIVIDUAL}`}
+                          value={GroupType.INDIVIDUAL}
+                          className="after:absolute after:inset-0"
                         />
-                      </FormControl>
+                        <Label htmlFor={`${id}-${GroupType.INDIVIDUAL}`}>Индив</Label>
+                      </div>
+                    </div>
+                    <div
+                      key={`${id}-${GroupType.INTENSIVE}`}
+                      className="border-input has-data-[state=checked]:border-primary/50 relative flex flex-col items-start gap-4 rounded-md border p-3 shadow-xs outline-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem
+                          id={`${id}-${GroupType.INTENSIVE}`}
+                          value={GroupType.INTENSIVE}
+                          className="after:absolute after:inset-0"
+                        />
+                        <Label htmlFor={`${id}-${GroupType.INTENSIVE}`}>Интенсив</Label>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <FormField
+            control={form.control}
+            name="lessonCount"
+            render={({ field }) => (
+              <FormItem className="col-span-12">
+                <FormLabel>Количество занятий</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Backoffice URL */}
+          <FormField
+            control={form.control}
+            name="backOfficeUrl"
+            render={({ field }) => (
+              <FormItem className="col-span-12">
+                <FormLabel>Ссылка на backoffice</FormLabel>
+                <FormControl>
+                  <Input type="url" placeholder="https://..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
       </form>
     </Form>
