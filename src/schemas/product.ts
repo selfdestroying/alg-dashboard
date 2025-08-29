@@ -5,6 +5,7 @@ export const ProductSchema = z.object({
   description: z.string().optional(),
   price: z.number().min(0, 'Цена не может быть отрицательной.'),
   originalPrice: z.number().optional(),
+  quantity: z.number().min(1),
   image: z.file().mime(['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp']).optional(),
   categoryId: z.number().int('ID категории должен быть целым числом.'),
 })
