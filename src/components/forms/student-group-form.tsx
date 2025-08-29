@@ -2,27 +2,27 @@
 
 import { addToGroup } from '@/actions/groups'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { StudentGroupSchema, StudentGroupSchemaType } from '@/schemas/group'
+import { GroupsStudentSchema, GroupStudentSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student } from '@prisma/client'
+import { Group } from '@prisma/client'
 import { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 interface GroupStudenProps {
-  students: Student[]
-  groupId: number
+  groups: Group[]
+  studentId: number
   onSubmit?: () => void
 }
 
-export const GroupStudentForm: FC<GroupStudenProps> = ({ students, groupId, onSubmit }) => {
-  const form = useForm<StudentGroupSchemaType>({
-    resolver: zodResolver(StudentGroupSchema),
+export const StudentGroupForm: FC<GroupStudenProps> = ({ groups, studentId, onSubmit }) => {
+  const form = useForm<GroupStudentSchemaType>({
+    resolver: zodResolver(GroupsStudentSchema),
   })
 
-  function handleSubmit(data: StudentGroupSchemaType) {
-    const ok = addToGroup({ studentId: data.studentId, groupId }, true)
+  function handleSubmit(data: GroupStudentSchemaType) {
+    const ok = addToGroup({ studentId, groupId: data.groupId }, true)
     toast.promise(ok, {
       loading: 'Loding...',
       success: 'Ученик успешно добавлен в группу',
@@ -35,27 +35,27 @@ export const GroupStudentForm: FC<GroupStudenProps> = ({ students, groupId, onSu
     <Form {...form}>
       <form
         className="@container space-y-8"
-        onSubmit={form.handleSubmit(handleSubmit)}
-        id="group-student-form"
+        onSubmit={form.handleSubmit(handleSubmit, (e) => console.log(e))}
+        id="student-group-form"
       >
         <div className="grid grid-cols-12 gap-4">
           <FormField
             control={form.control}
-            name="studentId"
+            name="groupId"
             render={({ field }) => (
               <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
                 <div className="w-full">
-                  <FormLabel>Ученик</FormLabel>
+                  <FormLabel>Грппа</FormLabel>
                   <Select onValueChange={(value) => field.onChange(+value)}>
                     <FormControl>
                       <SelectTrigger className="w-full cursor-pointer">
-                        <SelectValue placeholder="Выбрать ученика" />
+                        <SelectValue placeholder="Выбрать группу" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {students.map((s) => (
+                      {groups.map((s) => (
                         <SelectItem key={s.id} value={s.id.toString()} className="cursor-pointer">
-                          {s.firstName} {s.lastName}
+                          {s.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

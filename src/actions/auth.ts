@@ -22,11 +22,9 @@ export async function sigin(state: any | undefined, formData: FormData): Promise
     return { success: false, message: 'User not found' }
   }
 
-  if (['ADMIN', 'OWNER', 'MANAGER'].includes(user.role)) {
-    const isValidPassword = await bcrypt.compare(password, user.password)
-    if (!isValidPassword) {
-      return { success: false, message: 'Invalid password' }
-    }
+  const isValidPassword = await bcrypt.compare(password, user.password)
+  if (!isValidPassword) {
+    return { success: false, message: 'Invalid password' }
   }
 
   await createSession(user.id)

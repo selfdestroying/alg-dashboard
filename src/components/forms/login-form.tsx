@@ -132,10 +132,7 @@ export default function LoginForm() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem
-                    className="space-y-1"
-                    hidden={!selectedUserRole || selectedUserRole == 'TEACHER'}
-                  >
+                  <FormItem className="space-y-1" hidden={!selectedUserRole}>
                     <FormLabel>Пароль</FormLabel>
                     <FormControl>
                       <Input {...field} />
