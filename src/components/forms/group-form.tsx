@@ -51,6 +51,11 @@ const timeSlots = [
   { time: '16:30', available: true },
   { time: '17:00', available: true },
   { time: '17:30', available: true },
+  { time: '18:00', available: true },
+  { time: '18:30', available: true },
+  { time: '19:00', available: true },
+  { time: '19:30', available: true },
+  { time: '20:00', available: true },
 ]
 
 export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
@@ -61,6 +66,10 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
 
   const form = useForm<GroupSchemaType>({
     resolver: zodResolver(GroupSchema),
+    defaultValues: {
+      backOfficeUrl: '',
+      type: 'GROUP',
+    },
   })
 
   function handleSubmit(values: GroupSchemaType) {
@@ -242,7 +251,11 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
               <FormItem className="col-span-12">
                 <FormLabel>Тип группы</FormLabel>
                 <FormControl>
-                  <RadioGroup className="grid grid-cols-1 md:grid-cols-3" defaultValue="1">
+                  <RadioGroup
+                    className="grid grid-cols-1 md:grid-cols-3"
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <div
                       key={`${id}-${GroupType.GROUP}`}
                       className="border-input has-data-[state=checked]:border-primary/50 relative flex flex-col items-start gap-4 rounded-md border p-3 shadow-xs outline-none"
