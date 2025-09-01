@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma'
 import { DayOfWeek } from '@/lib/utils'
 import { Course, Group, Prisma, Student, User } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { getCourses } from './courses'
 import { createLesson } from './lessons'
 import { createPayment } from './payments'
 
@@ -58,8 +57,12 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
 }
 
 export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
-  const courses = await getCourses()
-  const groupName = `${courses[data.courseId - 1].name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
+  const course = await prisma.course.findFirst({
+    where: {
+      id: data.courseId,
+    },
+  })
+  const groupName = `${course?.name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...data, name: groupName } })
 
   if (data.lessonCount) {
