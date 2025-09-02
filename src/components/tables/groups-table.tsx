@@ -115,7 +115,9 @@ export default function GroupsTable({
     <DataTable
       data={groups}
       columns={columns}
-      defaultValues={[{ id: 'teacher', value: user.firstName }]}
+      defaultValues={
+        user.role == 'TEACHER' ? [{ id: 'teacher', value: user.firstName }] : undefined
+      }
     />
   )
 }

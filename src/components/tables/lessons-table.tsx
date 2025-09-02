@@ -129,12 +129,16 @@ export default function LessonsTable({
     <DataTable
       data={lessons}
       columns={column}
-      defaultValues={[
-        {
-          id: 'teacher',
-          value: user.firstName,
-        },
-      ]}
+      defaultValues={
+        user.role == 'TEACHER'
+          ? [
+              {
+                id: 'teacher',
+                value: user.firstName,
+              },
+            ]
+          : undefined
+      }
     />
   )
 }
