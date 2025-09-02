@@ -9,9 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Group } from '@prisma/client'
-import { Calendar, Coins, Link as LinkIcon, Lock, User, Users } from 'lucide-react'
+import { Calendar, Coins, Link as LinkIcon, Lock, LucideProps, User, Users } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 
 interface StudentCardProps {
   student: StudentWithGroups
@@ -25,7 +25,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
   if (!student) return <div>Ошибка при получении ученика</div>
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
@@ -161,7 +161,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
           </div>
           {student.groups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {student.groups.map((group: any) => (
+              {student.groups.map((group) => (
                 <Button
                   key={group.id}
                   variant="outline"
@@ -188,7 +188,7 @@ function Section({
   children,
 }: {
   title: string
-  icon: any
+  icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
   children: React.ReactNode
 }) {
   return (
@@ -211,7 +211,7 @@ function EditableInfoItem({
   onChange,
   isLink = false,
 }: {
-  icon?: any
+  icon?: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
   label?: string
   value: string | number
   field: string

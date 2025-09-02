@@ -42,7 +42,7 @@ export const createStudent = async (
   revalidatePath('dashboard/students')
 }
 
-export async function updateStudent(studentData: any) {
+export async function updateStudent(studentData: StudentWithGroups) {
   try {
     const updated = await prisma.student.update({
       where: { id: studentData.id },
