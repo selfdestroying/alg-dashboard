@@ -13,7 +13,7 @@ interface DashboardPageProps {
 }
 
 export default function DashboardPage({ user, teachers }: DashboardPageProps) {
-  const [selectedTeacherId, setSelectedTeacherId] = useState(user.id)
+  const [selectedTeacherId, setSelectedTeacherId] = useState(user.role == 'TEACHER' ? user.id : -1)
   const [statistics, setStatistics] = useState({
     totalStudents: 0,
     totalGroups: 0,
