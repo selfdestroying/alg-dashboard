@@ -144,31 +144,33 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
       <SidebarHeader>
         <NavUser />
         {/* <SearchForm className="mt-3" /> */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>Добавить учителя</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>Добавить учителя</DialogTitle>
-            <form action={addTeacher}>
-              <Input type="text" name="name" />
-              <Select name="role">
-                <SelectTrigger>
-                  <SelectValue placeholder="роль" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(Role).map((role) => (
-                    <SelectItem value={role} key={role}>
-                      {role}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input type="text" name="password" />
-              <Button type="submit">Добавить</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {user.role == 'ADMIN' && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Добавить учителя</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Добавить учителя</DialogTitle>
+              <form action={addTeacher}>
+                <Input type="text" name="name" />
+                <Select name="role">
+                  <SelectTrigger>
+                    <SelectValue placeholder="роль" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(Role).map((role) => (
+                      <SelectItem value={role} key={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input type="text" name="password" />
+                <Button type="submit">Добавить</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
