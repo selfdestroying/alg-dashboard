@@ -14,7 +14,9 @@ import {
 } from '@/components/ui/sidebar'
 
 import { getUser } from '@/actions/users'
-import { User } from '@prisma/client'
+import prisma from '@/lib/prisma'
+import { Role, User } from '@prisma/client'
+import bcrypt from 'bcrypt'
 import {
   Boxes,
   FolderKanban,
@@ -31,6 +33,10 @@ import {
 } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { NavUser } from './nav-user'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog'
+import { Input } from './ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 interface NavData {
   title: string
@@ -121,11 +127,48 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
   if (!user) {
     return redirect('/auth')
   }
+
+  const addTeacher = async (formData: FormData) => {
+    'use server'
+    const firstName = formData.get('name') as string
+    const role = formData.get('role') as Role
+    const password = formData.get('password') as string
+
+    await prisma.user.create({
+      data: { firstName, role, password: await bcrypt.hash(password, 10), passwordRequired: true },
+    })
+  }
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <NavUser />
         {/* <SearchForm className="mt-3" /> */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Добавить учителя</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Добавить учителя</DialogTitle>
+            <form action={addTeacher}>
+              <Input type="text" name="name" />
+              <Select name="role">
+                <SelectTrigger>
+                  <SelectValue placeholder="роль" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(Role).map((role) => (
+                    <SelectItem value={role} key={role}>
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input type="text" name="password" />
+              <Button type="submit">Добавить</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
