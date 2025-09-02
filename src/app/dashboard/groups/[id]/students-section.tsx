@@ -1,6 +1,5 @@
 import { AllGroupData } from '@/actions/groups'
-import FormDialog from '@/components/button-dialog'
-import { GroupStudentForm } from '@/components/forms/group-student-form'
+import { GroupStudentDialog } from '@/components/group-student-dialog'
 import { GroupStudentsTable } from '@/components/tables/group-students-table'
 import { Student } from '@prisma/client'
 
@@ -13,17 +12,7 @@ export default async function StudentsSection({
 }) {
   return (
     <>
-      <FormDialog
-        title="Добавить ученика"
-        FormComponent={GroupStudentForm}
-        formComponentProps={{
-          groupId: group.id,
-          students: students,
-        }}
-        submitButtonProps={{
-          form: 'group-student-form',
-        }}
-      />
+      <GroupStudentDialog students={students} groupId={group.id} />
       <GroupStudentsTable data={group} />
     </>
   )
