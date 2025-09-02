@@ -13,6 +13,16 @@ export default async function Page() {
           title="Добавить ученика"
           submitButtonProps={{ form: 'student-form' }}
           FormComponent={StudentForm}
+          formComponentProps={{
+            type: 'create',
+            defaultValues: {
+              firstName: '',
+              lastName: '',
+              age: 0,
+              parentsName: '',
+              crmUrl: '',
+            },
+          }}
         />
       </div>
       <div>

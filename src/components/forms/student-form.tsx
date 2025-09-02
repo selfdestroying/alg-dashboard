@@ -8,23 +8,23 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
+import { DefaultValues, useForm } from 'react-hook-form'
 
 import { createStudent } from '@/actions/students'
 import { StudentSchema, StudentSchemaType } from '@/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
-export default function StudentForm({ onSubmit }: { onSubmit?: () => void }) {
+interface StudentFormProps {
+  type: string
+  defaultValues?: DefaultValues<StudentSchemaType>
+  onSubmit?: () => void
+}
+
+export default function StudentForm({ defaultValues, onSubmit }: StudentFormProps) {
   const form = useForm<StudentSchemaType>({
     resolver: zodResolver(StudentSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      age: 0,
-      parentsName: '',
-      crmUrl: '',
-    },
+    defaultValues,
   })
 
   function handleSubmit(values: StudentSchemaType) {

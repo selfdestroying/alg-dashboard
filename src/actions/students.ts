@@ -1,8 +1,10 @@
 'use server'
 import prisma from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Group, Prisma, Student } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { revalidatePath } from 'next/cache'
+
+export type StudentWithGroups = Student & { groups: Group[] }
 
 export const getStudents = async () => {
   const students = await prisma.student.findMany({
@@ -13,7 +15,7 @@ export const getStudents = async () => {
   return students
 }
 
-export const getStudent = async (id: number) => {
+export const getStudent = async (id: number): Promise<StudentWithGroups> => {
   const student = await prisma.student.findFirstOrThrow({
     where: { id },
     include: { groups: { include: { group: true } } },
@@ -38,6 +40,32 @@ export const createStudent = async (
     },
   })
   revalidatePath('dashboard/students')
+}
+
+export async function updateStudent(studentData: any) {
+  try {
+    const updated = await prisma.student.update({
+      where: { id: studentData.id },
+      data: {
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
+        age: Number(studentData.age),
+        login: studentData.login,
+        password: studentData.password,
+        coins: Number(studentData.coins),
+        parentsName: studentData.parentsName,
+        crmUrl: studentData.crmUrl,
+      },
+    })
+
+    // сброс кеша на странице конкретного ученика
+    revalidatePath(`/dashboard/students/${studentData.id}`)
+
+    return updated
+  } catch (err) {
+    console.error('Ошибка при обновлении ученика:', err)
+    throw new Error('Не удалось обновить данные ученика')
+  }
 }
 
 export const deleteStudent = async (id: number) => {

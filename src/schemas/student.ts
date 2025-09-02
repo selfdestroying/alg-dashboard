@@ -9,6 +9,10 @@ export const StudentSchema = z.object({
     .lte(17, { message: 'Must be less than or equal to 17' }),
   parentsName: z.string().min(2, 'Укажите имя родителя'),
   crmUrl: z.url('Укажите корректный URL'),
+  // optional
+  login: z.string().min(2, 'Укажите логин').optional(),
+  password: z.string().min(2, 'Укажите пароль').optional(),
+  coins: z.number().positive().optional(),
 })
 
 export type StudentSchemaType = z.infer<typeof StudentSchema>
