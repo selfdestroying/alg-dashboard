@@ -1,7 +1,6 @@
 import { getGroups } from '@/actions/groups'
 import { getStudent } from '@/actions/students'
-import FormDialog from '@/components/button-dialog'
-import { StudentGroupForm } from '@/components/forms/student-group-form'
+import { StudentGroupDialog } from '@/components/student-group-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -93,20 +92,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <Users size={20} />
               Группы
             </h3>
-            <FormDialog
-              title="Добавить в группу"
-              FormComponent={StudentGroupForm}
-              formComponentProps={{
-                groups,
-                studentId: student.id,
-              }}
-              triggerButtonProps={{
-                size: 'sm',
-              }}
-              submitButtonProps={{
-                form: 'student-group-form',
-              }}
-            />
+            <StudentGroupDialog groups={groups} studentId={student.id} />
           </div>
           {student.groups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
