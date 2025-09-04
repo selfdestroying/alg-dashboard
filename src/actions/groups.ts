@@ -119,5 +119,21 @@ export const addToGroup = async (
 
 export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
   await prisma.studentGroup.delete({ where: { studentId_groupId: { ...data } } })
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const lessons = await prisma.lesson.findMany({
+    where: { groupId: data.groupId, date: { gte: today } },
+  })
+  lessons.forEach(
+    async (lesson) =>
+      await prisma.attendance.delete({
+        where: {
+          studentId_lessonId: {
+            studentId: data.studentId,
+            lessonId: lesson.id,
+          },
+        },
+      })
+  )
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
