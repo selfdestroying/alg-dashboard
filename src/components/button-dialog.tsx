@@ -9,12 +9,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { VariantProps } from 'class-variance-authority'
-import { useState } from 'react'
+import { LucideProps } from 'lucide-react'
+import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
 
 interface FormDialogProps<T extends object = object> {
   title: string
+  icon?: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
   description?: string
   FormComponent: React.ComponentType<T & { onSubmit: () => void }>
   formComponentProps?: T
@@ -30,6 +32,7 @@ interface FormDialogProps<T extends object = object> {
 
 export default function FormDialog<T extends object = object>({
   title,
+  icon: Icon,
   FormComponent,
   formComponentProps,
   description,
@@ -40,7 +43,7 @@ export default function FormDialog<T extends object = object>({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button {...triggerButtonProps}>{title}</Button>
+        <Button {...triggerButtonProps}>{Icon ? <Icon /> : title}</Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">

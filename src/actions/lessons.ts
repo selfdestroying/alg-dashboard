@@ -8,8 +8,9 @@ import { createAttendance } from './attendance'
 export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
   include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
 }>
-export type LessonWithAttendance = Prisma.LessonGetPayload<{
+export type LessonWithGroupAndAttendance = Prisma.LessonGetPayload<{
   include: {
+    group: { include: { _count: { select: { students: true } } } }
     attendance: {
       include: {
         student: true
@@ -55,10 +56,11 @@ export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup
   return lessons
 }
 
-export const getLesson = async (id: number): Promise<LessonWithAttendance | null> => {
+export const getLesson = async (id: number): Promise<LessonWithGroupAndAttendance | null> => {
   const lesson = await prisma.lesson.findFirst({
     where: { id },
     include: {
+      group: { include: { _count: { select: { students: true } } } },
       attendance: {
         include: {
           student: true,

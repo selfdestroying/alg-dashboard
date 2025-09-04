@@ -28,7 +28,7 @@ export default function ProductForm({
 
     toast.promise(ok, {
       loading: 'Загрузка...',
-      success: 'Категория успешно создана',
+      success: 'Товар успешно создан',
       error: (e) => e.message,
     })
     onSubmit?.()
