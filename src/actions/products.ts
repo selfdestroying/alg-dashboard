@@ -31,6 +31,11 @@ export async function createProduct(values: ProductSchemaType) {
   revalidatePath('/dashboard/products')
 }
 
+export async function updateproduct({ where, data }: Prisma.ProductUpdateArgs) {
+  await prisma.product.update({ where, data })
+  revalidatePath('/dashboard/products')
+}
+
 export async function deleteProduct(id: number) {
   await prisma.product.delete({ where: { id } })
   revalidatePath('/dashboard/products')

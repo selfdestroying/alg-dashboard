@@ -5,6 +5,7 @@ import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
 import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Attendance, AttendanceStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
@@ -42,7 +43,11 @@ const getColumns = (
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <div className="flex flex-wrap gap-2 font-medium">
-          {row.original.student.firstName} {row.original.student.lastName}
+          <Button asChild variant={'link'} className="h-fit p-0 font-medium">
+            <Link href={`/dashboard/students/${row.original.id}`}>
+              {row.original.student.firstName} {row.original.student.lastName}
+            </Link>
+          </Button>
           {row.original.asMakeupFor && (
             <Badge variant={'outline'}>
               Отработка за{' '}
@@ -61,7 +66,7 @@ const getColumns = (
     header: 'Статус',
     accessorKey: 'status',
     cell: ({ row }) => (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-[1fr_1fr_auto]">
         <StatusAction
           value={row.original}
           onChange={(val: AttendanceStatus) => {
@@ -91,7 +96,7 @@ const getColumns = (
           </Badge>
         ) : (
           <FormDialog
-            title="Назначить отработку"
+            title="Отработка"
             triggerButtonProps={{ variant: 'outline', size: 'sm' }}
             submitButtonProps={{ form: 'makeup-form' }}
             FormComponent={MakeUpForm}
@@ -199,7 +204,7 @@ function StatusAction({
       value={value.status != 'UNSPECIFIED' ? value.status : undefined}
       onValueChange={(e: AttendanceStatus) => onChange(e)}
     >
-      <SelectTrigger size="sm" className="">
+      <SelectTrigger size="sm" className="w-full">
         <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
       </SelectTrigger>
       <SelectContent>
