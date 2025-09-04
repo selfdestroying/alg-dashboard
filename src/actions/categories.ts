@@ -14,3 +14,8 @@ export const createCategory = async (
   await prisma.category.create({ data })
   revalidatePath('/dashboard/categories')
 }
+
+export const updateCategory = async ({ where, data }: Prisma.CategoryUpdateArgs) => {
+  await prisma.category.update({ where, data })
+  revalidatePath('/dashboard/categories')
+}
