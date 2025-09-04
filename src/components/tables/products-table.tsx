@@ -84,7 +84,7 @@ const getColumns = (): ColumnDef<ProductWithCategory>[] => [
               name: row.original.name,
               description: row.original.description ?? undefined,
               price: row.original.price,
-              quantity: row.original.price,
+              quantity: row.original.quantity,
               categoryId: row.original.categoryId,
             },
           }}
