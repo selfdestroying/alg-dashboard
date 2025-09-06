@@ -44,7 +44,7 @@ const getColumns = (
       <div className="flex items-center gap-3">
         <div className="flex flex-wrap gap-2 font-medium">
           <Button asChild variant={'link'} className="h-fit p-0 font-medium">
-            <Link href={`/dashboard/students/${row.original.id}`}>
+            <Link href={`/dashboard/students/${row.original.studentId}`}>
               {row.original.student.firstName} {row.original.student.lastName}
             </Link>
           </Button>
