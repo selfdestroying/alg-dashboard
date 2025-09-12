@@ -1,7 +1,7 @@
 'use client'
 import React, { useMemo, useState } from 'react'
 
-import { AttendanceWithStudents, updateAttendance } from '@/actions/attendance'
+import { AttendanceWithStudents, deleteAttendance, updateAttendance } from '@/actions/attendance'
 import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Attendance, AttendanceStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
@@ -14,6 +14,7 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import DeleteAction from '../actions/delete-action'
 
 function useSkipper() {
   const shouldSkipRef = React.useRef(true)
@@ -139,6 +140,23 @@ const getColumns = (
       />
     ),
   },
+  {
+    id: 'actions',
+    header: () => <span className="sr-only">Actions</span>,
+    cell: ({ row }) => (
+      <DeleteAction
+        id={row.original.id}
+        action={() => deleteAttendance({where: {
+          studentId_lessonId: {
+            lessonId: row.original.lessonId!,
+            studentId: row.original.studentId
+          }
+        }})}
+        confirmationText={`${row.original.student.firstName} ${row.original.student.lastName}`}
+      />
+    ),
+    enableHiding: false,
+  }
 ]
 
 export function AttendanceTable({
