@@ -112,3 +112,11 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
 
   revalidatePath(`dashboard/lessons/${data[0].lessonId}`)
 }
+
+
+
+export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
+  await prisma.attendance.delete(data)
+
+  revalidatePath(`dashboard/lessons/${data.where.lessonId}`)
+}
