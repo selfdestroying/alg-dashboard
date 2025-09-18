@@ -7,14 +7,13 @@ import { Attendance, AttendanceStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import DeleteAction from '../actions/delete-action'
 import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
 import MakeUpForm from '../forms/makeup-form'
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import DeleteAction from '../actions/delete-action'
 
 function useSkipper() {
   const shouldSkipRef = React.useRef(true)
@@ -43,21 +42,25 @@ const getColumns = (
     accessorFn: (value) => `${value.student.firstName} ${value.student.lastName}`,
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
-        <div className="flex flex-wrap gap-2 font-medium">
+        <div className="flex flex-wrap items-center gap-2 font-medium">
           <Button asChild variant={'link'} className="h-fit p-0 font-medium">
             <Link href={`/dashboard/students/${row.original.studentId}`}>
               {row.original.student.firstName} {row.original.student.lastName}
             </Link>
           </Button>
           {row.original.asMakeupFor && (
-            <Badge variant={'outline'}>
-              Отработка за{' '}
-              {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
-                year: '2-digit',
-                month: '2-digit',
-                day: '2-digit',
-              })}
-            </Badge>
+            <Button asChild variant={'outline'} size={'sm'} className="h-fit font-medium">
+              <Link
+                href={`/dashboard/lessons/${row.original.asMakeupFor.missedAttendance.lessonId}`}
+              >
+                Отработка за{' '}
+                {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
+                  year: '2-digit',
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
+              </Link>
+            </Button>
           )}
         </div>
       </div>
@@ -87,14 +90,18 @@ const getColumns = (
           }}
         />
         {row.original.asMakeupFor ? null : row.original.missedMakeup ? (
-          <Badge variant={'outline'}>
-            Отработка{' '}
-            {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
-              year: '2-digit',
-              month: '2-digit',
-              day: '2-digit',
-            })}
-          </Badge>
+          <Button asChild variant={'outline'} size={'sm'} className="place-self-center font-medium">
+            <Link
+              href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
+            >
+              Отработка{' '}
+              {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit',
+              })}
+            </Link>
+          </Button>
         ) : (
           <FormDialog
             title="Отработка"
@@ -146,17 +153,21 @@ const getColumns = (
     cell: ({ row }) => (
       <DeleteAction
         id={row.original.id}
-        action={() => deleteAttendance({where: {
-          studentId_lessonId: {
-            lessonId: row.original.lessonId!,
-            studentId: row.original.studentId
-          }
-        }})}
+        action={() =>
+          deleteAttendance({
+            where: {
+              studentId_lessonId: {
+                lessonId: row.original.lessonId!,
+                studentId: row.original.studentId,
+              },
+            },
+          })
+        }
         confirmationText={`${row.original.student.firstName} ${row.original.student.lastName}`}
       />
     ),
     enableHiding: false,
-  }
+  },
 ]
 
 export function AttendanceTable({
