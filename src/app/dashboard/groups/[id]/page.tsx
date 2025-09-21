@@ -1,15 +1,13 @@
 import { getGroup } from '@/actions/groups'
-import { getStudents } from '@/actions/students'
+import { GroupStudentDialog } from '@/components/group-student-dialog'
+import { GroupStudentsTable } from '@/components/tables/group-students-table'
 import { Card, CardHeader } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import prisma from '@/lib/prisma'
 import InfoSection from './info-section'
-import LessonsSection from './lessons-section'
-import StudentsSection from './students-section'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const group = await getGroup(+id)
-  const students = await getStudents()
   if (!group) {
     return (
       <Card>
@@ -17,21 +15,30 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       </Card>
     )
   }
+  const lessons = await prisma.lesson.findMany({
+    where: { groupId: group.id },
+    orderBy: { date: 'asc' },
+  })
+
+  const students = await prisma.student.findMany({
+    where: { groups: { some: { groupId: group.id } } },
+    include: {
+      attendances: {
+        where: { lesson: { groupId: group.id } },
+        include: {
+          lesson: true,
+          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        },
+      },
+    },
+  })
+
   return (
     <div className="space-y-4">
       <InfoSection group={group} />
-      <Tabs defaultValue="attendance">
-        <TabsList>
-          <TabsTrigger value="students">Ученики</TabsTrigger>
-          <TabsTrigger value="attendance">Расписание</TabsTrigger>
-        </TabsList>
-        <TabsContent value="students">
-          <StudentsSection group={group} students={students} />
-        </TabsContent>
-        <TabsContent value="attendance">
-          <LessonsSection group={group} />
-        </TabsContent>
-      </Tabs>
+      <GroupStudentDialog students={students} groupId={group.id} />
+      <GroupStudentsTable data={group} lessons={lessons} students={students} />
     </div>
   )
 }

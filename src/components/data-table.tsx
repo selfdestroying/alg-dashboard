@@ -55,18 +55,20 @@ interface DataObject {
 interface DataTableProps<T> {
   data: T[]
   columns: ColumnDef<T>[]
-  defaultValues?: ColumnFiltersState
+  defaultFilters?: ColumnFiltersState
+  defaultColumnVisibility?: VisibilityState
   tableOptions?: Partial<TableOptions<T>>
 }
 
 export default function DataTable<T extends DataObject>({
   data,
   columns,
-  defaultValues = [],
+  defaultFilters = [],
+  defaultColumnVisibility = {},
   tableOptions,
 }: DataTableProps<T>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultValues)
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultFilters)
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(defaultColumnVisibility)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,

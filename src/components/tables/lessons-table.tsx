@@ -129,7 +129,7 @@ export default function LessonsTable({
     <DataTable
       data={lessons}
       columns={column}
-      defaultValues={
+      defaultFilters={
         user.role == 'TEACHER'
           ? [
               {
