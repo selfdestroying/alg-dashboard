@@ -83,16 +83,16 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
       })
     )
 
-    if (item.asMakeupFor) {
-      updates.push(
-        prisma.attendance.update({
-          where: { id: item.asMakeupFor.missedAttendanceId },
-          data: {
-            status: item.status,
-          },
-        })
-      )
-    }
+    // if (item.asMakeupFor) {
+    //   updates.push(
+    //     prisma.attendance.update({
+    //       where: { id: item.asMakeupFor.missedAttendanceId },
+    //       data: {
+    //         status: item.status,
+    //       },
+    //     })
+    //   )
+    // }
 
     const coinOperations = getCoinUpdateOperations(
       item.status,
@@ -112,8 +112,6 @@ export const updateAttendance = async (data: AttendanceWithStudents[]) => {
 
   revalidatePath(`dashboard/lessons/${data[0].lessonId}`)
 }
-
-
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
   await prisma.attendance.delete(data)

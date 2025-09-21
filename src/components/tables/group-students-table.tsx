@@ -1,88 +1,169 @@
 'use client'
 import { AllGroupData, removeFromGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
-import { Student } from '@prisma/client'
+import { cn } from '@/lib/utils'
+import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
+import { useMemo } from 'react'
 import DeleteAction from '../actions/delete-action'
 import DataTable from '../data-table'
+import DragScrollArea from '../drag-scroll-area'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
-const getColumns = (groupId: number): ColumnDef<Student & { _count: { groups: number } }>[] => [
+// -------------------- Types --------------------
+type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
+  include: {
+    lesson: true
+    asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
+    missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+  }
+}>
+
+type StudentWithAttendances = Prisma.StudentGetPayload<{
+  include: {
+    attendances: {
+      where: { lesson: { groupId: number } }
+      include: {
+        lesson: true
+        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
+        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+      }
+    }
+  }
+}>
+
+// -------------------- Utils --------------------
+const formatDate = (date: Date) => date.toLocaleDateString('ru-RU')
+
+const statusClasses: Record<AttendanceStatus, string> = {
+  PRESENT: 'bg-success dark:bg-success text-white',
+  ABSENT: 'bg-error dark:bg-error text-white',
+  UNSPECIFIED: 'border-accent',
+}
+
+const makeupStatusClasses: Record<AttendanceStatus, string> = {
+  PRESENT: 'border-success dark:border-success',
+  ABSENT: 'border-error dark:border-error',
+  UNSPECIFIED: 'border-accent',
+}
+
+// -------------------- Attendance Cell --------------------
+function AttendanceCell({
+  lesson,
+  attendance,
+}: {
+  lesson: Lesson
+  attendance?: AttendanceWithRelations
+}) {
+  if (!attendance) {
+    return (
+      <div className="text-muted-foreground rounded-lg border-4 px-2">
+        {formatDate(lesson.date)}
+      </div>
+    )
+  }
+
+  const attendanceStatus = statusClasses[attendance.status] ?? statusClasses.UNSPECIFIED
+  const makeUpStatus = attendance.missedMakeup
+    ? (makeupStatusClasses[attendance.missedMakeup.makeUpAttendance.status] ??
+      makeupStatusClasses.UNSPECIFIED)
+    : makeupStatusClasses.UNSPECIFIED
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        className={cn('cursor-pointer rounded-lg border-4 px-2', attendanceStatus, makeUpStatus)}
+      >
+        {formatDate(lesson.date)}
+      </PopoverTrigger>
+      <PopoverContent className="text-xs">
+        <div className="space-y-1">
+          <p>
+            Урок –{' '}
+            <Button asChild variant="link" className="h-fit p-0 font-medium">
+              <Link href={`/dashboard/lessons/${lesson.id}`}>{formatDate(lesson.date)}</Link>
+            </Button>{' '}
+            {attendance.status === 'PRESENT'
+              ? '– Пришел'
+              : attendance.status === 'ABSENT'
+                ? '– Пропустил'
+                : ''}
+          </p>
+          <p>
+            Отработка –{' '}
+            {attendance.missedMakeup ? (
+              <>
+                <Button asChild variant="link" className="h-fit p-0 font-medium">
+                  <Link
+                    href={`/dashboard/lessons/${attendance.missedMakeup.makeUpAttendance.lessonId}`}
+                  >
+                    {formatDate(attendance.missedMakeup.makeUpAttendance.lesson.date)}
+                  </Link>
+                </Button>
+                {attendance.missedMakeup.makeUpAttendance.status === 'PRESENT'
+                  ? ' – Пришел'
+                  : attendance.missedMakeup.makeUpAttendance.status === 'ABSENT'
+                    ? ' – Пропустил'
+                    : ''}
+              </>
+            ) : (
+              ' Не нужна'
+            )}
+          </p>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+// -------------------- Columns --------------------
+const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAttendances>[] => [
   {
     header: 'Полное имя',
-    accessorKey: 'fullName',
-    accessorFn: (value) => `${value.firstName} ${value.lastName}`,
+    accessorFn: (student) => `${student.firstName} ${student.lastName}`,
     cell: ({ row }) => (
-      <Button asChild variant={'link'} className="h-fit p-0 font-medium">
+      <Button asChild variant="link" className="h-fit p-0 font-medium">
         <Link href={`/dashboard/students/${row.original.id}`}>
           {row.original.firstName} {row.original.lastName}
         </Link>
       </Button>
     ),
-    meta: {
-      filterVariant: 'text',
-    },
+    meta: { filterVariant: 'text' },
+    size: 50,
   },
   {
-    header: 'Возраст',
-    accessorKey: 'age',
-    meta: {
-      filterVariant: 'range',
-    },
+    header: 'Посещаемость',
+    accessorKey: 'attendance',
+    cell: ({ row }) => (
+      <DragScrollArea>
+        {lessons.map((lesson) => {
+          const attendance = row.original.attendances.find((a) => a.lessonId === lesson.id)
+          return <AttendanceCell key={lesson.id} lesson={lesson} attendance={attendance} />
+        })}
+      </DragScrollArea>
+    ),
   },
-  {
-    header: 'ФИО Родителя',
-    accessorKey: 'parentsName',
-    meta: {
-      filterVariant: 'text',
-    },
-  },
+  { header: 'Возраст', accessorKey: 'age', meta: { filterVariant: 'range' } },
+  { header: 'ФИО Родителя', accessorKey: 'parentsName', meta: { filterVariant: 'text' } },
   {
     header: 'Ссылка в amoCRM',
     accessorKey: 'crmUrl',
     cell: ({ row }) => (
-      <Button asChild variant={'link'} className="h-fit w-fit p-0 font-medium">
-        <a target="_blank" href={row.getValue('crmUrl')}>
+      <Button asChild variant="link" className="h-fit w-fit p-0 font-medium">
+        <a target="_blank" href={row.getValue('crmUrl') || '#'}>
           {row.getValue('crmUrl') || 'Нет ссылки'}
         </a>
       </Button>
     ),
-    meta: {
-      filterVariant: 'text',
-    },
+    meta: { filterVariant: 'text' },
   },
-  {
-    header: 'Количество групп',
-    accessorKey: 'groups',
-    accessorFn: (value) => value._count.groups,
-    meta: {
-      filterVariant: 'range',
-    },
-  },
-  {
-    accessorKey: 'login',
-    header: 'Логин',
-    meta: {
-      filterVariant: 'text',
-    },
-  },
-  {
-    accessorKey: 'password',
-    header: 'Пароль',
-    meta: {
-      filterVariant: 'text',
-    },
-  },
-  {
-    accessorKey: 'coins',
-    header: 'Астрокоины',
-    meta: {
-      filterVariant: 'range',
-    },
-  },
+  { accessorKey: 'login', header: 'Логин', meta: { filterVariant: 'text' } },
+  { accessorKey: 'password', header: 'Пароль', meta: { filterVariant: 'text' } },
+  { accessorKey: 'coins', header: 'Астрокоины', meta: { filterVariant: 'range' } },
   {
     id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
+    header: 'Действия',
     cell: ({ row }) => (
       <DeleteAction
         id={row.original.id}
@@ -90,11 +171,34 @@ const getColumns = (groupId: number): ColumnDef<Student & { _count: { groups: nu
         confirmationText={`${row.original.firstName} ${row.original.lastName}`}
       />
     ),
-    enableHiding: false,
   },
 ]
 
-export function GroupStudentsTable({ data }: { data: AllGroupData }) {
-  const columns = getColumns(data.id)
-  return <DataTable data={data.students} columns={columns} />
+// -------------------- Main Component --------------------
+export function GroupStudentsTable({
+  lessons,
+  students,
+  data,
+}: {
+  data: AllGroupData
+  lessons: Lesson[]
+  students: StudentWithAttendances[]
+}) {
+  const columns = useMemo(() => getColumns(lessons, data.id), [lessons, data.id])
+
+  return (
+    <DataTable
+      data={students}
+      columns={columns}
+      defaultColumnVisibility={{
+        age: false,
+        actions: false,
+        coins: false,
+        login: false,
+        password: false,
+        crmUrl: false,
+        parentsName: false,
+      }}
+    />
+  )
 }
