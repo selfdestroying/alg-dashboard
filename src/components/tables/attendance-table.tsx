@@ -2,17 +2,17 @@
 import React, { useMemo, useState } from 'react'
 
 import { AttendanceWithStudents, deleteAttendance, updateAttendance } from '@/actions/attendance'
-import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Attendance, AttendanceStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import DeleteAction from '../actions/delete-action'
 import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
+import DeleteAction from '../delete-action'
 import MakeUpForm from '../forms/makeup-form'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 function useSkipper() {
@@ -33,8 +33,7 @@ function useSkipper() {
 
 const getColumns = (
   setData: React.Dispatch<React.SetStateAction<AttendanceWithStudents[]>>,
-  skipAutoResetPageIndex: () => void,
-  upcomingLessons: LessonWithAttendanceAndGroup[]
+  skipAutoResetPageIndex: () => void
 ): ColumnDef<AttendanceWithStudents>[] => [
   {
     header: 'Полное имя',
@@ -90,18 +89,40 @@ const getColumns = (
           }}
         />
         {row.original.asMakeupFor ? null : row.original.missedMakeup ? (
-          <Button asChild variant={'outline'} size={'sm'} className="place-self-center font-medium">
-            <Link
-              href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
-            >
-              Отработка{' '}
-              {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
-                year: '2-digit',
-                month: '2-digit',
-                day: '2-digit',
-              })}
-            </Link>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant={'outline'} size={'sm'}>
+                Отработка{' '}
+                {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
+                  year: '2-digit',
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="flex flex-col gap-2">
+                <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
+                  <Link
+                    href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
+                  >
+                    Урок
+                  </Link>
+                </Button>
+                <FormDialog
+                  title="Изменить дату"
+                  triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+                  submitButtonProps={{ form: 'makeup-form' }}
+                  FormComponent={MakeUpForm}
+                  formComponentProps={{
+                    studentId: row.original.studentId,
+                    missedAttendanceId: row.original.id,
+                    makeUpAttendanceId: row.original.missedMakeup.makeUpAttendaceId,
+                  }}
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
         ) : (
           <FormDialog
             title="Отработка"
@@ -109,9 +130,6 @@ const getColumns = (
             submitButtonProps={{ form: 'makeup-form' }}
             FormComponent={MakeUpForm}
             formComponentProps={{
-              upcomingLessons: upcomingLessons.filter(
-                (lesson) => !lesson.attendance.some((a) => a.studentId == row.original.studentId)
-              ),
               studentId: row.original.studentId,
               missedAttendanceId: row.original.id,
             }}
@@ -170,13 +188,7 @@ const getColumns = (
   },
 ]
 
-export function AttendanceTable({
-  attendance,
-  upcomingLessons,
-}: {
-  attendance: AttendanceWithStudents[]
-  upcomingLessons: LessonWithAttendanceAndGroup[]
-}) {
+export function AttendanceTable({ attendance }: { attendance: AttendanceWithStudents[] }) {
   const [data, setData] = React.useState<AttendanceWithStudents[]>(() => attendance)
   const [editedData, setEditedData] = useState<AttendanceWithStudents[]>(attendance)
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
@@ -187,7 +199,7 @@ export function AttendanceTable({
     })
   }, [data, editedData])
   const columns = useMemo<ColumnDef<AttendanceWithStudents>[]>(
-    () => getColumns(setEditedData, skipAutoResetPageIndex, upcomingLessons),
+    () => getColumns(setEditedData, skipAutoResetPageIndex),
     []
   )
   const handleSave = () => {
@@ -205,6 +217,7 @@ export function AttendanceTable({
         Сохранить
       </Button>
       <DataTable
+        paginate={false}
         data={editedData}
         columns={columns}
         tableOptions={{
