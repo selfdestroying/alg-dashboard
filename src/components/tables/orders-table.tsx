@@ -88,6 +88,7 @@ export default function OrdersTable({ orders }: { orders: OrderWithProductAndStu
     <DataTable
       data={orders}
       columns={columns}
+      paginate
       tableOptions={{
         autoResetPageIndex,
       }}

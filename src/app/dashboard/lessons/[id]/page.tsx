@@ -1,4 +1,4 @@
-import { getLesson, getUpcomingLessons } from '@/actions/lessons'
+import { getLesson } from '@/actions/lessons'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,8 +8,6 @@ import Link from 'next/link'
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const lesson = await getLesson(+id)
-  console.log(lesson)
-  const upcomingLesson = await getUpcomingLessons()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
@@ -54,7 +52,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </div>
         </CardContent>
       </Card>
-      <AttendanceTable attendance={lesson.attendance} upcomingLessons={upcomingLesson} />
+      <AttendanceTable attendance={lesson.attendance} />
     </div>
   )
 }

@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ArrowDown, ArrowUp, Eye } from 'lucide-react'
 import { useState } from 'react'
-import DebouncedInput from './DebouncedInput'
+import DebouncedInput from './debounced-input'
 import Filter from './filter'
 
 declare module '@tanstack/react-table' {
@@ -57,6 +57,8 @@ interface DataTableProps<T> {
   columns: ColumnDef<T>[]
   defaultFilters?: ColumnFiltersState
   defaultColumnVisibility?: VisibilityState
+  defaultPagination?: PaginationState
+  paginate: boolean
   tableOptions?: Partial<TableOptions<T>>
 }
 
@@ -65,14 +67,16 @@ export default function DataTable<T extends DataObject>({
   columns,
   defaultFilters = [],
   defaultColumnVisibility = {},
+  defaultPagination = {
+    pageIndex: 0,
+    pageSize: 10,
+  },
+  paginate,
   tableOptions,
 }: DataTableProps<T>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(defaultFilters)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(defaultColumnVisibility)
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
+  const [pagination, setPagination] = useState<PaginationState>(defaultPagination)
   const [globalFilter, setGlobalFilter] = useState('')
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -84,8 +88,8 @@ export default function DataTable<T extends DataObject>({
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     enableSortingRemoval: false,
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    getPaginationRowModel: paginate ? getPaginationRowModel() : undefined,
+    onPaginationChange: paginate ? setPagination : undefined,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
@@ -93,7 +97,7 @@ export default function DataTable<T extends DataObject>({
     getFacetedRowModel: getFacetedRowModel(),
     state: {
       sorting,
-      pagination,
+      pagination: paginate ? pagination : undefined,
       columnFilters,
       columnVisibility,
       globalFilter,
@@ -215,17 +219,17 @@ export default function DataTable<T extends DataObject>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 data-[state=selected]:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="h-[inherit] overflow-hidden">
+                  <TableCell key={cell.id} className="h-[inherit] overflow-hidden last:py-0">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
-            <TableRow className="data-[state=selected]:bg-accent/50 hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
@@ -236,7 +240,7 @@ export default function DataTable<T extends DataObject>({
       </Table>
 
       {/* Pagination */}
-      {table.getRowModel().rows.length > 0 && (
+      {table.getRowModel().rows.length > 0 && paginate && (
         <div className="flex items-center justify-between gap-3">
           <p className="text-muted-foreground flex-1 text-sm whitespace-nowrap" aria-live="polite">
             Страница{' '}

@@ -10,7 +10,7 @@ import { Edit } from 'lucide-react'
 import Link from 'next/link'
 import { DefaultValues, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import DeleteAction from '../actions/delete-action'
+import DeleteAction from '../delete-action'
 import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
@@ -106,7 +106,7 @@ const getColumns = (): ColumnDef<ProductWithCategory>[] => [
 
 export default function ProductsTable({ products }: { products: ProductWithCategory[] }) {
   const columns = getColumns()
-  return <DataTable data={products} columns={columns} />
+  return <DataTable data={products} columns={columns} paginate />
 }
 
 function EditAction({

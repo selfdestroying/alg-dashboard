@@ -72,5 +72,5 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
 
 export default function PaymentsTable({ payments }: { payments: PaymentsWithStudentAndGroup[] }) {
   const columns = getColumns()
-  return <DataTable data={payments} columns={columns} />
+  return <DataTable data={payments} columns={columns} paginate />
 }

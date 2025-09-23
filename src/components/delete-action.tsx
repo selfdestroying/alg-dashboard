@@ -13,8 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../ui/alert-dialog'
-import { Input } from '../ui/input'
+} from './ui/alert-dialog'
+import { Input } from './ui/input'
 
 interface RowActionsProps {
   id: number

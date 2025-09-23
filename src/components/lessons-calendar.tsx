@@ -2,7 +2,7 @@
 
 import { getLessons, LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { isToday } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -15,7 +15,7 @@ import { Button } from './ui/button'
 const getDayTimestamp = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
-export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: number }) {
+export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacherId: number }) {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [month, setMonth] = useState<Date>(new Date())
   const [lessonsByDay, setLessonsByDay] = useState<Record<number, LessonWithAttendanceAndGroup[]>>(
@@ -37,30 +37,29 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
     return 'bg-info'
   }
 
-  const fetchLessonsForMonth = async (month: Date) => {
-    setIsLoading(true)
-    const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1)
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0)
-    const lessons = await getLessons({
-      where: {
-        date: { gte: startOfMonth, lte: endOfMonth },
-        group: { teacherId: selectedTeacherId == -1 ? undefined : selectedTeacherId },
-      },
-    })
-
-    const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}
-    lessons.forEach((lesson) => {
-      const dayTimestamp = getDayTimestamp(lesson.date)
-      if (!newLessonsByDay[dayTimestamp]) {
-        newLessonsByDay[dayTimestamp] = []
-      }
-      newLessonsByDay[dayTimestamp].push(lesson)
-    })
-    setLessonsByDay(newLessonsByDay)
-    setIsLoading(false)
-  }
-
   useEffect(() => {
+    async function fetchLessonsForMonth(month: Date) {
+      setIsLoading(true)
+      const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1)
+      const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0)
+      const lessons = await getLessons({
+        where: {
+          date: { gte: startOfMonth, lte: endOfMonth },
+          group: { teacherId: selectedTeacherId == -1 ? undefined : selectedTeacherId },
+        },
+      })
+
+      const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}
+      lessons.forEach((lesson) => {
+        const dayTimestamp = getDayTimestamp(lesson.date)
+        if (!newLessonsByDay[dayTimestamp]) {
+          newLessonsByDay[dayTimestamp] = []
+        }
+        newLessonsByDay[dayTimestamp].push(lesson)
+      })
+      setLessonsByDay(newLessonsByDay)
+      setIsLoading(false)
+    }
     fetchLessonsForMonth(month)
   }, [month, selectedTeacherId])
 
@@ -82,7 +81,7 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
           onSelect={setDate}
           month={month}
           onMonthChange={setMonth}
-          className="place-self-center p-0 [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
+          className="p-0 [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
           locale={ru}
           showOutsideDays={false}
           components={{
@@ -161,34 +160,6 @@ export default function Calendar31({ selectedTeacherId }: { selectedTeacherId: n
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <div className="text-muted-foreground grid grid-cols-3 gap-2 text-xs">
-          <div
-            className="flex items-center justify-center space-x-1"
-            role="region"
-            aria-live="polite"
-          >
-            <span className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></span>
-            <span>Завершённые уроки</span>
-          </div>
-          <div
-            className="flex items-center justify-center space-x-1"
-            role="region"
-            aria-live="polite"
-          >
-            <span className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></span>
-            <span>Неотмеченные уроки</span>
-          </div>
-          <div
-            className="flex items-center justify-center space-x-1"
-            role="region"
-            aria-live="polite"
-          >
-            <span className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></span>
-            <span>Будущие уроки</span>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

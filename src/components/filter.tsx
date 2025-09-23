@@ -2,7 +2,7 @@ import { Label } from '@/components/ui/label'
 import { Column } from '@tanstack/react-table'
 import { X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import DebouncedInput from './DebouncedInput'
+import DebouncedInput from './debounced-input'
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
