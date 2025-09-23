@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Student } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
-import DeleteAction from '../actions/delete-action'
 import DataTable from '../data-table'
+import DeleteAction from '../delete-action'
 
 const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => [
   {
@@ -96,5 +96,5 @@ const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => 
 
 export function StudentsTable({ data }: { data: (Student & { _count: { groups: number } })[] }) {
   const columns = getColumns()
-  return <DataTable data={data} columns={columns} />
+  return <DataTable data={data} columns={columns} paginate />
 }

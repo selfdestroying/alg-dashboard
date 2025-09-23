@@ -50,7 +50,7 @@ const getColumns = (): ColumnDef<Category>[] => [
 
 export default function CategoriesTable({ categories }: { categories: Category[] }) {
   const columns = getColumns()
-  return <DataTable data={categories} columns={columns} />
+  return <DataTable data={categories} columns={columns} paginate />
 }
 
 function EditAction({

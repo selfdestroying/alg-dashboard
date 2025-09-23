@@ -115,6 +115,7 @@ export default function GroupsTable({
     <DataTable
       data={groups}
       columns={columns}
+      paginate
       defaultFilters={
         user.role == 'TEACHER' ? [{ id: 'teacher', value: user.firstName }] : undefined
       }

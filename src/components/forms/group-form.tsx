@@ -24,6 +24,7 @@ import { GroupSchema, GroupSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GroupType } from '@prisma/client'
 import { differenceInWeeks, format } from 'date-fns'
+import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -159,7 +160,12 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={ru}
+                      />
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -197,6 +203,7 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
+                        locale={ru}
                         selected={field.value}
                         onSelect={(date) => {
                           field.onChange(date)

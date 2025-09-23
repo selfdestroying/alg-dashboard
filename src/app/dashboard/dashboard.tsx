@@ -2,7 +2,7 @@
 
 import { getStatistics } from '@/actions/statistic'
 import { UserData } from '@/actions/users'
-import Calendar31 from '@/components/calendar-31'
+import LessonsCalendar from '@/components/lessons-calendar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -22,14 +22,13 @@ export default function DashboardPage({ user, teachers }: DashboardPageProps) {
   })
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchStatistics = async () => {
-    setIsLoading(true)
-    const statistics = await getStatistics(selectedTeacherId)
-    setStatistics(statistics)
-    setIsLoading(false)
-  }
-
   useEffect(() => {
+    async function fetchStatistics() {
+      setIsLoading(true)
+      const statistics = await getStatistics(selectedTeacherId)
+      setStatistics(statistics)
+      setIsLoading(false)
+    }
     fetchStatistics()
   }, [selectedTeacherId])
 
@@ -73,7 +72,7 @@ export default function DashboardPage({ user, teachers }: DashboardPageProps) {
             </div>
           </div>
         )}
-        <Calendar31 selectedTeacherId={+selectedTeacherId} />
+        <LessonsCalendar selectedTeacherId={+selectedTeacherId} />
       </div>
     </div>
   )

@@ -129,6 +129,7 @@ export default function LessonsTable({
     <DataTable
       data={lessons}
       columns={column}
+      paginate
       defaultFilters={
         user.role == 'TEACHER'
           ? [

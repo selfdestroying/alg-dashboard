@@ -6,8 +6,8 @@ import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import DeleteAction from '../actions/delete-action'
 import DataTable from '../data-table'
+import DeleteAction from '../delete-action'
 import DragScrollArea from '../drag-scroll-area'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
@@ -120,6 +120,12 @@ function AttendanceCell({
 // -------------------- Columns --------------------
 const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAttendances>[] => [
   {
+    id: '№',
+    header: '№',
+    cell: ({ row }) => row.index + 1,
+    size: 10,
+  },
+  {
     header: 'Полное имя',
     accessorFn: (student) => `${student.firstName} ${student.lastName}`,
     cell: ({ row }) => (
@@ -130,7 +136,7 @@ const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAt
       </Button>
     ),
     meta: { filterVariant: 'text' },
-    size: 50,
+    size: 100,
   },
   {
     header: 'Посещаемость',
@@ -143,6 +149,7 @@ const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAt
         })}
       </DragScrollArea>
     ),
+    size: 400,
   },
   { header: 'Возраст', accessorKey: 'age', meta: { filterVariant: 'range' } },
   { header: 'ФИО Родителя', accessorKey: 'parentsName', meta: { filterVariant: 'text' } },
@@ -190,6 +197,7 @@ export function GroupStudentsTable({
     <DataTable
       data={students}
       columns={columns}
+      paginate={false}
       defaultColumnVisibility={{
         age: false,
         actions: false,
