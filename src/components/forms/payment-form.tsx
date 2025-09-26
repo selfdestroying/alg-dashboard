@@ -39,14 +39,11 @@ export default function PaymentForm({
   })
 
   function handleSubmit(values: PaymentSchemaType) {
-    const ok = createPayment(
-      {
-        studentId: values.studentId,
-        lessonCount: values.lessonsPaid,
-        price: values.amount,
-      },
-      values.isAddToGroup
-    )
+    const ok = createPayment({
+      studentId: values.studentId,
+      lessonCount: values.lessonsPaid,
+      price: values.amount,
+    })
     toast.promise(ok, {
       loading: 'Загрузка...',
       success: 'Оплата успешно создана',

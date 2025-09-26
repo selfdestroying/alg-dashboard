@@ -105,14 +105,11 @@ export const addToGroup = async (
       })
   )
   if (isCreatePayment)
-    await createPayment(
-      {
-        lessonCount: 0,
-        studentId: data.studentId,
-        price: 0,
-      },
-      false
-    )
+    await createPayment({
+      lessonCount: 0,
+      studentId: data.studentId,
+      price: 0,
+    })
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
 

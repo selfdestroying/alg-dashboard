@@ -19,10 +19,7 @@ export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
   return payments
 }
 
-export const createPayment = async (
-  data: Prisma.PaymentUncheckedCreateInput,
-  isAddToGroup: boolean
-) => {
+export const createPayment = async (data: Prisma.PaymentUncheckedCreateInput) => {
   await prisma.payment.upsert({
     where: {
       id: data.id,
