@@ -43,8 +43,8 @@ export default function PaymentForm({
       {
         studentId: values.studentId,
         groupId: values.groupId,
-        lessonsPaid: values.lessonsPaid,
-        amount: values.amount,
+        lessonCount: values.lessonsPaid,
+        price: values.amount,
       },
       values.isAddToGroup
     )

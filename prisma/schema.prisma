@@ -19,23 +19,24 @@ model User {
 }
 
 model Student {
-  id           Int            @id @default(autoincrement())
-  firstName    String
-  lastName     String?
-  login        String
-  password     String
-  age          Int
-  birthDate    DateTime?
-  parentsName  String?
-  parentsPhone String?
-  crmUrl       String?
-  createdAt    DateTime       @default(now())
-  coins        Int            @default(0)
-  attendances  Attendance[]
-  Cart         Cart?
-  Order        Order[]
-  payments     Payment[]
-  groups       StudentGroup[]
+  id             Int            @id @default(autoincrement())
+  firstName      String
+  lastName       String?
+  login          String
+  password       String
+  age            Int
+  birthDate      DateTime?
+  parentsName    String?
+  parentsPhone   String?
+  crmUrl         String?
+  lessonsBalance Int            @default(0)
+  createdAt      DateTime       @default(now())
+  coins          Int            @default(0)
+  attendances    Attendance[]
+  Cart           Cart?
+  Order          Order[]
+  payments       Payment[]
+  groups         StudentGroup[]
 }
 
 model Group {
@@ -65,10 +66,12 @@ model Course {
 }
 
 model StudentGroup {
-  studentId Int
-  groupId   Int
-  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId    Int
+  groupId      Int
+  group        Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  bidForLesson Int       @default(0)
+  payments     Payment[]
 
   @@id([studentId, groupId])
 }
@@ -106,14 +109,15 @@ model MakeUp {
 }
 
 model Payment {
-  id          Int      @id @default(autoincrement())
-  studentId   Int
-  groupId     Int
-  lessonsPaid Int
-  amount      Int?
-  createdAt   DateTime @default(now())
-  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id           Int          @id @default(autoincrement())
+  studentId    Int
+  groupId      Int
+  lessonCount  Int          @default(0)
+  price        Int          @default(0)
+  studentGroup StudentGroup @relation(fields: [studentId, groupId], references: [studentId, groupId])
+  createdAt    DateTime     @default(now())
+  Student      Student      @relation(fields: [studentId], references: [id])
+  Group        Group        @relation(fields: [groupId], references: [id])
 
   @@unique([studentId, groupId])
 }
@@ -150,12 +154,12 @@ model Product {
   description   String?
   price         Float
   originalPrice Float?
-  quantity      Int
   image         String     @default("placeholder.svg")
   categoryId    Int
   rating        Float      @default(0)
   reviews       Int        @default(0)
   popular       Boolean    @default(false)
+  quantity      Int
   cartItem      CartItem[]
   order         Order[]
   category      Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
