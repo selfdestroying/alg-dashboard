@@ -29,9 +29,11 @@ model Student {
   parentsName    String?
   parentsPhone   String?
   crmUrl         String?
-  lessonsBalance Int            @default(0)
   createdAt      DateTime       @default(now())
   coins          Int            @default(0)
+  lessonsBalance Int            @default(0)
+  totalLessons   Int            @default(0)
+  totalPayments  Int            @default(0)
   attendances    Attendance[]
   Cart           Cart?
   Order          Order[]
@@ -108,10 +110,10 @@ model MakeUp {
 model Payment {
   id           Int      @id @default(autoincrement())
   studentId    Int
+  createdAt    DateTime @default(now())
   lessonCount  Int      @default(0)
   price        Int      @default(0)
   bidForLesson Int      @default(0)
-  createdAt    DateTime @default(now())
   student      Student  @relation(fields: [studentId], references: [id])
 }
 

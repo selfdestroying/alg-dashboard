@@ -9,7 +9,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Group } from '@prisma/client'
-import { Calendar, Coins, Link as LinkIcon, Lock, LucideProps, User, Users } from 'lucide-react'
+import {
+  Calendar,
+  Coins,
+  Link as LinkIcon,
+  Lock,
+  LucideProps,
+  Presentation,
+  ReceiptRussianRuble,
+  RussianRuble,
+  User,
+  Users,
+} from 'lucide-react'
 import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 
@@ -84,6 +95,44 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
             label="Возраст"
             field="age"
             value={formData.age}
+            editable={editMode}
+            onChange={handleChange}
+          />
+        </Section>
+
+        <Separator />
+
+        <Section title="Оплаты" icon={ReceiptRussianRuble}>
+          <EditableInfoItem
+            icon={RussianRuble}
+            label="Сумма всех оплат"
+            field="totalPayments"
+            value={formData.totalPayments}
+            editable={editMode}
+            onChange={handleChange}
+          />
+          <EditableInfoItem
+            icon={Presentation}
+            label="Сумма всех уроков"
+            field="totalLessons"
+            value={formData.totalLessons}
+            editable={editMode}
+            onChange={handleChange}
+          />
+          <EditableInfoItem
+            icon={RussianRuble}
+            label="Ставка за урок"
+            field=""
+            value={formData.totalPayments / formData.totalLessons}
+            editable={false}
+            onChange={handleChange}
+          />
+
+          <EditableInfoItem
+            icon={Presentation}
+            label="Баланс уроков"
+            field="lessonsBalance"
+            value={formData.lessonsBalance}
             editable={editMode}
             onChange={handleChange}
           />
@@ -240,7 +289,9 @@ function EditableInfoItem({
           </a>
         </Button>
       ) : (
-        <p className="mt-1 font-medium break-all">{value || 'Не указано'}</p>
+        <p className="mt-1 font-medium break-all">
+          {value !== null || value !== undefined ? value : 'Не указано'}
+        </p>
       )}
     </div>
   )
