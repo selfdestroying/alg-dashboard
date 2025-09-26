@@ -107,7 +107,6 @@ export const addToGroup = async (
   if (isCreatePayment)
     await createPayment(
       {
-        groupId: data.groupId,
         lessonCount: 0,
         studentId: data.studentId,
         price: 0,

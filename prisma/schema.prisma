@@ -55,7 +55,6 @@ model Group {
   course        Course         @relation(fields: [courseId], references: [id])
   teacher       User           @relation(fields: [teacherId], references: [id])
   lessons       Lesson[]
-  payments      Payment[]
   students      StudentGroup[]
 }
 
@@ -66,12 +65,10 @@ model Course {
 }
 
 model StudentGroup {
-  studentId    Int
-  groupId      Int
-  group        Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  bidForLesson Int       @default(0)
-  payments     Payment[]
+  studentId Int
+  groupId   Int
+  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@id([studentId, groupId])
 }
@@ -109,17 +106,13 @@ model MakeUp {
 }
 
 model Payment {
-  id           Int          @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   studentId    Int
-  groupId      Int
-  lessonCount  Int          @default(0)
-  price        Int          @default(0)
-  studentGroup StudentGroup @relation(fields: [studentId, groupId], references: [studentId, groupId])
-  createdAt    DateTime     @default(now())
-  Student      Student      @relation(fields: [studentId], references: [id])
-  Group        Group        @relation(fields: [groupId], references: [id])
-
-  @@unique([studentId, groupId])
+  lessonCount  Int      @default(0)
+  price        Int      @default(0)
+  bidForLesson Int      @default(0)
+  createdAt    DateTime @default(now())
+  student      Student  @relation(fields: [studentId], references: [id])
 }
 
 model Cart {

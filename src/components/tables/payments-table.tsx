@@ -12,7 +12,7 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
     header: 'Ученик',
     accessorKey: 'student',
     accessorFn: (item) =>
-      `${item.studentGroup.student.firstName} ${item.studentGroup.student.lastName}`,
+      `${item.student.firstName} ${item.student.lastName}`,
     cell: ({ row }) => (
       <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
         <Link href={`/dashboard/students/${row.original.studentId}`}>
@@ -24,19 +24,19 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
       filterVariant: 'text',
     },
   },
-  {
-    header: 'Группа',
-    accessorKey: 'group',
-    accessorFn: (item) => item.studentGroup.group.name,
-    cell: ({ row }) => (
-      <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-        <Link href={`/dashboard/groups/${row.original.groupId}`}>{row.getValue('group')}</Link>
-      </Button>
-    ),
-    meta: {
-      filterVariant: 'select',
-    },
-  },
+  // {
+  //   header: 'Группа',
+  //   accessorKey: 'group',
+  //   accessorFn: (item) => item.group.name,
+  //   cell: ({ row }) => (
+  //     <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
+  //       <Link href={`/dashboard/groups/${row.original.groupId}`}>{row.getValue('group')}</Link>
+  //     </Button>
+  //   ),
+  //   meta: {
+  //     filterVariant: 'select',
+  //   },
+  // },
   {
     header: 'Всего занятий оплачено',
     accessorKey: 'lessonsPaid',

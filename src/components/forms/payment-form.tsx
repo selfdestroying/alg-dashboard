@@ -42,7 +42,6 @@ export default function PaymentForm({
     const ok = createPayment(
       {
         studentId: values.studentId,
-        groupId: values.groupId,
         lessonCount: values.lessonsPaid,
         price: values.amount,
       },
