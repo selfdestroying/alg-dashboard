@@ -5,27 +5,38 @@ import { revalidatePath } from 'next/cache'
 import { addToGroup } from './groups'
 
 export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
-  include: { student: true; group: { select: { id: true; name: true } } }
+  include: {
+    studentGroup: {
+      include: {
+        group: true
+        student: true
+      }
+    }
+  }
 }> & { remainingLessons: number }
 
 export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
   const payments = await prisma.payment.findMany({
     include: {
-      student: true,
-      group: {
+      studentGroup: {
         include: {
-          lessons: {
-            select: {
-              id: true,
-              attendance: {
-                where: { asMakeupFor: null },
+          group: {
+            include: {
+              lessons: {
                 select: {
-                  studentId: true,
-                  status: true,
+                  id: true,
+                  attendance: {
+                    where: { asMakeupFor: null },
+                    select: {
+                      studentId: true,
+                      status: true,
+                    },
+                  },
                 },
               },
             },
           },
+          student: true,
         },
       },
     },
@@ -34,15 +45,16 @@ export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
   // Обогащаем каждую оплату количеством оставшихся занятий
   return payments.map((payment) => {
     const studentId = payment.studentId
-    const lessonsPaid = payment.lessonsPaid
+    const lessonCount = payment.lessonCount
 
-    const allAttendances = payment.group?.lessons.flatMap((lesson) => lesson.attendance) ?? []
+    const allAttendances =
+      payment.studentGroup.group?.lessons.flatMap((lesson) => lesson.attendance) ?? []
 
     const attendedCount = allAttendances.filter(
       (a) => a.studentId === studentId && a.status === 'PRESENT'
     ).length
 
-    const remainingLessons = lessonsPaid - attendedCount
+    const remainingLessons = lessonCount - attendedCount
 
     return {
       ...payment,
@@ -63,8 +75,8 @@ export const createPayment = async (
       },
     },
     update: {
-      lessonsPaid: { increment: data.lessonsPaid },
-      amount: { increment: data.amount as number },
+      lessonCount: { increment: data.lessonCount },
+      price: { increment: data.price as number },
     },
     create: data,
   })
