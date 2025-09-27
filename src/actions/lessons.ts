@@ -67,6 +67,9 @@ export const getLesson = async (id: number): Promise<LessonWithGroupAndAttendanc
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
           missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
         },
+        orderBy: {
+          id: 'asc',
+        },
       },
     },
   })

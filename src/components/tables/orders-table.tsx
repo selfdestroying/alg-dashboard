@@ -81,7 +81,7 @@ export default function OrdersTable({ orders }: { orders: OrderWithProductAndStu
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
   const columns = useMemo<ColumnDef<OrderWithProductAndStudent>[]>(
     () => getColumns(skipAutoResetPageIndex),
-    []
+    [skipAutoResetPageIndex]
   )
 
   return (

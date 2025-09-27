@@ -10,9 +10,10 @@ export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
 }>
 
 export const getPayments = async (
-  payload: Prisma.PaymentFindManyArgs
+  payload?: Prisma.PaymentFindManyArgs
 ): Promise<PaymentsWithStudentAndGroup[]> => {
   const payments = await prisma.payment.findMany({
+    ...payload,
     include: {
       student: true,
     },

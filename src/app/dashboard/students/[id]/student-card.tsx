@@ -290,7 +290,7 @@ function EditableInfoItem({
         </Button>
       ) : (
         <p className="mt-1 font-medium break-all">
-          {value !== null || value !== undefined ? value : 'Не указано'}
+          {value !== null || value !== undefined ? value.toString() : 'Не указано'}
         </p>
       )}
     </div>

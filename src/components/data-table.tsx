@@ -35,10 +35,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { debounce } from 'es-toolkit'
 import { ArrowDown, ArrowUp, Eye } from 'lucide-react'
-import { useState } from 'react'
-import DebouncedInput from './debounced-input'
+import { useMemo, useState } from 'react'
 import Filter from './filter'
+import { Input } from './ui/input'
 
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,6 +79,11 @@ export default function DataTable<T extends DataObject>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(defaultColumnVisibility)
   const [pagination, setPagination] = useState<PaginationState>(defaultPagination)
   const [globalFilter, setGlobalFilter] = useState('')
+  const [search, setSearch] = useState<string>('')
+  const handleSearch = useMemo(
+    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
+    []
+  )
 
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -111,9 +117,12 @@ export default function DataTable<T extends DataObject>({
         <div className="grid w-full grid-cols-1 items-end gap-4 md:grid-cols-[1fr_max-content]">
           <div className="grid grid-cols-1 items-end gap-4 lg:grid-cols-[max-content_1fr]">
             <div className="w-fit">
-              <DebouncedInput
-                value={globalFilter ?? ''}
-                onChange={(value) => setGlobalFilter(String(value))}
+              <Input
+                value={search ?? ''}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  handleSearch(e.target.value)
+                }}
                 className="font-lg border-block border p-2 shadow"
                 placeholder="Общий поиск..."
               />
