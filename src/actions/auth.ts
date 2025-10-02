@@ -30,7 +30,7 @@ export async function sigin(state: any | undefined, formData: FormData): Promise
   await createSession(user.id)
   redirect('/dashboard')
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function changePassword(state: any | undefined, formData: FormData) {
   const validatedFields = changePasswordSchema.safeParse({
     user: formData.get('user'),
