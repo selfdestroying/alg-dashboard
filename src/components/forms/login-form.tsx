@@ -135,7 +135,7 @@ export default function LoginForm() {
                   <FormItem className="space-y-1" hidden={!selectedUserRole}>
                     <FormLabel>Пароль</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} type="password" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

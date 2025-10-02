@@ -4,3 +4,10 @@ export const signInFormSchema = z.object({
   user: z.string().min(1, { message: 'This field is required' }),
   password: z.string(),
 })
+
+export const changePasswordSchema = z.object({
+  user: z.string().min(1, { message: 'This field is required' }),
+  currentPassword: z.string(),
+  newPassword: z.string(),
+  confirmPassword: z.string(),
+})
