@@ -20,9 +20,9 @@ export const getUser = cache(async (): Promise<UserData | null> => {
   return user
 })
 
-export const getUsers = cache(async (): Promise<UserData[]> => {
+export const getUsers = async (): Promise<UserData[]> => {
   const users: UserData[] = await prisma.user.findMany({
     omit: { createdAt: true, password: true, passwordRequired: true },
   })
   return users
-})
+}

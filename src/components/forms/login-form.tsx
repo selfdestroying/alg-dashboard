@@ -12,12 +12,11 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod/v4'
 
 import { sigin } from '@/actions/auth'
+import { UserData } from '@/actions/users'
 import { Input } from '@/components/ui/input'
-import { useData } from '@/providers/data-provider'
 import { signInFormSchema } from '@/schemas/auth'
-import { User } from '@prisma/client'
 import { Loader2, LogIn } from 'lucide-react'
-import { useActionState, useState } from 'react'
+import { useActionState } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import {
@@ -30,15 +29,13 @@ import {
   SelectValue,
 } from '../ui/select'
 
-export default function LoginForm() {
-  const { users } = useData()
-  const [selectedUserRole, setSelectedUserRole] = useState<User['role']>()
+export default function LoginForm({ users }: { users: UserData[] }) {
   const [state, action, isPending] = useActionState(sigin, undefined)
 
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
-      user: '',
+      userId: '',
       password: '',
     },
   })
@@ -57,21 +54,14 @@ export default function LoginForm() {
             <form action={action} className="space-y-4">
               <FormField
                 control={form.control}
-                name="user"
+                name="userId"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
                     <p className="text-foreground data-[error=true]:text-destructive text-sm leading-4 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
                       Пользователь
                     </p>
                     <FormControl>
-                      <Select
-                        key="select-0"
-                        {...field}
-                        onValueChange={(value) => {
-                          setSelectedUserRole(users.find((u) => u.firstName == value)?.role)
-                          return field.onChange(value)
-                        }}
-                      >
+                      <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="" />
                         </SelectTrigger>
@@ -83,8 +73,8 @@ export default function LoginForm() {
                                 {users
                                   .filter((u) => u.role == 'ADMIN')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.firstName}>
-                                      {item.firstName}
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -93,8 +83,8 @@ export default function LoginForm() {
                                 {users
                                   .filter((u) => u.role == 'OWNER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.firstName}>
-                                      {item.firstName}
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -103,8 +93,8 @@ export default function LoginForm() {
                                 {users
                                   .filter((u) => u.role == 'MANAGER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.firstName}>
-                                      {item.firstName}
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -113,8 +103,8 @@ export default function LoginForm() {
                                 {users
                                   .filter((u) => u.role == 'TEACHER')
                                   .map((item) => (
-                                    <SelectItem key={item.id} value={item.firstName}>
-                                      {item.firstName}
+                                    <SelectItem key={item.id} value={item.id.toString()}>
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -132,7 +122,7 @@ export default function LoginForm() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="space-y-1" hidden={!selectedUserRole}>
+                  <FormItem className="space-y-1">
                     <FormLabel>Пароль</FormLabel>
                     <FormControl>
                       <Input {...field} type="password" />

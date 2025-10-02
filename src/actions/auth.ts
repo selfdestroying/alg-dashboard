@@ -7,7 +7,7 @@ import { createSession, deleteSession } from '../lib/session'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function sigin(state: any | undefined, formData: FormData): Promise<any | undefined> {
   const validatedFields = signInFormSchema.safeParse({
-    user: formData.get('user'),
+    userId: formData.get('userId'),
     password: formData.get('password'),
   })
 
@@ -15,9 +15,9 @@ export async function sigin(state: any | undefined, formData: FormData): Promise
     return { success: false, message: validatedFields.error.message }
   }
 
-  const { user: name, password } = validatedFields.data
+  const { userId, password } = validatedFields.data
 
-  const user = await prisma.user.findFirst({ where: { firstName: name } })
+  const user = await prisma.user.findFirst({ where: { id: parseInt(userId) } })
   if (!user) {
     return { success: false, message: 'User not found' }
   }
