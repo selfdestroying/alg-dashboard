@@ -6,12 +6,8 @@ import { revalidatePath } from 'next/cache'
 
 export type StudentWithGroups = Student & { groups: Group[] }
 
-export const getStudents = async () => {
-  const students = await prisma.student.findMany({
-    include: {
-      _count: { select: { groups: true } },
-    },
-  })
+export const getStudents = async (payload: Prisma.StudentFindManyArgs) => {
+  const students = await prisma.student.findMany(payload)
   return students
 }
 

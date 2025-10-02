@@ -36,6 +36,24 @@ const updateCoins = async (
   }
 }
 
+const updateLessonsBalance = async (
+  newStatus: AttendanceStatus,
+  oldStatus: AttendanceStatus,
+  studentId: number
+) => {
+  if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { lessonsBalance: { decrement: 1 } },
+    })
+  } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { lessonsBalance: { increment: 1 } },
+    })
+  }
+}
+
 export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => {
   const status = payload.data.status
   if (status) {
@@ -46,7 +64,12 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
       },
     })
     if (oldAttendance) {
-      updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
+      await updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
+      await updateLessonsBalance(
+        status as AttendanceStatus,
+        oldAttendance.status,
+        oldAttendance.studentId
+      )
     }
   }
   await prisma.attendance.update(payload)

@@ -4,7 +4,7 @@ import StudentForm from '@/components/forms/student-form'
 import { StudentsTable } from '@/components/tables/students-table'
 
 export default async function Page() {
-  const students = await getStudents()
+  const students = await getStudents({})
 
   return (
     <>

@@ -19,13 +19,13 @@ import { Role, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import {
   Boxes,
-  FolderKanban,
-  HandCoins,
   House,
   LayoutDashboard,
   LucideProps,
   PackageOpen,
   Presentation,
+  ReceiptRussianRuble,
+  RussianRuble,
   ShoppingCart,
   Store,
   User as UserIcon,
@@ -77,19 +77,19 @@ const data: NavData[] = [
     roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
   },
   {
-    title: 'Менеджер',
+    title: 'Финансы',
     url: '#',
-    icon: FolderKanban,
+    icon: RussianRuble,
     items: [
       {
         title: 'Оплаты',
         url: '/dashboard/payments',
-        icon: HandCoins,
+        icon: ReceiptRussianRuble,
         items: [],
-        roles: ['ADMIN', 'OWNER', 'MANAGER'],
+        roles: ['ADMIN', 'OWNER'],
       },
     ],
-    roles: ['ADMIN', 'OWNER', 'MANAGER'],
+    roles: ['ADMIN', 'OWNER'],
   },
   {
     title: 'Магазин',
