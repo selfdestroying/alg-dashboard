@@ -74,7 +74,7 @@ export default function LoginForm({ users }: { users: UserData[] }) {
                                   .filter((u) => u.role == 'ADMIN')
                                   .map((item) => (
                                     <SelectItem key={item.id} value={item.id.toString()}>
-                                      {item.firstName}
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -84,7 +84,7 @@ export default function LoginForm({ users }: { users: UserData[] }) {
                                   .filter((u) => u.role == 'OWNER')
                                   .map((item) => (
                                     <SelectItem key={item.id} value={item.id.toString()}>
-                                      {item.firstName}
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -94,7 +94,7 @@ export default function LoginForm({ users }: { users: UserData[] }) {
                                   .filter((u) => u.role == 'MANAGER')
                                   .map((item) => (
                                     <SelectItem key={item.id} value={item.id.toString()}>
-                                      {item.firstName}
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
@@ -104,7 +104,7 @@ export default function LoginForm({ users }: { users: UserData[] }) {
                                   .filter((u) => u.role == 'TEACHER')
                                   .map((item) => (
                                     <SelectItem key={item.id} value={item.id.toString()}>
-                                      {item.firstName}
+                                      {item.firstName} {item.lastName}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>
