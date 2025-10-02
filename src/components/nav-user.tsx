@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
-import { ArrowLeftRight, ChevronsUpDown } from 'lucide-react'
+import { ArrowLeftRight, ChevronsUpDown, User } from 'lucide-react'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Badge } from './ui/badge'
 
@@ -50,6 +51,12 @@ export async function NavUser() {
             align="start"
           >
             <DropdownMenuGroup>
+              <DropdownMenuItem className="focus:bg-sidebar-accent gap-3" asChild>
+                <Link href={'/dashboard/profile'}>
+                  <User size={20} className="text-muted-foreground/80 size-5" />
+                  Профиль
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem className="focus:bg-sidebar-accent gap-3" onClick={onLogout}>
                 <ArrowLeftRight size={20} className="text-muted-foreground/80 size-5" />
                 Сменить аккаунт
