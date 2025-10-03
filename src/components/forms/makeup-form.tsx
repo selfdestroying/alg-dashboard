@@ -49,7 +49,13 @@ export default function MakeUpForm({
         selectedDate.getMonth(),
         selectedDate.getDate()
       )
-      const l = await getLessons({ where: { date: today } })
+      const l = await getLessons({
+        where: { date: today },
+        include: {
+          attendance: { include: { student: true } },
+          group: { include: { teacher: true } },
+        },
+      })
       setLessons(l)
     }
 

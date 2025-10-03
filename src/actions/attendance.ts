@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { Attendance, AttendanceStatus, Prisma, Student } from '@prisma/client'
+import { AttendanceStatus, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
@@ -18,99 +18,62 @@ export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInp
   return attendance
 }
 
-const getCoinUpdateOperations = (
+const updateCoins = async (
   newStatus: AttendanceStatus,
   oldStatus: AttendanceStatus,
   studentId: number
-): Prisma.PrismaPromise<Student>[] => {
-  const coinUpdates: Prisma.PrismaPromise<Student>[] = []
-
+) => {
   if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
-    coinUpdates.push(
-      prisma.student.update({
-        where: { id: studentId },
-        data: { coins: { increment: 10 } },
-      })
-    )
-    console.log(`Начислено 10 коинов студенту ${studentId} за посещение.`)
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { coins: { increment: 10 } },
+    })
   } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
-    coinUpdates.push(
-      prisma.student.update({
-        where: { id: studentId },
-        data: { coins: { decrement: 10 } },
-      })
-    )
-    console.log(`Списано 10 коинов у студента ${studentId} из-за изменения статуса с PRESENT.`)
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { coins: { decrement: 10 } },
+    })
   }
-
-  return coinUpdates
 }
 
-export const updateAttendance = async (data: AttendanceWithStudents[]) => {
-  if (data.length === 0 || !data[0].lessonId) {
-    console.warn('Нет данных для обновления или отсутствует lessonId.')
-    return
+const updateLessonsBalance = async (
+  newStatus: AttendanceStatus,
+  oldStatus: AttendanceStatus,
+  studentId: number
+) => {
+  if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { lessonsBalance: { decrement: 1 } },
+    })
+  } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { lessonsBalance: { increment: 1 } },
+    })
   }
+}
 
-  const updates: Prisma.PrismaPromise<Attendance | Student>[] = []
-
-  const oldAttendances = await prisma.attendance.findMany({
-    where: {
-      id: {
-        in: data.map((item) => item.id),
+export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => {
+  const status = payload.data.status
+  if (status) {
+    const oldAttendance = await prisma.attendance.findFirst({
+      where: {
+        studentId: payload.where.studentId_lessonId?.studentId,
+        lessonId: payload.where.studentId_lessonId?.lessonId,
       },
-    },
-    select: { id: true, status: true, studentId: true },
-  })
-
-  const oldAttendanceMap = new Map(oldAttendances.map((att) => [att.id, att]))
-
-  for (const item of data) {
-    const oldAttendance = oldAttendanceMap.get(item.id)
-
-    if (!oldAttendance) {
-      console.warn(`Запись о посещении с ID ${item.id} не найдена. Пропускаем.`)
-      continue
+    })
+    if (oldAttendance) {
+      await updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
+      await updateLessonsBalance(
+        status as AttendanceStatus,
+        oldAttendance.status,
+        oldAttendance.studentId
+      )
     }
-
-    updates.push(
-      prisma.attendance.update({
-        where: { id: item.id },
-        data: {
-          status: item.status,
-          comment: item.comment,
-        },
-      })
-    )
-
-    // if (item.asMakeupFor) {
-    //   updates.push(
-    //     prisma.attendance.update({
-    //       where: { id: item.asMakeupFor.missedAttendanceId },
-    //       data: {
-    //         status: item.status,
-    //       },
-    //     })
-    //   )
-    // }
-
-    const coinOperations = getCoinUpdateOperations(
-      item.status,
-      oldAttendance.status,
-      oldAttendance.studentId
-    )
-    updates.push(...coinOperations)
   }
-
-  try {
-    await prisma.$transaction(updates)
-    console.log('Все обновления посещаемости и операции с коинами выполнены успешно.')
-  } catch (error) {
-    console.error('Ошибка при выполнении транзакции обновления посещаемости и коинов:', error)
-    throw error
-  }
-
-  revalidatePath(`dashboard/lessons/${data[0].lessonId}`)
+  await prisma.attendance.update(payload)
+  // revalidatePath(`/dashboard/lessons/${payload.where.studentId_lessonId?.lessonId}`)
 }
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {

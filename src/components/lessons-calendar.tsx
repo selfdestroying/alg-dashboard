@@ -47,6 +47,18 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
           date: { gte: startOfMonth, lte: endOfMonth },
           group: { teacherId: selectedTeacherId == -1 ? undefined : selectedTeacherId },
         },
+        include: {
+          attendance: {
+            include: {
+              student: true,
+            },
+          },
+          group: {
+            include: {
+              teacher: true,
+            },
+          },
+        },
       })
 
       const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}

@@ -1,37 +1,63 @@
 'use client'
-import { useEffect, useState } from 'react'
+
+import { useDebounce } from '@/hooks/use-debounce'
+import { cn } from '@/lib/utils'
+import { useEffect, useRef, useTransition } from 'react'
+import { toast } from 'sonner'
 import { Input } from './ui/input'
 
+type DebouncedInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'onChange'
+> & {
+  initValue?: string | number
+  delay?: number
+  onDebouncedChange?: (val: string | number) => void | Promise<void>
+  showToast?: boolean
+}
+
 export default function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 500,
+  initValue = '',
+  delay = 500,
+  onDebouncedChange,
+  showToast = false,
   ...props
-}: {
-  value: string | number
-  onChange: (value: string | number) => void
-  debounce?: number
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
-  const [value, setValue] = useState(initialValue)
+}: DebouncedInputProps) {
+  const [debouncedValue, setDebouncedValue] = useDebounce(initValue, delay)
+  const [, startTransition] = useTransition()
+
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+    setDebouncedValue(initValue)
+  }, [initValue])
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
 
-    return () => clearTimeout(timeout)
-  }, [value])
+    if (onDebouncedChange) {
+      startTransition(() => {
+        const ok = Promise.resolve(onDebouncedChange(debouncedValue))
+        if (showToast)
+          toast.promise(ok, {
+            loading: 'Загрузка...',
+            success: 'Успешно!',
+            error: (e) => e.message,
+          })
+      })
+    }
+  }, [debouncedValue, showToast])
 
   return (
     <Input
-      className="peer min-w-60 bg-gradient-to-br ps-9"
       {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      className={cn('peer bg-gradient-to-br', props.className)}
+      value={debouncedValue}
+      onChange={(e) => setDebouncedValue(e.target.value)}
+      // disabled={isPending}
     />
   )
 }

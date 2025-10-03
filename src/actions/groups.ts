@@ -5,7 +5,6 @@ import { DayOfWeek } from '@/lib/utils'
 import { Course, Group, Prisma, Student, User } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createLesson } from './lessons'
-import { createPayment } from './payments'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: {
@@ -83,10 +82,7 @@ export const deleteGroup = async (id: number) => {
   revalidatePath('dashboard/groups')
 }
 
-export const addToGroup = async (
-  data: Prisma.StudentGroupUncheckedCreateInput,
-  isCreatePayment: boolean
-) => {
+export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
   await prisma.studentGroup.create({ data })
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -104,12 +100,7 @@ export const addToGroup = async (
         },
       })
   )
-  if (isCreatePayment)
-    await createPayment({
-      lessonCount: 0,
-      studentId: data.studentId,
-      price: 0,
-    })
+
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
 

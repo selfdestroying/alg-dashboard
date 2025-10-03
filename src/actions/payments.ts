@@ -9,8 +9,11 @@ export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
   }
 }>
 
-export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
+export const getPayments = async (
+  payload?: Prisma.PaymentFindManyArgs
+): Promise<PaymentsWithStudentAndGroup[]> => {
   const payments = await prisma.payment.findMany({
+    ...payload,
     include: {
       student: true,
     },
@@ -19,18 +22,17 @@ export const getPayments = async (): Promise<PaymentsWithStudentAndGroup[]> => {
   return payments
 }
 
-export const createPayment = async (data: Prisma.PaymentUncheckedCreateInput) => {
-  await prisma.payment.upsert({
-    where: {
-      id: data.id,
-      studentId: data.studentId,
-    },
-    update: {
-      lessonCount: { increment: data.lessonCount },
-      price: { increment: data.price as number },
-    },
-    create: data,
-  })
+export const getUnprocessedPayments = async (payload?: Prisma.UnprocessedPaymentFindManyArgs) => {
+  return await prisma.unprocessedPayment.findMany(payload)
+}
+
+export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentUpdateArgs) => {
+  await prisma.unprocessedPayment.update(payload)
+  revalidatePath('/dashboard/payments')
+}
+
+export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
+  await prisma.payment.create(payload)
   // if (isAddToGroup)
   //   addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number }, false)
   revalidatePath('dashboard/payments')

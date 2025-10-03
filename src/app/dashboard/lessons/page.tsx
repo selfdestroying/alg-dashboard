@@ -8,7 +8,20 @@ export default async function Page() {
   if (!user) {
     return redirect('/auth')
   }
-  const lessons = await getLessons()
+  const lessons = await getLessons({
+    include: {
+      attendance: {
+        include: {
+          student: true,
+        },
+      },
+      group: {
+        include: {
+          teacher: true,
+        },
+      },
+    },
+  })
 
   return (
     <div>

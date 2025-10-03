@@ -7,7 +7,7 @@ import Link from 'next/link'
 import DataTable from '../data-table'
 import DeleteAction from '../delete-action'
 
-const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => [
+const getColumns = (): ColumnDef<Student>[] => [
   {
     header: 'Полное имя',
     accessorKey: 'fullName',
@@ -51,14 +51,14 @@ const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => 
       filterVariant: 'text',
     },
   },
-  {
-    header: 'Количество групп',
-    accessorKey: 'groups',
-    accessorFn: (value) => value._count.groups,
-    meta: {
-      filterVariant: 'range',
-    },
-  },
+  // {
+  //   header: 'Количество групп',
+  //   accessorKey: 'groups',
+  //   accessorFn: (value) => value._count.groups,
+  //   meta: {
+  //     filterVariant: 'range',
+  //   },
+  // },
   {
     accessorKey: 'login',
     header: 'Логин',
@@ -94,7 +94,7 @@ const getColumns = (): ColumnDef<Student & { _count: { groups: number } }>[] => 
   },
 ]
 
-export function StudentsTable({ data }: { data: (Student & { _count: { groups: number } })[] }) {
+export function StudentsTable({ data }: { data: Student[] }) {
   const columns = getColumns()
   return <DataTable data={data} columns={columns} paginate />
 }

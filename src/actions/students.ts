@@ -6,12 +6,8 @@ import { revalidatePath } from 'next/cache'
 
 export type StudentWithGroups = Student & { groups: Group[] }
 
-export const getStudents = async () => {
-  const students = await prisma.student.findMany({
-    include: {
-      _count: { select: { groups: true } },
-    },
-  })
+export const getStudents = async (payload: Prisma.StudentFindManyArgs) => {
+  const students = await prisma.student.findMany(payload)
   return students
 }
 
@@ -42,7 +38,7 @@ export const createStudent = async (
   revalidatePath('dashboard/students')
 }
 
-export async function updateStudent(studentData: StudentWithGroups) {
+export async function updateStudentCard(studentData: StudentWithGroups) {
   try {
     const updated = await prisma.student.update({
       where: { id: studentData.id },
@@ -66,6 +62,10 @@ export async function updateStudent(studentData: StudentWithGroups) {
     console.error('Ошибка при обновлении ученика:', err)
     throw new Error('Не удалось обновить данные ученика')
   }
+}
+
+export async function updateStudent(payload: Prisma.StudentUpdateArgs) {
+  await prisma.student.update(payload)
 }
 
 export const deleteStudent = async (id: number) => {

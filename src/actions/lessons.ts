@@ -25,26 +25,11 @@ export type LessonWithAttendanceAndGroup = Prisma.LessonGetPayload<{
   include: { attendance: { include: { student: true } }; group: { include: { teacher: true } } }
 }>
 
-export const getLessons = async (
-  data?: Prisma.LessonFindManyArgs
-): Promise<LessonWithAttendanceAndGroup[]> => {
-  const lessons = await prisma.lesson.findMany({
-    ...data,
-    include: {
-      attendance: {
-        include: {
-          student: true,
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
-        },
-      },
-      group: { include: { teacher: true } },
-    },
-    orderBy: { date: 'asc' },
-  })
-  return lessons
+export const getLessons = async <T extends Prisma.LessonFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.LessonFindManyArgs>
+) => {
+  return prisma.lesson.findMany(payload)
 }
-
 export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -66,6 +51,9 @@ export const getLesson = async (id: number): Promise<LessonWithGroupAndAttendanc
           student: true,
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
           missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        },
+        orderBy: {
+          id: 'asc',
         },
       },
     },
