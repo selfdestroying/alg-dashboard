@@ -94,10 +94,10 @@ const data: NavData[] = [
         url: '/dashboard/payments',
         icon: ReceiptRussianRuble,
         items: [],
-        roles: ['ADMIN', 'OWNER'],
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
       },
     ],
-    roles: ['ADMIN', 'OWNER'],
+    roles: ['ADMIN', 'OWNER', 'MANAGER'],
   },
   {
     title: 'Магазин',
