@@ -82,10 +82,7 @@ export const deleteGroup = async (id: number) => {
   revalidatePath('dashboard/groups')
 }
 
-export const addToGroup = async (
-  data: Prisma.StudentGroupUncheckedCreateInput,
-  isCreatePayment: boolean
-) => {
+export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
   await prisma.studentGroup.create({ data })
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())

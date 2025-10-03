@@ -40,15 +40,12 @@ export const GroupStudentDialog: FC<GroupStudenProps> = ({ students, groupId }) 
 
   function handleSubmit() {
     if (fullName) {
-      const ok = addToGroup(
-        {
-          studentId: students.find(
-            (student) => fullName == `${student.firstName} ${student.lastName}`
-          )?.id as number,
-          groupId,
-        },
-        true
-      )
+      const ok = addToGroup({
+        studentId: students.find(
+          (student) => fullName == `${student.firstName} ${student.lastName}`
+        )?.id as number,
+        groupId,
+      })
       toast.promise(ok, {
         loading: 'Loding...',
         success: 'Ученик успешно добавлен в группу',
