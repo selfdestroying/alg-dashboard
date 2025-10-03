@@ -38,7 +38,7 @@ export const createStudent = async (
   revalidatePath('dashboard/students')
 }
 
-export async function updateStudent(studentData: StudentWithGroups) {
+export async function updateStudentCard(studentData: StudentWithGroups) {
   try {
     const updated = await prisma.student.update({
       where: { id: studentData.id },
@@ -62,6 +62,10 @@ export async function updateStudent(studentData: StudentWithGroups) {
     console.error('Ошибка при обновлении ученика:', err)
     throw new Error('Не удалось обновить данные ученика')
   }
+}
+
+export async function updateStudent(payload: Prisma.StudentUpdateArgs) {
+  await prisma.student.update(payload)
 }
 
 export const deleteStudent = async (id: number) => {

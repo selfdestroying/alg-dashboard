@@ -19,6 +19,7 @@ interface DateRangePickerProps {
 
 export function DateRangePicker({ value, onChange, className }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
+  const today = new Date()
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -53,7 +54,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
             selected={value}
             onSelect={onChange}
             numberOfMonths={2}
-            disabled={{ after: new Date() }}
+            disabled={{ after: today, before: new Date(2025, 9, 1) }}
             locale={ru}
           />
         </PopoverContent>

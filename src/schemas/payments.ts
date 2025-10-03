@@ -1,11 +1,10 @@
 import { z } from 'zod/v4'
 
 export const PaymentSchema = z.object({
-  studentId: z.number().int().positive(),
-  groupId: z.number().int().positive(),
-  lessonsPaid: z.number().int().positive(),
-  isAddToGroup: z.boolean(),
-  amount: z.number().int().positive(),
+  lessonCount: z.number().int().positive(),
+  price: z.number().int().positive(),
+  leadName: z.string(),
+  productName: z.string(),
 })
 
 export type PaymentSchemaType = z.infer<typeof PaymentSchema>

@@ -2,7 +2,7 @@
 
 import { useDebounce } from '@/hooks/use-debounce'
 import { cn } from '@/lib/utils'
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useEffect, useRef, useTransition } from 'react'
 import { toast } from 'sonner'
 import { Input } from './ui/input'
 
@@ -23,14 +23,13 @@ export default function DebouncedInput({
   showToast = false,
   ...props
 }: DebouncedInputProps) {
-  const [value, setValue] = useState(initValue)
-  const debouncedValue = useDebounce(value, delay)
+  const [debouncedValue, setDebouncedValue] = useDebounce(initValue, delay)
   const [, startTransition] = useTransition()
 
   const isFirstRender = useRef(true)
 
   useEffect(() => {
-    setValue(initValue)
+    setDebouncedValue(initValue)
   }, [initValue])
 
   useEffect(() => {
@@ -50,14 +49,14 @@ export default function DebouncedInput({
           })
       })
     }
-  }, [debouncedValue, onDebouncedChange, showToast])
+  }, [debouncedValue, showToast])
 
   return (
     <Input
       {...props}
-      className={cn('peer min-w-60 bg-gradient-to-br', props.className)}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      className={cn('peer bg-gradient-to-br', props.className)}
+      value={debouncedValue}
+      onChange={(e) => setDebouncedValue(e.target.value)}
       // disabled={isPending}
     />
   )

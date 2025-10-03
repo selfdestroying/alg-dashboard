@@ -1,6 +1,6 @@
 'use client'
 
-import { StudentWithGroups, updateStudent } from '@/actions/students'
+import { StudentWithGroups, updateStudentCard } from '@/actions/students'
 import { StudentGroupDialog } from '@/components/student-group-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -40,7 +40,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
   }
 
   const handleSave = async () => {
-    await updateStudent(formData) // нужно реализовать в actions/students
+    await updateStudentCard(formData) // нужно реализовать в actions/students
     setEditMode(false)
   }
 
