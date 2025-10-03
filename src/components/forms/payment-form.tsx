@@ -234,7 +234,7 @@ export default function PaymentForm({
             name="leadName"
             render={({ field }) => (
               <FormItem className="col-span-6 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Имя</FormLabel>
+                <FormLabel className="flex shrink-0">Имя сделки из amoCRM</FormLabel>
                 <FormControl>
                   <Input placeholder="" type="text" className=" " {...field} />
                 </FormControl>
@@ -247,7 +247,7 @@ export default function PaymentForm({
             name="productName"
             render={({ field }) => (
               <FormItem className="col-span-6 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Имя</FormLabel>
+                <FormLabel className="flex shrink-0">Имя товара из amoCRM</FormLabel>
                 <FormControl>
                   <Input placeholder="" type="text" className=" " {...field} />
                 </FormControl>

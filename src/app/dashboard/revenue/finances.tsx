@@ -78,7 +78,10 @@ export default function FinanceClient() {
                   prev +
                   curr.attendance.reduce(
                     (prev1, curr1) =>
-                      prev1 + curr1.student.totalPayments / curr1.student.totalLessons,
+                      prev1 +
+                      (curr1.student.totalLessons !== 0
+                        ? curr1.student.totalPayments / curr1.student.totalLessons
+                        : 0),
                     0
                   ),
                 0
@@ -96,7 +99,10 @@ export default function FinanceClient() {
                     <b>
                       {lesson.attendance.reduce(
                         (prev1, curr1) =>
-                          prev1 + curr1.student.totalPayments / curr1.student.totalLessons,
+                          prev1 +
+                          (curr1.student.totalLessons !== 0
+                            ? curr1.student.totalPayments / curr1.student.totalLessons
+                            : 0),
                         0
                       )}{' '}
                       ₽
@@ -108,7 +114,12 @@ export default function FinanceClient() {
                     {lesson.attendance.map((a) => (
                       <li key={a.id}>
                         {a.student.firstName} {a.student.lastName} -{' '}
-                        <b>{a.student.totalPayments / a.student.totalLessons} ₽</b>
+                        <b>
+                          {a.student.totalLessons !== 0
+                            ? a.student.totalPayments / a.student.totalLessons
+                            : 0}{' '}
+                          ₽
+                        </b>
                       </li>
                     ))}
                   </ul>
