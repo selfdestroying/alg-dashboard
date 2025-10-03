@@ -19,26 +19,27 @@ model User {
 }
 
 model Student {
-  id             Int            @id @default(autoincrement())
-  firstName      String
-  lastName       String?
-  login          String
-  password       String
-  age            Int
-  birthDate      DateTime?
-  parentsName    String?
-  parentsPhone   String?
-  crmUrl         String?
-  createdAt      DateTime       @default(now())
-  coins          Int            @default(0)
-  lessonsBalance Int            @default(0)
-  totalLessons   Int            @default(0)
-  totalPayments  Int            @default(0)
-  attendances    Attendance[]
-  Cart           Cart?
-  Order          Order[]
-  payments       Payment[]
-  groups         StudentGroup[]
+  id                  Int                  @id @default(autoincrement())
+  firstName           String
+  lastName            String?
+  login               String
+  password            String
+  age                 Int
+  birthDate           DateTime?
+  parentsName         String?
+  parentsPhone        String?
+  crmUrl              String?
+  createdAt           DateTime             @default(now())
+  coins               Int                  @default(0)
+  lessonsBalance      Int                  @default(0)
+  totalLessons        Int                  @default(0)
+  totalPayments       Int                  @default(0)
+  attendances         Attendance[]
+  Cart                Cart?
+  Order               Order[]
+  payments            Payment[]
+  groups              StudentGroup[]
+  unprocessedPayments UnprocessedPayment[]
 }
 
 model Group {
@@ -113,8 +114,20 @@ model Payment {
   createdAt    DateTime @default(now())
   lessonCount  Int      @default(0)
   price        Int      @default(0)
+  leadName     String   @default("")
+  productName  String   @default("")
   bidForLesson Int      @default(0)
   student      Student  @relation(fields: [studentId], references: [id])
+}
+
+model UnprocessedPayment {
+  id        Int      @id @default(autoincrement())
+  rawData   Json
+  reason    String
+  resolved  Boolean
+  createdAt DateTime @default(now())
+  studentId Int?
+  student   Student? @relation(fields: [studentId], references: [id])
 }
 
 model Cart {
