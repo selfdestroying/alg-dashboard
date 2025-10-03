@@ -23,19 +23,20 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
       filterVariant: 'text',
     },
   },
-  // {
-  //   header: 'Группа',
-  //   accessorKey: 'group',
-  //   accessorFn: (item) => item.group.name,
-  //   cell: ({ row }) => (
-  //     <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-  //       <Link href={`/dashboard/groups/${row.original.groupId}`}>{row.getValue('group')}</Link>
-  //     </Button>
-  //   ),
-  //   meta: {
-  //     filterVariant: 'select',
-  //   },
-  // },
+  {
+    header: 'Имя сделки',
+    accessorKey: 'leadName',
+    meta: {
+      filterVariant: 'text',
+    },
+  },
+  {
+    header: 'Название товара',
+    accessorKey: 'productName',
+    meta: {
+      filterVariant: 'text',
+    },
+  },
   {
     header: 'Занятий оплачено',
     accessorKey: 'lessonCount',
