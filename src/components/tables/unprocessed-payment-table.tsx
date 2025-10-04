@@ -19,6 +19,12 @@ const getColumns = (): ColumnDef<UnprocessedPayment>[] => [
   {
     header: 'Статус',
     accessorKey: 'resolved',
+    accessorFn: ({ resolved }) => (resolved ? 'Разобрано' : 'Неразобрано'),
+    filterFn: (row, columnId, filterValue) => {
+      const value = row.getValue<string>(columnId)
+      return value === filterValue
+    },
+
     cell: ({ row }) =>
       row.original.resolved ? (
         <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
@@ -27,7 +33,7 @@ const getColumns = (): ColumnDef<UnprocessedPayment>[] => [
       ),
     size: 25,
     meta: {
-      filterVariant: 'text',
+      filterVariant: 'select',
     },
   },
   {
@@ -105,6 +111,7 @@ export default function UnprocessedPaymentTable({
       defaultColumnVisibility={{
         resolved: false,
       }}
+      defaultFilters={[{ id: 'resolved', value: 'Неразобрано' }]}
     />
   )
 }
