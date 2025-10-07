@@ -1,8 +1,9 @@
 import { getLesson } from '@/actions/lessons'
 import { AttendanceTable } from '@/components/tables/attendance-table'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { BookOpen, Calendar, Clock, User } from 'lucide-react'
+import { BookOpen, Calendar, Clock, Dot, User } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -15,7 +16,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <div className="space-y-2">
       <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
             <div className="space-y-1">
               <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
                 <BookOpen className="h-3 w-3" />
@@ -25,7 +26,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <Link href={`/dashboard/groups/${lesson.group.id}`}>{lesson.group.name}</Link>
               </Button>
             </div>
-
             <div className="space-y-1">
               <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
                 <Clock className="h-3 w-3" />
@@ -33,8 +33,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               </div>
               <p className="text-sm font-semibold">{lesson.time}</p>
             </div>
-
-            {/* Course */}
+            <div className="space-y-1">
+              <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+                <Dot className="h-3 w-3" />
+                Статус
+              </div>
+              <Badge variant={'outline'}>
+                <div className="bg-success size-1.5 rounded-full" aria-hidden="true"></div>
+                {lesson.status}
+              </Badge>
+            </div>
             <div className="space-y-1">
               <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
                 <Calendar className="h-3 w-3" />
@@ -48,6 +56,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 Учеников в группе
               </div>
               <p className="text-sm font-semibold">{lesson.group._count.students}</p>
+            </div>
+            <div className="space-y-1">
+              <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+                <User className="h-3 w-3" />
+                Преподаватели
+              </div>
+              <p className="text-sm font-semibold">
+                {lesson.teachers.map((teacher) => `${teacher.teacher.firstName},`)}
+              </p>
             </div>
           </div>
         </CardContent>

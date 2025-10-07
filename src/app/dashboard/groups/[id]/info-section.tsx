@@ -1,11 +1,15 @@
-import { AllGroupData } from '@/actions/groups'
+import { getGroup } from '@/actions/groups'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { BookOpen, Calendar, Clock, ExternalLink, User, Users } from 'lucide-react'
 
-export default async function InfoSection({ group }: { group: AllGroupData }) {
+export default async function InfoSection({
+  group,
+}: {
+  group: Awaited<ReturnType<typeof getGroup>>
+}) {
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
       <CardContent className="space-y-4">
@@ -30,9 +34,11 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
           <div className="space-y-1">
             <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
               <User className="h-3 w-3" />
-              Преподаватель
+              Преподаватели
             </div>
-            <p className="text-sm font-semibold">{group.teacher.firstName}</p>
+            <p className="text-sm font-semibold">
+              {group.teachers.map((teacher) => `${teacher.teacher.firstName},`)}
+            </p>
           </div>
 
           {/* Course */}

@@ -2,24 +2,28 @@
 
 import prisma from '@/lib/prisma'
 import { DayOfWeek } from '@/lib/utils'
-import { Course, Group, Prisma, Student, User } from '@prisma/client'
+import { Course, Group, Prisma, Student } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createLesson } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: {
-    teacher: {
-      omit: {
-        password: true
-        passwordRequired: true
-        createdAt: true
+    teachers: {
+      include: {
+        teacher: {
+          omit: {
+            password: true
+            passwordRequired: true
+            createdAt: true
+          }
+        }
       }
     }
     course: true
   }
 }>
 export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
-  teacher: User
+  teachers: {}
   course: Course
   lessons: Prisma.LessonGetPayload<{
     include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
@@ -29,16 +33,39 @@ export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
 
 export const getGroups = async (): Promise<GroupWithTeacherAndCourse[]> => {
   const groups = await prisma.group.findMany({
-    include: { teacher: true, course: true },
+    include: {
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+      course: true,
+    },
   })
   return groups
 }
 
-export const getGroup = async (id: number): Promise<AllGroupData | null> => {
+export const getGroup = async (id: number) => {
   const group = await prisma.group.findFirstOrThrow({
     where: { id },
     include: {
-      teacher: true,
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
       course: true,
       students: { include: { student: { include: { _count: { select: { groups: true } } } } } },
       lessons: {
@@ -47,12 +74,8 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
       },
     },
   })
-  const groupWithStudents: AllGroupData = {
-    ...group,
-    students: group.students.map((s) => s.student),
-  }
 
-  return groupWithStudents
+  return group
 }
 
 export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {

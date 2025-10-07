@@ -17,7 +17,17 @@ export default async function Page() {
       },
       group: {
         include: {
-          teacher: true,
+          teachers: {
+            include: {
+              teacher: {
+                omit: {
+                  password: true,
+                  passwordRequired: true,
+                  createdAt: true,
+                },
+              },
+            },
+          },
         },
       },
     },

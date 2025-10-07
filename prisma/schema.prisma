@@ -8,14 +8,18 @@ datasource db {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   firstName        String
   lastName         String?
   password         String
   role             Role
   passwordRequired Boolean
-  createdAt        DateTime @default(now())
-  groups           Group[]
+  bidForLesson     Int             @default(1100)
+  bidForIndividual Int             @default(750)
+  createdAt        DateTime        @default(now())
+  Group            Group[]
+  groups           TeacherGroup[]
+  lessons          TeacherLesson[]
 }
 
 model Student {
@@ -56,9 +60,10 @@ model Group {
   lessonCount   Int?
   lessonPerWeek Int?
   course        Course         @relation(fields: [courseId], references: [id])
-  teacher       User           @relation(fields: [teacherId], references: [id])
+  User          User           @relation(fields: [teacherId], references: [id])
   lessons       Lesson[]
   students      StudentGroup[]
+  teachers      TeacherGroup[]
 }
 
 model Course {
@@ -76,14 +81,34 @@ model StudentGroup {
   @@id([studentId, groupId])
 }
 
+model TeacherGroup {
+  teacherId Int
+  groupId   Int
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  teacher   User  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, groupId])
+}
+
+model TeacherLesson {
+  teacherId Int
+  lessonId  Int
+  lesson    Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  teacher   User   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, lessonId])
+}
+
 model Lesson {
-  id         Int          @id @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   groupId    Int
   date       DateTime
   time       String?
-  createdAt  DateTime     @default(now())
+  createdAt  DateTime        @default(now())
+  status     LessonStatus    @default(ACTIVE)
   attendance Attendance[]
-  group      Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group      Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  teachers   TeacherLesson[]
 }
 
 model Attendance {
@@ -114,9 +139,9 @@ model Payment {
   createdAt    DateTime @default(now())
   lessonCount  Int      @default(0)
   price        Int      @default(0)
+  bidForLesson Int      @default(0)
   leadName     String   @default("")
   productName  String   @default("")
-  bidForLesson Int      @default(0)
   student      Student  @relation(fields: [studentId], references: [id])
 }
 
@@ -205,5 +230,10 @@ enum AttendanceStatus {
 enum OrderStatus {
   COMPLETED
   PENDING
+  CANCELLED
+}
+
+enum LessonStatus {
+  ACTIVE
   CANCELLED
 }

@@ -42,9 +42,9 @@ const getColumns = (users: string[]): ColumnDef<LessonWithAttendanceAndGroup>[] 
     },
   },
   {
-    header: 'Учитель',
+    header: 'Учителя',
     accessorKey: 'teacher',
-    accessorFn: (item) => item.group.teacher.firstName,
+    accessorFn: (item) => item.group.teachers.map((teacher) => `${teacher.teacher.firstName},`),
 
     meta: {
       filterVariant: 'select',

@@ -10,6 +10,17 @@ export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
 }>
 export type LessonWithGroupAndAttendance = Prisma.LessonGetPayload<{
   include: {
+    teachers: {
+      include: {
+        teacher: {
+          omit: {
+            password: true
+            passwordRequired: true
+            createdAt: true
+          }
+        }
+      }
+    }
     group: { include: { _count: { select: { students: true } } } }
     attendance: {
       include: {
@@ -22,7 +33,24 @@ export type LessonWithGroupAndAttendance = Prisma.LessonGetPayload<{
 }>
 
 export type LessonWithAttendanceAndGroup = Prisma.LessonGetPayload<{
-  include: { attendance: { include: { student: true } }; group: { include: { teacher: true } } }
+  include: {
+    attendance: { include: { student: true } }
+    group: {
+      include: {
+        teachers: {
+          include: {
+            teacher: {
+              omit: {
+                password: true
+                passwordRequired: true
+                createdAt: true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }>
 
 export const getLessons = async <T extends Prisma.LessonFindManyArgs>(
@@ -35,7 +63,24 @@ export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const lessons = await prisma.lesson.findMany({
     where: { date: { gte: today } },
-    include: { attendance: { include: { student: true } }, group: { include: { teacher: true } } },
+    include: {
+      attendance: { include: { student: true } },
+      group: {
+        include: {
+          teachers: {
+            include: {
+              teacher: {
+                omit: {
+                  password: true,
+                  passwordRequired: true,
+                  createdAt: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     orderBy: { date: 'asc' },
   })
   return lessons
@@ -45,6 +90,17 @@ export const getLesson = async (id: number): Promise<LessonWithGroupAndAttendanc
   const lesson = await prisma.lesson.findFirst({
     where: { id },
     include: {
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
       group: { include: { _count: { select: { students: true } } } },
       attendance: {
         include: {

@@ -53,7 +53,21 @@ export default function MakeUpForm({
         where: { date: today },
         include: {
           attendance: { include: { student: true } },
-          group: { include: { teacher: true } },
+          group: {
+            include: {
+              teachers: {
+                include: {
+                  teacher: {
+                    omit: {
+                      password: true,
+                      passwordRequired: true,
+                      createdAt: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       })
       setLessons(l)
@@ -138,7 +152,10 @@ export default function MakeUpForm({
                       {lessons.length > 0 ? (
                         lessons.map((lesson) => (
                           <SelectItem key={lesson.id} value={lesson.id.toString()}>
-                            {lesson.group.name} - {lesson.group.teacher.firstName}
+                            {lesson.group.name} -{' '}
+                            {lesson.group.teachers.map(
+                              (teacher) => `${teacher.teacher.firstName},`
+                            )}
                           </SelectItem>
                         ))
                       ) : (
