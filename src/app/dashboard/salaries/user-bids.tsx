@@ -18,8 +18,8 @@ interface UserBidProps {
 }
 
 export default function UserBid({ user }: UserBidProps) {
-  const [lessonBid, setLessonBid] = useState(user.bidForLesson)
-  const [individualBid, setIndividualBid] = useState(user.bidForIndividual)
+  const [lessonBid, ] = useState(user.bidForLesson)
+  const [individualBid,] = useState(user.bidForIndividual)
   const handleUpdate = useMemo(
     () =>
       debounce((bid: number, type: GroupType) => {

@@ -166,7 +166,7 @@ export default function Salaries() {
 
                 <CollapsibleContent>
                   <CardContent className="space-y-3">
-                    {r.lessons.map((lesson, index) => (
+                    {r.lessons.map((lesson) => (
                       <div
                         key={lesson.id}
                         className="bg-muted/30 hover:bg-muted/50 rounded-lg border p-3 transition"

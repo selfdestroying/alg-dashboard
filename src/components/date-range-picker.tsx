@@ -26,7 +26,6 @@ export function DateRangePicker({
   calendarProps,
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const today = new Date()
 
   return (
     <div className={cn('grid gap-2', className)}>

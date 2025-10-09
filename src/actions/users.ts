@@ -23,7 +23,7 @@ export const getUser = cache(async (): Promise<UserData | null> => {
 
 export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidate?: string) => {
   await prisma.user.update(payload)
-  pathToRevalidate && revalidatePath(pathToRevalidate)
+  if (pathToRevalidate) revalidatePath(pathToRevalidate)
 }
 
 export const getUsers = async (): Promise<UserData[]> => {

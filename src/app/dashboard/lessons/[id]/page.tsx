@@ -1,5 +1,7 @@
 import { getLesson } from '@/actions/lessons'
+import { getUsers } from '@/actions/users'
 import { AttendanceTable } from '@/components/tables/attendance-table'
+import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,9 +11,11 @@ import Link from 'next/link'
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const lesson = await getLesson(+id)
+  const teachers = await getUsers()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
+
   return (
     <div className="space-y-2">
       <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
@@ -57,15 +61,23 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               </div>
               <p className="text-sm font-semibold">{lesson.group._count.students}</p>
             </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
-                <User className="h-3 w-3" />
-                Преподаватели
-              </div>
-              <p className="text-sm font-semibold">
-                {lesson.teachers.map((teacher) => `${teacher.teacher.firstName},`)}
-              </p>
+          </div>
+          <div className="space-y-1">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+              <User className="h-3 w-3" />
+              Преподаватели
             </div>
+            <TeachersMultiSelect
+              teachers={teachers.map((teacher) => ({
+                value: teacher.id.toString(),
+                label: `${teacher.firstName} ${teacher.lastName ?? ''}`,
+              }))}
+              currentTeachers={lesson.teachers.map((teacher) => ({
+                value: teacher.teacher.id.toString(),
+                label: `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`,
+              }))}
+              lessonId={lesson.id}
+            />
           </div>
         </CardContent>
       </Card>
