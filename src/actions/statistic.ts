@@ -10,7 +10,7 @@ export const getStatistics = async (userId: number) => {
       userId == -1
         ? {}
         : {
-            teacherId: userId,
+            teachers: { some: { teacherId: userId } },
           },
   })
   const totalPersonalStudents = await prisma.student.count({
@@ -21,7 +21,7 @@ export const getStatistics = async (userId: number) => {
             groups: {
               some: {
                 group: {
-                  teacherId: userId,
+                  teachers: { some: { teacherId: userId } },
                 },
               },
             },

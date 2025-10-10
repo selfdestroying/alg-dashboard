@@ -3,23 +3,29 @@
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import * as React from 'react'
-import { DateRange } from 'react-day-picker'
+import { DateRange, DayPicker } from 'react-day-picker'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { ru } from 'date-fns/locale'
 
 interface DateRangePickerProps {
   value?: DateRange
   onChange?: (range: DateRange | undefined) => void
   className?: string
+  calendarProps?: React.ComponentProps<typeof DayPicker> & {
+    buttonVariant?: React.ComponentProps<typeof Button>['variant']
+  }
 }
 
-export function DateRangePicker({ value, onChange, className }: DateRangePickerProps) {
+export function DateRangePicker({
+  value,
+  onChange,
+  className,
+  calendarProps,
+}: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
-  const today = new Date()
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -49,13 +55,11 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
+            {...calendarProps}
             mode="range"
             defaultMonth={value?.from}
             selected={value}
             onSelect={onChange}
-            numberOfMonths={2}
-            disabled={{ after: today, before: new Date(2025, 9, 1) }}
-            locale={ru}
           />
         </PopoverContent>
       </Popover>

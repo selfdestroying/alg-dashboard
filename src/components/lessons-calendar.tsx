@@ -45,7 +45,14 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
       const lessons = await getLessons({
         where: {
           date: { gte: startOfMonth, lte: endOfMonth },
-          group: { teacherId: selectedTeacherId == -1 ? undefined : selectedTeacherId },
+          group: {
+            teachers:
+              selectedTeacherId == -1
+                ? undefined
+                : {
+                    some: { teacherId: selectedTeacherId },
+                  },
+          },
         },
         include: {
           attendance: {
@@ -55,7 +62,17 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
           },
           group: {
             include: {
-              teacher: true,
+              teachers: {
+                include: {
+                  teacher: {
+                    omit: {
+                      password: true,
+                      passwordRequired: true,
+                      createdAt: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -159,7 +176,8 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
                   >
                     <Link href={`/dashboard/lessons/${lesson.id}`}>
                       <span className="font-medium">
-                        {lesson.group.name} - {lesson.group.teacher.firstName}
+                        {lesson.group.name} -{' '}
+                        {lesson.group.teachers.map((teacher) => `${teacher.teacher.firstName},`)}
                       </span>
                       <span className="text-muted-foreground text-xs">
                         {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}

@@ -1,5 +1,5 @@
 'use client'
-import { AllGroupData, removeFromGroup } from '@/actions/groups'
+import { getGroup, removeFromGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
@@ -187,7 +187,7 @@ export function GroupStudentsTable({
   students,
   data,
 }: {
-  data: AllGroupData
+  data: Awaited<ReturnType<typeof getGroup>>
   lessons: Lesson[]
   students: StudentWithAttendances[]
 }) {

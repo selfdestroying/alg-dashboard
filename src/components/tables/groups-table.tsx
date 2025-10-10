@@ -47,9 +47,9 @@ const getColumns = (users: string[]): ColumnDef<GroupWithTeacherAndCourse>[] => 
     },
   },
   {
-    header: 'Учитель',
+    header: 'Учителя',
     accessorKey: 'teacher',
-    accessorFn: (item) => item.teacher.firstName,
+    accessorFn: (item) => item.teachers.map((teacher) => `${teacher.teacher.firstName},`),
     // filterFn: (row, columnId, filterValue: string) => {
     //   console.log(filterValue)
     //   return true

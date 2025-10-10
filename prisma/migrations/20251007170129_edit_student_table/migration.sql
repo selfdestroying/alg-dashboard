@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "bidForIndividual" INTEGER NOT NULL DEFAULT 750,
+ADD COLUMN     "bidForLesson" INTEGER NOT NULL DEFAULT 1100;

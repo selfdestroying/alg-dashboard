@@ -1,11 +1,18 @@
-import { AllGroupData } from '@/actions/groups'
+import { getGroup } from '@/actions/groups'
+import { getUsers } from '@/actions/users'
+import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { format } from 'date-fns'
-import { BookOpen, Calendar, Clock, ExternalLink, User, Users } from 'lucide-react'
+import { BookOpen, Calendar, CircleAlert, Clock, ExternalLink, User, Users } from 'lucide-react'
 
-export default async function InfoSection({ group }: { group: AllGroupData }) {
+export default async function InfoSection({
+  group,
+}: {
+  group: Awaited<ReturnType<typeof getGroup>>
+}) {
+  const teachers = await getUsers()
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
       <CardContent className="space-y-4">
@@ -24,15 +31,6 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
                 </a>
               </Button>
             </p>
-          </div>
-
-          {/* Teacher */}
-          <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
-              <User className="h-3 w-3" />
-              Преподаватель
-            </div>
-            <p className="text-sm font-semibold">{group.teacher.firstName}</p>
           </div>
 
           {/* Course */}
@@ -76,6 +74,28 @@ export default async function InfoSection({ group }: { group: AllGroupData }) {
               {group.startDate ? format(group.startDate, 'dd-MM-yyyy') : 'Не указано'}
             </p>
           </div>
+        </div>
+        <div className="space-y-1">
+          <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+            <User className="h-3 w-3" />
+            Преподаватели
+          </div>
+          <TeachersMultiSelect
+            teachers={teachers.map((teacher) => ({
+              value: teacher.id.toString(),
+              label: `${teacher.firstName} ${teacher.lastName ?? ''}`,
+            }))}
+            currentTeachers={group.teachers.map((teacher) => ({
+              value: teacher.teacher.id.toString(),
+              label: `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`,
+            }))}
+            groupId={group.id}
+          />
+          <Badge className="text-warning" variant={'outline'}>
+            <CircleAlert />
+            Изменение списка учителей в группе так же будет применено и ко всем урокам в этой
+            группе, начиная с текущей даты.
+          </Badge>
         </div>
       </CardContent>
     </Card>

@@ -1,44 +1,64 @@
 'use server'
 
+import { Option } from '@/components/ui/multiselect'
 import prisma from '@/lib/prisma'
 import { DayOfWeek } from '@/lib/utils'
-import { Course, Group, Prisma, Student, User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { createLesson } from './lessons'
+import { createLesson, getLessons } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: {
-    teacher: {
-      omit: {
-        password: true
-        passwordRequired: true
-        createdAt: true
+    teachers: {
+      include: {
+        teacher: {
+          omit: {
+            password: true
+            passwordRequired: true
+            createdAt: true
+          }
+        }
       }
     }
     course: true
   }
 }>
-export type AllGroupData = Omit<Omit<Group, 'students'>, 'lessons'> & {
-  teacher: User
-  course: Course
-  lessons: Prisma.LessonGetPayload<{
-    include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
-  }>[]
-  students: (Student & { _count: { groups: number } })[]
-}
 
 export const getGroups = async (): Promise<GroupWithTeacherAndCourse[]> => {
   const groups = await prisma.group.findMany({
-    include: { teacher: true, course: true },
+    include: {
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+      course: true,
+    },
   })
   return groups
 }
 
-export const getGroup = async (id: number): Promise<AllGroupData | null> => {
+export const getGroup = async (id: number) => {
   const group = await prisma.group.findFirstOrThrow({
     where: { id },
     include: {
-      teacher: true,
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
       course: true,
       students: { include: { student: { include: { _count: { select: { groups: true } } } } } },
       lessons: {
@@ -47,12 +67,8 @@ export const getGroup = async (id: number): Promise<AllGroupData | null> => {
       },
     },
   })
-  const groupWithStudents: AllGroupData = {
-    ...group,
-    students: group.students.map((s) => s.student),
-  }
 
-  return groupWithStudents
+  return group
 }
 
 export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
@@ -123,4 +139,69 @@ export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateIn
       })
   )
   revalidatePath(`/dashboard/groups/${data.groupId}`)
+}
+
+export async function updateTeacherGroup(
+  groupId: number,
+  currentTeachers: Option[],
+  newTeachers: Option[]
+) {
+  const currentTeacherIds = currentTeachers.map((teacher) => +teacher.value)
+  const newTeacherIds = newTeachers.map((teacher) => +teacher.value)
+
+  const currentSet = new Set(currentTeacherIds)
+  const newSet = new Set(newTeacherIds)
+
+  const toDelete = currentTeacherIds.filter((id) => !newSet.has(id))
+
+  const toAdd = newTeacherIds.filter((id) => !currentSet.has(id))
+
+  await prisma.$transaction(async (tx) => {
+    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+
+    if (toDelete.length > 0) {
+      await tx.teacherGroup.deleteMany({
+        where: {
+          groupId,
+          teacherId: { in: toDelete },
+        },
+      })
+      await tx.teacherLesson.deleteMany({
+        where: {
+          teacherId: { in: toDelete },
+          lesson: {
+            groupId,
+            date: { gte: today },
+          },
+        },
+      })
+    }
+
+    if (toAdd.length > 0) {
+      await tx.teacherGroup.createMany({
+        data: toAdd.map((teacherId) => ({
+          groupId,
+          teacherId,
+        })),
+        skipDuplicates: true, // На случай, если дубликаты
+      })
+      const lessons = await getLessons({
+        where: {
+          date: { gte: today },
+          groupId: groupId,
+        },
+      })
+      for (const lesson of lessons) {
+        await tx.teacherLesson.createMany({
+          data: toAdd.map((teacherId) => ({
+            teacherId,
+            lessonId: lesson.id,
+          })),
+          skipDuplicates: true, // На случай, если дубликаты
+        })
+      }
+    }
+  })
+
+  revalidatePath(`/dashboard/groups/${groupId}`)
 }

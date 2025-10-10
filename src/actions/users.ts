@@ -2,6 +2,7 @@
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
 import { Prisma } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
 import { cache } from 'react'
 
 export type UserData = Prisma.UserGetPayload<{
@@ -19,6 +20,11 @@ export const getUser = cache(async (): Promise<UserData | null> => {
   })
   return user
 })
+
+export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidate?: string) => {
+  await prisma.user.update(payload)
+  if (pathToRevalidate) revalidatePath(pathToRevalidate)
+}
 
 export const getUsers = async (): Promise<UserData[]> => {
   const users: UserData[] = await prisma.user.findMany({
