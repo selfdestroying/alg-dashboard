@@ -82,10 +82,11 @@ model StudentGroup {
 }
 
 model TeacherGroup {
-  teacherId Int
-  groupId   Int
-  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  teacher   User  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId    Int
+  groupId      Int
+  group        Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  teacher      User  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  bidForLesson Int?
 
   @@id([teacherId, groupId])
 }
