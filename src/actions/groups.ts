@@ -141,6 +141,24 @@ export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateIn
   revalidatePath(`/dashboard/groups/${data.groupId}`)
 }
 
+export async function updateTeacherGroupBid(
+  bidForLesson: number,
+  teacherId: number,
+  groupId: number
+) {
+  await prisma.teacherGroup.update({
+    where: {
+      teacherId_groupId: {
+        teacherId,
+        groupId,
+      },
+    },
+    data: {
+      bidForLesson,
+    },
+  })
+}
+
 export async function updateTeacherGroup(
   groupId: number,
   currentTeachers: Option[],

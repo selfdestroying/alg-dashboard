@@ -96,7 +96,7 @@ const data: NavData[] = [
         url: '/dashboard/salaries',
         icon: Wallet,
         items: [],
-        roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+        roles: ['ADMIN', 'OWNER'],
       },
     ],
     roles: ['ADMIN', 'OWNER', 'MANAGER'],

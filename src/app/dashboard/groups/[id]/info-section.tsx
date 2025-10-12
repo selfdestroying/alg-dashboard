@@ -1,17 +1,20 @@
 import { getGroup } from '@/actions/groups'
-import { getUsers } from '@/actions/users'
+import { getUser, getUsers } from '@/actions/users'
 import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { BookOpen, Calendar, CircleAlert, Clock, ExternalLink, User, Users } from 'lucide-react'
+import { Fragment } from 'react'
+import TeacherGroupBids from './teacher-group-bids'
 
 export default async function InfoSection({
   group,
 }: {
   group: Awaited<ReturnType<typeof getGroup>>
 }) {
+  const user = await getUser()
   const teachers = await getUsers()
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
@@ -96,6 +99,19 @@ export default async function InfoSection({
             Изменение списка учителей в группе так же будет применено и ко всем урокам в этой
             группе, начиная с текущей даты.
           </Badge>
+          {(user?.role == 'ADMIN' || user?.role == 'OWNER') && (
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              {group.teachers.map((teacher) => (
+                <Fragment key={teacher.teacherId}>
+                  <TeacherGroupBids
+                    user={teacher.teacher}
+                    bidForLesson={teacher.bidForLesson}
+                    group={group}
+                  />
+                </Fragment>
+              ))}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

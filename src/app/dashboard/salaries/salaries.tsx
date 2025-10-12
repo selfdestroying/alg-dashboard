@@ -71,7 +71,16 @@ export default function Salaries() {
                 },
               },
             },
-            group: true,
+            group: {
+              include: {
+                teachers: {
+                  select: {
+                    teacherId: true,
+                    bidForLesson: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: { date: 'asc' },
         })
@@ -99,6 +108,9 @@ export default function Salaries() {
         for (const lesson of data) {
           for (const tl of lesson.teachers) {
             const teacher = tl.teacher
+            const bidForLesson = lesson.group.teachers.find(
+              (t) => t.teacherId === tl.teacherId
+            )?.bidForLesson
             if (!lessonsByTeacher[teacher.id]) {
               lessonsByTeacher[teacher.id] = {
                 teacher: teacher,
@@ -108,11 +120,12 @@ export default function Salaries() {
             lessonsByTeacher[teacher.id].lessons.push({
               ...lesson,
               price:
-                lesson.group.type == 'GROUP'
+                bidForLesson ??
+                (lesson.group.type == 'GROUP'
                   ? teacher.bidForLesson
                   : lesson.group.type == 'INDIVIDUAL'
                     ? teacher.bidForIndividual
-                    : 0,
+                    : 0),
             })
           }
         }
