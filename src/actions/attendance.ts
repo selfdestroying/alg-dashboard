@@ -64,12 +64,14 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
       },
     })
     if (oldAttendance) {
-      await updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
-      await updateLessonsBalance(
-        status as AttendanceStatus,
-        oldAttendance.status,
-        oldAttendance.studentId
-      )
+      if (oldAttendance.studentStatus !== 'TRIAL') {
+        await updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
+        await updateLessonsBalance(
+          status as AttendanceStatus,
+          oldAttendance.status,
+          oldAttendance.studentId
+        )
+      }
     }
   }
   await prisma.attendance.update(payload)
