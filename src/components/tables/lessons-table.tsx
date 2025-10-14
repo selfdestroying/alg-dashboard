@@ -44,7 +44,10 @@ const getColumns = (users: string[]): ColumnDef<LessonWithAttendanceAndGroup>[] 
   {
     header: 'Учителя',
     accessorKey: 'teacher',
-    accessorFn: (item) => item.group.teachers.map((teacher) => `${teacher.teacher.firstName},`),
+    accessorFn: (item) =>
+      item.group.teachers
+        .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
+        .join(', '),
 
     meta: {
       filterVariant: 'select',

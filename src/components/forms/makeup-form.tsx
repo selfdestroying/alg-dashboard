@@ -153,9 +153,12 @@ export default function MakeUpForm({
                         lessons.map((lesson) => (
                           <SelectItem key={lesson.id} value={lesson.id.toString()}>
                             {lesson.group.name} -{' '}
-                            {lesson.group.teachers.map(
-                              (teacher) => `${teacher.teacher.firstName},`
-                            )}
+                            {lesson.group.teachers
+                              .map(
+                                (teacher) =>
+                                  `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`
+                              )
+                              .join(', ')}
                           </SelectItem>
                         ))
                       ) : (

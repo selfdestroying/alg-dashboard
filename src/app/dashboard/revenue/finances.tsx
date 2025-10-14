@@ -3,16 +3,79 @@
 import { getLessons } from '@/actions/lessons'
 import { DateRangePicker } from '@/components/date-range-picker'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Prisma } from '@prisma/client'
+import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
 import { DateRange } from 'react-day-picker'
+import { RevenueSummary } from './revenue-summary'
+import { RevenueTable } from './revenue-table'
 
-export default function FinanceClient() {
+export function transformLessonsToRevenueData(
+  lessons: Prisma.LessonGetPayload<{
+    include: { attendance: { include: { student: true } }; group: true }
+  }>[]
+) {
+  // Группируем уроки по дате
+  const groupedByDate: Record<
+    string,
+    Prisma.LessonGetPayload<{
+      include: { attendance: { include: { student: true } }; group: true }
+    }>[]
+  > = {}
+
+  for (const lesson of lessons) {
+    const date = format(new Date(lesson.date), 'dd.MM.yyyy', { locale: ru })
+    if (!groupedByDate[date]) groupedByDate[date] = []
+    groupedByDate[date].push(lesson)
+  }
+
+  return Object.entries(groupedByDate).map(([date, lessons]) => ({
+    date,
+    revenue: lessons.reduce(
+      (prev, curr) =>
+        prev +
+        Math.floor(
+          curr.attendance.reduce(
+            (prev1, curr1) =>
+              prev1 +
+              (curr1.student.totalLessons !== 0
+                ? curr1.student.totalPayments / curr1.student.totalLessons
+                : 0),
+            0
+          )
+        ),
+      0
+    ),
+    lessons: lessons.map((lesson) => ({
+      time: lesson.time || '—',
+      group: `${lesson.group.name}`,
+      teacher: '—', // можно будет добавить, если есть связь с преподавателем
+      revenue: Math.floor(
+        lesson.attendance.reduce(
+          (prev1, curr1) =>
+            prev1 +
+            (curr1.student.totalLessons !== 0
+              ? curr1.student.totalPayments / curr1.student.totalLessons
+              : 0),
+          0
+        )
+      ),
+      students: lesson.attendance.map((att) => ({
+        name: `${att.student.firstName} ${att.student.lastName ?? ''}`.trim(),
+        revenue: att.student.totalPayments / att.student.totalLessons,
+      })),
+    })),
+  }))
+}
+
+export default function RevenueClient() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [lessons, setLessons] = useState<
-    Prisma.LessonGetPayload<{ include: { attendance: { include: { student: true } } } }>[]
+    Prisma.LessonGetPayload<{
+      include: { attendance: { include: { student: true } }; group: true }
+    }>[]
   >([])
   const today = new Date()
 
@@ -45,6 +108,7 @@ export default function FinanceClient() {
                 student: true,
               },
             },
+            group: true,
           },
           orderBy: {
             date: 'asc',
@@ -61,7 +125,7 @@ export default function FinanceClient() {
 
   return (
     <Card>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-2">
         <div className="flex items-center gap-4">
           <DateRangePicker
             value={dateRange}
@@ -76,10 +140,9 @@ export default function FinanceClient() {
             Сбросить
           </Button>
         </div>
-        <div className="space-y-2">
-          <p>Доход по факту за период</p>
-          <p className="text-3xl font-semibold">
-            {lessons.reduce(
+        <RevenueSummary
+          totalRevenue={Math.floor(
+            lessons.reduce(
               (prev, curr) =>
                 prev +
                 curr.attendance.reduce(
@@ -91,47 +154,26 @@ export default function FinanceClient() {
                   0
                 ),
               0
-            )}{' '}
-            ₽
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
-          {lessons?.map((lesson) => (
-            <Card key={lesson.id}>
-              <CardHeader>
-                <div>
-                  {lesson.date.toLocaleDateString('ru-RU')} {lesson.time} -{' '}
-                  <b>
-                    {lesson.attendance.reduce(
-                      (prev1, curr1) =>
-                        prev1 +
-                        (curr1.student.totalLessons !== 0
-                          ? curr1.student.totalPayments / curr1.student.totalLessons
-                          : 0),
-                      0
-                    )}{' '}
-                    ₽
-                  </b>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul>
-                  {lesson.attendance.map((a) => (
-                    <li key={a.id}>
-                      {a.student.firstName} {a.student.lastName} -{' '}
-                      <b>
-                        {a.student.totalLessons !== 0
-                          ? a.student.totalPayments / a.student.totalLessons
-                          : 0}{' '}
-                        ₽
-                      </b>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            )
+          )}
+          totalLessons={lessons.reduce(
+            (prev, curr) =>
+              prev +
+              curr.attendance.reduce(
+                (prev1, curr1) => prev1 + (curr1.student.totalLessons !== 0 ? 1 : 0),
+                0
+              ),
+            0
+          )}
+          paymentRate={0 / 0}
+        />
+        <RevenueTable data={transformLessonsToRevenueData(lessons)} />
+        {/* <RevenueChart
+          data={transformLessonsToRevenueData(lessons).map((item) => ({
+            date: item.date,
+            revenue: item.revenue,
+          }))}
+        /> */}
       </CardContent>
     </Card>
   )
