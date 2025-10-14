@@ -75,8 +75,9 @@ model Course {
 model StudentGroup {
   studentId Int
   groupId   Int
-  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status    StudentStatus @default(ACTIVE)
+  group     Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student   Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@id([studentId, groupId])
 }
@@ -113,15 +114,16 @@ model Lesson {
 }
 
 model Attendance {
-  id           Int              @id @default(autoincrement())
-  lessonId     Int
-  studentId    Int
-  status       AttendanceStatus
-  comment      String
-  lesson       Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  asMakeupFor  MakeUp?          @relation("MakeUpAttendace")
-  missedMakeup MakeUp?          @relation("MissedAttendance")
+  id            Int              @id @default(autoincrement())
+  lessonId      Int
+  studentId     Int
+  status        AttendanceStatus
+  comment       String
+  studentStatus StudentStatus    @default(ACTIVE)
+  lesson        Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student       Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  asMakeupFor   MakeUp?          @relation("MakeUpAttendace")
+  missedMakeup  MakeUp?          @relation("MissedAttendance")
 
   @@unique([studentId, lessonId])
 }
@@ -237,4 +239,10 @@ enum OrderStatus {
 enum LessonStatus {
   ACTIVE
   CANCELLED
+}
+
+enum StudentStatus {
+  TRIAL
+  ACTIVE
+  DISMISSED
 }

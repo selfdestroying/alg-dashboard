@@ -40,7 +40,7 @@ export function transformLessonsToRevenueData(
           curr.attendance.reduce(
             (prev1, curr1) =>
               prev1 +
-              (curr1.student.totalLessons !== 0
+              (curr1.student.totalLessons !== 0 && curr1.studentStatus !== 'TRIAL'
                 ? curr1.student.totalPayments / curr1.student.totalLessons
                 : 0),
             0
@@ -56,15 +56,16 @@ export function transformLessonsToRevenueData(
         lesson.attendance.reduce(
           (prev1, curr1) =>
             prev1 +
-            (curr1.student.totalLessons !== 0
+            (curr1.student.totalLessons !== 0 && curr1.studentStatus !== 'TRIAL'
               ? curr1.student.totalPayments / curr1.student.totalLessons
               : 0),
           0
         )
       ),
       students: lesson.attendance.map((att) => ({
-        name: `${att.student.firstName} ${att.student.lastName ?? ''}`.trim(),
-        revenue: att.student.totalPayments / att.student.totalLessons,
+        name: `${att.student.firstName} ${att.student.lastName ?? ''} ${att.studentStatus === 'TRIAL' ? '- пробный' : ''}`.trim(),
+        revenue:
+          att.studentStatus !== 'TRIAL' ? att.student.totalPayments / att.student.totalLessons : 0,
       })),
     })),
   }))
@@ -148,7 +149,7 @@ export default function RevenueClient() {
                 curr.attendance.reduce(
                   (prev1, curr1) =>
                     prev1 +
-                    (curr1.student.totalLessons !== 0
+                    (curr1.student.totalLessons !== 0 && curr1.studentStatus !== 'TRIAL'
                       ? curr1.student.totalPayments / curr1.student.totalLessons
                       : 0),
                   0
@@ -160,7 +161,9 @@ export default function RevenueClient() {
             (prev, curr) =>
               prev +
               curr.attendance.reduce(
-                (prev1, curr1) => prev1 + (curr1.student.totalLessons !== 0 ? 1 : 0),
+                (prev1, curr1) =>
+                  prev1 +
+                  (curr1.student.totalLessons !== 0 && curr1.studentStatus !== 'TRIAL' ? 1 : 0),
                 0
               ),
             0

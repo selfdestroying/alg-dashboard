@@ -18,8 +18,8 @@ interface UserBidProps {
 }
 
 export default function UserBid({ user }: UserBidProps) {
-  const [lessonBid, ] = useState(user.bidForLesson)
-  const [individualBid,] = useState(user.bidForIndividual)
+  const [lessonBid] = useState(user.bidForLesson)
+  const [individualBid] = useState(user.bidForIndividual)
   const handleUpdate = useMemo(
     () =>
       debounce((bid: number, type: GroupType) => {
@@ -38,7 +38,6 @@ export default function UserBid({ user }: UserBidProps) {
           success: 'Успешно!',
           error: (e) => e.message,
         })
-        console.log('save')
       }, 500),
     []
   )

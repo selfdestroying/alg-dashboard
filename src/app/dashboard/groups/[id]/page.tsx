@@ -23,6 +23,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const students = await prisma.student.findMany({
     where: { groups: { some: { groupId: group.id } } },
     include: {
+      groups: true,
       attendances: {
         where: { lesson: { groupId: group.id } },
         include: {
