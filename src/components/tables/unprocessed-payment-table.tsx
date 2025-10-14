@@ -1,10 +1,10 @@
 'use client'
 
-import { updateUnprocessedPayment } from '@/actions/payments'
-import { UnprocessedPayment } from '@prisma/client'
+import { Student, UnprocessedPayment } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { FileJson } from 'lucide-react'
 import DataTable from '../data-table'
+import PaymentDialogForm from '../forms/payment-form'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog'
 
-const getColumns = (): ColumnDef<UnprocessedPayment>[] => [
+const getColumns = (students: Student[]): ColumnDef<UnprocessedPayment>[] => [
   {
     header: 'Статус',
     accessorKey: 'resolved',
@@ -86,23 +86,19 @@ const getColumns = (): ColumnDef<UnprocessedPayment>[] => [
     header: 'Действия',
     cell: ({ row }) =>
       !row.original.resolved && (
-        <Button
-          onClick={() =>
-            updateUnprocessedPayment({ where: { id: row.original.id }, data: { resolved: true } })
-          }
-        >
-          Разобрать
-        </Button>
+        <PaymentDialogForm students={students} unprocessedPayment={row.original} />
       ),
   },
 ]
 
 export default function UnprocessedPaymentTable({
   unprocessedPayments,
+  students,
 }: {
   unprocessedPayments: UnprocessedPayment[]
+  students: Student[]
 }) {
-  const columns = getColumns()
+  const columns = getColumns(students)
   return (
     <DataTable
       data={unprocessedPayments}
