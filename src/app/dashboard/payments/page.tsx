@@ -1,7 +1,6 @@
 import { getPayments, getUnprocessedPayments } from '@/actions/payments'
 import { getStudents } from '@/actions/students'
-import FormDialog from '@/components/button-dialog'
-import PaymentForm from '@/components/forms/payment-form'
+import PaymentDialogForm from '@/components/forms/payment-form'
 import PaymentsTable from '@/components/tables/payments-table'
 import UnprocessedPaymentTable from '@/components/tables/unprocessed-payment-table'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -13,12 +12,7 @@ export default async function Page() {
 
   return (
     <div className="space-y-6">
-      <FormDialog
-        title="Добавить оплату"
-        submitButtonProps={{ form: 'payment-form' }}
-        FormComponent={PaymentForm}
-        formComponentProps={{ students }}
-      />
+      <PaymentDialogForm students={students} />
       <Card>
         <CardHeader>Оплаты</CardHeader>
         <CardContent>
@@ -28,7 +22,7 @@ export default async function Page() {
       <Card>
         <CardHeader>Неразобранное</CardHeader>
         <CardContent>
-          <UnprocessedPaymentTable unprocessedPayments={unprocessedPayments} />
+          <UnprocessedPaymentTable unprocessedPayments={unprocessedPayments} students={students} />
         </CardContent>
       </Card>
     </div>

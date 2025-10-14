@@ -22,6 +22,8 @@ type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
 
 type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {
+    groups: true
+
     attendances: {
       where: { lesson: { groupId: number } }
       include: {
@@ -36,10 +38,20 @@ type StudentWithAttendances = Prisma.StudentGetPayload<{
 // -------------------- Utils --------------------
 const formatDate = (date: Date) => date.toLocaleDateString('ru-RU')
 
-const statusClasses: Record<AttendanceStatus, string> = {
+const statusClasses: Record<
+  AttendanceStatus | 'TRIAL_PRESENT' | 'TRIAL_ABSENT' | 'TRIAL_UNSPECIFIED',
+  string
+> = {
   PRESENT: 'bg-success dark:bg-success text-white',
   ABSENT: 'bg-error dark:bg-error text-white',
   UNSPECIFIED: 'border-accent',
+
+  TRIAL_ABSENT:
+    'bg-linear-to-r from-info to-error dark:bg-linear-to-r from-info to-error text-white',
+  TRIAL_PRESENT:
+    'bg-linear-to-r from-info to-success dark:bg-linear-to-r from-info to-success text-white',
+  TRIAL_UNSPECIFIED:
+    'bg-linear-to-r from-info to-info dark:bg-linear-to-r from-info to-info text-white',
 }
 
 const makeupStatusClasses: Record<AttendanceStatus, string> = {
@@ -64,7 +76,10 @@ function AttendanceCell({
     )
   }
 
-  const attendanceStatus = statusClasses[attendance.status] ?? statusClasses.UNSPECIFIED
+  const attendanceStatus =
+    attendance.studentStatus == 'TRIAL'
+      ? statusClasses[`TRIAL_${attendance.status}`]
+      : statusClasses[attendance.status]
   const makeUpStatus = attendance.missedMakeup
     ? (makeupStatusClasses[attendance.missedMakeup.makeUpAttendance.status] ??
       makeupStatusClasses.UNSPECIFIED)
@@ -138,6 +153,15 @@ const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAt
     meta: { filterVariant: 'text' },
     size: 100,
   },
+  // {
+  //   header: 'Статус',
+  //   accessorFn: (item) => item.groups[0].status,
+  //   cell: ({ row }) => (
+  //     <Badge variant={'outline'} className={studentStatus[row.original.groups[0].status]}>
+  //       {StudentStatusMap[row.original.groups[0].status]}
+  //     </Badge>
+  //   ),
+  // },
   {
     header: 'Посещаемость',
     accessorKey: 'attendance',

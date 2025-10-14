@@ -177,7 +177,12 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
                     <Link href={`/dashboard/lessons/${lesson.id}`}>
                       <span className="font-medium">
                         {lesson.group.name} -{' '}
-                        {lesson.group.teachers.map((teacher) => `${teacher.teacher.firstName},`)}
+                        {lesson.group.teachers
+                          .map(
+                            (teacher) =>
+                              `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`
+                          )
+                          .join(', ')}
                       </span>
                       <span className="text-muted-foreground text-xs">
                         {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}

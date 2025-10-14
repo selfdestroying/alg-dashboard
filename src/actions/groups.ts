@@ -142,7 +142,7 @@ export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateIn
 }
 
 export async function updateTeacherGroupBid(
-  bidForLesson: number,
+  bidForLesson: number | null,
   teacherId: number,
   groupId: number
 ) {

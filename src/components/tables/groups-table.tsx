@@ -49,7 +49,10 @@ const getColumns = (users: string[]): ColumnDef<GroupWithTeacherAndCourse>[] => 
   {
     header: 'Учителя',
     accessorKey: 'teacher',
-    accessorFn: (item) => item.teachers.map((teacher) => `${teacher.teacher.firstName},`),
+    accessorFn: (item) =>
+      item.teachers
+        .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
+        .join(', '),
     // filterFn: (row, columnId, filterValue: string) => {
     //   console.log(filterValue)
     //   return true

@@ -17,15 +17,15 @@ export default function TeacherGroupBids({ user, group, bidForLesson }: UserBidP
   const [lessonBid] = useState<number | null>(bidForLesson)
   const handleUpdate = useMemo(
     () =>
-      debounce((bid: number) => {
+      debounce((bid: number | null) => {
         const ok = updateTeacherGroupBid(bid, user.id, group.id)
+        console.log(bid)
 
         toast.promise(ok, {
           loading: 'Загрузка...',
           success: 'Успешно!',
           error: (e) => e.message,
         })
-        console.log('save')
       }, 500),
     []
   )
@@ -44,7 +44,7 @@ export default function TeacherGroupBids({ user, group, bidForLesson }: UserBidP
         <Input
           type="number"
           defaultValue={lessonBid ?? undefined}
-          onChange={(e) => handleUpdate(+e.target.value)}
+          onChange={(e) => handleUpdate(e.target.value ? +e.target.value : null)}
         />
       </div>
     </div>

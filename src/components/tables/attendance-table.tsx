@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react'
 
 import { AttendanceWithStudents, deleteAttendance, updateAttendance } from '@/actions/attendance'
-import { Attendance, AttendanceStatus } from '@prisma/client'
+import { Attendance, AttendanceStatus, StudentStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { debounce, DebouncedFunction } from 'es-toolkit'
 import Link from 'next/link'
@@ -15,6 +15,12 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+
+const StudentStatusMap: { [key in StudentStatus]: string } = {
+  ACTIVE: 'Ученик',
+  DISMISSED: 'Отчислен',
+  TRIAL: 'Пробный',
+}
 
 function useSkipper() {
   const shouldSkipRef = React.useRef(true)
@@ -51,6 +57,7 @@ const getColumns = (
                 {row.original.student.firstName} {row.original.student.lastName}
               </Link>
             </Button>
+
             {row.original.asMakeupFor && (
               <Button asChild variant={'outline'} size={'sm'} className="h-fit font-medium">
                 <Link
@@ -68,6 +75,26 @@ const getColumns = (
           </div>
         </div>
       ),
+    },
+    {
+      header: 'Статус ученика',
+      accessorKey: 'studentStatus',
+      cell: ({ row }) => (
+        <StudentStatusAction
+          defaultValue={row.original}
+          onChange={(studentStatus: StudentStatus) => {
+            const ok = updateAttendance({ where: { id: row.original.id }, data: { studentStatus } })
+            toast.promise(ok, {
+              loading: 'Загрузка...',
+              success: 'Успешно!',
+              error: (e) => e.message,
+            })
+          }}
+        />
+      ),
+      meta: {
+        filterVariant: 'select',
+      },
     },
     {
       header: 'Статус',
@@ -220,6 +247,35 @@ const StatusMap: { [key in AttendanceStatus]: string } = {
   ABSENT: 'Пропустил',
   PRESENT: 'Пришел',
   UNSPECIFIED: 'Не отмечен',
+}
+
+function StudentStatusAction({
+  defaultValue,
+  onChange,
+}: {
+  defaultValue: Attendance
+  onChange: (val: StudentStatus) => void
+}) {
+  return (
+    <Select
+      defaultValue={defaultValue.studentStatus}
+      onValueChange={(e: StudentStatus) => onChange(e)}
+    >
+      <SelectTrigger size="sm" className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={StudentStatus.ACTIVE}>
+          <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
+          {StudentStatusMap.ACTIVE}
+        </SelectItem>
+        <SelectItem value={StudentStatus.TRIAL}>
+          <div className="bg-info size-2 rounded-full" aria-hidden="true"></div>
+          {StudentStatusMap.TRIAL}
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  )
 }
 
 function StatusAction({
