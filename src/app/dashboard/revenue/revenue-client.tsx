@@ -133,7 +133,7 @@ export default function RevenueClient() {
             onChange={setDateRange}
             calendarProps={{
               numberOfMonths: 2,
-              disabled: { after: today, before: new Date(2025, 9, 1) },
+              disabled: { after: today, before: new Date(2025, 8, 1) },
               locale: ru,
             }}
           />
