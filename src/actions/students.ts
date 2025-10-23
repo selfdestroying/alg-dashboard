@@ -51,6 +51,9 @@ export async function updateStudentCard(studentData: StudentWithGroups) {
         coins: Number(studentData.coins),
         parentsName: studentData.parentsName,
         crmUrl: studentData.crmUrl,
+        totalLessons: Number(studentData.totalLessons),
+        totalPayments: Number(studentData.totalPayments),
+        lessonsBalance: Number(studentData.lessonsBalance),
       },
     })
 

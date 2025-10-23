@@ -161,9 +161,7 @@ export default function RevenueClient() {
             (prev, curr) =>
               prev +
               curr.attendance.reduce(
-                (prev1, curr1) =>
-                  prev1 +
-                  (curr1.student.totalLessons !== 0 && curr1.studentStatus !== 'TRIAL' ? 1 : 0),
+                (prev1, curr1) => prev1 + (curr1.studentStatus !== 'TRIAL' ? 1 : 0),
                 0
               ),
             0
