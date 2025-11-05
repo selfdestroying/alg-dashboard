@@ -63,7 +63,7 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
   const id = useId()
 
   const [hasEndDate, setHasEndDate] = useState(false)
-  const { courses, users } = useData()
+  const { courses, users, locations } = useData()
 
   const form = useForm<GroupSchemaType>({
     resolver: zodResolver(GroupSchema),
@@ -105,6 +105,33 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     {courses.map((course) => (
                       <SelectItem key={course.id} value={course.id.toString()}>
                         {course.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="locationId"
+            render={({ field }) => (
+              <FormItem className="col-span-12">
+                <FormLabel>
+                  Локация <span className="text-destructive">*</span>
+                </FormLabel>
+                <Select onValueChange={(v) => field.onChange(+v)} value={field.value?.toString()}>
+                  <FormControl className="w-full">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите локацию" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {locations.map((location) => (
+                      <SelectItem key={location.id} value={location.id.toString()}>
+                        {location.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -5,6 +5,7 @@ export const GroupSchema = z.object({
   // required
   teacherId: z.number().int().positive(),
   courseId: z.number().int().positive(),
+  locationId: z.number().int().positive(),
   startDate: z.date({ error: 'Неверная дата начала' }),
   // optional
   type: GroupTypeEnum.optional(),

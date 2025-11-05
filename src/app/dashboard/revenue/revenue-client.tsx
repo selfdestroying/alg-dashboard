@@ -4,6 +4,14 @@ import { getLessons } from '@/actions/lessons'
 import { DateRangePicker } from '@/components/date-range-picker'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -73,6 +81,10 @@ export function transformLessonsToRevenueData(
 
 export default function RevenueClient() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [locationId, setLocationId] = useState<string>('')
+
+  const { locations } = useData()
+
   const [lessons, setLessons] = useState<
     Prisma.LessonGetPayload<{
       include: { attendance: { include: { student: true } }; group: true }
@@ -99,6 +111,11 @@ export default function RevenueClient() {
               gte: from,
               lte: to,
             },
+            group: locationId
+              ? {
+                  locationId: Number(locationId),
+                }
+              : undefined,
           },
           include: {
             attendance: {
@@ -115,6 +132,7 @@ export default function RevenueClient() {
             date: 'asc',
           },
         })
+        console.log(l)
         setLessons(l)
       } else {
         setLessons([])
@@ -122,7 +140,12 @@ export default function RevenueClient() {
     }
 
     getLessonsFromPeriod()
-  }, [dateRange])
+  }, [dateRange, locationId])
+
+  function resetFilters() {
+    setDateRange(undefined)
+    setLocationId('')
+  }
 
   return (
     <Card>
@@ -137,7 +160,19 @@ export default function RevenueClient() {
               locale: ru,
             }}
           />
-          <Button variant="outline" onClick={() => setDateRange(undefined)}>
+          <Select onValueChange={setLocationId} value={locationId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Выберите локацию" />
+            </SelectTrigger>
+            <SelectContent>
+              {locations.map((location) => (
+                <SelectItem key={location.id} value={location.id.toString()}>
+                  {location.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" onClick={resetFilters}>
             Сбросить
           </Button>
         </div>
