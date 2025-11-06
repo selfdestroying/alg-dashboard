@@ -1,10 +1,11 @@
 import { getCourses } from '@/actions/courses'
 import { getUsers } from '@/actions/users'
 import { Toaster } from '@/components/toaster'
+import prisma from '@/lib/prisma'
 import { DataProvider } from '@/providers/data-provider'
+import { ThemeProvider } from '@/providers/theme-provider'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/providers/theme-provider'
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -18,11 +19,12 @@ export default async function RootLayout({
 }>) {
   const courses = await getCourses()
   const users = await getUsers()
+  const locations = await prisma.location.findMany()
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${fontSans.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
-          <DataProvider courses={courses} users={users}>
+          <DataProvider courses={courses} users={users} locations={locations}>
             {children}
             <Toaster />
           </DataProvider>

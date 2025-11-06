@@ -59,11 +59,19 @@ model Group {
   backOfficeUrl String?
   lessonCount   Int?
   lessonPerWeek Int?
+  locationId    Int?
+  location      Location?      @relation(fields: [locationId], references: [id])
   course        Course         @relation(fields: [courseId], references: [id])
   User          User           @relation(fields: [teacherId], references: [id])
   lessons       Lesson[]
   students      StudentGroup[]
   teachers      TeacherGroup[]
+}
+
+model Location {
+  id     Int     @id @default(autoincrement())
+  name   String
+  groups Group[]
 }
 
 model Course {

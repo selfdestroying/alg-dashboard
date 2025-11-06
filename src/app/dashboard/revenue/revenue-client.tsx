@@ -4,6 +4,8 @@ import { getLessons } from '@/actions/lessons'
 import { DateRangePicker } from '@/components/date-range-picker'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import MultipleSelector, { Option } from '@/components/ui/multiselect'
+import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -73,6 +75,11 @@ export function transformLessonsToRevenueData(
 
 export default function RevenueClient() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [selectedLocations, setSelectedLocations] = useState<Option[]>([])
+  const [selectedCourses, setSelectedCourses] = useState<Option[]>([])
+
+  const { locations, courses } = useData()
+
   const [lessons, setLessons] = useState<
     Prisma.LessonGetPayload<{
       include: { attendance: { include: { student: true } }; group: true }
@@ -93,12 +100,21 @@ export default function RevenueClient() {
           dateRange.to.getMonth(),
           dateRange.to.getDate()
         )
+        const groupFilter: { courseId?: object; locationId?: object } = {}
+        if (selectedCourses.length > 0) {
+          groupFilter.courseId = { in: selectedCourses.map((course) => +course.value) }
+        }
+        if (selectedLocations.length > 0) {
+          groupFilter.locationId = { in: selectedLocations.map((location) => +location.value) }
+        }
+
         const l = await getLessons({
           where: {
             date: {
               gte: from,
               lte: to,
             },
+            group: groupFilter,
           },
           include: {
             attendance: {
@@ -115,6 +131,7 @@ export default function RevenueClient() {
             date: 'asc',
           },
         })
+        console.log(l)
         setLessons(l)
       } else {
         setLessons([])
@@ -122,12 +139,18 @@ export default function RevenueClient() {
     }
 
     getLessonsFromPeriod()
-  }, [dateRange])
+  }, [dateRange, selectedCourses, selectedLocations])
+
+  function resetFilters() {
+    setDateRange(undefined)
+    setSelectedLocations([])
+    setSelectedCourses([])
+  }
 
   return (
     <Card>
       <CardContent className="space-y-2">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <DateRangePicker
             value={dateRange}
             onChange={setDateRange}
@@ -137,7 +160,29 @@ export default function RevenueClient() {
               locale: ru,
             }}
           />
-          <Button variant="outline" onClick={() => setDateRange(undefined)}>
+          <MultipleSelector
+            defaultOptions={locations.map((location) => ({
+              label: location.name,
+              value: location.id.toString(),
+            }))}
+            value={selectedLocations}
+            placeholder="Выберите локацию"
+            emptyIndicator={<p className="text-center text-sm">Нет подходящих локаций</p>}
+            hidePlaceholderWhenSelected
+            onChange={setSelectedLocations}
+          />
+          <MultipleSelector
+            defaultOptions={courses.map((course) => ({
+              label: course.name,
+              value: course.id.toString(),
+            }))}
+            value={selectedCourses}
+            placeholder="Выберите курс"
+            emptyIndicator={<p className="text-center text-sm">Нет подходящих курсов</p>}
+            hidePlaceholderWhenSelected
+            onChange={setSelectedCourses}
+          />
+          <Button variant="outline" onClick={resetFilters}>
             Сбросить
           </Button>
         </div>
