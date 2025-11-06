@@ -4,13 +4,7 @@ import { getLessons } from '@/actions/lessons'
 import { DateRangePicker } from '@/components/date-range-picker'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import MultipleSelector, { Option } from '@/components/ui/multiselect'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
@@ -81,9 +75,10 @@ export function transformLessonsToRevenueData(
 
 export default function RevenueClient() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [locationId, setLocationId] = useState<string>('')
+  const [selectedLocations, setSelectedLocations] = useState<Option[]>([])
+  const [selectedCourses, setSelectedCourses] = useState<Option[]>([])
 
-  const { locations } = useData()
+  const { locations, courses } = useData()
 
   const [lessons, setLessons] = useState<
     Prisma.LessonGetPayload<{
@@ -105,17 +100,21 @@ export default function RevenueClient() {
           dateRange.to.getMonth(),
           dateRange.to.getDate()
         )
+        const groupFilter: { courseId?: object; locationId?: object } = {}
+        if (selectedCourses.length > 0) {
+          groupFilter.courseId = { in: selectedCourses.map((course) => +course.value) }
+        }
+        if (selectedLocations.length > 0) {
+          groupFilter.locationId = { in: selectedLocations.map((location) => +location.value) }
+        }
+
         const l = await getLessons({
           where: {
             date: {
               gte: from,
               lte: to,
             },
-            group: locationId
-              ? {
-                  locationId: Number(locationId),
-                }
-              : undefined,
+            group: groupFilter,
           },
           include: {
             attendance: {
@@ -140,17 +139,18 @@ export default function RevenueClient() {
     }
 
     getLessonsFromPeriod()
-  }, [dateRange, locationId])
+  }, [dateRange, selectedCourses, selectedLocations])
 
   function resetFilters() {
     setDateRange(undefined)
-    setLocationId('')
+    setSelectedLocations([])
+    setSelectedCourses([])
   }
 
   return (
     <Card>
       <CardContent className="space-y-2">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <DateRangePicker
             value={dateRange}
             onChange={setDateRange}
@@ -160,18 +160,28 @@ export default function RevenueClient() {
               locale: ru,
             }}
           />
-          <Select onValueChange={setLocationId} value={locationId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Выберите локацию" />
-            </SelectTrigger>
-            <SelectContent>
-              {locations.map((location) => (
-                <SelectItem key={location.id} value={location.id.toString()}>
-                  {location.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <MultipleSelector
+            defaultOptions={locations.map((location) => ({
+              label: location.name,
+              value: location.id.toString(),
+            }))}
+            value={selectedLocations}
+            placeholder="Выберите локацию"
+            emptyIndicator={<p className="text-center text-sm">Нет подходящих локаций</p>}
+            hidePlaceholderWhenSelected
+            onChange={setSelectedLocations}
+          />
+          <MultipleSelector
+            defaultOptions={courses.map((course) => ({
+              label: course.name,
+              value: course.id.toString(),
+            }))}
+            value={selectedCourses}
+            placeholder="Выберите курс"
+            emptyIndicator={<p className="text-center text-sm">Нет подходящих курсов</p>}
+            hidePlaceholderWhenSelected
+            onChange={setSelectedCourses}
+          />
           <Button variant="outline" onClick={resetFilters}>
             Сбросить
           </Button>
