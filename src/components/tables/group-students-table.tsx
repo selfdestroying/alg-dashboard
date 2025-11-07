@@ -166,7 +166,11 @@ const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAt
     header: 'Посещаемость',
     accessorKey: 'attendance',
     cell: ({ row }) => (
-      <DragScrollArea>
+      <DragScrollArea
+        initialScroll={
+          (lessons.reduce((prev, curr) => prev + (curr.date < new Date() ? 1 : 0), 0) - 1) * 100
+        }
+      >
         {lessons.map((lesson) => {
           const attendance = row.original.attendances.find((a) => a.lessonId === lesson.id)
           return <AttendanceCell key={lesson.id} lesson={lesson} attendance={attendance} />
