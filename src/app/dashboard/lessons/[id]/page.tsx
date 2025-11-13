@@ -1,16 +1,50 @@
-import { getLesson } from '@/actions/lessons'
 import { getUsers } from '@/actions/users'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import prisma from '@/lib/prisma'
 import { BookOpen, Calendar, Clock, Dot, User } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
-  const lesson = await getLesson(+id)
+  const lesson = await prisma.lesson.findFirst({
+    where: { id: +id },
+    include: {
+      teachers: {
+        include: {
+          teacher: {
+            omit: {
+              password: true,
+              passwordRequired: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+      group: { include: { _count: { select: { students: true } } } },
+      attendance: {
+        where: {
+          NOT: {
+            AND: [
+              { status: 'UNSPECIFIED' },
+              { student: { groups: { some: { status: 'DISMISSED' } } } },
+            ],
+          },
+        },
+        include: {
+          student: true,
+          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        },
+        orderBy: {
+          id: 'asc',
+        },
+      },
+    },
+  })
   const teachers = await getUsers()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>

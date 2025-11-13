@@ -180,13 +180,13 @@ export default function DataTable<T extends DataObject>({
                   <TableHead
                     key={header.id}
                     style={{ width: `${header.getSize()}px` }}
-                    className="bg-sidebar border-border relative h-9 border-y select-none first:rounded-l-lg first:border-l last:rounded-r-lg last:border-r"
+                    className="bg-sidebar border-border relative border-y select-none first:rounded-l-lg first:border-l last:rounded-r-lg last:border-r"
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
                         className={cn(
                           header.column.getCanSort() &&
-                            'flex h-full cursor-pointer items-center gap-2 select-none'
+                            'flex cursor-pointer items-center gap-2 select-none'
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {
@@ -231,7 +231,7 @@ export default function DataTable<T extends DataObject>({
                 className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="h-[inherit] overflow-hidden last:py-0">
+                  <TableCell key={cell.id} className="overflow-hidden last:py-0">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

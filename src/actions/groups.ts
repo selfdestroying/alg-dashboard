@@ -223,3 +223,7 @@ export async function updateTeacherGroup(
 
   revalidatePath(`/dashboard/groups/${groupId}`)
 }
+
+export async function updateStudentGroup(payload: Prisma.StudentGroupUpdateArgs) {
+  await prisma.studentGroup.update(payload)
+}

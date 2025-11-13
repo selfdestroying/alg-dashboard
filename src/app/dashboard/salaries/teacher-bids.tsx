@@ -43,30 +43,31 @@ export default function UserBid({ user }: UserBidProps) {
   )
 
   return (
-    <div className="hover:bg-muted/50 flex items-center gap-3 rounded-md border p-2 text-sm transition">
-      <div className="flex min-w-[160px] flex-col">
+    <div className="hover:bg-muted/50 flex flex-col items-center justify-between gap-3 rounded-md border p-2 text-sm transition lg:flex-row">
+      <div className="flex flex-col">
         <span className="font-medium">
           {user.firstName} {user.lastName}
         </span>
       </div>
+      <div className="flex flex-col gap-2 md:flex-row">
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground text-xs">Урок:</span>
 
-      <div className="flex items-center gap-2">
-        <span className="text-muted-foreground text-xs">Урок:</span>
+          <Input
+            type="number"
+            defaultValue={lessonBid}
+            onChange={(e) => handleUpdate(+e.target.value, 'GROUP')}
+          />
+        </div>
 
-        <Input
-          type="number"
-          defaultValue={lessonBid}
-          onChange={(e) => handleUpdate(+e.target.value, 'GROUP')}
-        />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <span className="text-muted-foreground text-xs">Индив.:</span>
-        <Input
-          type="number"
-          defaultValue={individualBid}
-          onChange={(e) => handleUpdate(+e.target.value, 'INDIVIDUAL')}
-        />
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground text-xs">Индив.:</span>
+          <Input
+            type="number"
+            defaultValue={individualBid}
+            onChange={(e) => handleUpdate(+e.target.value, 'INDIVIDUAL')}
+          />
+        </div>
       </div>
     </div>
   )

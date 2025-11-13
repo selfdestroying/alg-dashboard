@@ -71,10 +71,10 @@ const makeupStatusClasses: Record<AttendanceStatus, string> = {
 }
 
 const stickyColumnClasses: Record<string, string> = {
-  id_header: 'sticky left-0 z-10',
-  name_header: 'sticky left-8 z-10',
-  id: 'sticky left-0 z-10 bg-white',
-  name: 'sticky left-8 z-10 bg-white',
+  id_header: 'sticky left-0 z-[1]',
+  name_header: 'sticky left-8 z-[1]',
+  id: 'sticky left-0 bg-white z-[1]',
+  name: 'sticky left-8 bg-white z-[1]',
 }
 
 // -------------------- Attendance Cell --------------------
@@ -169,7 +169,6 @@ const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAt
       </Button>
     ),
     meta: { filterVariant: 'text' },
-    size: 100,
   },
   {
     header: 'Посещаемость',
@@ -278,7 +277,6 @@ export function GroupaAttendanceTable({
                 className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => {
-                  console.log(cell.column.id)
                   return (
                     <TableCell
                       key={cell.id}

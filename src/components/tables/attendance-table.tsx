@@ -100,69 +100,68 @@ const getColumns = (
       header: 'Статус',
       accessorKey: 'status',
       cell: ({ row }) => (
-        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[1fr_1fr_auto]">
-          <StatusAction
-            defaultValue={row.original}
-            onChange={(status: AttendanceStatus) =>
-              handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
-            }
-          />
-          {row.original.asMakeupFor ? null : row.original.missedMakeup ? (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant={'outline'} size={'sm'}>
-                  Отработка{' '}
-                  {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString(
-                    'ru',
-                    {
-                      year: '2-digit',
-                      month: '2-digit',
-                      day: '2-digit',
-                    }
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div className="flex flex-col gap-2">
-                  <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-                    <Link
-                      href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
-                    >
-                      Урок
-                    </Link>
-                  </Button>
-                  <FormDialog
-                    title="Изменить дату"
-                    triggerButtonProps={{ variant: 'outline', size: 'sm' }}
-                    submitButtonProps={{ form: 'makeup-form' }}
-                    FormComponent={MakeUpForm}
-                    formComponentProps={{
-                      studentId: row.original.studentId,
-                      missedAttendanceId: row.original.id,
-                      makeUpAttendanceId: row.original.missedMakeup.makeUpAttendaceId,
-                    }}
-                  />
-                </div>
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <FormDialog
-              title="Отработка"
-              triggerButtonProps={{ variant: 'outline', size: 'sm' }}
-              submitButtonProps={{ form: 'makeup-form' }}
-              FormComponent={MakeUpForm}
-              formComponentProps={{
-                studentId: row.original.studentId,
-                missedAttendanceId: row.original.id,
-              }}
-            />
-          )}
-        </div>
+        <StatusAction
+          defaultValue={row.original}
+          onChange={(status: AttendanceStatus) =>
+            handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
+          }
+        />
       ),
       meta: {
         filterVariant: 'select',
         allFilterVariants: Object.keys(StatusMap),
       },
+    },
+    {
+      header: 'Отработка',
+      cell: ({ row }) =>
+        row.original.asMakeupFor ? null : row.original.missedMakeup ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant={'outline'} size={'sm'} className="w-full">
+                Отработка{' '}
+                {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
+                  year: '2-digit',
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="flex flex-col gap-2">
+                <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
+                  <Link
+                    href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
+                  >
+                    Урок
+                  </Link>
+                </Button>
+                <FormDialog
+                  title="Изменить дату"
+                  triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+                  submitButtonProps={{ form: 'makeup-form' }}
+                  FormComponent={MakeUpForm}
+                  formComponentProps={{
+                    studentId: row.original.studentId,
+                    missedAttendanceId: row.original.id,
+                    makeUpAttendanceId: row.original.missedMakeup.makeUpAttendaceId,
+                  }}
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <FormDialog
+            title="Отработка"
+            triggerButtonProps={{ variant: 'outline', size: 'sm', className: 'w-full' }}
+            submitButtonProps={{ form: 'makeup-form' }}
+            FormComponent={MakeUpForm}
+            formComponentProps={{
+              studentId: row.original.studentId,
+              missedAttendanceId: row.original.id,
+            }}
+          />
+        ),
     },
     {
       header: 'Комментарий',
@@ -266,12 +265,16 @@ function StudentStatusAction({
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={StudentStatus.ACTIVE}>
-          <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
-          {StudentStatusMap.ACTIVE}
+          <div className="space-x-2">
+            <div className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></div>
+            <span>{StudentStatusMap.ACTIVE}</span>
+          </div>
         </SelectItem>
         <SelectItem value={StudentStatus.TRIAL}>
-          <div className="bg-info size-2 rounded-full" aria-hidden="true"></div>
-          {StudentStatusMap.TRIAL}
+          <div className="space-x-2">
+            <div className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></div>
+            <span>{StudentStatusMap.TRIAL}</span>
+          </div>
         </SelectItem>
       </SelectContent>
     </Select>
@@ -295,12 +298,16 @@ function StatusAction({
       </SelectTrigger>
       <SelectContent>
         <SelectItem value={AttendanceStatus.PRESENT}>
-          <div className="bg-success size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.PRESENT}
+          <div className="space-x-2">
+            <div className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></div>
+            <span>{StatusMap.PRESENT}</span>
+          </div>
         </SelectItem>
         <SelectItem value={AttendanceStatus.ABSENT}>
-          <div className="bg-error size-2 rounded-full" aria-hidden="true"></div>
-          {StatusMap.ABSENT}
+          <div className="space-x-2">
+            <div className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></div>
+            <span>{StatusMap.ABSENT}</span>
+          </div>
         </SelectItem>
       </SelectContent>
     </Select>

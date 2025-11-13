@@ -1,7 +1,7 @@
 import { getGroup } from '@/actions/groups'
 import { GroupStudentDialog } from '@/components/group-student-dialog'
-import { GroupStudentsTable } from '@/components/group-students-table'
 import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
+import { GroupStudentsTable } from '@/components/tables/group-students-table'
 import { Card, CardHeader } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
 import InfoSection from './info-section'
