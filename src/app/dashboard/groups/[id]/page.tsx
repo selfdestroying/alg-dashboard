@@ -1,6 +1,7 @@
 import { getGroup } from '@/actions/groups'
 import { GroupStudentDialog } from '@/components/group-student-dialog'
-import { GroupStudentsTable } from '@/components/tables/group-students-table'
+import { GroupStudentsTable } from '@/components/group-students-table'
+import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
 import { Card, CardHeader } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
 import InfoSection from './info-section'
@@ -39,6 +40,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <div className="space-y-4">
       <InfoSection group={group} />
       <GroupStudentDialog students={students} groupId={group.id} />
+      <GroupaAttendanceTable data={group} lessons={lessons} students={students} />
       <GroupStudentsTable data={group} lessons={lessons} students={students} />
     </div>
   )

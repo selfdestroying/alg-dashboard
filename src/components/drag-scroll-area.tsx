@@ -55,7 +55,7 @@ export default function DragScrollArea({
   return (
     <div
       ref={containerRef}
-      className="scrollbar-hide flex cursor-grab space-x-4 overflow-x-scroll p-2 select-none"
+      className="scrollbar-hide flex cursor-grab overflow-x-scroll select-none"
       onMouseDown={handleMouseDown}
       onMouseLeave={handleMouseLeave}
       onMouseUp={handleMouseUp}
