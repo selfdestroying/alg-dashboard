@@ -3,18 +3,13 @@ import { getGroup, removeFromGroup } from '@/actions/groups'
 import DataTable from '@/components/data-table'
 import DeleteAction from '@/components/delete-action'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Lesson, Prisma, StudentGroup, StudentStatus } from '@prisma/client'
+import { Lesson, Prisma } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { DoorOpen } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
+import FormDialog from '../button-dialog'
+import DismissForm from '../forms/dismiss-form'
 
 type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {
@@ -31,10 +26,9 @@ type StudentWithAttendances = Prisma.StudentGetPayload<{
   }
 }>
 
-// -------------------- Columns --------------------
 const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
   {
-    id: '№',
+    id: 'id',
     header: '№',
     cell: ({ row }) => row.index + 1,
     size: 10,
@@ -51,33 +45,6 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
     ),
     meta: { filterVariant: 'text' },
   },
-  // {
-  //   header: 'Статус',
-  //   accessorFn: (item) => item.groups[0].status,
-  //   cell: ({ row }) => (
-  //     <StudentStatusAction
-  //       defaultValue={row.original.groups[0]}
-  //       onChange={(studentStatus: StudentStatus) => {
-  //         const ok = updateStudentGroup({
-  //           where: {
-  //             studentId_groupId: {
-  //               groupId: row.original.groups[0].groupId,
-  //               studentId: row.original.id,
-  //             },
-  //           },
-  //           data: { status: studentStatus },
-  //         })
-  //         toast.promise(ok, {
-  //           loading: 'Загрузка...',
-  //           success: 'Успешно!',
-  //           error: (e) => e.message,
-  //         })
-  //       }}
-  //     />
-  //   ),
-  //   meta: { filterVariant: 'select', allFilterVariants: Object.keys(StudentStatus) },
-  // },
-
   { header: 'Возраст', accessorKey: 'age', meta: { filterVariant: 'range' } },
   { header: 'ФИО Родителя', accessorKey: 'parentsName', meta: { filterVariant: 'text' } },
   {
@@ -100,9 +67,17 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
     header: 'Действия',
     cell: ({ row }) => (
       <>
-        <Button variant={'ghost'} size={'icon'}>
-          <DoorOpen className="stroke-error" />
-        </Button>
+        <FormDialog
+          FormComponent={DismissForm}
+          title="Перевести в отток"
+          icon={DoorOpen}
+          formComponentProps={{
+            groupId: row.original.groups[0].groupId,
+            studentId: row.original.id,
+          }}
+          triggerButtonProps={{ variant: 'ghost', size: 'icon' }}
+          submitButtonProps={{ form: 'dismiss-form' }}
+        />
         <DeleteAction
           id={row.original.id}
           action={() => removeFromGroup({ studentId: row.original.id, groupId })}
@@ -113,7 +88,6 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
   },
 ]
 
-// -------------------- Main Component --------------------
 export function GroupStudentsTable({
   lessons,
   students,
@@ -126,46 +100,4 @@ export function GroupStudentsTable({
   const columns = useMemo(() => getColumns(data.id), [lessons, data.id])
 
   return <DataTable data={students} columns={columns} paginate={false} />
-}
-
-const StudentStatusMap: { [key in StudentStatus]: string } = {
-  ACTIVE: 'Ученик',
-  DISMISSED: 'Отчислен',
-  TRIAL: 'Пробный',
-}
-
-function StudentStatusAction({
-  defaultValue,
-  onChange,
-}: {
-  defaultValue: StudentGroup
-  onChange: (val: StudentStatus) => void
-}) {
-  return (
-    <Select defaultValue={defaultValue.status} onValueChange={(e: StudentStatus) => onChange(e)}>
-      <SelectTrigger size="sm" className="w-full">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={StudentStatus.ACTIVE}>
-          <div className="space-x-2">
-            <div className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StudentStatusMap.ACTIVE}</span>
-          </div>
-        </SelectItem>
-        <SelectItem value={StudentStatus.TRIAL}>
-          <div className="space-x-2">
-            <div className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StudentStatusMap.TRIAL}</span>
-          </div>
-        </SelectItem>
-        <SelectItem value={StudentStatus.DISMISSED}>
-          <div className="space-x-2">
-            <div className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StudentStatusMap.DISMISSED}</span>
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  )
 }

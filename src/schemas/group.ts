@@ -28,6 +28,14 @@ export const GroupsStudentSchema = z.object({
   }),
 })
 
+export const DismissSchema = z.object({
+  groupId: z.number(),
+  studentId: z.number(),
+  comment: z.string(),
+  date: z.date(),
+})
+
 export type GroupSchemaType = z.infer<typeof GroupSchema>
 export type StudentGroupSchemaType = z.infer<typeof StudentGroupSchema>
 export type GroupStudentSchemaType = z.infer<typeof GroupsStudentSchema>
+export type DismissSchemaType = z.infer<typeof DismissSchema>

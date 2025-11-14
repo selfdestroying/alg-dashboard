@@ -17,6 +17,7 @@ import { getUser } from '@/actions/users'
 import { User } from '@prisma/client'
 import {
   Boxes,
+  DoorOpen,
   HandCoins,
   House,
   LayoutDashboard,
@@ -60,6 +61,13 @@ const data: NavData[] = [
         icon: Users,
         items: [],
         roles: ['ADMIN', 'MANAGER', 'OWNER', 'TEACHER'],
+      },
+      {
+        title: 'Отток',
+        url: '/dashboard/dismissed',
+        icon: DoorOpen,
+        items: [],
+        roles: ['ADMIN', 'MANAGER', 'OWNER'],
       },
       // {
       //   title: 'Уроки',

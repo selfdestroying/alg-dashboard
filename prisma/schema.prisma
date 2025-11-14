@@ -17,7 +17,6 @@ model User {
   bidForLesson     Int             @default(1100)
   bidForIndividual Int             @default(750)
   createdAt        DateTime        @default(now())
-  Group            Group[]
   groups           TeacherGroup[]
   lessons          TeacherLesson[]
 }
@@ -44,13 +43,13 @@ model Student {
   payments            Payment[]
   groups              StudentGroup[]
   unprocessedPayments UnprocessedPayment[]
+  dismisseds          Dismissed[]
 }
 
 model Group {
   id            Int            @id @default(autoincrement())
   name          String
   courseId      Int
-  teacherId     Int
   type          GroupType?
   startDate     DateTime
   endDate       DateTime?
@@ -62,10 +61,10 @@ model Group {
   locationId    Int?
   location      Location?      @relation(fields: [locationId], references: [id])
   course        Course         @relation(fields: [courseId], references: [id])
-  User          User           @relation(fields: [teacherId], references: [id])
   lessons       Lesson[]
   students      StudentGroup[]
   teachers      TeacherGroup[]
+  dismisseds    Dismissed[]
 }
 
 model Location {
@@ -88,6 +87,16 @@ model StudentGroup {
   student   Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@id([studentId, groupId])
+}
+
+model Dismissed {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  groupId   Int
+  comment   String
+  date      DateTime
+  group     Group    @relation(fields: [groupId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id])
 }
 
 model TeacherGroup {
