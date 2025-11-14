@@ -75,7 +75,7 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
 
   function handleSubmit(values: GroupSchemaType) {
     const { teacherId, ...data } = values
-    const promise = createGroup({ data: { ...data, name: '' } }, values.teacherId)
+    const promise = createGroup({ data: { ...data, name: '' } }, teacherId)
     toast.promise(promise, {
       loading: 'Создание группы...',
       success: 'Группа успешно создана',

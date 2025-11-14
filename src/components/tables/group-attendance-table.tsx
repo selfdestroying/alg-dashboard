@@ -150,7 +150,7 @@ function AttendanceCell({
 }
 
 // -------------------- Columns --------------------
-const getColumns = (lessons: Lesson[], groupId: number): ColumnDef<StudentWithAttendances>[] => [
+const getColumns = (lessons: Lesson[]): ColumnDef<StudentWithAttendances>[] => [
   {
     id: 'id',
     header: '№',
@@ -195,7 +195,7 @@ export function GroupaAttendanceTable({
   lessons: Lesson[]
   students: StudentWithAttendances[]
 }) {
-  const columns = useMemo(() => getColumns(lessons, data.id), [lessons, data.id])
+  const columns = useMemo(() => getColumns(lessons), [lessons, data.id])
 
   const table = useReactTable({
     data: students,
