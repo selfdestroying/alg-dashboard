@@ -42,7 +42,7 @@ export default function DeleteAction({ id, action, confirmationText }: RowAction
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" size={'icon'}>
-          <Trash className="stroke-rose-400" />
+          <Trash className="stroke-error" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -77,7 +77,17 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
           },
         },
       })
-
+      lessons.sort((a, b) => {
+        const dateA = new Date(a.date)
+        const dateB = new Date(b.date)
+        if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime()
+        if (a.time && b.time) {
+          const [aH, aM] = a.time.split(':').map(Number)
+          const [bH, bM] = b.time.split(':').map(Number)
+          return aH * 60 + aM - (bH * 60 + bM)
+        }
+        return 0
+      })
       const newLessonsByDay: Record<number, LessonWithAttendanceAndGroup[]> = {}
       lessons.forEach((lesson) => {
         const dayTimestamp = getDayTimestamp(lesson.date)

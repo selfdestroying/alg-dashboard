@@ -54,7 +54,6 @@ const getColumns = (users: string[]): ColumnDef<GroupWithTeacherAndCourse>[] => 
         .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
         .join(', '),
     // filterFn: (row, columnId, filterValue: string) => {
-    //   console.log(filterValue)
     //   return true
     // },
     meta: {

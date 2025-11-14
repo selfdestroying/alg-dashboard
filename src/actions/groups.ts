@@ -71,18 +71,18 @@ export const getGroup = async (id: number) => {
   return group
 }
 
-export const createGroup = async (data: Omit<Prisma.GroupUncheckedCreateInput, 'name'>) => {
+export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherId: number) => {
   const course = await prisma.course.findFirst({
     where: {
-      id: data.courseId,
+      id: groupPayload.data.courseId,
     },
   })
-  const groupName = `${course?.name} ${DayOfWeek[(data.startDate as Date).getDay()]} ${data.time ?? ''}`
-  const group = await prisma.group.create({ data: { ...data, name: groupName } })
-
-  if (data.lessonCount) {
+  const groupName = `${course?.name} ${DayOfWeek[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
+  const group = await prisma.group.create({ data: { ...groupPayload.data, name: groupName } })
+  await prisma.teacherGroup.create({ data: { groupId: group.id, teacherId } })
+  if (groupPayload.data.lessonCount) {
     const lessonDate = group.startDate
-    for (let i = 0; i < data.lessonCount; i++) {
+    for (let i = 0; i < groupPayload.data.lessonCount; i++) {
       await createLesson({ groupId: group.id, time: group.time, date: lessonDate })
       if (lessonDate) {
         lessonDate.setDate(lessonDate.getDate() + 7)
@@ -222,4 +222,8 @@ export async function updateTeacherGroup(
   })
 
   revalidatePath(`/dashboard/groups/${groupId}`)
+}
+
+export async function updateStudentGroup(payload: Prisma.StudentGroupUpdateArgs) {
+  await prisma.studentGroup.update(payload)
 }

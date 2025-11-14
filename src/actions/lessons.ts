@@ -87,34 +87,8 @@ export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup
   return lessons
 }
 
-export const getLesson = async (id: number): Promise<LessonWithGroupAndAttendance | null> => {
-  const lesson = await prisma.lesson.findFirst({
-    where: { id },
-    include: {
-      teachers: {
-        include: {
-          teacher: {
-            omit: {
-              password: true,
-              passwordRequired: true,
-              createdAt: true,
-            },
-          },
-        },
-      },
-      group: { include: { _count: { select: { students: true } } } },
-      attendance: {
-        include: {
-          student: true,
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
-        },
-        orderBy: {
-          id: 'asc',
-        },
-      },
-    },
-  })
+export const getLesson = async (payload: Prisma.LessonFindFirstArgs) => {
+  const lesson = await prisma.lesson.findFirst(payload)
   return lesson
 }
 

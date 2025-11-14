@@ -131,7 +131,6 @@ export default function RevenueClient() {
             date: 'asc',
           },
         })
-        console.log(l)
         setLessons(l)
       } else {
         setLessons([])

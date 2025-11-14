@@ -19,7 +19,6 @@ export default function TeacherGroupBids({ user, group, bidForLesson }: UserBidP
     () =>
       debounce((bid: number | null) => {
         const ok = updateTeacherGroupBid(bid, user.id, group.id)
-        console.log(bid)
 
         toast.promise(ok, {
           loading: 'Загрузка...',
