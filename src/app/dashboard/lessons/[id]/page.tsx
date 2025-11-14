@@ -1,4 +1,5 @@
-import { getUsers } from '@/actions/users'
+import { getUser, getUsers } from '@/actions/users'
+import { AttendanceDialog } from '@/components/attendance-dialog'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +25,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           },
         },
       },
-      group: { include: { _count: { select: { students: true } } } },
+      group: {
+        include: {
+          _count: { select: { students: true } },
+          students: { include: { student: true } },
+        },
+      },
       attendance: {
         where: {
           NOT: {
@@ -46,6 +52,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     },
   })
   const teachers = await getUsers()
+  const user = await getUser()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
@@ -115,6 +122,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </div>
         </CardContent>
       </Card>
+      {user?.role !== 'TEACHER' && (
+        <AttendanceDialog
+          students={lesson.group.students.map((s) => s.student)}
+          lessonId={lesson.id}
+        />
+      )}
       <AttendanceTable attendance={lesson.attendance} />
     </div>
   )

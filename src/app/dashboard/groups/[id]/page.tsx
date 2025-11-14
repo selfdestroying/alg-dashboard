@@ -22,7 +22,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   })
 
   const students = await prisma.student.findMany({
-    where: { groups: { some: { groupId: group.id } } },
     include: {
       groups: true,
       attendances: {
@@ -39,9 +38,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <div className="space-y-4">
       <InfoSection group={group} />
-      <GroupStudentDialog students={students} groupId={group.id} />
-      <GroupaAttendanceTable data={group} lessons={lessons} students={students} />
-      <GroupStudentsTable data={group} lessons={lessons} students={students} />
+      <GroupStudentDialog
+        students={students.filter((student) => student.groups.find((s) => s.groupId !== group.id))}
+        groupId={group.id}
+      />
+      <GroupaAttendanceTable
+        data={group}
+        lessons={lessons}
+        students={students.filter((student) => student.groups.find((s) => s.groupId === group.id))}
+      />
+      <GroupStudentsTable
+        data={group}
+        lessons={lessons}
+        students={students.filter((student) => student.groups.find((s) => s.groupId === group.id))}
+      />
     </div>
   )
 }
