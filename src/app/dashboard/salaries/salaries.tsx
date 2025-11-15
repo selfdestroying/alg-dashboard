@@ -1,5 +1,6 @@
 'use client'
 import { getLessons } from '@/actions/lessons'
+import { getPaychecks } from '@/actions/paycheck'
 import { UserData } from '@/actions/users'
 import { DateRangePicker } from '@/components/date-range-picker'
 import { Badge } from '@/components/ui/badge'
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
-import { Prisma } from '@prisma/client'
+import { PayCheck, Prisma } from '@prisma/client'
 import { ru } from 'date-fns/locale'
 import { Calendar, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -36,6 +37,7 @@ export default function Salaries() {
       }> & { price: number })[]
     }[]
   >([])
+  const [paychecks, setPaychecks] = useState<PayCheck[]>([])
   const today = new Date()
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function Salaries() {
           dateRange.to.getMonth(),
           dateRange.to.getDate()
         )
-        const data = await getLessons({
+        const lessonsData = await getLessons({
           where: {
             date: {
               gte: from,
@@ -84,8 +86,16 @@ export default function Salaries() {
           },
           orderBy: { date: 'asc' },
         })
+        const paychecksData = await getPaychecks({
+          where: {
+            date: {
+              gte: from,
+              lte: to,
+            },
+          },
+        })
 
-        data.sort((a, b) => {
+        lessonsData.sort((a, b) => {
           const dateA = new Date(a.date)
           const dateB = new Date(b.date)
           if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime()
@@ -101,11 +111,11 @@ export default function Salaries() {
           number,
           {
             teacher: UserData
-            lessons: ((typeof data)[0] & { price: number })[]
+            lessons: ((typeof lessonsData)[0] & { price: number })[]
           }
         > = {}
 
-        for (const lesson of data) {
+        for (const lesson of lessonsData) {
           for (const tl of lesson.teachers) {
             const teacher = tl.teacher
             const bidForLesson = lesson.group.teachers.find(
@@ -132,8 +142,10 @@ export default function Salaries() {
 
         const result = Object.values(lessonsByTeacher)
         setLessons(result)
+        setPaychecks(paychecksData)
       } else {
         setLessons([])
+        setPaychecks([])
       }
     }
 
@@ -166,7 +178,13 @@ export default function Salaries() {
                     <div className="flex items-center gap-2">
                       <Users className="text-muted-foreground h-5 w-5" />
                       {r.teacher.firstName} {r.teacher.lastName} -{' '}
-                      {r.lessons.reduce((prev, curr) => prev + curr.price, 0)} ₽
+                      {(
+                        r.lessons.reduce((prev, curr) => prev + curr.price, 0) +
+                        paychecks
+                          .filter((paycheck) => paycheck.userId === r.teacher.id)
+                          .reduce((prev, curr) => prev + curr.amount, 0)
+                      ).toLocaleString()}{' '}
+                      ₽
                     </div>
                     <CollapsibleTrigger asChild>
                       <Button variant="ghost" size="icon" className="size-8">
@@ -200,7 +218,7 @@ export default function Salaries() {
                                 variant="outline"
                                 className={`${lesson.price === 0 && 'border-error bg-error/30'}`}
                               >
-                                {lesson.price} ₽
+                                {lesson.price.toLocaleString()} ₽
                               </Badge>
                             </div>
                           )}
@@ -214,6 +232,41 @@ export default function Salaries() {
                         </div>
                       </div>
                     ))}
+                    {paychecks
+                      .filter((paycheck) => paycheck.userId == r.teacher.id)
+                      .map((paycheck) => (
+                        <div
+                          key={paycheck.id}
+                          className="bg-muted/30 hover:bg-muted/50 rounded-lg border p-3 transition"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="text-muted-foreground h-4 w-4" />
+                              <span className="font-medium">
+                                {paycheck.date.toLocaleDateString('ru-RU', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                })}
+                              </span>
+                            </div>
+                            <div className="text-muted-foreground flex items-center gap-1 text-sm">
+                              <Badge
+                                variant="outline"
+                                className={`${paycheck.amount === 0 && 'border-error bg-error/30'}`}
+                              >
+                                {paycheck.amount.toLocaleString()} ₽
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <Separator className="my-2" />
+
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium">{paycheck.comment}</span>
+                            <Badge variant="outline">Чек</Badge>
+                          </div>
+                        </div>
+                      ))}
                   </CardContent>
                 </CollapsibleContent>
               </Card>

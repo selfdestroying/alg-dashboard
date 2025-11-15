@@ -19,6 +19,7 @@ model User {
   createdAt        DateTime        @default(now())
   groups           TeacherGroup[]
   lessons          TeacherLesson[]
+  payChecks        PayCheck[]
 }
 
 model Student {
@@ -65,6 +66,16 @@ model Group {
   students      StudentGroup[]
   teachers      TeacherGroup[]
   dismisseds    Dismissed[]
+}
+
+model PayCheck {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  comment   String
+  date      DateTime
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Location {
