@@ -64,11 +64,11 @@ export default function PaycheckForm({ userId, onSubmit }: PaycheckFormProps) {
                   <div className="relative w-full">
                     <Input
                       className="peer ps-6 pe-12"
-                      placeholder="0"
+                      value={Number(field.value).toString()}
                       type="number"
-                      min={1}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value) ? Number(e.target.value) : 0)
+                      }
                     />
                     <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
                       ₽
@@ -102,9 +102,7 @@ export default function PaycheckForm({ userId, onSubmit }: PaycheckFormProps) {
             name="date"
             render={({ field }) => (
               <FormItem className="col-span-12">
-                <FormLabel>
-                  Дата зачисления <span className="text-destructive">*</span>
-                </FormLabel>
+                <FormLabel>Дата зачисления</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
