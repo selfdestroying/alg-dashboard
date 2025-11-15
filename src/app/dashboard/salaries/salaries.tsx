@@ -14,7 +14,7 @@ import { Calendar, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 
-export default function Salaries() {
+export default function Salaries({ userId }: { userId?: number }) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [lessons, setLessons] = useState<
     {
@@ -60,6 +60,7 @@ export default function Salaries() {
               lte: to,
             },
             status: { not: 'CANCELLED' },
+            teachers: userId ? { some: { teacherId: userId } } : undefined,
           },
           include: {
             teachers: {
@@ -92,6 +93,7 @@ export default function Salaries() {
               gte: from,
               lte: to,
             },
+            userId,
           },
         })
 
