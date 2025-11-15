@@ -106,7 +106,7 @@ const data: NavData[] = [
         roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
     ],
-    roles: ['ADMIN', 'OWNER', 'MANAGER'],
+    roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
   },
   {
     title: 'Магазин',
