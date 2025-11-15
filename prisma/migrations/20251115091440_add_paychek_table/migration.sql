@@ -2,7 +2,7 @@
 CREATE TABLE "PayCheck" (
     "id" SERIAL NOT NULL,
     "amount" INTEGER NOT NULL,
-    "reason" TEXT NOT NULL,
+    "comment" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" INTEGER NOT NULL,
