@@ -12,11 +12,15 @@ import { ChangePasswordCard } from './change-password-card'
 
 export default async function Page() {
   const user = await getUser()
-  const paychecks = await getPaychecks({})
 
   if (!user) {
     return <div>User not found</div>
   }
+  const paychecks = await getPaychecks({
+    where: {
+      userId: user.id,
+    },
+  })
 
   return (
     <>
