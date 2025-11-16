@@ -73,8 +73,8 @@ const makeupStatusClasses: Record<AttendanceStatus, string> = {
 const stickyColumnClasses: Record<string, string> = {
   id_header: 'sticky left-0 z-[1]',
   name_header: 'sticky left-8 z-[1]',
-  id: 'sticky left-0 bg-white z-[1]',
-  name: 'sticky left-8 bg-white z-[1]',
+  id: 'sticky left-0 bg-background z-[1]',
+  name: 'sticky left-8 bg-background z-[1]',
 }
 
 // -------------------- Attendance Cell --------------------
@@ -232,7 +232,7 @@ export function GroupaAttendanceTable({
                       <div
                         className={cn(
                           header.column.getCanSort() &&
-                            'flex h-full cursor-pointer items-center gap-2 select-none'
+                          'flex h-full cursor-pointer items-center gap-2 select-none'
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {

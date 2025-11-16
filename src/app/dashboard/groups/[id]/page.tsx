@@ -25,7 +25,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     include: {
       groups: true,
       attendances: {
-        where: { lesson: { groupId: group.id } },
         include: {
           lesson: true,
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
@@ -39,7 +38,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <div className="space-y-4">
       <InfoSection group={group} />
       <GroupStudentDialog
-        students={students.filter((student) => student.groups.find((s) => s.groupId !== group.id))}
+        students={students.filter(student => student.groups.length == 0 || student.groups.find(s => s.groupId != group.id))}
         groupId={group.id}
       />
       <GroupaAttendanceTable
