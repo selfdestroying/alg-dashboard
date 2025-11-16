@@ -66,7 +66,7 @@ export const GroupStudentDialog: FC<GroupStudenProps> = ({ students, groupId }) 
         </DialogHeader>
         <div className="overflow-y-auto px-6 pt-4 pb-6">
           <div className="*:not-first:mt-2">
-            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal>
               <PopoverTrigger asChild>
                 <Button
                   id={id}

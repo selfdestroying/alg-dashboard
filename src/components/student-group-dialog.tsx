@@ -55,15 +55,15 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ groups, studentId }) 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>Добавить ученика</Button>
+        <Button>Добавить группу</Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
-          <DialogTitle className="border-b px-6 py-4 text-base">Добавить ученика</DialogTitle>
+          <DialogTitle className="border-b px-6 py-4 text-base">Добавить группу</DialogTitle>
         </DialogHeader>
         <div className="overflow-y-auto px-6 pt-4 pb-6">
           <div className="*:not-first:mt-2">
-            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal>
               <PopoverTrigger asChild>
                 <Button
                   id={id}
@@ -73,7 +73,7 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ groups, studentId }) 
                   className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
                 >
                   <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
-                    {fullName ?? 'Выберите ученика...'}
+                    {fullName ?? 'Выберите группу...'}
                   </span>
                   <ChevronDownIcon
                     size={16}
@@ -87,7 +87,7 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ groups, studentId }) 
                 align="start"
               >
                 <Command>
-                  <CommandInput placeholder="Выберите ученика..." />
+                  <CommandInput placeholder="Выберите группу..." />
                   <CommandList>
                     <CommandEmpty>Ученики не найдены</CommandEmpty>
                     <CommandGroup>
