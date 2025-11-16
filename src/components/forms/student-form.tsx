@@ -11,30 +11,56 @@ import { Input } from '@/components/ui/input'
 import { DefaultValues, useForm } from 'react-hook-form'
 
 import { createStudent } from '@/actions/students'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { StudentSchema, StudentSchemaType } from '@/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Group } from '@prisma/client'
+import { CheckIcon, ChevronDownIcon } from 'lucide-react'
+import { useId, useState } from 'react'
 import { toast } from 'sonner'
+import { Checkbox } from '../ui/checkbox'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '../ui/command'
+import { Label } from '../ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 interface StudentFormProps {
   type: string
+  groups: Group[]
   defaultValues?: DefaultValues<StudentSchemaType>
   onSubmit?: () => void
 }
 
-export default function StudentForm({ defaultValues, onSubmit }: StudentFormProps) {
+export default function StudentForm({ defaultValues, onSubmit, groups }: StudentFormProps) {
+  const id = useId()
+  const [fullName, setFullName] = useState<string | undefined>()
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
+  const [isAddToGroup, setIsAddToGroup] = useState<boolean>(false)
+
   const form = useForm<StudentSchemaType>({
     resolver: zodResolver(StudentSchema),
     defaultValues,
   })
 
   function handleSubmit(values: StudentSchemaType) {
+    let groupId
+    if (fullName) {
+      groupId = groups.find((group) => fullName == group.name)?.id as number
+    }
     const ok = createStudent({
       age: values.age,
       firstName: values.firstName,
       lastName: values.lastName,
       parentsName: values.parentsName,
       crmUrl: values.crmUrl,
-    })
+    }, groupId)
     toast.promise(ok, {
       loading: 'Загрузка...',
       success: 'Ученик успешно добавлен',
@@ -132,6 +158,65 @@ export default function StudentForm({ defaultValues, onSubmit }: StudentFormProp
               </FormItem>
             )}
           />
+
+          <div className="col-span-12 space-y-2">
+            <Label className="w-fit">
+              <Checkbox
+                checked={isAddToGroup}
+                onCheckedChange={(checked) => {
+                  setIsAddToGroup(Boolean(checked))
+                }}
+              />
+              Добавить в группу
+            </Label>
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal>
+              <PopoverTrigger asChild>
+                <Button
+                  id={id}
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={popoverOpen}
+                  className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
+                  disabled={!isAddToGroup}
+                >
+                  <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
+                    {fullName ?? 'Выберите ученика...'}
+                  </span>
+                  <ChevronDownIcon
+                    size={16}
+                    className="text-muted-foreground/80 shrink-0"
+                    aria-hidden="true"
+                  />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                align="start"
+              >
+                <Command>
+                  <CommandInput placeholder="Выберите ученика..." />
+                  <CommandList>
+                    <CommandEmpty>Ученики не найдены</CommandEmpty>
+                    <CommandGroup>
+                      {groups.map((group) => (
+                        <CommandItem
+                          key={group.id}
+                          value={group.name}
+                          onSelect={(currentValue) => {
+                            setFullName(currentValue === fullName ? undefined : currentValue)
+                            setPopoverOpen(false)
+                          }}
+                        >
+                          {group.name}
+                          {fullName === group.name && <CheckIcon size={16} className="ml-auto" />}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </form>
     </Form>

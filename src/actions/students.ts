@@ -21,7 +21,8 @@ export const getStudent = async (id: number): Promise<StudentWithGroups> => {
 }
 
 export const createStudent = async (
-  data: Omit<Prisma.StudentCreateInput, 'login' | 'password'>
+  data: Omit<Prisma.StudentCreateInput, 'login' | 'password'>,
+  groupId: number | undefined
 ) => {
   const student = await prisma.student.create({
     data: {
@@ -35,6 +36,9 @@ export const createStudent = async (
       studentId: student.id,
     },
   })
+  if (groupId) {
+    await prisma.studentGroup.create({ data: { groupId, studentId: student.id } })
+  }
   revalidatePath('dashboard/students')
 }
 
