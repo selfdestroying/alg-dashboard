@@ -93,7 +93,6 @@ export default function Salaries({ userId }: { userId?: number }) {
               gte: from,
               lte: to,
             },
-            userId,
           },
         })
 
