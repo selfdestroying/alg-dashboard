@@ -1,3 +1,4 @@
+import { getGroups } from '@/actions/groups'
 import { getStudents } from '@/actions/students'
 import FormDialog from '@/components/button-dialog'
 import StudentForm from '@/components/forms/student-form'
@@ -5,6 +6,7 @@ import { StudentsTable } from '@/components/tables/students-table'
 
 export default async function Page() {
   const students = await getStudents({})
+  const groups = await getGroups()
 
   return (
     <>
@@ -15,6 +17,7 @@ export default async function Page() {
           FormComponent={StudentForm}
           formComponentProps={{
             type: 'create',
+            groups,
             defaultValues: {
               firstName: '',
               lastName: '',

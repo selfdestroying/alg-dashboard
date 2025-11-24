@@ -135,6 +135,7 @@ export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateIn
             studentId: data.studentId,
             lessonId: lesson.id,
           },
+          status: 'UNSPECIFIED',
         },
       })
   )

@@ -1,9 +1,12 @@
 'use client'
-import { DismissedWithStudentAndGroup } from '@/actions/dismissed'
+import { DismissedWithStudentAndGroup, removeFromDismissed } from '@/actions/dismissed'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import DataTable from '../data-table'
 import { Button } from '../ui/button'
+import { Undo } from 'lucide-react'
+import { addToGroup } from '@/actions/groups'
+import { toast } from 'sonner'
 
 const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
   {
@@ -45,6 +48,21 @@ const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
     meta: {
       filterVariant: 'text',
     },
+  },
+  {
+    header: 'Действия',
+    cell: ({ row }) => (
+      <Button variant="ghost" size="icon" onClick={() => {
+        const ok = Promise.all([addToGroup({groupId: row.original.groupId, studentId: row.original.studentId}), removeFromDismissed({ where: { id: row.original.id } })])
+        toast.promise(ok, {
+          loading: 'Возвращение ученика...',
+          success: 'Ученик успешно возвращен в группу',
+          error: (e) => e.message,
+        })
+      }}>
+        <Undo />
+      </Button>
+    ),
   },
 ]
 

@@ -60,6 +60,27 @@ const getColumns = (): ColumnDef<Student>[] => [
   //   },
   // },
   {
+    accessorKey: 'lessonsBalance',
+    header: 'Баланс уроков',
+    meta: {
+      filterVariant: 'range',
+    },
+  },
+  {
+    accessorKey: 'totalLessons',
+    header: 'Всего уроков',
+    meta: {
+      filterVariant: 'range',
+    },
+  },
+  {
+    accessorKey: 'totalPayments',
+    header: 'Всего оплат',
+    meta: {
+      filterVariant: 'range',
+    },
+  },
+  {
     accessorKey: 'login',
     header: 'Логин',
     meta: {
@@ -82,7 +103,7 @@ const getColumns = (): ColumnDef<Student>[] => [
   },
   {
     id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
+    header: 'Действия',
     cell: ({ row }) => (
       <DeleteAction
         id={row.original.id}
@@ -90,7 +111,6 @@ const getColumns = (): ColumnDef<Student>[] => [
         confirmationText={`${row.original.firstName} ${row.original.lastName}`}
       />
     ),
-    enableHiding: false,
   },
 ]
 

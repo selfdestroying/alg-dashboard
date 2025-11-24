@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Group } from '@prisma/client'
 import {
   Calendar,
   Coins,
@@ -26,10 +25,9 @@ import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 
 interface StudentCardProps {
   student: StudentWithGroups
-  groups: Group[]
 }
 
-export default function StudentCard({ student, groups }: StudentCardProps) {
+export default function StudentCard({ student }: StudentCardProps) {
   const [editMode, setEditMode] = useState(false)
   const [formData, setFormData] = useState<StudentWithGroups>(student)
 
@@ -206,7 +204,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
               <Users size={20} />
               Группы
             </h3>
-            <StudentGroupDialog groups={groups} studentId={student.id} />
+            <StudentGroupDialog studentId={student.id} />
           </div>
           {student.groups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
