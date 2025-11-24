@@ -1,10 +1,10 @@
 'use client'
 
-import { addToGroup } from '@/actions/groups'
+import { addToGroup, getGroups, removeFromGroup } from '@/actions/groups'
 import { cn } from '@/lib/utils'
 import { Group } from '@prisma/client'
-import { CheckIcon, ChevronDownIcon } from 'lucide-react'
-import { FC, useId, useState } from 'react'
+import { CheckIcon, ChevronDownIcon, GitCompare } from 'lucide-react'
+import { FC, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
 import {
@@ -27,22 +27,36 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 interface GroupStudenProps {
-  groups: Group[]
+  variant?: 'button' | 'icon'
   studentId: number
+  fromGroupId?: number
 }
 
-export const StudentGroupDialog: FC<GroupStudenProps> = ({ groups, studentId }) => {
+export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupId, variant }) => {
   const id = useId()
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [fullName, setFullName] = useState<string>()
+  const [groups, setGroups] = useState<Group[]>([])
+
+  useEffect(() => {
+    async function fetchGroups() {
+      const g = await getGroups()
+      setGroups(g)
+    }
+    fetchGroups()
+  }, [])
+
 
   function handleSubmit() {
     if (fullName) {
-      const ok = addToGroup({
+      const ok = Promise.all([addToGroup({
         groupId: groups.find((group) => fullName == group.name)?.id as number,
         studentId,
-      })
+      }), fromGroupId ? removeFromGroup({
+        groupId: fromGroupId,
+        studentId,
+      }) : Promise.resolve()])
       toast.promise(ok, {
         loading: 'Loding...',
         success: 'Ученик успешно добавлен в группу',
@@ -55,7 +69,13 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ groups, studentId }) 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>Добавить группу</Button>
+        {variant === 'icon' ? (
+          <Button variant="ghost" size="icon">
+            <GitCompare />
+          </Button>
+        ) : (
+          <Button>Добавить группу</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">

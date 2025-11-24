@@ -206,7 +206,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
               <Users size={20} />
               Группы
             </h3>
-            <StudentGroupDialog groups={groups} studentId={student.id} />
+            <StudentGroupDialog studentId={student.id} />
           </div>
           {student.groups.length > 0 ? (
             <div className="flex flex-wrap gap-2">
