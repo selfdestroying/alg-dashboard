@@ -26,10 +26,9 @@ import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 
 interface StudentCardProps {
   student: StudentWithGroups
-  groups: Group[]
 }
 
-export default function StudentCard({ student, groups }: StudentCardProps) {
+export default function StudentCard({ student }: StudentCardProps) {
   const [editMode, setEditMode] = useState(false)
   const [formData, setFormData] = useState<StudentWithGroups>(student)
 
