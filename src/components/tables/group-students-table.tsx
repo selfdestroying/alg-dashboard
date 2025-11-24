@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 import FormDialog from '../button-dialog'
 import DismissForm from '../forms/dismiss-form'
+import { StudentGroupDialog } from '../student-group-dialog'
 
 type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {
@@ -77,6 +78,11 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
           }}
           triggerButtonProps={{ variant: 'ghost', size: 'icon' }}
           submitButtonProps={{ form: 'dismiss-form' }}
+        />
+        <StudentGroupDialog
+          variant='icon'
+          studentId={row.original.id}
+          fromGroupId={row.original.groups[0].groupId}
         />
         <DeleteAction
           id={row.original.id}
