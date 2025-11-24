@@ -1,4 +1,3 @@
-import { getGroups } from '@/actions/groups'
 import { getStudent } from '@/actions/students'
 import StudentCard from './student-card'
 
