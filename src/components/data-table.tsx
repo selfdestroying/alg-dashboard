@@ -57,6 +57,7 @@ interface DataTableProps<T> {
   data: T[]
   columns: ColumnDef<T>[]
   defaultFilters?: ColumnFiltersState
+  defaultSorting?: SortingState
   defaultColumnVisibility?: VisibilityState
   defaultPagination?: PaginationState
   paginate: boolean
@@ -67,6 +68,7 @@ export default function DataTable<T extends DataObject>({
   data,
   columns,
   defaultFilters = [],
+  defaultSorting = [],
   defaultColumnVisibility = {},
   defaultPagination = {
     pageIndex: 0,
@@ -85,7 +87,7 @@ export default function DataTable<T extends DataObject>({
     []
   )
 
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>(defaultSorting)
 
   const table = useReactTable({
     data,

@@ -6,7 +6,7 @@ import UnprocessedPaymentTable from '@/components/tables/unprocessed-payment-tab
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default async function Page() {
-  const payments = await getPayments()
+  const payments = await getPayments({ orderBy: { createdAt: 'desc' } })
   const unprocessedPayments = await getUnprocessedPayments()
   const students = await getStudents({})
 

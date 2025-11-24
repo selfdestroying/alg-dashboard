@@ -58,6 +58,11 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
       filterVariant: 'range',
     },
   },
+  {
+    header: 'Дата оплаты',
+    accessorKey: 'createdAt',
+    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+  },
 ]
 
 export default function PaymentsTable({ payments }: { payments: PaymentsWithStudentAndGroup[] }) {
