@@ -35,7 +35,7 @@ const startDate = new Date('2023-08-01')
 const endDate = new Date('2025-08-01')
 const totalMs = endDate.getTime() - startDate.getTime()
 
-export function StudentGroupHistory() {
+export function StudentGroupHistoryV1() {
   const isMobile = useMediaQuery({ maxWidth: 768 })
   const activeCount = data.filter((m) => !m.to).length
 

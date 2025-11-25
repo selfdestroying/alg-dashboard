@@ -22,7 +22,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
-import { StudentGroupHistory } from './student-group-history'
+import { StudentGroupHistoryV1 } from './student-group-history-v1'
+import { StudentGroupHistoryV2 } from './student-group-history-v2'
+import { StudentGroupHistoryV3 } from './student-group-history-v3'
+import { StudentGroupHistoryV4 } from './student-group-history-v4'
 
 interface StudentCardProps {
   student: StudentWithGroups
@@ -233,8 +236,10 @@ export default function StudentCard({ student }: StudentCardProps) {
             </h2>
             <p className="text-muted-foreground mt-1">Все переводы ученика между группами</p>
           </div>
-
-          <StudentGroupHistory />
+          <StudentGroupHistoryV1 />
+          <StudentGroupHistoryV2 />
+          <StudentGroupHistoryV3 />
+          <StudentGroupHistoryV4 />
         </div>
       </CardContent>
     </Card>
