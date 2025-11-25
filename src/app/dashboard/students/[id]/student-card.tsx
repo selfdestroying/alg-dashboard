@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
+import { StudentGroupHistory } from './student-group-history'
 
 interface StudentCardProps {
   student: StudentWithGroups
@@ -222,6 +223,18 @@ export default function StudentCard({ student }: StudentCardProps) {
           ) : (
             <p className="text-muted-foreground">Ученик не состоит в группах.</p>
           )}
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <h2 className="flex items-center gap-2 text-2xl font-bold">
+              <Users className="h-7 w-7 text-purple-600" />
+              История групп
+            </h2>
+            <p className="text-muted-foreground mt-1">Все переводы ученика между группами</p>
+          </div>
+
+          <StudentGroupHistory />
         </div>
       </CardContent>
     </Card>
