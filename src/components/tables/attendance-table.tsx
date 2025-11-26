@@ -15,6 +15,7 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { AttendanceStatusSwitcher } from '@/app/playground/attendance-status-switcher'
 
 const StudentStatusMap: { [key in StudentStatus]: string } = {
   ACTIVE: 'Ученик',
@@ -100,12 +101,13 @@ const getColumns = (
       header: 'Статус',
       accessorKey: 'status',
       cell: ({ row }) => (
-        <StatusAction
-          defaultValue={row.original}
-          onChange={(status: AttendanceStatus) =>
-            handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
-          }
-        />
+        // <StatusAction
+        //   defaultValue={row.original}
+        //   onChange={(status: AttendanceStatus) =>
+        //     handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
+        //   }
+        // />
+        <AttendanceStatusSwitcher lessonId={row.original.lessonId} studentId={row.original.studentId} status={row.original.status} />
       ),
       meta: {
         filterVariant: 'select',

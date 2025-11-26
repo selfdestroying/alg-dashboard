@@ -7,7 +7,7 @@ export default function Page() {
     <div>
       <ModeToggle />
       <div className="flex items-center justify-center">
-        <AttendanceStatusSwitcher />
+        {/* <AttendanceStatusSwitcher /> */}
       </div>
       <div className="mt-10 flex flex-wrap gap-2">
         <Badge>Default Badge</Badge>
