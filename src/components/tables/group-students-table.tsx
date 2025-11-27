@@ -3,7 +3,7 @@ import { getGroup, removeFromGroup } from '@/actions/groups'
 import DataTable from '@/components/data-table'
 import DeleteAction from '@/components/delete-action'
 import { Button } from '@/components/ui/button'
-import { Lesson, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { DoorOpen } from 'lucide-react'
 import Link from 'next/link'
@@ -80,7 +80,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
           submitButtonProps={{ form: 'dismiss-form' }}
         />
         <StudentGroupDialog
-          variant='icon'
+          variant="icon"
           studentId={row.original.id}
           fromGroupId={row.original.groups[0].groupId}
         />
@@ -95,15 +95,13 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
 ]
 
 export function GroupStudentsTable({
-  lessons,
   students,
   data,
 }: {
   data: Awaited<ReturnType<typeof getGroup>>
-  lessons: Lesson[]
   students: StudentWithAttendances[]
 }) {
-  const columns = useMemo(() => getColumns(data.id), [lessons, data.id])
+  const columns = useMemo(() => getColumns(data.id), [data.id])
 
   return <DataTable data={students} columns={columns} paginate={false} />
 }
