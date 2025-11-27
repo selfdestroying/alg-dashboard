@@ -99,47 +99,73 @@ export const deleteGroup = async (id: number) => {
 }
 
 export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
-  await prisma.studentGroup.create({ data })
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const lessons = await prisma.lesson.findMany({
-    where: { groupId: data.groupId, date: { gte: today } },
-  })
-  lessons.forEach(
-    async (lesson) =>
-      await prisma.attendance.create({
-        data: {
-          lessonId: lesson.id,
-          studentId: data.studentId,
-          comment: '',
-          status: 'UNSPECIFIED',
-        },
-      })
-  )
+  const { studentId, groupId } = data
 
-  revalidatePath(`/dashboard/groups/${data.groupId}`)
+  await prisma.$transaction(async (tx) => {
+    await tx.studentGroup.create({ data })
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const futureLessons = await tx.lesson.findMany({
+      where: {
+        groupId,
+        date: { gte: today },
+      },
+      select: { id: true },
+    })
+
+    if (futureLessons.length > 0) {
+      const attendanceData = futureLessons.map((lesson) => ({
+        lessonId: lesson.id,
+        studentId,
+        comment: '',
+        status: 'UNSPECIFIED' as const,
+      }))
+
+      await tx.attendance.createMany({
+        data: attendanceData,
+        skipDuplicates: true,
+      })
+    }
+  })
+
+  revalidatePath(`/dashboard/groups/${groupId}`)
 }
 
 export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
-  await prisma.studentGroup.delete({ where: { studentId_groupId: { ...data } } })
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const lessons = await prisma.lesson.findMany({
-    where: { groupId: data.groupId, date: { gte: today } },
-  })
-  lessons.forEach(
-    async (lesson) =>
-      await prisma.attendance.delete({
+  const { studentId, groupId } = data
+
+  await prisma.$transaction(async (tx) => {
+    await tx.studentGroup.delete({
+      where: { studentId_groupId: { studentId, groupId } },
+    })
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const futureLessons = await tx.lesson.findMany({
+      where: {
+        groupId,
+        date: { gte: today },
+      },
+      select: { id: true },
+    })
+
+    if (futureLessons.length > 0) {
+      const lessonIds = futureLessons.map((l) => l.id)
+
+      await tx.attendance.deleteMany({
         where: {
-          studentId_lessonId: {
-            studentId: data.studentId,
-            lessonId: lesson.id,
-          },
+          studentId,
+          lessonId: { in: lessonIds },
           status: 'UNSPECIFIED',
         },
       })
-  )
-  revalidatePath(`/dashboard/groups/${data.groupId}`)
+    }
+  })
+
+  revalidatePath(`/dashboard/groups/${groupId}`)
 }
 
 export async function updateTeacherGroupBid(
@@ -202,7 +228,7 @@ export async function updateTeacherGroup(
           groupId,
           teacherId,
         })),
-        skipDuplicates: true, // На случай, если дубликаты
+        skipDuplicates: true,
       })
       const lessons = await getLessons({
         where: {
@@ -216,7 +242,7 @@ export async function updateTeacherGroup(
             teacherId,
             lessonId: lesson.id,
           })),
-          skipDuplicates: true, // На случай, если дубликаты
+          skipDuplicates: true,
         })
       }
     }

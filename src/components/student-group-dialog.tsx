@@ -47,23 +47,28 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupI
     fetchGroups()
   }, [])
 
-
   function handleSubmit() {
     if (fullName) {
-      const ok = Promise.all([addToGroup({
-        groupId: groups.find((group) => fullName == group.name)?.id as number,
-        studentId,
-      }), fromGroupId ? removeFromGroup({
-        groupId: fromGroupId,
-        studentId,
-      }) : Promise.resolve()])
-      toast.promise(ok, {
-        loading: 'Loding...',
-        success: 'Ученик успешно добавлен в группу',
-        error: (e) => e.message,
+      const promise = (async () => {
+        const targetGroup = groups.find((g) => g.name === fullName)
+        if (!targetGroup) throw new Error('Группа не найдена')
+
+        const tasks = [addToGroup({ studentId, groupId: targetGroup.id })]
+
+        if (fromGroupId && fromGroupId !== targetGroup.id) {
+          tasks.push(removeFromGroup({ studentId, groupId: fromGroupId }))
+        }
+
+        await Promise.all(tasks)
+      })()
+
+      toast.promise(promise, {
+        loading: 'Переводим ученика...',
+        success: 'Ученик успешно переведён',
+        error: (err) => err.message || 'Произошла ошибка',
+        finally: () => setDialogOpen(false),
       })
     }
-    setDialogOpen(false)
   }
 
   return (
