@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react'
 
 import { AttendanceWithStudents, deleteAttendance, updateAttendance } from '@/actions/attendance'
+import { AttendanceStatusSwitcher } from '@/app/playground/attendance-status-switcher'
 import { Attendance, AttendanceStatus, StudentStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { debounce, DebouncedFunction } from 'es-toolkit'
@@ -15,7 +16,6 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { AttendanceStatusSwitcher } from '@/app/playground/attendance-status-switcher'
 
 const StudentStatusMap: { [key in StudentStatus]: string } = {
   ACTIVE: 'Ученик',
@@ -107,7 +107,11 @@ const getColumns = (
         //     handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
         //   }
         // />
-        <AttendanceStatusSwitcher lessonId={row.original.lessonId} studentId={row.original.studentId} status={row.original.status} />
+        <AttendanceStatusSwitcher
+          lessonId={row.original.lessonId}
+          studentId={row.original.studentId}
+          status={row.original.status}
+        />
       ),
       meta: {
         filterVariant: 'select',
@@ -276,39 +280,6 @@ function StudentStatusAction({
           <div className="space-x-2">
             <div className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></div>
             <span>{StudentStatusMap.TRIAL}</span>
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  )
-}
-
-function StatusAction({
-  defaultValue,
-  onChange,
-}: {
-  defaultValue: Attendance
-  onChange: (val: AttendanceStatus) => void
-}) {
-  return (
-    <Select
-      defaultValue={defaultValue.status != 'UNSPECIFIED' ? defaultValue.status : undefined}
-      onValueChange={(e: AttendanceStatus) => onChange(e)}
-    >
-      <SelectTrigger size="sm" className="w-full">
-        <SelectValue placeholder={StatusMap['UNSPECIFIED']} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={AttendanceStatus.PRESENT}>
-          <div className="space-x-2">
-            <div className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StatusMap.PRESENT}</span>
-          </div>
-        </SelectItem>
-        <SelectItem value={AttendanceStatus.ABSENT}>
-          <div className="space-x-2">
-            <div className="bg-error inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StatusMap.ABSENT}</span>
           </div>
         </SelectItem>
       </SelectContent>
