@@ -55,7 +55,7 @@ export function AttendanceStatusSwitcher({
         ) : (
           <TooltipTrigger
             asChild
-            className="group h-6 disabled:border-red-300 disabled:bg-red-100 disabled:opacity-100 disabled:dark:border-red-800 disabled:dark:bg-red-900/20"
+            className="group h-6 cursor-pointer disabled:border-red-300 disabled:bg-red-100 disabled:opacity-100 disabled:dark:border-red-800 disabled:dark:bg-red-900/20"
           >
             <ToggleGroupItem
               value={AttendanceStatus.ABSENT}
@@ -81,7 +81,7 @@ export function AttendanceStatusSwitcher({
         ) : (
           <TooltipTrigger
             asChild
-            className="group disabled:border-input disabled:bg-accent h-6 disabled:opacity-100"
+            className="group disabled:border-input disabled:bg-accent h-6 cursor-pointer disabled:opacity-100"
           >
             <ToggleGroupItem
               value={AttendanceStatus.UNSPECIFIED}
@@ -107,7 +107,7 @@ export function AttendanceStatusSwitcher({
         ) : (
           <TooltipTrigger
             asChild
-            className="group h-6 disabled:border-emerald-300 disabled:bg-emerald-100 disabled:opacity-100 disabled:dark:border-emerald-800 disabled:dark:bg-emerald-900/20"
+            className="group h-6 cursor-pointer disabled:border-emerald-300 disabled:bg-emerald-100 disabled:opacity-100 disabled:dark:border-emerald-800 disabled:dark:bg-emerald-900/20"
           >
             <ToggleGroupItem
               value={AttendanceStatus.PRESENT}

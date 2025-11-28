@@ -1,13 +1,15 @@
 import { ModeToggle } from '@/components/mode-toggle'
 import { Badge } from '@/components/ui/badge'
-import { AttendanceStatusSwitcher } from './attendance-status-switcher'
 
-export default function Page() {
+export default async function Page() {
   return (
     <div>
       <ModeToggle />
       <div className="flex items-center justify-center">
-        {<AttendanceStatusSwitcher lessonId={0} studentId={0} status="UNSPECIFIED" />}
+        {/* <AttendanceStatusSwitcher lessonId={1419} studentId={124} status={student.status} /> */}
+      </div>
+      <div className="flex items-center justify-center">
+        {/* <DeleteDropdown attendance={student} /> */}
       </div>
       <div className="mt-10 flex flex-wrap gap-2">
         <Badge>Default Badge</Badge>
