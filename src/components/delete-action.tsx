@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Trash } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import {
@@ -17,12 +15,13 @@ import {
 import { Input } from './ui/input'
 
 interface RowActionsProps {
+  children?: React.ReactNode
   id: number
   confirmationText: string
   action: (id: number) => Promise<void>
 }
 
-export default function DeleteAction({ id, action, confirmationText }: RowActionsProps) {
+export default function DeleteAction({ children, id, action, confirmationText }: RowActionsProps) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [studentName, setStudentName] = useState('')
@@ -40,11 +39,7 @@ export default function DeleteAction({ id, action, confirmationText }: RowAction
 
   return (
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-      <AlertDialogTrigger asChild>
-        <Button variant="ghost" size={'icon'}>
-          <Trash className="stroke-error" />
-        </Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>

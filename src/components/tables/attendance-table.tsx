@@ -1,26 +1,29 @@
 'use client'
 import React, { useMemo } from 'react'
 
-import { AttendanceWithStudents, deleteAttendance, updateAttendance } from '@/actions/attendance'
+import { AttendanceWithStudents, updateAttendanceComment } from '@/actions/attendance'
+import AttendanceActions from '@/app/playground/attendance-actions'
 import { AttendanceStatusSwitcher } from '@/app/playground/attendance-status-switcher'
-import { Attendance, AttendanceStatus, StudentStatus } from '@prisma/client'
+import { AttendanceStatus, StudentStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { debounce, DebouncedFunction } from 'es-toolkit'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
-import DeleteAction from '../delete-action'
-import MakeUpForm from '../forms/makeup-form'
+import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 const StudentStatusMap: { [key in StudentStatus]: string } = {
   ACTIVE: 'Ученик',
   DISMISSED: 'Отчислен',
   TRIAL: 'Пробный',
+}
+
+const AttendanceStatusVariantMap: { [key in AttendanceStatus]: 'success' | 'error' | 'outline' } = {
+  PRESENT: 'success',
+  ABSENT: 'error',
+  UNSPECIFIED: 'outline',
 }
 
 function useSkipper() {
@@ -51,132 +54,72 @@ const getColumns = (
       accessorKey: 'fullName',
       accessorFn: (value) => `${value.student.firstName} ${value.student.lastName}`,
       cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          <div className="flex flex-wrap items-center gap-2 font-medium">
-            <Button asChild variant={'link'} className="h-fit p-0 font-medium">
-              <Link href={`/dashboard/students/${row.original.studentId}`}>
-                {row.original.student.firstName} {row.original.student.lastName}
-              </Link>
-            </Button>
-
-            {row.original.asMakeupFor && (
-              <Button asChild variant={'outline'} size={'sm'} className="h-fit font-medium">
-                <Link
-                  href={`/dashboard/lessons/${row.original.asMakeupFor.missedAttendance.lessonId}`}
-                >
-                  Отработка за{' '}
-                  {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
-                    year: '2-digit',
-                    month: '2-digit',
-                    day: '2-digit',
-                  })}
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
+        <Button asChild variant={'link'} className="h-fit p-0 font-medium">
+          <Link href={`/dashboard/students/${row.original.studentId}`}>
+            {row.original.student.firstName} {row.original.student.lastName}
+          </Link>
+        </Button>
       ),
     },
     {
       header: 'Статус ученика',
       accessorKey: 'studentStatus',
       cell: ({ row }) => (
-        <StudentStatusAction
-          defaultValue={row.original}
-          onChange={(studentStatus: StudentStatus) => {
-            const ok = updateAttendance({ where: { id: row.original.id }, data: { studentStatus } })
-            toast.promise(ok, {
-              loading: 'Загрузка...',
-              success: 'Успешно!',
-              error: (e) => e.message,
-            })
-          }}
-        />
+        <Badge variant={row.original.studentStatus === 'ACTIVE' ? 'success' : 'info'}>
+          {StudentStatusMap[row.original.studentStatus]}
+        </Badge>
       ),
-      meta: {
-        filterVariant: 'select',
-      },
     },
     {
       header: 'Статус',
       accessorKey: 'status',
       cell: ({ row }) => (
-        // <StatusAction
-        //   defaultValue={row.original}
-        //   onChange={(status: AttendanceStatus) =>
-        //     handleUpdate(row.original.studentId, row.original.lessonId, undefined, status)
-        //   }
-        // />
         <AttendanceStatusSwitcher
           lessonId={row.original.lessonId}
           studentId={row.original.studentId}
           status={row.original.status}
         />
       ),
-      meta: {
-        filterVariant: 'select',
-        allFilterVariants: Object.keys(StatusMap),
-      },
     },
     {
       header: 'Отработка',
       cell: ({ row }) =>
-        row.original.asMakeupFor ? null : row.original.missedMakeup ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant={'outline'} size={'sm'} className="w-full">
-                Отработка{' '}
-                {row.original.missedMakeup.makeUpAttendance.lesson?.date.toLocaleDateString('ru', {
-                  year: '2-digit',
-                  month: '2-digit',
-                  day: '2-digit',
-                })}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="flex flex-col gap-2">
-                <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-                  <Link
-                    href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
-                  >
-                    Урок
-                  </Link>
-                </Button>
-                <FormDialog
-                  title="Изменить дату"
-                  triggerButtonProps={{ variant: 'outline', size: 'sm' }}
-                  submitButtonProps={{ form: 'makeup-form' }}
-                  FormComponent={MakeUpForm}
-                  formComponentProps={{
-                    studentId: row.original.studentId,
-                    missedAttendanceId: row.original.id,
-                    makeUpAttendanceId: row.original.missedMakeup.makeUpAttendaceId,
-                  }}
-                />
-              </div>
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <FormDialog
-            title="Отработка"
-            triggerButtonProps={{ variant: 'outline', size: 'sm', className: 'w-full' }}
-            submitButtonProps={{ form: 'makeup-form' }}
-            FormComponent={MakeUpForm}
-            formComponentProps={{
-              studentId: row.original.studentId,
-              missedAttendanceId: row.original.id,
-            }}
-          />
-        ),
+        row.original.asMakeupFor ? (
+          <Badge asChild variant={'info'}>
+            <Link href={`/dashboard/lessons/${row.original.asMakeupFor.missedAttendance.lessonId}`}>
+              Отработка за{' '}
+              {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
+                month: '2-digit',
+                day: '2-digit',
+              })}
+            </Link>
+          </Badge>
+        ) : row.original.missedMakeup ? (
+          <Badge
+            asChild
+            variant={AttendanceStatusVariantMap[row.original.missedMakeup.makeUpAttendance.status]}
+          >
+            <Link
+              href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
+            >
+              Отработка{' '}
+              {row.original.missedMakeup.makeUpAttendance.lesson!.date.toLocaleDateString('ru', {
+                month: '2-digit',
+                day: '2-digit',
+              })}
+            </Link>
+          </Badge>
+        ) : null,
     },
     {
       header: 'Комментарий',
       accessorKey: 'comment',
       cell: ({ row }) => (
         <Input
+          className="h-8"
           defaultValue={row.original.comment}
           onChange={(e) =>
-            handleUpdate(row.original.studentId, row.original.lessonId, e.target.value, undefined)
+            handleUpdate(row.original.studentId, row.original.lessonId, e.target.value)
           }
         />
       ),
@@ -184,23 +127,7 @@ const getColumns = (
     {
       id: 'actions',
       header: () => <span className="sr-only">Actions</span>,
-      cell: ({ row }) => (
-        <DeleteAction
-          id={row.original.id}
-          action={() =>
-            deleteAttendance({
-              where: {
-                studentId_lessonId: {
-                  lessonId: row.original.lessonId!,
-                  studentId: row.original.studentId,
-                },
-              },
-            })
-          }
-          confirmationText={`${row.original.student.firstName} ${row.original.student.lastName}`}
-        />
-      ),
-      enableHiding: false,
+      cell: ({ row }) => <AttendanceActions attendance={row.original} />,
     },
   ]
 }
@@ -209,29 +136,25 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
   const handleUpdate = useMemo(
     () =>
-      debounce(
-        (studentId: number, lessonId: number, comment?: string, status?: AttendanceStatus) => {
-          skipAutoResetPageIndex()
-          const ok = updateAttendance({
-            where: {
-              studentId_lessonId: {
-                studentId: studentId,
-                lessonId: lessonId,
-              },
+      debounce((studentId: number, lessonId: number, comment?: string) => {
+        skipAutoResetPageIndex()
+        const ok = updateAttendanceComment({
+          where: {
+            studentId_lessonId: {
+              studentId: studentId,
+              lessonId: lessonId,
             },
-            data: {
-              comment,
-              status,
-            },
-          })
-          toast.promise(ok, {
-            loading: 'Загрузка...',
-            success: 'Успешно!',
-            error: (e) => e.message,
-          })
-        },
-        500
-      ),
+          },
+          data: {
+            comment,
+          },
+        })
+        toast.promise(ok, {
+          loading: 'Загрузка...',
+          success: 'Успешно!',
+          error: (e) => e.message,
+        })
+      }, 500),
     [skipAutoResetPageIndex]
   )
   const columns = getColumns(handleUpdate)
@@ -245,44 +168,5 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
         autoResetPageIndex,
       }}
     />
-  )
-}
-
-const StatusMap: { [key in AttendanceStatus]: string } = {
-  ABSENT: 'Пропустил',
-  PRESENT: 'Пришел',
-  UNSPECIFIED: 'Не отмечен',
-}
-
-function StudentStatusAction({
-  defaultValue,
-  onChange,
-}: {
-  defaultValue: Attendance
-  onChange: (val: StudentStatus) => void
-}) {
-  return (
-    <Select
-      defaultValue={defaultValue.studentStatus}
-      onValueChange={(e: StudentStatus) => onChange(e)}
-    >
-      <SelectTrigger size="sm" className="w-full">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={StudentStatus.ACTIVE}>
-          <div className="space-x-2">
-            <div className="bg-success inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StudentStatusMap.ACTIVE}</span>
-          </div>
-        </SelectItem>
-        <SelectItem value={StudentStatus.TRIAL}>
-          <div className="space-x-2">
-            <div className="bg-info inline-block size-2 rounded-full" aria-hidden="true"></div>
-            <span>{StudentStatusMap.TRIAL}</span>
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
   )
 }
