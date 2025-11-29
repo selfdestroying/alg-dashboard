@@ -1,6 +1,5 @@
 'use client'
 import { updateTeacherGroup } from '@/actions/groups'
-import { updateTeacherLesson } from '@/actions/lessons'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
@@ -9,14 +8,12 @@ import MultipleSelector, { Option } from './ui/multiselect'
 interface TeachersMultiSelectProps {
   teachers: Option[]
   currentTeachers: Option[]
-  lessonId?: number
   groupId?: number
 }
 
 export default function TeachersMultiSelect({
   teachers,
   currentTeachers,
-  lessonId,
   groupId,
 }: TeachersMultiSelectProps) {
   const [newTeachers, setNewTeachers] = useState<Option[]>(currentTeachers)
@@ -34,15 +31,6 @@ export default function TeachersMultiSelect({
   }, [newTeachers, currentTeachers])
 
   const handleUpdate = () => {
-    if (lessonId) {
-      const ok = updateTeacherLesson(lessonId, currentTeachers, newTeachers)
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Успешно',
-        error: (err) => err.message,
-      })
-      return
-    }
     if (groupId) {
       const ok = updateTeacherGroup(groupId, currentTeachers, newTeachers)
       toast.promise(ok, {

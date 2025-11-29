@@ -5,7 +5,6 @@ import DeleteAction from '@/components/delete-action'
 import { Button } from '@/components/ui/button'
 import { Prisma } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
-import { DoorOpen } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import FormDialog from '../button-dialog'
@@ -71,7 +70,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
         <FormDialog
           FormComponent={DismissForm}
           title="Перевести в отток"
-          icon={DoorOpen}
+          icon="doorOpen"
           formComponentProps={{
             groupId: row.original.groups[0].groupId,
             studentId: row.original.id,

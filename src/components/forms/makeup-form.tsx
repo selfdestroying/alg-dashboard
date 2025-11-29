@@ -117,13 +117,13 @@ export default function MakeUpForm({
           render={({ field }) => (
             <FormItem className="flex flex-col gap-2">
               <FormLabel>Урок для отработки</FormLabel>
-
               <div className="space-y-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className="w-full justify-start text-left font-normal"
+                      size={'sm'}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {selectedDate ? format(selectedDate, 'dd.MM.yyyy') : 'Выбрать дату'}
@@ -145,7 +145,7 @@ export default function MakeUpForm({
                     value={field.value?.toString()}
                     onValueChange={(value) => field.onChange(+value)}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" size={'sm'}>
                       <SelectValue placeholder="Выберите урок" />
                     </SelectTrigger>
                     <SelectContent>

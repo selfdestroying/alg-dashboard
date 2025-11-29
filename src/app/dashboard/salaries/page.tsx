@@ -6,7 +6,7 @@ import TeacherBids from './teacher-bids'
 
 export default async function Page() {
   const user = await getUser()
-  const users = await getUsers()
+  const users = await getUsers({})
 
   return (
     <>

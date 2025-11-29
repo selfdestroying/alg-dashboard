@@ -1,6 +1,5 @@
 'use server'
 
-import { Option } from '@/components/ui/multiselect'
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
@@ -115,41 +114,17 @@ export const createLesson = async (data: Prisma.LessonUncheckedCreateInput) => {
   revalidatePath(`dashboard/groups/${data.groupId}`)
 }
 
-export async function updateTeacherLesson(
-  lessonId: number,
-  currentTeachers: Option[],
-  newTeachers: Option[]
-) {
-  const currentTeacherIds = currentTeachers.map((teacher) => +teacher.value)
-  const newTeacherIds = newTeachers.map((teacher) => +teacher.value)
+export async function addTeacherToLesson(payload: Prisma.TeacherLessonCreateArgs) {
+  await prisma.teacherLesson.create(payload)
+  revalidatePath(`/dashboard/lessons/${payload.data.lessonId}`)
+}
 
-  const currentSet = new Set(currentTeacherIds)
-  const newSet = new Set(newTeacherIds)
+export async function removeTeacherFromLesson(payload: Prisma.TeacherLessonDeleteArgs) {
+  await prisma.teacherLesson.delete(payload)
+  revalidatePath(`/dashboard/lessons/${payload.where.lessonId}`)
+}
 
-  const toDelete = currentTeacherIds.filter((id) => !newSet.has(id))
-
-  const toAdd = newTeacherIds.filter((id) => !currentSet.has(id))
-
-  await prisma.$transaction(async (tx) => {
-    if (toDelete.length > 0) {
-      await tx.teacherLesson.deleteMany({
-        where: {
-          lessonId,
-          teacherId: { in: toDelete },
-        },
-      })
-    }
-
-    if (toAdd.length > 0) {
-      await tx.teacherLesson.createMany({
-        data: toAdd.map((teacherId) => ({
-          lessonId,
-          teacherId,
-        })),
-        skipDuplicates: true,
-      })
-    }
-  })
-
-  revalidatePath(`/dashboard/lessons/${lessonId}`)
+export async function updateTeacherLesson(payload: Prisma.TeacherLessonUpdateArgs) {
+  await prisma.teacherLesson.update(payload)
+  revalidatePath(`/dashboard/lessons/${payload.where.lessonId}`)
 }

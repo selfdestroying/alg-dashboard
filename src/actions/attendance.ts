@@ -75,7 +75,15 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
     }
   }
   await prisma.attendance.update(payload)
-  // revalidatePath(`/dashboard/lessons/${payload.where.studentId_lessonId?.lessonId}`)
+  revalidatePath(`/dashboard/lessons/${payload.where.studentId_lessonId?.lessonId}`)
+}
+
+export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateArgs) => {
+  await prisma.attendance.update(payload)
+}
+
+export const updateDataMock = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 2000))
 }
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {

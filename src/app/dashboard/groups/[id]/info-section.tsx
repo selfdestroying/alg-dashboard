@@ -15,7 +15,7 @@ export default async function InfoSection({
   group: Awaited<ReturnType<typeof getGroup>>
 }) {
   const user = await getUser()
-  const teachers = await getUsers()
+  const teachers = await getUsers({})
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
       <CardContent className="space-y-4">

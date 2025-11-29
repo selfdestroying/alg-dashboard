@@ -33,30 +33,30 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 
-const timeSlots = [
-  { time: '09:00', available: true },
-  { time: '09:30', available: true },
-  { time: '10:00', available: true },
-  { time: '10:30', available: true },
-  { time: '11:00', available: true },
-  { time: '11:30', available: true },
-  { time: '12:00', available: true },
-  { time: '12:30', available: true },
-  { time: '13:00', available: true },
-  { time: '13:30', available: true },
-  { time: '14:00', available: true },
-  { time: '14:30', available: true },
-  { time: '15:00', available: true },
-  { time: '15:30', available: true },
-  { time: '16:00', available: true },
-  { time: '16:30', available: true },
-  { time: '17:00', available: true },
-  { time: '17:30', available: true },
-  { time: '18:00', available: true },
-  { time: '18:30', available: true },
-  { time: '19:00', available: true },
-  { time: '19:30', available: true },
-  { time: '20:00', available: true },
+export const timeSlots = [
+  { time: '09:00' },
+  { time: '09:30' },
+  { time: '10:00' },
+  { time: '10:30' },
+  { time: '11:00' },
+  { time: '11:30' },
+  { time: '12:00' },
+  { time: '12:30' },
+  { time: '13:00' },
+  { time: '13:30' },
+  { time: '14:00' },
+  { time: '14:30' },
+  { time: '15:00' },
+  { time: '15:30' },
+  { time: '16:00' },
+  { time: '16:30' },
+  { time: '17:00' },
+  { time: '17:30' },
+  { time: '18:00' },
+  { time: '18:30' },
+  { time: '19:00' },
+  { time: '19:30' },
+  { time: '20:00' },
 ]
 
 export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
@@ -268,8 +268,8 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                   </FormControl>
                   <SelectContent>
                     {timeSlots.map((slot) => (
-                      <SelectItem key={slot.time} value={slot.time} disabled={!slot.available}>
-                        {slot.time} {!slot.available && '(недоступно)'}
+                      <SelectItem key={slot.time} value={slot.time}>
+                        {slot.time}
                       </SelectItem>
                     ))}
                   </SelectContent>
