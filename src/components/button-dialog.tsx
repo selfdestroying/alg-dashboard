@@ -21,13 +21,13 @@ interface FormDialogProps<T extends object = object> {
   FormComponent: React.ComponentType<T & { onSubmit: () => void }>
   formComponentProps?: T
   triggerButtonProps?: React.ComponentProps<'button'> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean
-    }
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }
   submitButtonProps?: React.ComponentProps<'button'> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean
-    }
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }
 }
 
 export default function FormDialog<T extends object = object>({

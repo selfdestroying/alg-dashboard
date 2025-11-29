@@ -15,39 +15,37 @@ import {
   CommandItem,
   CommandList,
 } from './ui/command'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { useForm } from 'react-hook-form'
+import { AttendanceSchema, AttendanceSchemaType } from '@/schemas/attendance'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 
-interface AttendanceDialogProps {
+interface AttendanceFormProps {
   students: Student[]
   lessonId: number
   onSubmit?: () => void
 }
 
-export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId }) => {
+export const AttendanceForm: FC<AttendanceFormProps> = ({ students, lessonId, onSubmit }) => {
   const id = useId()
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [fullName, setFullName] = useState<string>('')
 
-  function handleSubmit() {
+  const form = useForm<AttendanceSchemaType>({
+    resolver: zodResolver(AttendanceSchema),
+    defaultValues: {
+      status: 'UNSPECIFIED',
+      studentStatus: 'TRIAL',
+      comment: '',
+      lessonId: lessonId
+    }
+  })
+
+  function handleSubmit(values: AttendanceSchemaType) {
     if (fullName) {
-      const ok = createAttendance({
-        studentId: students.find(
-          (student) => fullName == `${student.firstName} ${student.lastName}`
-        )?.id as number,
-        lessonId,
-        comment: '',
-        status: 'UNSPECIFIED',
-      })
+      const ok = createAttendance(values)
       toast.promise(ok, {
         loading: 'Loding...',
         success: 'Ученик успешно добавлен в урок',
@@ -55,84 +53,71 @@ export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId
       })
       setDialogOpen(false)
       setFullName('')
+      onSubmit?.()
     }
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus />
-          Добавить ученика
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
-        <DialogHeader className="contents space-y-0 text-left">
-          <DialogTitle className="border-b px-6 py-4 text-base">Добавить ученика</DialogTitle>
-        </DialogHeader>
-        <div className="overflow-y-auto px-6 pt-4 pb-6">
-          <div className="*:not-first:mt-2">
-            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  id={id}
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={popoverOpen}
-                  className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} onError={(e) => console.log(e)} className="space-y-8" id="attendance-form">
+        <div className="grid grid-cols-12 gap-4">
+          <FormField control={form.control} name='studentId' render={({ field }) =>
+            <FormItem className='col-span-12'>
+              <FormLabel>Ученик</FormLabel>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id={id}
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={popoverOpen}
+                    className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
+                  >
+                    <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
+                      {fullName ?? 'Выберите ученика...'}
+                    </span>
+                    <ChevronDownIcon
+                      size={16}
+                      className="text-muted-foreground/80 shrink-0"
+                      aria-hidden="true"
+                    />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                  align="start"
                 >
-                  <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
-                    {fullName ?? 'Выберите ученика...'}
-                  </span>
-                  <ChevronDownIcon
-                    size={16}
-                    className="text-muted-foreground/80 shrink-0"
-                    aria-hidden="true"
-                  />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
-                align="start"
-              >
-                <Command>
-                  <CommandInput placeholder="Выберите ученика..." />
-                  <CommandList>
-                    <CommandEmpty>Ученики не найдены</CommandEmpty>
-                    <CommandGroup>
-                      {students.map((student) => (
-                        <CommandItem
-                          key={student.id}
-                          value={`${student.firstName} ${student.lastName}`}
-                          onSelect={(currentValue) => {
-                            setFullName(currentValue === fullName ? '' : currentValue)
-                            setPopoverOpen(false)
-                          }}
-                        >
-                          {student.firstName} {student.lastName}
-                          {fullName === `${student.firstName} ${student.lastName}` && (
-                            <CheckIcon size={16} className="ml-auto" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
+                  <Command>
+                    <CommandInput placeholder="Выберите ученика..." />
+                    <CommandList>
+                      <CommandEmpty>Ученики не найдены</CommandEmpty>
+                      <CommandGroup>
+                        {students.map((student) => (
+                          <CommandItem
+                            key={student.id}
+                            value={`${student.firstName} ${student.lastName}`}
+                            onSelect={(currentValue) => {
+                              field.onChange(students.find((student) => currentValue == `${student.firstName} ${student.lastName}`)?.id)
+                              setFullName(currentValue === fullName ? '' : currentValue)
+                              setPopoverOpen(false)
+                            }}
+                          >
+                            {student.firstName} {student.lastName}
+                            {fullName === `${student.firstName} ${student.lastName}` && (
+                              <CheckIcon size={16} className="ml-auto" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+            </FormItem>} />
         </div>
-        <DialogFooter className="border-t px-6 py-4">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button onClick={handleSubmit} disabled={!fullName}>
-            Подтвердить
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </form>
+      <FormMessage />
+    </Form>
   )
 }

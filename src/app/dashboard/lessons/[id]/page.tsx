@@ -1,9 +1,11 @@
 import { getStudents } from '@/actions/students'
 import { getUser, getUsers } from '@/actions/users'
-import { AttendanceDialog } from '@/components/attendance-dialog'
+import { AttendanceForm } from '@/components/attendance-dialog'
+import FormDialog from '@/components/button-dialog'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
+import { Plus } from 'lucide-react'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
@@ -139,7 +141,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Список учеников</CardTitle>
           {user?.role !== 'TEACHER' && (
-            <AttendanceDialog students={students} lessonId={lesson.id} />
+            <FormDialog
+              FormComponent={AttendanceForm}
+              title='Добавить посещаемость'
+              formComponentProps={{
+                students,
+                lessonId: lesson.id
+              }}
+              triggerButtonProps={{
+                size: 'sm'
+              }}
+              submitButtonProps={{
+                form: 'attendance-form'
+              }}
+            />
+            // <AttendanceForm students={students} lessonId={lesson.id} />
           )}
         </CardHeader>
         <CardContent>
