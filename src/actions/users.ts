@@ -26,9 +26,10 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidat
   if (pathToRevalidate) revalidatePath(pathToRevalidate)
 }
 
-export const getUsers = async (): Promise<UserData[]> => {
+export const getUsers = async (payload: Prisma.UserFindManyArgs): Promise<UserData[]> => {
   const users: UserData[] = await prisma.user.findMany({
     omit: { createdAt: true, password: true, passwordRequired: true },
+    ...payload,
   })
   return users
 }
