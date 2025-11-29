@@ -9,30 +9,39 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { VariantProps } from 'class-variance-authority'
-import { LucideProps } from 'lucide-react'
+import { DoorOpen, Edit, LucideProps, Plus } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
 
+const IconMap: Record<
+  'plus' | 'edit' | 'doorOpen',
+  ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
+> = {
+  plus: Plus,
+  edit: Edit,
+  doorOpen: DoorOpen,
+}
+
 interface FormDialogProps<T extends object = object> {
   title: string
-  icon?: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
+  icon?: keyof typeof IconMap
   description?: string
   FormComponent: React.ComponentType<T & { onSubmit: () => void }>
   formComponentProps?: T
   triggerButtonProps?: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }
+    VariantProps<typeof buttonVariants> & {
+      asChild?: boolean
+    }
   submitButtonProps?: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }
+    VariantProps<typeof buttonVariants> & {
+      asChild?: boolean
+    }
 }
 
 export default function FormDialog<T extends object = object>({
   title,
-  icon: Icon,
+  icon,
   FormComponent,
   formComponentProps,
   description,
@@ -40,6 +49,7 @@ export default function FormDialog<T extends object = object>({
   submitButtonProps,
 }: FormDialogProps<T>) {
   const [open, setOpen] = useState(false)
+  const Icon = icon ? IconMap[icon] : null
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

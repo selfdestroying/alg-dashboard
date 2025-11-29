@@ -2,7 +2,6 @@
 import { updateCategory } from '@/actions/categories'
 import { Category } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
-import { Edit } from 'lucide-react'
 import { DefaultValues } from 'react-hook-form'
 import { toast } from 'sonner'
 import FormDialog from '../button-dialog'
@@ -35,7 +34,7 @@ const getColumns = (): ColumnDef<Category>[] => [
           },
         }}
         title="Редактровать"
-        icon={Edit}
+        icon="edit"
         triggerButtonProps={{
           size: 'icon',
           variant: 'ghost',

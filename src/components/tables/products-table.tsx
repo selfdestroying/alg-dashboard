@@ -6,13 +6,12 @@ import { ColumnDef } from '@tanstack/react-table'
 import { deleteProduct, ProductWithCategory, updateproduct } from '@/actions/products'
 import { ProductSchema, ProductSchemaType } from '@/schemas/product'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Edit } from 'lucide-react'
 import Link from 'next/link'
 import { DefaultValues, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import DeleteAction from '../delete-action'
 import FormDialog from '../button-dialog'
 import DataTable from '../data-table'
+import DeleteAction from '../delete-action'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
@@ -89,7 +88,7 @@ const getColumns = (): ColumnDef<ProductWithCategory>[] => [
             },
           }}
           title="Редактровать"
-          icon={Edit}
+          icon="edit"
           triggerButtonProps={{
             size: 'icon',
             variant: 'ghost',
