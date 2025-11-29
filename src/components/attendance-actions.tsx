@@ -186,7 +186,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
             <DialogTitle className="border-b px-6 py-4 text-base">Отработка</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto">
-            <div className="px-6 pt-4 pb-6">
+            <div className="px-6 pt-4">
               {attendance.missedMakeup ? (
                 <MakeUpForm
                   studentId={attendance.studentId}

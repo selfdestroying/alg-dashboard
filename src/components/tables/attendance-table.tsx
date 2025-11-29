@@ -5,6 +5,7 @@ import { AttendanceWithStudents, updateAttendanceComment } from '@/actions/atten
 import AttendanceActions from '@/components/attendance-actions'
 import { AttendanceStatusSwitcher } from '@/components/attendance-status-switcher'
 import { cn } from '@/lib/utils'
+import { useData } from '@/providers/data-provider'
 import { AttendanceStatus, StudentStatus } from '@prisma/client'
 import {
   ColumnDef,
@@ -23,7 +24,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table'
 import { debounce, DebouncedFunction } from 'es-toolkit'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ArrowDown, ArrowUp, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { Badge } from '../ui/badge'
@@ -47,7 +48,6 @@ function useSkipper() {
   const shouldSkipRef = React.useRef(true)
   const shouldSkip = shouldSkipRef.current
 
-  // Wrap a function with this to skip a pagination reset temporarily
   const skip = React.useCallback(() => {
     shouldSkipRef.current = false
   }, [])
@@ -60,7 +60,6 @@ function useSkipper() {
 }
 
 const getColumns = (
-  // setData: React.Dispatch<React.SetStateAction<AttendanceWithStudents[]>>,
   handleUpdate: DebouncedFunction<
     (studentId: number, lessonId: number, comment?: string, status?: AttendanceStatus) => void
   >
@@ -109,6 +108,7 @@ const getColumns = (
                 month: '2-digit',
                 day: '2-digit',
               })}
+              <ExternalLink />
             </Link>
           </Badge>
         ) : row.original.missedMakeup ? (
@@ -124,6 +124,7 @@ const getColumns = (
                 month: '2-digit',
                 day: '2-digit',
               })}
+              <ExternalLink />
             </Link>
           </Badge>
         ) : null,
@@ -141,16 +142,12 @@ const getColumns = (
         />
       ),
     },
-    {
-      id: 'actions',
-      header: 'Действия',
-      cell: ({ row }) => <AttendanceActions attendance={row.original} />,
-    },
   ]
 }
 
 export function AttendanceTable({ attendance }: { attendance: AttendanceWithStudents[] }) {
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
+  const { user } = useData()
   const handleUpdate = useMemo(
     () =>
       debounce((studentId: number, lessonId: number, comment?: string) => {
@@ -175,6 +172,18 @@ export function AttendanceTable({ attendance }: { attendance: AttendanceWithStud
     [skipAutoResetPageIndex]
   )
   const columns = getColumns(handleUpdate)
+  if (user?.role !== 'TEACHER') {
+    columns.push({
+      id: 'actions',
+
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <AttendanceActions attendance={row.original} />
+        </div>
+      ),
+      size: 50,
+    })
+  }
 
   return (
     <DataTable
@@ -297,14 +306,13 @@ function DataTable<T extends DataObject>({
             </TableRow>
           ))}
         </TableHeader>
-        <tbody aria-hidden="true" className="table-row h-1"></tbody>
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="hover:bg-accent/50 h-px border-0"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="last:py-0">
@@ -314,14 +322,13 @@ function DataTable<T extends DataObject>({
               </TableRow>
             ))
           ) : (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow className="hover:bg-transparent">
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
-        <tbody aria-hidden="true" className="table-row h-1"></tbody>
       </Table>
     </div>
   )
