@@ -12,6 +12,10 @@ const fontSans = Inter({
   variable: '--font-sans',
 })
 
+export const metadata = {
+  title: 'AlgCore',
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{

@@ -17,16 +17,16 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="overflow-hidden px-4 md:px-6 lg:px-8">
+      <SidebarInset className="overflow-hidden px-2 md:px-4 lg:px-6">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
           <div className="flex flex-1 items-center gap-2">
             <SidebarTrigger variant={'outline'} />
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
             <ModeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 py-4 lg:gap-6 lg:py-6">{children}</div>
+        <div className="flex flex-1 flex-col gap-2">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )
