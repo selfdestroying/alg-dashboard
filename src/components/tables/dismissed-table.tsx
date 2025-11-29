@@ -52,14 +52,21 @@ const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
   {
     header: 'Действия',
     cell: ({ row }) => (
-      <Button variant="ghost" size="icon" onClick={() => {
-        const ok = Promise.all([addToGroup({groupId: row.original.groupId, studentId: row.original.studentId}), removeFromDismissed({ where: { id: row.original.id } })])
-        toast.promise(ok, {
-          loading: 'Возвращение ученика...',
-          success: 'Ученик успешно возвращен в группу',
-          error: (e) => e.message,
-        })
-      }}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => {
+          const ok = Promise.all([
+            addToGroup({ groupId: row.original.groupId, studentId: row.original.studentId }),
+            removeFromDismissed({ where: { id: row.original.id } }),
+          ])
+          toast.promise(ok, {
+            loading: 'Возвращение ученика...',
+            success: 'Ученик успешно возвращен в группу',
+            error: (e) => e.message,
+          })
+        }}
+      >
         <Undo />
       </Button>
     ),

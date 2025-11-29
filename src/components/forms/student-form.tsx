@@ -54,13 +54,16 @@ export default function StudentForm({ defaultValues, onSubmit, groups }: Student
     if (fullName) {
       groupId = groups.find((group) => fullName == group.name)?.id as number
     }
-    const ok = createStudent({
-      age: values.age,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      parentsName: values.parentsName,
-      crmUrl: values.crmUrl,
-    }, groupId)
+    const ok = createStudent(
+      {
+        age: values.age,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        parentsName: values.parentsName,
+        crmUrl: values.crmUrl,
+      },
+      groupId
+    )
     toast.promise(ok, {
       loading: 'Загрузка...',
       success: 'Ученик успешно добавлен',

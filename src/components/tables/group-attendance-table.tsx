@@ -232,7 +232,7 @@ export function GroupaAttendanceTable({
                       <div
                         className={cn(
                           header.column.getCanSort() &&
-                          'flex h-full cursor-pointer items-center gap-2 select-none'
+                            'flex h-full cursor-pointer items-center gap-2 select-none'
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {
