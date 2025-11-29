@@ -1,13 +1,9 @@
+import { getStudents } from '@/actions/students'
 import { getUser, getUsers } from '@/actions/users'
 import { AttendanceDialog } from '@/components/attendance-dialog'
 import { AttendanceTable } from '@/components/tables/attendance-table'
-import TeachersMultiSelect from '@/components/teachers-multiselect'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
-import { BookOpen, Calendar, Clock, Dot, User } from 'lucide-react'
-import Link from 'next/link'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
@@ -51,6 +47,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
     },
   })
+  const students = await getStudents({
+    where: {
+      id: { notIn: lesson?.attendance.map((a) => a.studentId) },
+    },
+  })
   const teachers = await getUsers()
   const user = await getUser()
   if (!lesson) {
@@ -59,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="space-y-2">
-      <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
+      {/* <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
             <div className="space-y-1">
@@ -121,14 +122,30 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             />
           </div>
         </CardContent>
+      </Card> */}
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <Card className="shadow-none">
+          <CardHeader>
+            <CardTitle>Информация о уроке</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="shadow-none">
+          <CardHeader>
+            <CardTitle>Преподаватели</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+      <Card className="shadow-none">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Список учеников</CardTitle>
+          {user?.role !== 'TEACHER' && (
+            <AttendanceDialog students={students} lessonId={lesson.id} />
+          )}
+        </CardHeader>
+        <CardContent>
+          <AttendanceTable attendance={lesson.attendance} />
+        </CardContent>
       </Card>
-      {user?.role !== 'TEACHER' && (
-        <AttendanceDialog
-          students={lesson.group.students.map((s) => s.student)}
-          lessonId={lesson.id}
-        />
-      )}
-      <AttendanceTable attendance={lesson.attendance} />
     </div>
   )
 }

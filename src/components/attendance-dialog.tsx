@@ -3,7 +3,7 @@
 import { createAttendance } from '@/actions/attendance'
 import { cn } from '@/lib/utils'
 import { Student } from '@prisma/client'
-import { CheckIcon, ChevronDownIcon } from 'lucide-react'
+import { CheckIcon, ChevronDownIcon, Plus } from 'lucide-react'
 import { FC, useId, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
@@ -36,7 +36,7 @@ export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId
   const id = useId()
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
-  const [fullName, setFullName] = useState<string>()
+  const [fullName, setFullName] = useState<string>('')
 
   function handleSubmit() {
     if (fullName) {
@@ -53,14 +53,18 @@ export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId
         success: 'Ученик успешно добавлен в урок',
         error: (e) => e.message,
       })
+      setDialogOpen(false)
+      setFullName('')
     }
-    setDialogOpen(false)
   }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button>Добавить ученика</Button>
+        <Button size="sm">
+          <Plus />
+          Добавить ученика
+        </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
@@ -101,7 +105,7 @@ export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId
                           key={student.id}
                           value={`${student.firstName} ${student.lastName}`}
                           onSelect={(currentValue) => {
-                            setFullName(currentValue === fullName ? undefined : currentValue)
+                            setFullName(currentValue === fullName ? '' : currentValue)
                             setPopoverOpen(false)
                           }}
                         >
@@ -124,7 +128,9 @@ export const AttendanceDialog: FC<AttendanceDialogProps> = ({ students, lessonId
               Cancel
             </Button>
           </DialogClose>
-          <Button onClick={handleSubmit}>Подтвердить</Button>
+          <Button onClick={handleSubmit} disabled={!fullName}>
+            Подтвердить
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
