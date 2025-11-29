@@ -13,7 +13,7 @@ const fontSans = Inter({
 })
 
 export const metadata = {
-  title: 'AlgCore',
+  title: 'ALGCORE',
 }
 
 export default async function RootLayout({
