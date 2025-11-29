@@ -15,13 +15,13 @@ const badgeVariants = cva(
         destructive:
           'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline: 'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
-        info: 'bg-blue-100 text-blue-700 border border-blue-300 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+        info: 'bg-blue-100 text-blue-700 border border-blue-300 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300 [a&]:hover:bg-blue-200/70 [a&]:dark:hover:bg-blue-900/40',
         success:
-          'bg-emerald-100 text-emerald-700 border border-emerald-300 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300',
+          'bg-emerald-100 text-emerald-700 border border-emerald-300 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300 [a&]:hover:bg-emerald-200/70 [a&]:dark:hover:bg-emerald-900/40',
         error:
-          'bg-red-100 text-red-700 border border-red-300 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300',
+          'bg-red-100 text-red-700 border border-red-300 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300 [a&]:hover:bg-red-200/70 [a&]:dark:hover:bg-red-900/40',
         warning:
-          'bg-amber-100 text-amber-700 border border-amber-300 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300', // на будущее
+          'bg-amber-100 text-amber-700 border border-amber-300 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300 [a&]:hover:bg-amber-200/70 [a&]:dark:hover:bg-amber-900/40',
       },
     },
     defaultVariants: {
