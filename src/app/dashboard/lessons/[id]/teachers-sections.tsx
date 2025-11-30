@@ -2,6 +2,7 @@
 import { updateDataMock } from '@/actions/attendance'
 import { addTeacherToLesson, removeTeacherFromLesson } from '@/actions/lessons'
 import { UserData } from '@/actions/users'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -16,9 +17,10 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useData } from '@/providers/data-provider'
 import { GroupType, Prisma } from '@prisma/client'
-import { Check, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { Asterisk, Check, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { useId, useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import BalanceBadge from './balance-badge'
 
 interface TeachersSectionProps {
   lesson: Prisma.LessonGetPayload<{ include: { group: true } }>
@@ -243,13 +245,14 @@ function TeacherBidCar({
                 user.id === teacher.id) ||
                 user?.role === 'OWNER' ||
                 user?.role === 'ADMIN') && (
-                <>
-                  <span className="text-muted-foreground text-sm">Ставка:</span>
-                  <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                    {teacher[bidMap[lessonType]].toLocaleString('ru-RU')} ₽
-                  </span>
-                </>
-              )}
+                  <>
+                    <span className="text-muted-foreground text-sm">Ставка:</span>
+
+                    {/* <span className='text-center'>***</span> */}
+                    <BalanceBadge balance={teacher[bidMap[lessonType]]} />
+                    {/* {teacher[bidMap[lessonType]].toLocaleString('ru-RU')} ₽ */}
+                  </>
+                )}
               {/* <Button size="icon-sm" variant="ghost" onClick={() => setEditMode(true)}>
                 <Edit />
               </Button> */}
