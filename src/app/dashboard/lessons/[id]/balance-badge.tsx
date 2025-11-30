@@ -9,7 +9,7 @@ interface BalanceBadgeProps {
 }
 
 
-export default function BalanceBadge({ balance, currency = '', className }: BalanceBadgeProps) {
+export default function BalanceBadge({ balance }: BalanceBadgeProps) {
 
 
     const [isRevealed, setIsRevealed] = useState(false)
