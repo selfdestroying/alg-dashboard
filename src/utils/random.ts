@@ -3,6 +3,10 @@ export function getRandomInteger(min: number, max: number) {
   return Math.floor(rand)
 }
 
+export function getRandomFloat(min: number, max: number) {
+  return min + Math.random() * (max - min)
+}
+
 export function getRandomDate(
   start: Date = new Date(2025, 9, 1),
   end: Date = new Date(2026, 5, 29)

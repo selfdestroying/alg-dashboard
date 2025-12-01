@@ -1,5 +1,6 @@
 import { getCourses } from '@/actions/courses'
 import { getUser, getUsers } from '@/actions/users'
+import ChristmasLights from '@/components/christmas-lights'
 import { Toaster } from '@/components/toaster'
 import prisma from '@/lib/prisma'
 import { DataProvider } from '@/providers/data-provider'
@@ -30,6 +31,7 @@ export default async function RootLayout({
       <body className={`${fontSans.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <DataProvider courses={courses} users={users} locations={locations} user={user}>
+            <ChristmasLights />
             {children}
             <Toaster />
           </DataProvider>
