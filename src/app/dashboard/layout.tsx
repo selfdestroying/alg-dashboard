@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { redirect } from 'next/navigation'
+import LightSwitch from '../../components/light-switch'
 
 export default async function Layout({
   children,
@@ -15,19 +16,22 @@ export default async function Layout({
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="overflow-hidden px-2 md:px-4 lg:px-6">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b">
-          <div className="flex flex-1 items-center gap-2">
-            <SidebarTrigger variant={'outline'} />
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <ModeToggle />
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-2">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className="overflow-hidden px-2 md:px-4 lg:px-6">
+          <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger variant={'outline'} />
+            </div>
+            <LightSwitch />
+            <div className="flex items-center gap-2">
+              <ModeToggle />
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-2">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   )
 }
