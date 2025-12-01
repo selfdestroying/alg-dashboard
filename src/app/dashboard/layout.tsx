@@ -3,7 +3,6 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { redirect } from 'next/navigation'
-import LightSwitch from '../../components/light-switch'
 
 export default async function Layout({
   children,
@@ -24,7 +23,7 @@ export default async function Layout({
             <div className="flex items-center gap-2">
               <SidebarTrigger variant={'outline'} />
             </div>
-            <LightSwitch />
+
             <div className="flex items-center gap-2">
               <ModeToggle />
             </div>
