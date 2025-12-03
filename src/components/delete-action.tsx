@@ -13,6 +13,8 @@ import {
   AlertDialogTrigger,
 } from './ui/alert-dialog'
 import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Trash2 } from 'lucide-react'
 
 interface RowActionsProps {
   children?: React.ReactNode
@@ -39,6 +41,11 @@ export default function DeleteAction({ children, id, action, confirmationText }:
 
   return (
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialogTrigger asChild>
+        <Button size={'icon-sm'} variant={'ghost'}>
+          <Trash2 />
+        </Button>
+      </AlertDialogTrigger>
       <AlertDialogTrigger>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

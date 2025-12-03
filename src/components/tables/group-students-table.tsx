@@ -72,7 +72,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
           title="Перевести в отток"
           icon="doorOpen"
           formComponentProps={{
-            groupId: row.original.groups[0].groupId,
+            groupId,
             studentId: row.original.id,
           }}
           triggerButtonProps={{ variant: 'ghost', size: 'icon' }}
@@ -81,7 +81,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
         <StudentGroupDialog
           variant="icon"
           studentId={row.original.id}
-          fromGroupId={row.original.groups[0].groupId}
+          fromGroupId={groupId}
         />
         <DeleteAction
           id={row.original.id}

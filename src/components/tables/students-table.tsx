@@ -51,14 +51,11 @@ const getColumns = (): ColumnDef<Student>[] => [
       filterVariant: 'text',
     },
   },
-  // {
-  //   header: 'Количество групп',
-  //   accessorKey: 'groups',
-  //   accessorFn: (value) => value._count.groups,
-  //   meta: {
-  //     filterVariant: 'range',
-  //   },
-  // },
+  {
+    accessorKey: 'createdAt',
+    header: 'Дата создания',
+    cell: ({ row }) => row.original.createdAt.toLocaleDateString('ru-RU')
+  },
   {
     accessorKey: 'lessonsBalance',
     header: 'Баланс уроков',
@@ -116,5 +113,11 @@ const getColumns = (): ColumnDef<Student>[] => [
 
 export function StudentsTable({ data }: { data: Student[] }) {
   const columns = getColumns()
-  return <DataTable data={data} columns={columns} paginate />
+  return <DataTable data={data} columns={columns} paginate defaultColumnVisibility={
+    {
+      login: false,
+      password: false,
+      coins: false
+    }
+  } />
 }
