@@ -177,7 +177,7 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                   <FormLabel>
                     Дата начала <span className="text-destructive">*</span>
                   </FormLabel>
-                  <Popover>
+                  <Popover modal>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -218,7 +218,7 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
                     />
                     Дата конца
                   </FormLabel>
-                  <Popover>
+                  <Popover modal>
                     <PopoverTrigger asChild disabled={!hasEndDate}>
                       <Button
                         variant="outline"

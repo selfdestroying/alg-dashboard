@@ -131,21 +131,9 @@ export default function PaymentDialogForm({
                       <FormLabel className="flex shrink-0">Ученик</FormLabel>
 
                       <div className="w-full">
-                        {/* <Select key="select-0" onValueChange={(value) => field.onChange(+value)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {students.map((student) => (
-                          <SelectItem key={student.id} value={student.id.toString()}>
-                            {student.firstName} {student.lastName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select> */}
                         <div className="overflow-y-auto">
                           <div className="*:not-first:mt-2">
-                            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                            <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal>
                               <PopoverTrigger asChild>
                                 <Button
                                   id={id}

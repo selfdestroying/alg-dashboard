@@ -65,7 +65,7 @@ export default function DismissForm({
                   <FormLabel>
                     Дата отчисления <span className="text-destructive">*</span>
                   </FormLabel>
-                  <Popover>
+                  <Popover modal>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"

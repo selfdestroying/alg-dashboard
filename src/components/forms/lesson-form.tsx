@@ -82,7 +82,7 @@ export default function LessonForm({
                   Дата
                 </p>
 
-                <Popover>
+                <Popover modal>
                   <PopoverTrigger asChild>
                     <Button
                       variant={'outline'}

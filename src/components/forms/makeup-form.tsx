@@ -118,7 +118,7 @@ export default function MakeUpForm({
             <FormItem className="flex flex-col gap-2">
               <FormLabel>Урок для отработки</FormLabel>
               <div className="space-y-2">
-                <Popover>
+                <Popover modal>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"

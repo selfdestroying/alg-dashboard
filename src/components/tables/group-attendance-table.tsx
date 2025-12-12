@@ -103,7 +103,7 @@ function AttendanceCell({
     : makeupStatusClasses.UNSPECIFIED
 
   return (
-    <Popover>
+    <Popover modal>
       <PopoverTrigger
         className={cn('cursor-pointer rounded-lg border-4 px-2', attendanceStatus, makeUpStatus)}
       >

@@ -103,7 +103,7 @@ export default function PaycheckForm({ userId, onSubmit }: PaycheckFormProps) {
             render={({ field }) => (
               <FormItem className="col-span-12">
                 <FormLabel>Дата зачисления</FormLabel>
-                <Popover>
+                <Popover modal>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
