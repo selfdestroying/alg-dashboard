@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import { Group, Prisma, Student } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { revalidatePath } from 'next/cache'
+import { addToGroup } from './groups'
 
 export type StudentWithGroups = Student & { groups: Group[] }
 
@@ -37,7 +38,11 @@ export const createStudent = async (
     },
   })
   if (groupId) {
-    await prisma.studentGroup.create({ data: { groupId, studentId: student.id } })
+    await addToGroup({
+      groupId,
+      studentId: student.id,
+      status: 'ACTIVE',
+    })
   }
   revalidatePath('dashboard/students')
 }

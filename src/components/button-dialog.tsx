@@ -61,9 +61,9 @@ export default function FormDialog<T extends object = object>({
         <DialogHeader className="contents space-y-0 text-left">
           <DialogTitle className="border-b px-6 py-4 text-base">{title}</DialogTitle>
         </DialogHeader>
-        <DialogDescription className={description && 'px-6 py-4 text-base'}>
-          {description}
-        </DialogDescription>
+        {description && (
+          <DialogDescription className="px-6 py-4 text-base">{description}</DialogDescription>
+        )}
         <div className="overflow-y-auto">
           <div className="px-6 pt-4 pb-6">
             <FormComponent {...(formComponentProps as T)} onSubmit={() => setOpen(false)} />
