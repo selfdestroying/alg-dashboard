@@ -53,7 +53,9 @@ export default function FormDialog<T extends object = object>({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button {...triggerButtonProps}>{Icon ? <Icon /> : title}</Button>
+        <Button {...triggerButtonProps}>
+          {Icon && <Icon />} {title}
+        </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">

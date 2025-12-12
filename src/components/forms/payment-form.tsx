@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
 import { PaymentSchema, PaymentSchemaType } from '@/schemas/payments'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Student, UnprocessedPayment } from '@prisma/client'
-import { CheckIcon, ChevronDownIcon } from 'lucide-react'
+import { CheckIcon, ChevronDownIcon, Plus } from 'lucide-react'
 import { title } from 'process'
 import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -107,7 +107,10 @@ export default function PaymentDialogForm({
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>Добавить оплату</Button>
+          <Button variant={'outline'} size={'sm'}>
+            <Plus />
+            <span className="hidden sm:inline">Добавить оплату</span>
+          </Button>
         </DialogTrigger>
         <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
           <DialogHeader className="contents space-y-0 text-left">
