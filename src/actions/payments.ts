@@ -35,7 +35,7 @@ export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
   await prisma.payment.create(payload)
   // if (isAddToGroup)
   //   addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number }, false)
-  revalidatePath('dashboard/payments')
+  revalidatePath('/dashboard/payments')
 }
 
 export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
