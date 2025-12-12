@@ -37,3 +37,14 @@ export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
   //   addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number }, false)
   revalidatePath('dashboard/payments')
 }
+
+export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
+  const product = await prisma.paymentProduct.create(payload)
+  revalidatePath('/dashboard/payments')
+  return product
+}
+
+export const deletePaymentProduct = async (id: number) => {
+  await prisma.paymentProduct.delete({ where: { id } })
+  revalidatePath('/dashboard/payments')
+}
