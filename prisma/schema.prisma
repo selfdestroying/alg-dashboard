@@ -239,6 +239,14 @@ model Order {
   student   Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
+model PaymentProduct {
+  id Int @id @default(autoincrement())
+  productId Int?
+  name String
+  price Int
+  lessonCount Int
+}
+
 enum Role {
   ADMIN
   OWNER
