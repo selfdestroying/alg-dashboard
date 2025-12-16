@@ -7,6 +7,19 @@ import { addToGroup } from './groups'
 
 export type StudentWithGroups = Student & { groups: Group[] }
 
+export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
+  include: {
+    groups: { include: { group: { include: { lessons: true } } } }
+    attendances: {
+      include: {
+        lesson: true
+        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
+        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+      }
+    }
+  }
+}>
+
 export const getStudents = async (payload: Prisma.StudentFindManyArgs) => {
   const students = await prisma.student.findMany(payload)
   return students
@@ -19,6 +32,30 @@ export const getStudent = async (id: number): Promise<StudentWithGroups> => {
   })
   const studentWithGroups = { ...student, groups: student?.groups.map((group) => group.group) }
   return studentWithGroups
+}
+
+export const getStudentWithAttendance = async (id: number) => {
+  const student = await prisma.student.findFirstOrThrow({
+    where: { id },
+    include: {
+      groups: {
+        include: {
+          group: {
+            include: { lessons: true },
+          },
+        },
+      },
+      attendances: {
+        include: {
+          lesson: true,
+          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        },
+      },
+    },
+  })
+
+  return student
 }
 
 export const createStudent = async (
@@ -47,7 +84,7 @@ export const createStudent = async (
   revalidatePath('dashboard/students')
 }
 
-export async function updateStudentCard(studentData: StudentWithGroups) {
+export async function updateStudentCard(studentData: Student) {
   try {
     const updated = await prisma.student.update({
       where: { id: studentData.id },

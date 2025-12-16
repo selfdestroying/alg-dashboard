@@ -1,7 +1,9 @@
 'use client'
 
-import { StudentWithGroups, updateStudentCard } from '@/actions/students'
+import { getGroup } from '@/actions/groups'
+import { StudentWithGroupsAndAttendance, updateStudentCard } from '@/actions/students'
 import { StudentGroupDialog } from '@/components/student-group-dialog'
+import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,14 +26,12 @@ import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 
 interface StudentCardProps {
-  student: StudentWithGroups
+  student: StudentWithGroupsAndAttendance
 }
 
 export default function StudentCard({ student }: StudentCardProps) {
   const [editMode, setEditMode] = useState(false)
-  const [formData, setFormData] = useState<StudentWithGroups>(student)
-
-  if (!student) return <div>Ошибка при получении ученика</div>
+  const [formData, setFormData] = useState<StudentWithGroupsAndAttendance>(student)
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -207,16 +207,20 @@ export default function StudentCard({ student }: StudentCardProps) {
             <StudentGroupDialog studentId={student.id} />
           </div>
           {student.groups.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {student.groups.map((group) => (
-                <Button
-                  key={group.id}
-                  variant="outline"
-                  asChild
-                  className="h-auto rounded-full px-4 py-1"
-                >
-                  <Link href={`/dashboard/groups/${group.id}`}>{group.name}</Link>
-                </Button>
+            <div className="space-y-6">
+              {student.groups.map((groupData) => (
+                <div key={groupData.group.id} className="space-y-2">
+                  <Button asChild variant="link" size="sm">
+                    <Link href={`/dashboard/groups/${groupData.group.id}`}>
+                      {groupData.group.name}
+                    </Link>
+                  </Button>
+                  <GroupaAttendanceTable
+                    data={groupData.group as Awaited<ReturnType<typeof getGroup>>}
+                    lessons={groupData.group.lessons}
+                    students={[student]}
+                  />
+                </div>
               ))}
             </div>
           ) : (
