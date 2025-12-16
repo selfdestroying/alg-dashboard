@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 
 import { PaymentsWithStudentAndGroup } from '@/actions/payments'
 import { ColumnDef } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
 import Link from 'next/link'
 import DataTable from '../data-table'
 
@@ -61,7 +62,12 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {
     header: 'Дата оплаты',
     accessorKey: 'createdAt',
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+    cell: ({ row }) =>
+      toZonedTime(row.original.createdAt, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
   },
 ]
 

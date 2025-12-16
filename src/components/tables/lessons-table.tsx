@@ -6,6 +6,7 @@ import { LessonWithAttendanceAndGroup } from '@/actions/lessons'
 import { UserData } from '@/actions/users'
 import { useData } from '@/providers/data-provider'
 import { ColumnDef } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
 import Link from 'next/link'
 import DataTable from '../data-table'
 
@@ -13,7 +14,12 @@ const getColumns = (users: string[]): ColumnDef<LessonWithAttendanceAndGroup>[] 
   {
     header: 'Дата',
     accessorKey: 'date',
-    accessorFn: (item) => item.date.toLocaleDateString('ru-RU'),
+    accessorFn: (item) =>
+      toZonedTime(item.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
     cell: ({ row }) => (
       <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
         <Link href={`/dashboard/lessons/${row.original.id}`} className="font-medium">

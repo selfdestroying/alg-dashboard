@@ -23,6 +23,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
 import { debounce, DebouncedFunction } from 'es-toolkit'
 import { ArrowDown, ArrowUp, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
@@ -104,7 +105,10 @@ const getColumns = (
           <Badge asChild variant={'info'}>
             <Link href={`/dashboard/lessons/${row.original.asMakeupFor.missedAttendance.lessonId}`}>
               Отработка за{' '}
-              {row.original.asMakeupFor.missedAttendance.lesson!.date.toLocaleDateString('ru', {
+              {toZonedTime(
+                row.original.asMakeupFor.missedAttendance.lesson!.date,
+                'Europe/Moscow'
+              ).toLocaleDateString('ru', {
                 month: '2-digit',
                 day: '2-digit',
               })}
@@ -120,7 +124,10 @@ const getColumns = (
               href={`/dashboard/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
             >
               Отработка{' '}
-              {row.original.missedMakeup.makeUpAttendance.lesson!.date.toLocaleDateString('ru', {
+              {toZonedTime(
+                row.original.missedMakeup.makeUpAttendance.lesson!.date,
+                'Europe/Moscow'
+              ).toLocaleDateString('ru', {
                 month: '2-digit',
                 day: '2-digit',
               })}

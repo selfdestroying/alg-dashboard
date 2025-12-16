@@ -5,6 +5,7 @@ import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { isToday } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
@@ -162,7 +163,7 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
         <div className="space-y-2">
           <div className="flex w-full items-center justify-between px-1">
             <div className="text-sm font-medium">
-              {date?.toLocaleDateString('ru-RU', {
+              {toZonedTime(date!, 'Europe/Moscow').toLocaleDateString('ru-RU', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -195,7 +196,12 @@ export default function LessonsCalendar({ selectedTeacherId }: { selectedTeacher
                           .join(', ')}
                       </span>
                       <span className="text-muted-foreground text-xs">
-                        {lesson.date.toLocaleDateString('ru-RU')} {lesson.time}
+                        {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric',
+                        })}{' '}
+                        {lesson.time}
                       </span>
                     </Link>
                   </Button>

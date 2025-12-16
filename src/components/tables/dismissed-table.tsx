@@ -1,12 +1,13 @@
 'use client'
 import { DismissedWithStudentAndGroup, removeFromDismissed } from '@/actions/dismissed'
+import { addToGroup } from '@/actions/groups'
 import { ColumnDef } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
+import { Undo } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import DataTable from '../data-table'
 import { Button } from '../ui/button'
-import { Undo } from 'lucide-react'
-import { addToGroup } from '@/actions/groups'
-import { toast } from 'sonner'
 
 const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
   {
@@ -44,10 +45,13 @@ const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
   },
   {
     header: 'Дата',
-    accessorFn: (data) => data.date.toLocaleDateString('ru-RU'),
-    meta: {
-      filterVariant: 'text',
-    },
+    accessorKey: 'date',
+    cell: ({ row }) =>
+      toZonedTime(row.original.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
   },
   {
     header: 'Действия',

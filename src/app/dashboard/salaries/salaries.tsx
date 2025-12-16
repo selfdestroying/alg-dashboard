@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
+import { getUtcRangeForLocalDays } from '@/utils/time'
 import { PayCheck, Prisma } from '@prisma/client'
+import { toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { Calendar, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -43,21 +45,12 @@ export default function Salaries({ userId }: { userId?: number }) {
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
-        const from = new Date(
-          dateRange.from.getFullYear(),
-          dateRange.from.getMonth(),
-          dateRange.from.getDate()
-        )
-        const to = new Date(
-          dateRange.to.getFullYear(),
-          dateRange.to.getMonth(),
-          dateRange.to.getDate()
-        )
+        const { startUtc, endUtc } = getUtcRangeForLocalDays(dateRange)
         const lessonsData = await getLessons({
           where: {
             date: {
-              gte: from,
-              lte: to,
+              gte: startUtc,
+              lte: endUtc,
             },
             status: { not: 'CANCELLED' },
             teachers: userId ? { some: { teacherId: userId } } : undefined,
@@ -90,8 +83,8 @@ export default function Salaries({ userId }: { userId?: number }) {
         const paychecksData = await getPaychecks({
           where: {
             date: {
-              gte: from,
-              lte: to,
+              gte: startUtc,
+              lte: endUtc,
             },
           },
         })
@@ -207,10 +200,14 @@ export default function Salaries({ userId }: { userId?: number }) {
                           <div className="flex items-center gap-2">
                             <Calendar className="text-muted-foreground h-4 w-4" />
                             <span className="font-medium">
-                              {lesson.date.toLocaleDateString('ru-RU', {
-                                day: '2-digit',
-                                month: 'short',
-                              })}
+                              {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString(
+                                'ru-RU',
+                                {
+                                  day: '2-digit',
+                                  month: 'short',
+                                }
+                              )}
+                              {lesson.time && `, ${lesson.time}`}
                             </span>
                           </div>
                           {lesson.time && (
@@ -244,10 +241,13 @@ export default function Salaries({ userId }: { userId?: number }) {
                             <div className="flex items-center gap-2">
                               <Calendar className="text-muted-foreground h-4 w-4" />
                               <span className="font-medium">
-                                {paycheck.date.toLocaleDateString('ru-RU', {
-                                  day: '2-digit',
-                                  month: 'short',
-                                })}
+                                {toZonedTime(paycheck.date, 'Europe/Moscow').toLocaleDateString(
+                                  'ru-RU',
+                                  {
+                                    day: '2-digit',
+                                    month: 'short',
+                                  }
+                                )}
                               </span>
                             </div>
                             <div className="text-muted-foreground flex items-center gap-1 text-sm">

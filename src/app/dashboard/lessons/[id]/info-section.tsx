@@ -16,6 +16,7 @@ import {
 import { useData } from '@/providers/data-provider'
 import { Lesson, LessonStatus } from '@prisma/client'
 import { format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import {
   BookOpen,
@@ -171,7 +172,13 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
                 </PopoverContent>
               </Popover>
             ) : (
-              <p className="text-sm font-semibold">{lesson.date.toLocaleDateString('ru-RU')}</p>
+              <p className="text-sm font-semibold">
+                {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </p>
             )}
           </div>
           <div className="space-y-1">

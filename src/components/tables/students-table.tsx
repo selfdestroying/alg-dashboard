@@ -3,6 +3,7 @@ import { deleteStudent } from '@/actions/students'
 import { Button } from '@/components/ui/button'
 import { Student } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
 import Link from 'next/link'
 import DataTable from '../data-table'
 import DeleteAction from '../delete-action'
@@ -54,7 +55,12 @@ const getColumns = (): ColumnDef<Student>[] => [
   {
     accessorKey: 'createdAt',
     header: 'Дата создания',
-    cell: ({ row }) => row.original.createdAt.toLocaleDateString('ru-RU')
+    cell: ({ row }) =>
+      toZonedTime(row.original.createdAt, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }),
   },
   {
     accessorKey: 'lessonsBalance',
@@ -113,11 +119,16 @@ const getColumns = (): ColumnDef<Student>[] => [
 
 export function StudentsTable({ data }: { data: Student[] }) {
   const columns = getColumns()
-  return <DataTable data={data} columns={columns} paginate defaultColumnVisibility={
-    {
-      login: false,
-      password: false,
-      coins: false
-    }
-  } />
+  return (
+    <DataTable
+      data={data}
+      columns={columns}
+      paginate
+      defaultColumnVisibility={{
+        login: false,
+        password: false,
+        coins: false,
+      }}
+    />
+  )
 }

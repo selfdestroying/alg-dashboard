@@ -58,6 +58,7 @@ export const getLessons = async <T extends Prisma.LessonFindManyArgs>(
 ) => {
   return prisma.lesson.findMany(payload)
 }
+
 export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())

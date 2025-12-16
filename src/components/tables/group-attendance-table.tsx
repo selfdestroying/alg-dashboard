@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { toZonedTime } from 'date-fns-tz'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
@@ -46,7 +47,7 @@ type StudentWithAttendances = Prisma.StudentGetPayload<{
 }>
 
 // -------------------- Utils --------------------
-const formatDate = (date: Date) => date.toLocaleDateString('ru-RU')
+const formatDate = (date: Date) => toZonedTime(date, 'Europe/Moscow').toLocaleDateString('ru-RU')
 
 const statusClasses: Record<
   AttendanceStatus | 'TRIAL_PRESENT' | 'TRIAL_ABSENT' | 'TRIAL_UNSPECIFIED',

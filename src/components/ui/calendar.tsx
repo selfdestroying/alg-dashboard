@@ -6,6 +6,7 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { toZonedTime } from 'date-fns-tz'
 
 function Calendar({
   className,
@@ -154,7 +155,11 @@ function CalendarDayButton({
       ref={ref}
       variant="ghost"
       size="icon"
-      data-day={day.date.toLocaleDateString('ru-RU')}
+      data-day={toZonedTime(day.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })}
       data-selected-single={
         modifiers.selected &&
         !modifiers.range_start &&
