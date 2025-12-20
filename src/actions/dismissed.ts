@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
-  include: { student: true; group: true }
+  include: { student: true; group: { include: { course: true } } }
 }>
 
 export async function getDismissed(payload: Prisma.DismissedFindFirstArgs) {
