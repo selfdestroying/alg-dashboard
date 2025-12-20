@@ -1,8 +1,25 @@
-import DismissedTable from '@/components/tables/dismissed-table'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
+import DismissedTable from './dismissed-table'
 
 export default async function Page() {
-  const dismissed = await prisma.dismissed.findMany({ include: { group: true, student: true } })
+  const dismissed = await prisma.dismissed.findMany({
+    include: {
+      group: {
+        include: { course: true },
+      },
+      student: true,
+    },
+  })
 
-  return <DismissedTable dismissed={dismissed} />
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Отток</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <DismissedTable dismissed={dismissed} />
+      </CardContent>
+    </Card>
+  )
 }
