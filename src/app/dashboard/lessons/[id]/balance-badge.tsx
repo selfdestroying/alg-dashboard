@@ -1,25 +1,35 @@
-import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { Badge } from '@/components/ui/badge'
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 
 interface BalanceBadgeProps {
-    balance: number
-    currency?: string
-    className?: string;
+  balance: number
+  currency?: string
+  className?: string
 }
 
-
 export default function BalanceBadge({ balance }: BalanceBadgeProps) {
+  const [isRevealed, setIsRevealed] = useState(false)
 
-
-    const [isRevealed, setIsRevealed] = useState(false)
-
-
-    return <Badge variant={'success'} className="group cursor-pointer w-14 h-6 text-center" role="button" onClick={() => setIsRevealed(!isRevealed)}>
-        {isRevealed ? <span className="inline group-hover:hidden text-xs">{balance.toLocaleString('ru-RU')} ₽</span> : <span className="inline group-hover:hidden text-lg">⁎⁎⁎</span>}
-        {isRevealed ? <EyeOff className="group-hover:inline hidden" /> : <Eye className="group-hover:inline hidden" />}
-
+  return (
+    <Badge
+      variant={'success'}
+      className="group h-6 w-14 cursor-pointer text-center"
+      role="button"
+      onClick={() => setIsRevealed(!isRevealed)}
+    >
+      {isRevealed ? (
+        <span className="inline text-xs group-hover:hidden">
+          {balance.toLocaleString('ru-RU')} ₽
+        </span>
+      ) : (
+        <span className="inline text-lg group-hover:hidden">⁎⁎⁎</span>
+      )}
+      {isRevealed ? (
+        <EyeOff className="hidden group-hover:inline" />
+      ) : (
+        <Eye className="hidden group-hover:inline" />
+      )}
     </Badge>
-
-
+  )
 }
