@@ -1,5 +1,4 @@
-import { removeFromDismissed } from '@/actions/dismissed'
-import { addToGroup } from '@/actions/groups'
+import { removeDismissed, returnToGroup } from '@/actions/dismissed'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -14,9 +13,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Loader2, MoreVertical, Undo } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Loader2, MoreVertical, Trash2, Undo } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
@@ -36,13 +38,24 @@ export default function DismissedActions({
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [confirmText, setConfirmText] = useState('')
 
   const handleReturnToGroup = () => {
     startTransition(() => {
-      const ok = Promise.all([
-        addToGroup({ groupId, studentId }),
-        removeFromDismissed({ where: { id: dismissedId } }),
-      ])
+      const ok = returnToGroup({ dismissedId, groupId, studentId })
+      toast.promise(ok, {
+        loading: 'Загрузка...',
+        success: 'Ученик успешно возвращен в группу',
+        error: (e) => e.message,
+      })
+      setConfirmOpen(false)
+      setOpen(false)
+    })
+  }
+
+  const handleDelete = () => {
+    startTransition(() => {
+      const ok = removeDismissed({ where: { id: dismissedId } })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Ученик успешно удален',
@@ -63,14 +76,21 @@ export default function DismissedActions({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handleReturnToGroup}>
+            <Undo />
+            Вернуть в группу
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
+            variant="destructive"
             onClick={() => {
               setConfirmOpen(true)
               setOpen(false)
             }}
           >
-            <Undo />
-            Вернуть в группу
+            <Trash2 className="mr-2 h-4 w-4" />
+            Удалить
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -87,9 +107,25 @@ export default function DismissedActions({
             </AlertDialogDescription>
           </AlertDialogHeader>
 
+          <div className="">
+            <Label htmlFor="confirm">Введите для подтверждения удаления:</Label>
+            <Input
+              id="confirm"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder={studentName}
+              className="mt-2"
+              autoFocus
+            />
+          </div>
+
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Отмена</AlertDialogCancel>
-            <Button variant="destructive" onClick={handleReturnToGroup}>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={confirmText !== studentName || isPending}
+            >
               {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
             </Button>
           </AlertDialogFooter>

@@ -40,7 +40,7 @@ import {
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import { debounce } from 'es-toolkit'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import DismissedActions from './dismissed-actions'
@@ -70,6 +70,20 @@ const getColumns = (): ColumnDef<DismissedWithStudentAndGroup>[] => [
     ),
     meta: {
       filterVariant: 'text',
+    },
+  },
+  {
+    id: 'teacher',
+    header: 'Учитель',
+    accessorFn: (data) =>
+      data.group.teachers
+        .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
+        .join(', '),
+    filterFn: (row, columnId: string, filterValue: string[]) => {
+      const rowTeachers = row.original.group.teachers.map((teacher) =>
+        teacher.teacher.id.toString()
+      )
+      return filterValue.length === 0 || rowTeachers.some((id) => filterValue.includes(id))
     },
   },
   {
@@ -177,7 +191,8 @@ function DataTable<T extends DataObject>({
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedMonths, setSelectedMonths] = useState<Option[]>([])
   const [selectedCourses, setSelectedCourses] = useState<Option[]>([])
-  const { courses } = useData()
+  const [selectedUsers, setSelectedUsers] = useState<Option[]>([])
+  const { courses, users } = useData()
 
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
@@ -193,9 +208,13 @@ function DataTable<T extends DataObject>({
       id: 'course',
       value: selectedCourses.map((course) => course.value),
     }
+    const userFilters = {
+      id: 'teacher',
+      value: selectedUsers.map((user) => user.value),
+    }
 
-    setColumnFilters([monthFilters, courseFilters])
-  }, [selectedMonths, selectedCourses])
+    setColumnFilters([monthFilters, courseFilters, userFilters])
+  }, [selectedMonths, selectedCourses, selectedUsers])
 
   const table = useReactTable({
     data,
@@ -276,6 +295,17 @@ function DataTable<T extends DataObject>({
                 emptyIndicator={<p className="text-center text-sm">Нет подходящих курсов</p>}
                 hidePlaceholderWhenSelected
                 onChange={setSelectedCourses}
+              />
+              <MultipleSelector
+                defaultOptions={users.map((user) => ({
+                  label: `${user.firstName} ${user.lastName ?? ''}`,
+                  value: user.id.toString(),
+                }))}
+                value={selectedUsers}
+                placeholder="Выберите пользователя"
+                emptyIndicator={<p className="text-center text-sm">Нет подходящих пользователей</p>}
+                hidePlaceholderWhenSelected
+                onChange={setSelectedUsers}
               />
             </div>
           </div>
@@ -362,7 +392,7 @@ function DataTable<T extends DataObject>({
 
       {table.getRowModel().rows.length > 0 && paginate && (
         <>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-2">
             <p
               className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
               aria-live="polite"
@@ -394,27 +424,29 @@ function DataTable<T extends DataObject>({
               </Select>
             </div>
             <Pagination className="w-auto">
-              <PaginationContent className="gap-3">
+              <PaginationContent className="gap-2">
                 <PaginationItem>
                   <Button
                     variant="outline"
+                    size={'icon-sm'}
                     className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                     aria-label="Go to previous page"
                   >
-                    Назад
+                    <ArrowLeft />
                   </Button>
                 </PaginationItem>
                 <PaginationItem>
                   <Button
                     variant="outline"
+                    size={'icon-sm'}
                     className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                     aria-label="Go to next page"
                   >
-                    Далее
+                    <ArrowRight />
                   </Button>
                 </PaginationItem>
               </PaginationContent>
