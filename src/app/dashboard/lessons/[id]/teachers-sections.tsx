@@ -244,14 +244,14 @@ function TeacherBidCar({
                 user.id === teacher.id) ||
                 user?.role === 'OWNER' ||
                 user?.role === 'ADMIN') && (
-                  <>
-                    <span className="text-muted-foreground text-sm">Ставка:</span>
+                <>
+                  <span className="text-muted-foreground text-sm">Ставка:</span>
 
-                    {/* <span className='text-center'>***</span> */}
-                    <BalanceBadge balance={teacher[bidMap[lessonType]]} />
-                    {/* {teacher[bidMap[lessonType]].toLocaleString('ru-RU')} ₽ */}
-                  </>
-                )}
+                  {/* <span className='text-center'>***</span> */}
+                  <BalanceBadge balance={teacher[bidMap[lessonType]]} />
+                  {/* {teacher[bidMap[lessonType]].toLocaleString('ru-RU')} ₽ */}
+                </>
+              )}
               {/* <Button size="icon-sm" variant="ghost" onClick={() => setEditMode(true)}>
                 <Edit />
               </Button> */}

@@ -78,11 +78,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
           triggerButtonProps={{ variant: 'ghost', size: 'icon' }}
           submitButtonProps={{ form: 'dismiss-form' }}
         />
-        <StudentGroupDialog
-          variant="icon"
-          studentId={row.original.id}
-          fromGroupId={groupId}
-        />
+        <StudentGroupDialog variant="icon" studentId={row.original.id} fromGroupId={groupId} />
         <DeleteAction
           id={row.original.id}
           action={() => removeFromGroup({ studentId: row.original.id, groupId })}
