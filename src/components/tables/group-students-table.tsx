@@ -69,7 +69,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
       <>
         <FormDialog
           FormComponent={DismissForm}
-          title="Перевести в отток"
+          title=""
           icon="doorOpen"
           formComponentProps={{
             groupId,
