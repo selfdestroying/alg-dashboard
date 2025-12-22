@@ -121,3 +121,23 @@ export const deleteStudent = async (id: number) => {
   await prisma.student.delete({ where: { id } })
   revalidatePath('dashboard/students')
 }
+
+export const getActiveStudents = async () => {
+  const students = await prisma.student.findMany({
+    where: {
+      groups: {
+        some: {},
+      },
+    },
+    include: {
+      groups: {
+        include: {
+          group: true,
+        },
+      },
+      payments: true,
+    },
+  })
+
+  return students
+}
