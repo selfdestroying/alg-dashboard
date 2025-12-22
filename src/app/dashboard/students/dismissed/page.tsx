@@ -18,6 +18,7 @@ export default async function Page() {
 
   return (
     <div className="space-y-2">
+      <DismissedStatistics {...statistics} />
       <Card>
         <CardHeader>
           <CardTitle>Отток</CardTitle>
@@ -26,7 +27,6 @@ export default async function Page() {
           <DismissedTable dismissed={dismissed} />
         </CardContent>
       </Card>
-      <DismissedStatistics {...statistics} />
     </div>
   )
 }
