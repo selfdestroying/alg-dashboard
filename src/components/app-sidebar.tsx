@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { useData } from '@/providers/data-provider'
 import { Folder } from 'lucide-react'
 import Link from 'next/link'
 import { NavUser } from './nav-user'
@@ -32,18 +33,22 @@ const navLists = [
       {
         title: 'Все',
         url: '/dashboard/students',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
       {
         title: 'Активные',
         url: '/dashboard/students/active',
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
       },
       {
         title: 'Пропустившие',
         url: '/dashboard/students/absent',
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
       },
       {
         title: 'Отчисленные',
         url: '/dashboard/students/dismissed',
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
       },
     ],
   },
@@ -54,6 +59,7 @@ const navLists = [
       {
         title: 'Все',
         url: '/dashboard/groups',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
     ],
   },
@@ -64,14 +70,17 @@ const navLists = [
       {
         title: 'Оплаты',
         url: '/dashboard/finances/payments',
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
       },
       {
         title: 'Выручка',
         url: '/dashboard/finances/revenue',
+        roles: ['ADMIN', 'OWNER'],
       },
       {
         title: 'Зарплаты',
         url: '/dashboard/finances/salaries',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
     ],
   },
@@ -82,14 +91,17 @@ const navLists = [
       {
         title: 'Товары',
         url: '/dashboard/shop/products',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
       {
         title: 'Категории',
         url: '/dashboard/shop/categories',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
       {
         title: 'Заказы',
         url: '/dashboard/shop/orders',
+        roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
       },
     ],
   },
@@ -97,6 +109,7 @@ const navLists = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const { user } = useData()
 
   return (
     <Sidebar {...props}>
@@ -133,17 +146,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {item.items?.length ? (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              size="sm"
-                              isActive={pathname === subItem.url}
-                            >
-                              <Link href={subItem.url}>{subItem.title}</Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                        {item.items.map(
+                          (subItem) =>
+                            subItem.roles.includes(user!.role) && (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  size="sm"
+                                  isActive={pathname === subItem.url}
+                                >
+                                  <Link href={subItem.url}>{subItem.title}</Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            )
+                        )}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   ) : null}
