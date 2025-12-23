@@ -38,6 +38,10 @@ const navLists = [
         url: '/dashboard/students/active',
       },
       {
+        title: 'Пропустившие',
+        url: '/dashboard/students/absent',
+      },
+      {
         title: 'Отчисленные',
         url: '/dashboard/students/dismissed',
       },
