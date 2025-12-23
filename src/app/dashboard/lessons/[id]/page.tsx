@@ -40,6 +40,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         },
         include: {
           student: true,
+          lesson: {
+            include: {
+              group: true,
+            },
+          },
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
           missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
         },

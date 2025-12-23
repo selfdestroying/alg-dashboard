@@ -13,9 +13,9 @@ import {
 export const description = 'A bar chart with a custom label'
 
 interface ChartData {
-  name: string
-  dismissed: number
-  total: number
+  teacherName: string
+  dismissedCount: number
+  totalStudents: number
   percentage: number
 }
 
@@ -52,7 +52,7 @@ export function ChartByTeacher({ data }: { data: ChartData[] }) {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="name"
+              dataKey="teacherName"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -61,18 +61,41 @@ export function ChartByTeacher({ data }: { data: ChartData[] }) {
               hide
             />
             <XAxis dataKey="percentage" type="number" hide />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(label, payload) => payload[0]?.payload.teacherName || label}
+                  formatter={(value, name, item) => {
+                    const data = item?.payload as ChartData | undefined
+                    const percentage = data?.percentage || 0
+                    const dismissedCount = data?.dismissedCount || 0
+                    const totalStudents = data?.totalStudents || 0
+                    return (
+                      <div className="text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Всего студентов:</span>
+                          <span className="font-medium">{totalStudents}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Отчисленные:</span>
+                          <span className="text-destructive font-medium">{dismissedCount}</span>
+                        </div>
+                        <div className="flex items-center justify-between border-t pt-1.5">
+                          <span className="text-muted-foreground">Процент оттока:</span>
+                          <span className="font-semibold">{percentage}%</span>
+                        </div>
+                      </div>
+                    )
+                  }}
+                />
+              }
+            />
             <Bar dataKey="percentage" layout="vertical" fill="var(--color-dismissed)" radius={4}>
               <LabelList
-                dataKey="dismissed"
+                dataKey="teacherName"
+                formatter={(value: string) => value.split(' ')[0]}
                 position="insideLeft"
-                offset={8}
-                className="fill-(--color-label)"
-                fontSize={12}
-              />
-              <LabelList
-                dataKey="name"
-                position="right"
                 offset={8}
                 className="fill-foreground"
                 fontSize={12}

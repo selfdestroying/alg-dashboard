@@ -7,6 +7,11 @@ import { revalidatePath } from 'next/cache'
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
   include: {
     student: true
+    lesson: {
+      include: {
+        group: true
+      }
+    }
     asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
     missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
   }

@@ -10,9 +10,9 @@ type MonthlyData = {
 }
 
 type TeacherData = {
-  name: string
-  dismissed: number
-  total: number
+  teacherName: string
+  dismissedCount: number
+  totalStudents: number
   percentage: number
 }
 

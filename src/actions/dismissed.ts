@@ -75,59 +75,50 @@ export async function getDismissedStatistics() {
 
   // Расчет статистики по преподавателям с процентами
   // Собираем информацию о всех студентах преподавателей
-  const allGroups = await prisma.group.findMany({
+  const allGroups = await prisma.teacherGroup.findMany({
     include: {
-      teachers: {
-        include: {
-          teacher: true,
-        },
-      },
-      students: {
+      group: {
         select: {
-          studentId: true,
+          _count: { select: { students: true } },
         },
       },
+      teacher: true,
     },
+    orderBy: { teacher: { id: 'asc' } },
   })
 
-  // Подсчитываем общее количество студентов у каждого преподавателя
-  const teacherTotalStudents = allGroups.reduce(
-    (acc, group) => {
-      group.teachers.forEach((t) => {
-        const teacherName = `${t.teacher.firstName} ${t.teacher.lastName || ''}`
-        if (!acc[teacherName]) {
-          acc[teacherName] = new Set<number>()
-        }
-        group.students.forEach((s) => {
-          acc[teacherName].add(s.studentId)
-        })
-      })
-      return acc
-    },
-    {} as Record<string, Set<number>>
-  )
+  const teacherStudentCounts: Record<string, number> = {}
+  allGroups.forEach((tg) => {
+    const teacherName = `${tg.teacher.firstName} ${tg.teacher.lastName || ''}`
+    const studentCount = tg.group._count.students
+    if (!teacherStudentCounts[teacherName]) {
+      teacherStudentCounts[teacherName] = 0
+    }
+    teacherStudentCounts[teacherName] += studentCount
+  })
 
-  // Подсчитываем отчисленных у каждого преподавателя
-  const teacherDismissedCount = dismissed.reduce(
-    (acc, item) => {
-      item.group.teachers.forEach((t) => {
-        const teacherName = `${t.teacher.firstName} ${t.teacher.lastName || ''}`
-        acc[teacherName] = (acc[teacherName] || 0) + 1
-      })
-      return acc
-    },
-    {} as Record<string, number>
-  )
+  // Считаем количество отчисленных по каждому преподавателю
+  const dismissedByTeacher: Record<string, number> = {}
+  dismissed.forEach((item) => {
+    item.group.teachers.forEach((tg) => {
+      const teacherName = `${tg.teacher.firstName} ${tg.teacher.lastName || ''}`
+      if (!dismissedByTeacher[teacherName]) {
+        dismissedByTeacher[teacherName] = 0
+      }
+      dismissedByTeacher[teacherName] += 1
+    })
+  })
 
-  // Вычисляем процент оттока для каждого преподавателя
-  const teacherStats = Object.entries(teacherDismissedCount).map(([name, dismissed]) => {
-    const total = teacherTotalStudents[name]?.size || 0
-    const percentage = total > 0 ? (dismissed / total) * 100 : 0
+  // Формируем итоговую статистику с процентами
+  const teacherStats = Object.entries(dismissedByTeacher).map(([teacherName, count]) => {
+    const totalStudents = teacherStudentCounts[teacherName] || 0
+    const percentage =
+      totalStudents > 0 ? (Number(count) / (totalStudents + Number(count))) * 100 : 0
     return {
-      name,
-      dismissed,
-      total,
-      percentage: Math.round(percentage * 10) / 10, // Округляем до 1 знака
+      teacherName,
+      dismissedCount: Number(count),
+      totalStudents,
+      percentage: Math.round(percentage * 100) / 100, // Округление до двух знаков
     }
   })
 
