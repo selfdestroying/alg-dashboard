@@ -38,6 +38,7 @@ export function DateRangePicker({
               'w-[260px] justify-start text-left font-normal',
               !value && 'text-muted-foreground'
             )}
+            size={'sm'}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value?.from ? (

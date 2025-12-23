@@ -13,7 +13,7 @@ import {
 export const description = 'A bar chart with a custom label'
 
 interface ChartData {
-  name: string
+  teacherName: string
   dismissedCount: number
   totalStudents: number
   percentage: number
@@ -52,7 +52,7 @@ export function ChartByTeacher({ data }: { data: ChartData[] }) {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="name"
+              dataKey="teacherName"
               type="category"
               tickLine={false}
               tickMargin={10}
