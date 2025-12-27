@@ -1,5 +1,5 @@
 import { getGroup } from '@/actions/groups'
-import { getUser, getUsers } from '@/actions/users'
+import { getUserByAuth, getUsers } from '@/actions/users'
 import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ export default async function InfoSection({
 }: {
   group: Awaited<ReturnType<typeof getGroup>>
 }) {
-  const user = await getUser()
+  const user = await getUserByAuth()
   const teachers = await getUsers({})
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">

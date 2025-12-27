@@ -1,5 +1,5 @@
 import { getStudents } from '@/actions/students'
-import { getUser, getUsers } from '@/actions/users'
+import { getUserByAuth, getUsers } from '@/actions/users'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       id: { notIn: lesson?.teachers.map((t) => t.teacherId) },
     },
   })
-  const user = await getUser()
+  const user = await getUserByAuth()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
