@@ -27,6 +27,17 @@ import { NavUser } from './nav-user'
 // This is sample data.
 const navLists = [
   {
+    title: 'Пользователи',
+    icon: Users,
+    items: [
+      {
+        title: 'Все',
+        url: '/dashboard/users',
+        roles: ['ADMIN', 'OWNER', 'MANAGER']
+      }
+    ]
+  },
+  {
     title: 'Ученики',
     icon: Users,
     items: [
