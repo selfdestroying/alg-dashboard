@@ -2,6 +2,7 @@
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
 import { Prisma } from '@prisma/client'
+import bcrypt from 'bcrypt'
 import { revalidatePath } from 'next/cache'
 import { cache } from 'react'
 
@@ -24,8 +25,10 @@ export const getUserByAuth = cache(async (): Promise<UserData | null> => {
 export const getUserById = async (payload: Prisma.UserFindFirstArgs) => {
   return await prisma.user.findFirst({
     omit: {
-      password: true, passwordRequired: true
-    }, ...payload
+      password: true,
+      passwordRequired: true,
+    },
+    ...payload,
   })
 }
 
@@ -40,4 +43,18 @@ export const getUsers = async (payload: Prisma.UserFindManyArgs): Promise<UserDa
     ...payload,
   })
   return users
+}
+
+export const createUser = async (data: Prisma.UserCreateInput) => {
+  const hashedPassword = await bcrypt.hash(data.password, 10)
+
+  const user = await prisma.user.create({
+    data: {
+      ...data,
+      password: hashedPassword,
+    },
+    omit: { password: true, passwordRequired: true },
+  })
+  revalidatePath('dashboard/users')
+  return user
 }
