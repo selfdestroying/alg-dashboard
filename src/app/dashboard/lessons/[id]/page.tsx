@@ -18,7 +18,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             omit: {
               password: true,
               passwordRequired: true,
-              createdAt: true,
             },
           },
         },

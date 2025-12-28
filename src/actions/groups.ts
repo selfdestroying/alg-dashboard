@@ -54,7 +54,6 @@ export const getGroup = async (id: number) => {
             omit: {
               password: true,
               passwordRequired: true,
-              createdAt: true,
             },
           },
         },

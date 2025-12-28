@@ -62,7 +62,6 @@ export default function Salaries({ userId }: { userId?: number }) {
                   omit: {
                     password: true,
                     passwordRequired: true,
-                    createdAt: true,
                   },
                 },
               },
