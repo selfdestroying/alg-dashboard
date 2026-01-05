@@ -1,6 +1,7 @@
 'use client'
 import { UserData } from '@/actions/users'
 import DataTable from '@/components/data-table'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useData } from '@/providers/data-provider'
 import { ColumnDef } from '@tanstack/react-table'
@@ -47,6 +48,15 @@ const getColumns = (): ColumnDef<UserData>[] => [
     header: 'Ставка за индив',
     accessorKey: 'bidForIndividual',
   },
+  {
+    header: 'Статус',
+    accessorKey: 'status',
+    cell: ({ row }) => (
+      <Badge variant={row.original.status == 'ACTIVE' ? 'success' : 'error'}>
+        {row.original.status === 'ACTIVE' ? 'Активен' : 'Неактивен'}
+      </Badge>
+    ),
+  },
 ]
 
 export default function UsersTable({ users }: UsersTableProps) {
@@ -58,10 +68,7 @@ export default function UsersTable({ users }: UsersTableProps) {
       id: 'actions',
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <UsersActions
-            userId={row.original.id}
-            userName={`${row.original.firstName} ${row.original.lastName}`}
-          />
+          <UsersActions user={row.original} />
         </div>
       ),
       size: 50,

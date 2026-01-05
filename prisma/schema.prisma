@@ -13,6 +13,7 @@ model User {
   lastName         String?
   password         String
   role             Role
+  status           UserStatus       @default(ACTIVE)
   passwordRequired Boolean
   bidForLesson     Int             @default(1100)
   bidForIndividual Int             @default(750)
@@ -281,4 +282,9 @@ enum StudentStatus {
   TRIAL
   ACTIVE
   DISMISSED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 }

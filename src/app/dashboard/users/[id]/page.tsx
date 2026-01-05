@@ -1,10 +1,11 @@
 import { getPaychecks } from '@/actions/paycheck'
 import { getUserById } from '@/actions/users'
+import EditUserForm from '@/app/dashboard/users/_components/edit-user-form'
 import FormDialog from '@/components/button-dialog'
 import PaycheckForm from '@/components/forms/paycheck-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, MessageSquare, RussianRuble } from 'lucide-react'
@@ -50,11 +51,37 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   {user.firstName} {user.lastName}
                 </span>
                 <Badge variant={'outline'}>{userRoleMap[user.role]}</Badge>
+                <Badge variant={user.status == 'ACTIVE' ? 'success' : 'error'}>{user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}</Badge>
+
               </div>
             </CardTitle>
           </div>
+          <CardAction>
+            <FormDialog
+              title="Редактировать пользователя"
+              icon="edit"
+              FormComponent={EditUserForm}
+              formComponentProps={{ user }}
+              submitButtonProps={{ form: 'user-form' }}
+              triggerButtonProps={{ variant: 'outline', size: 'sm' }}
+            />
+          </CardAction>
         </CardHeader>
         <CardContent>
+          <div className="mb-2 flex w-full items-center">
+            <div className="text-right">
+              <div className="text-muted-foreground text-sm">Ставка за урок</div>
+              <div className="text-lg font-bold">
+                {user.bidForLesson ? user.bidForLesson.toLocaleString() : '—'} ₽
+              </div>
+            </div>
+            <div className="ml-6 text-right">
+              <div className="text-muted-foreground text-sm">Ставка за индив.</div>
+              <div className="text-lg font-bold">
+                {user.bidForIndividual ? user.bidForIndividual.toLocaleString() : '—'} ₽
+              </div>
+            </div>
+          </div>
           <div className="space-y-2">
             <FormDialog
               title="Создать чек"
