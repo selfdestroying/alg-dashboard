@@ -3,9 +3,9 @@ import { getUserByAuth, getUsers } from '@/actions/users'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
-import AttendanceDialog from './attendance-dialog'
-import InfoSection from './info-section'
-import TeachersSection from './teachers-sections'
+import AttendanceDialog from './_components/attendance-dialog'
+import InfoSection from './_components/info-section'
+import TeachersSection from './_components/teachers-sections'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
