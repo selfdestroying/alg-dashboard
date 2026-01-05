@@ -1,62 +1,30 @@
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import { UserData } from '@/actions/users'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Loader2, MoreVertical, Pen, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { MoreVertical, Pen } from 'lucide-react'
+import { useState } from 'react'
+import EditUserForm from './edit-user-form'
 
 interface UsersActionsProps {
-  userId: number
-  userName: string
+  user: UserData
 }
 
-export default function UsersActions({ userName }: UsersActionsProps) {
+export default function UsersActions({ user }: UsersActionsProps) {
   const [open, setOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const [confirmText, setConfirmText] = useState('')
-
-  const handleReturnToGroup = () => {
-    startTransition(() => {
-      const ok = Promise.resolve()
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ученик успешно возвращен в группу',
-        error: (e) => e.message,
-      })
-      setConfirmOpen(false)
-      setOpen(false)
-    })
-  }
-
-  const handleDelete = () => {
-    startTransition(() => {
-      const ok = Promise.resolve()
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ученик успешно удален',
-        error: (e) => e.message,
-      })
-      setConfirmOpen(false)
-      setOpen(false)
-    })
-  }
+  const [editOpen, setEditOpen] = useState(false)
 
   return (
     <>
@@ -68,61 +36,38 @@ export default function UsersActions({ userName }: UsersActionsProps) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleReturnToGroup}>
-            <Pen />
-            Редактировать
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-
           <DropdownMenuItem
-            variant="destructive"
             onClick={() => {
-              setConfirmOpen(true)
+              setEditOpen(true)
               setOpen(false)
             }}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Удалить
+            <Pen />
+            Редактировать
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Вы уверены, что хотите удалить <strong>{userName}</strong>?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              При удалении записи, будут удалены все связанные с ним сущности. Это действие нельзя
-              будет отменить.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="">
-            <Label htmlFor="confirm">Введите для подтверждения удаления:</Label>
-            <Input
-              id="confirm"
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              placeholder={userName}
-              className="mt-2"
-              autoFocus
-            />
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="flex flex-col overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
+          <DialogHeader className="contents space-y-0 text-left">
+            <DialogTitle className="border-b px-6 py-4 text-base">Редактировать</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto">
+            <div className="px-6">
+              <EditUserForm user={user} />
+            </div>
           </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Отмена</AlertDialogCancel>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={confirmText !== userName || isPending}
-            >
-              {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          <DialogFooter className="border-t px-6 py-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button form="user-form">Подтвердить</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

@@ -1,5 +1,4 @@
 import FormDialog from '@/components/button-dialog'
-import UserForm from '@/components/forms/user-form'
 import {
   Card,
   CardAction,
@@ -9,6 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
+import CreateUserForm from './_components/create-user-form'
 import UsersTable from './_components/users-table'
 
 export default async function Page() {
@@ -27,7 +27,7 @@ export default async function Page() {
           <CardDescription>Список всех пользователей</CardDescription>
           <CardAction>
             <FormDialog
-              FormComponent={UserForm}
+              FormComponent={CreateUserForm}
               title="Добавить пользователя"
               icon="plus"
               submitButtonProps={{

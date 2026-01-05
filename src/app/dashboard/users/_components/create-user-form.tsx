@@ -8,26 +8,31 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { DefaultValues, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 import { createUser } from '@/actions/users'
 import { Button } from '@/components/ui/button'
-import { UserSchema, UserSchemaType } from '@/schemas/user'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { CreateUserSchema, CreateUserSchemaType } from '@/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Role } from '@prisma/client'
 import { Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 interface UserFormProps {
-  defaultValues?: DefaultValues<UserSchemaType>
   onSubmit?: () => void
 }
 
-export default function UserForm({ defaultValues, onSubmit }: UserFormProps) {
-  const form = useForm<UserSchemaType>({
-    resolver: zodResolver(UserSchema),
-    defaultValues: defaultValues || {
+export default function CreateUserForm({ onSubmit }: UserFormProps) {
+  const form = useForm<CreateUserSchemaType>({
+    resolver: zodResolver(CreateUserSchema),
+    defaultValues: {
       firstName: '',
       lastName: '',
       password: '',
@@ -38,8 +43,8 @@ export default function UserForm({ defaultValues, onSubmit }: UserFormProps) {
     },
   })
 
-  async function handleSubmit(values: UserSchemaType) {
-    const promise = createUser({
+  async function handleSubmit(values: CreateUserSchemaType) {
+    const ok = createUser({
       firstName: values.firstName,
       lastName: values.lastName,
       password: values.password,
@@ -49,14 +54,14 @@ export default function UserForm({ defaultValues, onSubmit }: UserFormProps) {
       bidForIndividual: values.bidForIndividual,
     })
 
-    toast.promise(promise, {
+    toast.promise(ok, {
       loading: 'Создание пользователя...',
       success: 'Пользователь успешно создан',
       error: (e) => e.message || 'Ошибка при создании пользователя',
     })
 
     try {
-      await promise
+      await ok
       form.reset()
       onSubmit?.()
     } catch (error) {
