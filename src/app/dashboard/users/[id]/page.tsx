@@ -51,8 +51,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   {user.firstName} {user.lastName}
                 </span>
                 <Badge variant={'outline'}>{userRoleMap[user.role]}</Badge>
-                <Badge variant={user.status == 'ACTIVE' ? 'success' : 'error'}>{user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}</Badge>
-
+                <Badge variant={user.status == 'ACTIVE' ? 'success' : 'error'}>
+                  {user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}
+                </Badge>
               </div>
             </CardTitle>
           </div>
