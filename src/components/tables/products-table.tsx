@@ -6,7 +6,6 @@ import { ColumnDef } from '@tanstack/react-table'
 import { deleteProduct, ProductWithCategory, updateproduct } from '@/actions/products'
 import { ProductSchema, ProductSchemaType } from '@/schemas/product'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 import { DefaultValues, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import FormDialog from '../button-dialog'
@@ -51,7 +50,9 @@ const getColumns = (): ColumnDef<ProductWithCategory>[] => [
     accessorKey: 'image',
     cell: ({ row }) => (
       <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-        <Link href={`/uploads/${row.original.image}`}>{row.original.image}</Link>
+        <a target="_blank" href={row.original.image}>
+          {row.original.image}
+        </a>
       </Button>
     ),
     meta: {
