@@ -5,7 +5,16 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { format } from 'date-fns'
-import { BookOpen, Calendar, CircleAlert, Clock, ExternalLink, User, Users } from 'lucide-react'
+import {
+  BookOpen,
+  Calendar,
+  CircleAlert,
+  Clock,
+  ExternalLink,
+  MapPin,
+  User,
+  Users,
+} from 'lucide-react'
 import { Fragment } from 'react'
 import TeacherGroupBids from './teacher-group-bids'
 
@@ -43,6 +52,14 @@ export default async function InfoSection({
               Курс
             </div>
             <p className="text-sm font-semibold">{group.course.name}</p>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+              <MapPin className="h-3 w-3" />
+              Локация
+            </div>
+            <p className="text-sm font-semibold">{group.location?.name || 'Не указана'}</p>
           </div>
 
           {/* Group Type */}
