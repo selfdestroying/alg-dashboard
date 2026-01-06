@@ -123,19 +123,24 @@ export const deleteStudent = async (id: number) => {
 }
 
 export const getActiveStudents = async () => {
-  const students = await prisma.student.findMany({
-    where: {
-      groups: {
-        some: {},
-      },
-    },
+  const students = await prisma.studentGroup.findMany({
     include: {
-      groups: {
+      group: {
         include: {
-          group: true,
+          location: true,
+          course: true,
+          teachers: {
+            include: {
+              teacher: true,
+            },
+          },
         },
       },
-      payments: true,
+      student: {
+        include: {
+          payments: true,
+        },
+      },
     },
   })
 

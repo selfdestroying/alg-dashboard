@@ -1,5 +1,5 @@
 import { getCourses } from '@/actions/courses'
-import { getUser, getUsers } from '@/actions/users'
+import { getUserByAuth, getUsers } from '@/actions/users'
 import ChristmasLights from '@/components/christmas-lights'
 import { Toaster } from '@/components/toaster'
 import prisma from '@/lib/prisma'
@@ -24,7 +24,7 @@ export default async function RootLayout({
 }>) {
   const courses = await getCourses()
   const users = await getUsers({})
-  const user = await getUser()
+  const user = await getUserByAuth()
   const locations = await prisma.location.findMany()
   return (
     <html lang="en" suppressHydrationWarning>

@@ -48,13 +48,13 @@ export const getGroup = async (id: number) => {
   const group = await prisma.group.findFirstOrThrow({
     where: { id },
     include: {
+      location: true,
       teachers: {
         include: {
           teacher: {
             omit: {
               password: true,
               passwordRequired: true,
-              createdAt: true,
             },
           },
         },

@@ -38,6 +38,26 @@ export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
   revalidatePath('/dashboard/payments')
 }
 
+export const deletePayment = async (payload: Prisma.PaymentDeleteArgs) => {
+  await prisma.payment.delete(payload)
+  revalidatePath('/dashboard/payments')
+}
+
+export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
+  await prisma.$transaction(async (tx) => {
+    const payment = await tx.payment.delete(payload)
+    await tx.student.update({
+      where: { id: payment.studentId },
+      data: {
+        totalLessons: { decrement: payment.lessonCount },
+        totalPayments: { decrement: payment.price },
+        lessonsBalance: { decrement: payment.lessonCount },
+      },
+    })
+  })
+  revalidatePath('/dashboard/payments')
+}
+
 export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
   const product = await prisma.paymentProduct.create(payload)
   revalidatePath('/dashboard/payments')

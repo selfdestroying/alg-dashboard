@@ -17,18 +17,18 @@ export const getProducts = async () => {
 export async function createProduct(values: ProductSchemaType) {
   const file = values.image
 
-  let fileName
-
-  if (file) {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    fileName = `${Date.now()}-${randomUUID().slice(0, 8)}`
-    console.log(fileName)
-    const filePath = path.join(process.cwd(), 'public', 'uploads', fileName)
-
-    await fs.mkdir(path.join(process.cwd(), 'public', 'uploads'), { recursive: true })
-    await fs.writeFile(filePath, buffer)
+  if (!file) {
+    throw new Error('Image is required')
   }
-  await prisma.product.create({ data: { ...values, image: fileName } })
+
+  const buffer = Buffer.from(await file.arrayBuffer())
+  const ext = path.extname(file.name)
+  const fileName = `${Date.now()}-${randomUUID().slice(0, 8)}${ext}`
+  const filePath = path.join('/var/www/storage/images', fileName)
+  const fileUrl = `http://images.alg.tw1.ru/images/${fileName}`
+
+  await fs.writeFile(filePath, buffer)
+  await prisma.product.create({ data: { ...values, image: fileUrl } })
 
   revalidatePath('/dashboard/products')
 }

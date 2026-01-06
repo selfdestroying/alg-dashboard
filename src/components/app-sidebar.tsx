@@ -27,7 +27,20 @@ import { NavUser } from './nav-user'
 // This is sample data.
 const navLists = [
   {
+    title: 'Пользователи',
+    icon: Users,
+    roles: ['ADMIN', 'OWNER', 'MANAGER'],
+    items: [
+      {
+        title: 'Все',
+        url: '/dashboard/users',
+        roles: ['ADMIN', 'OWNER', 'MANAGER'],
+      },
+    ],
+  },
+  {
     title: 'Ученики',
+    roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
     icon: Users,
     items: [
       {
@@ -55,6 +68,7 @@ const navLists = [
   {
     title: 'Группы',
     icon: Folder,
+    roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
     items: [
       {
         title: 'Все',
@@ -66,6 +80,7 @@ const navLists = [
   {
     title: 'Финансы',
     icon: Wallet,
+    roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
     items: [
       {
         title: 'Оплаты',
@@ -87,6 +102,7 @@ const navLists = [
   {
     title: 'Магазин',
     icon: ShoppingCart,
+    roles: ['ADMIN', 'OWNER', 'MANAGER', 'TEACHER'],
     items: [
       {
         title: 'Товары',
@@ -132,40 +148,43 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupLabel>Списки</SidebarGroupLabel>
           <SidebarMenu>
-            {navLists.map((item) => (
-              <Collapsible key={item.title} defaultOpen className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton size="sm" className="cursor-pointer">
-                      <item.icon />
-                      {item.title}{' '}
-                      <ChevronDown className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <ChevronUp className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {item.items?.length ? (
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items.map(
-                          (subItem) =>
-                            subItem.roles.includes(user!.role) && (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  size="sm"
-                                  isActive={pathname === subItem.url}
-                                >
-                                  <Link href={subItem.url}>{subItem.title}</Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            )
-                        )}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  ) : null}
-                </SidebarMenuItem>
-              </Collapsible>
-            ))}
+            {navLists.map(
+              (item) =>
+                item.roles.includes(user!.role) && (
+                  <Collapsible key={item.title} defaultOpen className="group/collapsible">
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton size="sm" className="cursor-pointer">
+                          <item.icon />
+                          {item.title}{' '}
+                          <ChevronDown className="ml-auto group-data-[state=open]/collapsible:hidden" />
+                          <ChevronUp className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      {item.items?.length ? (
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items.map(
+                              (subItem) =>
+                                subItem.roles.includes(user!.role) && (
+                                  <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      size="sm"
+                                      isActive={pathname === subItem.url}
+                                    >
+                                      <Link href={subItem.url}>{subItem.title}</Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                )
+                            )}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      ) : null}
+                    </SidebarMenuItem>
+                  </Collapsible>
+                )
+            )}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

@@ -1,11 +1,20 @@
 import { getGroup } from '@/actions/groups'
-import { getUser, getUsers } from '@/actions/users'
+import { getUserByAuth, getUsers } from '@/actions/users'
 import TeachersMultiSelect from '@/components/teachers-multiselect'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { format } from 'date-fns'
-import { BookOpen, Calendar, CircleAlert, Clock, ExternalLink, User, Users } from 'lucide-react'
+import {
+  BookOpen,
+  Calendar,
+  CircleAlert,
+  Clock,
+  ExternalLink,
+  MapPin,
+  User,
+  Users,
+} from 'lucide-react'
 import { Fragment } from 'react'
 import TeacherGroupBids from './teacher-group-bids'
 
@@ -14,7 +23,7 @@ export default async function InfoSection({
 }: {
   group: Awaited<ReturnType<typeof getGroup>>
 }) {
-  const user = await getUser()
+  const user = await getUserByAuth()
   const teachers = await getUsers({})
   return (
     <Card className="flex flex-col rounded-lg border has-data-[slot=month-view]:flex-1">
@@ -43,6 +52,14 @@ export default async function InfoSection({
               Курс
             </div>
             <p className="text-sm font-semibold">{group.course.name}</p>
+          </div>
+
+          <div className="space-y-1">
+            <div className="text-muted-foreground/60 flex items-center gap-1 text-xs font-medium tracking-wide uppercase">
+              <MapPin className="h-3 w-3" />
+              Локация
+            </div>
+            <p className="text-sm font-semibold">{group.location?.name || 'Не указана'}</p>
           </div>
 
           {/* Group Type */}

@@ -1,11 +1,11 @@
 import { getStudents } from '@/actions/students'
-import { getUser, getUsers } from '@/actions/users'
+import { getUserByAuth, getUsers } from '@/actions/users'
 import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
-import AttendanceDialog from './attendance-dialog'
-import InfoSection from './info-section'
-import TeachersSection from './teachers-sections'
+import AttendanceDialog from './_components/attendance-dialog'
+import InfoSection from './_components/info-section'
+import TeachersSection from './_components/teachers-sections'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
@@ -18,7 +18,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             omit: {
               password: true,
               passwordRequired: true,
-              createdAt: true,
             },
           },
         },
@@ -64,7 +63,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       id: { notIn: lesson?.teachers.map((t) => t.teacherId) },
     },
   })
-  const user = await getUser()
+  const user = await getUserByAuth()
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
