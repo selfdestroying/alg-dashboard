@@ -1,10 +1,10 @@
 import { getLessons } from '@/actions/lessons'
-import { getUserByAuth } from '@/actions/users'
+import { getMe } from '@/actions/users'
 import LessonsTable from '@/components/tables/lessons-table'
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  const user = await getUserByAuth()
+  const user = await getMe()
   if (!user) {
     return redirect('/auth')
   }

@@ -10,7 +10,7 @@ export type UserData = Prisma.UserGetPayload<{
   omit: { password: true; passwordRequired: true }
 }>
 
-export const getUserByAuth = cache(async (): Promise<UserData | null> => {
+export const getMe = cache(async (): Promise<UserData | null> => {
   const { isAuth, userId } = await verifySession()
   if (!isAuth || userId === null) {
     return null

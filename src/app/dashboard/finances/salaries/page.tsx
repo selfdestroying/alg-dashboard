@@ -1,11 +1,11 @@
-import { getUserByAuth, getUsers } from '@/actions/users'
+import { getMe, getUsers } from '@/actions/users'
 import { Card, CardContent } from '@/components/ui/card'
 import { Fragment } from 'react'
 import Salaries from './salaries'
 import TeacherBids from './teacher-bids'
 
 export default async function Page() {
-  const user = await getUserByAuth()
+  const user = await getMe()
   const users = await getUsers({})
 
   return (

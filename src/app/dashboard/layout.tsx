@@ -1,4 +1,4 @@
-import { getUserByAuth } from '@/actions/users'
+import { getMe } from '@/actions/users'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -9,7 +9,7 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await getUserByAuth()
+  const user = await getMe()
   if (!user) {
     return redirect('/auth')
   }
