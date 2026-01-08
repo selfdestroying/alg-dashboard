@@ -1,11 +1,10 @@
 'use server'
 
-import { Option } from '@/components/ui/multiselect'
 import prisma from '@/lib/prisma'
-import { DayOfWeek } from '@/lib/utils'
+import { DayOfWeekShort } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { createLesson, getLessons } from './lessons'
+import { createLesson } from './lessons'
 
 export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
   include: {
@@ -77,7 +76,7 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
       id: groupPayload.data.courseId,
     },
   })
-  const groupName = `${course?.name} ${DayOfWeek[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
+  const groupName = `${course?.name} ${DayOfWeekShort[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...groupPayload.data, name: groupName } })
   await prisma.teacherGroup.create({ data: { groupId: group.id, teacherId } })
   if (groupPayload.data.lessonCount) {
@@ -91,6 +90,11 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
   }
 
   revalidatePath('dashboard/groups')
+}
+
+export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
+  await prisma.group.update(payload)
+  revalidatePath(`/dashboard/groups/${payload.where.id}`)
 }
 
 export const deleteGroup = async (id: number) => {
@@ -186,69 +190,14 @@ export async function updateTeacherGroupBid(
   })
 }
 
-export async function updateTeacherGroup(
-  groupId: number,
-  currentTeachers: Option[],
-  newTeachers: Option[]
-) {
-  const currentTeacherIds = currentTeachers.map((teacher) => +teacher.value)
-  const newTeacherIds = newTeachers.map((teacher) => +teacher.value)
+export async function addTeacherToGroup(payload: Prisma.TeacherGroupCreateArgs) {
+  await prisma.teacherGroup.create(payload)
+  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+}
 
-  const currentSet = new Set(currentTeacherIds)
-  const newSet = new Set(newTeacherIds)
-
-  const toDelete = currentTeacherIds.filter((id) => !newSet.has(id))
-
-  const toAdd = newTeacherIds.filter((id) => !currentSet.has(id))
-
-  await prisma.$transaction(async (tx) => {
-    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
-
-    if (toDelete.length > 0) {
-      await tx.teacherGroup.deleteMany({
-        where: {
-          groupId,
-          teacherId: { in: toDelete },
-        },
-      })
-      await tx.teacherLesson.deleteMany({
-        where: {
-          teacherId: { in: toDelete },
-          lesson: {
-            groupId,
-            date: { gte: today },
-          },
-        },
-      })
-    }
-
-    if (toAdd.length > 0) {
-      await tx.teacherGroup.createMany({
-        data: toAdd.map((teacherId) => ({
-          groupId,
-          teacherId,
-        })),
-        skipDuplicates: true,
-      })
-      const lessons = await getLessons({
-        where: {
-          date: { gte: today },
-          groupId: groupId,
-        },
-      })
-      for (const lesson of lessons) {
-        await tx.teacherLesson.createMany({
-          data: toAdd.map((teacherId) => ({
-            teacherId,
-            lessonId: lesson.id,
-          })),
-          skipDuplicates: true,
-        })
-      }
-    }
-  })
-
-  revalidatePath(`/dashboard/groups/${groupId}`)
+export async function removeTeacherFromGroup(payload: Prisma.TeacherGroupDeleteArgs) {
+  await prisma.teacherGroup.delete(payload)
+  revalidatePath(`/dashboard/groups/${payload.where.groupId}`)
 }
 
 export async function updateStudentGroup(payload: Prisma.StudentGroupUpdateArgs) {

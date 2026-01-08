@@ -1,21 +1,12 @@
 import { getGroup } from '@/actions/groups'
-import { GroupStudentDialog } from '@/components/group-student-dialog'
-import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
-import { GroupStudentsTable } from '@/components/tables/group-students-table'
-import { Card, CardHeader } from '@/components/ui/card'
 import prisma from '@/lib/prisma'
-import InfoSection from './info-section'
+import InfoSection from '../_components/info-section'
+import TeachersSection from '../_components/teachers-section'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
   const group = await getGroup(+id)
-  if (!group) {
-    return (
-      <Card>
-        <CardHeader className="justify-center gap-0">Ошибка при получении группы</CardHeader>
-      </Card>
-    )
-  }
+
   const lessons = await prisma.lesson.findMany({
     where: { groupId: group.id },
     orderBy: { date: 'asc' },
@@ -36,8 +27,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="space-y-4">
-      <InfoSection group={group} />
-      <GroupStudentDialog
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+        <InfoSection group={group} />
+        <TeachersSection group={group} currentTeachers={group.teachers} />
+      </div>
+      <div className="mt-6 grid gap-2 md:grid-cols-2">{/* <InfoSection group={group} /> */}</div>
+      {/* <GroupStudentDialog
         students={students.filter(
           (student) =>
             student.groups.length == 0 || student.groups.find((s) => s.groupId != group.id)
@@ -52,7 +47,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <GroupStudentsTable
         data={group}
         students={students.filter((student) => student.groups.find((s) => s.groupId === group.id))}
-      />
+      /> */}
     </div>
   )
 }
