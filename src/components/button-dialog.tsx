@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { VariantProps } from 'class-variance-authority'
-import { DoorOpen, Edit, LucideProps, Plus } from 'lucide-react'
+import { DoorOpen, LucideProps, Pen, Plus } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
 import { Button, buttonVariants } from './ui/button'
 import { DialogHeader, DialogTitle } from './ui/dialog'
@@ -19,12 +19,12 @@ const IconMap: Record<
   ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
 > = {
   plus: Plus,
-  edit: Edit,
+  edit: Pen,
   doorOpen: DoorOpen,
 }
 
 interface FormDialogProps<T extends object = object> {
-  title: string
+  title?: string
   icon?: keyof typeof IconMap
   description?: string
   FormComponent: React.ComponentType<T & { onSubmit: () => void }>
