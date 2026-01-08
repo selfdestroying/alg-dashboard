@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export enum DayOfWeek {
+export enum DayOfWeekShort {
   'ВСК' = 0,
   'ПН' = 1,
   'ВТ' = 2,
@@ -13,4 +13,14 @@ export enum DayOfWeek {
   'ЧТ' = 4,
   'ПТ' = 5,
   'СБ' = 6,
+}
+
+export enum DayOfWeekLong {
+  'Воскресенье' = 0,
+  'Понедельник' = 1,
+  'Вторник' = 2,
+  'Среда' = 3,
+  'Четверг' = 4,
+  'Пятница' = 5,
+  'Суббота' = 6,
 }

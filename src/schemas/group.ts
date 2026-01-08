@@ -1,7 +1,7 @@
 import { z } from 'zod/v4'
 import { GroupTypeEnum } from './enums'
 
-export const GroupSchema = z.object({
+export const CreateGroupSchema = z.object({
   // required
   teacherId: z.number().int().positive(),
   courseId: z.number().int().positive(),
@@ -14,6 +14,15 @@ export const GroupSchema = z.object({
   lessonCount: z.number().int().positive().optional(),
   lessonsPerWeek: z.number().int().positive().optional(),
   backOfficeUrl: z.string().optional(),
+})
+
+export const editGroupSchema = z.object({
+  courseId: z.number().int().positive().optional(),
+  locationId: z.number().int().positive().optional(),
+  type: GroupTypeEnum.optional(),
+  time: z.string().optional(),
+  backOfficeUrl: z.string().optional(),
+  startDate: z.date({ error: 'Неверная дата начала' }).optional(),
 })
 
 export const StudentGroupSchema = z.object({
@@ -35,7 +44,8 @@ export const DismissSchema = z.object({
   date: z.date(),
 })
 
-export type GroupSchemaType = z.infer<typeof GroupSchema>
+export type CreateGroupSchemaType = z.infer<typeof CreateGroupSchema>
+export type EditGroupSchemaType = z.infer<typeof editGroupSchema>
 export type StudentGroupSchemaType = z.infer<typeof StudentGroupSchema>
 export type GroupStudentSchemaType = z.infer<typeof GroupsStudentSchema>
 export type DismissSchemaType = z.infer<typeof DismissSchema>
