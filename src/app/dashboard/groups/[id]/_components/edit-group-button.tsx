@@ -19,12 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { DaysOfWeek } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import { editGroupSchema, EditGroupSchemaType } from '@/schemas/group'
-import { generateGroupName } from '@/utils/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GroupType } from '@prisma/client'
-import { Pen } from 'lucide-react'
+import { AlertTriangle, Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -34,7 +35,6 @@ interface EditGroupButtonProps {
 }
 
 export default function EditGroupButton({ group }: EditGroupButtonProps) {
-  const { courses } = useData()
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
@@ -45,26 +45,14 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       time: group.time || undefined,
       backOfficeUrl: group.backOfficeUrl || undefined,
       type: group.type || undefined,
+      dayOfWeek: DaysOfWeek.long[group.startDate.getDay()] || undefined,
     },
   })
 
   const handleSubmit = async (data: EditGroupSchemaType) => {
+    const { dayOfWeek, ...rest } = data
     startTransition(async () => {
-      let groupName: string | undefined = undefined
-      const touchedNameParts =
-        Object.prototype.hasOwnProperty.call(data ?? {}, 'courseId') ||
-        Object.prototype.hasOwnProperty.call(data ?? {}, 'startDate') ||
-        Object.prototype.hasOwnProperty.call(data ?? {}, 'time')
-      if (touchedNameParts) {
-        const course = courses.find((c) => c.id === (data.courseId ?? group.courseId))
-        groupName = generateGroupName(
-          course?.name || '',
-          data.startDate || group.startDate,
-          data.time || group.time || ''
-        )
-      }
-      const ok = updateGroup({ where: { id: group.id }, data: { ...data, name: groupName } })
-
+      const ok = updateGroup({ where: { id: group.id }, data: rest }, dayOfWeek)
       toast.promise(ok, {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
@@ -87,7 +75,9 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
         </DialogHeader>
         <EditGroupForm form={form} onSubmit={handleSubmit} />
         <DialogFooter>
-          <Button variant="secondary">Отмена</Button>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
+            Отмена
+          </Button>
           <Button form="edit-group" disabled={isPending}>
             Сохранить
           </Button>
@@ -218,6 +208,47 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                   <SelectItem key={GroupType.INTENSIVE} value={GroupType.INTENSIVE}>
                     Интенсив
                   </SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        />
+        <Controller
+          name="dayOfWeek"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldContent>
+                <div className="flex items-center gap-2">
+                  <FieldLabel htmlFor="form-rhf-select-dayOfWeek">День занятия</FieldLabel>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-help text-amber-500" aria-label="Бета">
+                        <AlertTriangle className="h-4 w-4" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <b>Тестовая функция.</b> При изменении этого поля будут пересчитаны будущие
+                      уроки.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <Select
+                name={field.name}
+                value={field.value?.toString() || ''}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger id="form-rhf-select-dayOfWeek" aria-invalid={fieldState.invalid}>
+                  <SelectValue placeholder="Выберите день недели" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DaysOfWeek.long.map((day) => (
+                    <SelectItem key={day} value={day}>
+                      {day}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>

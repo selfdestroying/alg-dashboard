@@ -13,7 +13,7 @@ model User {
   lastName         String?
   password         String
   role             Role
-  status           UserStatus       @default(ACTIVE)
+  status           UserStatus      @default(ACTIVE)
   passwordRequired Boolean
   bidForLesson     Int             @default(1100)
   bidForIndividual Int             @default(750)
@@ -55,6 +55,7 @@ model Group {
   type          GroupType?
   startDate     DateTime
   endDate       DateTime?
+  dayOfWeek     Int?
   time          String?
   createdAt     DateTime       @default(now())
   backOfficeUrl String?
@@ -112,11 +113,11 @@ model Dismissed {
 }
 
 model TeacherGroup {
-  teacherId    Int
-  groupId      Int
-  group        Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  teacher      User  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  bidForLesson Int?
+  teacherId Int
+  groupId   Int
+  bid       Int   @default(0)
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  teacher   User  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@id([teacherId, groupId])
 }
@@ -124,6 +125,7 @@ model TeacherGroup {
 model TeacherLesson {
   teacherId Int
   lessonId  Int
+  bid       Int    @default(0)
   lesson    Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   teacher   User   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
@@ -241,10 +243,10 @@ model Order {
 }
 
 model PaymentProduct {
-  id Int @id @default(autoincrement())
-  productId Int?
-  name String
-  price Int
+  id          Int    @id @default(autoincrement())
+  productId   Int?
+  name        String
+  price       Int
   lessonCount Int
 }
 

@@ -1,7 +1,7 @@
 import { getGroup } from '@/actions/groups'
 import { getMe } from '@/actions/users'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DayOfWeekLong } from '@/lib/utils'
+import { DaysOfWeek } from '@/lib/utils'
 import { GroupType } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { Book, Calendar, Clock, MapPin, Tag, Users } from 'lucide-react'
@@ -44,10 +44,10 @@ export default async function InfoSection({
           <div className="flex flex-col">
             <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
               <Calendar className="h-3 w-3" />
-              День
+              День занятия
             </div>
             <div className="truncate text-sm font-semibold">
-              {DayOfWeekLong[group.startDate.getDay()]}
+              {group.dayOfWeek ? DaysOfWeek.long[group.dayOfWeek] : '-'}
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 'use client'
+import { getGroup } from '@/actions/groups'
 import { UserData } from '@/actions/users'
 import {
   Table,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
+import { Prisma } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -27,7 +29,7 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import { useState } from 'react'
-import BalanceBadge from '../../lessons/[id]/_components/balance-badge'
+import BalanceBadge from '../../../lessons/[id]/_components/balance-badge'
 import GroupTeacherActions from './group-teachers-actions'
 
 export type Teacher = { teacher: UserData } & {
@@ -35,39 +37,42 @@ export type Teacher = { teacher: UserData } & {
   groupId: number
 }
 
-const getColumns = (): ColumnDef<Teacher>[] => [
-  {
-    header: 'Имя',
-    accessorFn: (row) => `${row.teacher.firstName} ${row.teacher.lastName}`,
-  },
-  {
-    header: 'Ставка за урок',
-    accessorFn: (row) => row.teacher.bidForLesson,
-    cell: ({ row }) => <BalanceBadge balance={row.original.teacher.bidForLesson} />,
-  },
-  {
-    header: 'Ставка за индив.',
-    accessorFn: (row) => row.teacher.bidForIndividual,
-    cell: ({ row }) => <BalanceBadge balance={row.original.teacher.bidForIndividual} />,
-  },
-]
-
 interface GroupTeachersTableProps {
-  teachers: Teacher[]
+  group: Awaited<ReturnType<typeof getGroup>>
 }
-export default function GroupTeachersTable({ teachers }: GroupTeachersTableProps) {
+export default function GroupTeachersTable({ group }: GroupTeachersTableProps) {
   const { user } = useData()
-  const columns = getColumns()
-
-  if (user?.role === 'ADMIN' || user?.role === 'OWNER') {
-    columns.push({
+  const columns: ColumnDef<
+    Prisma.TeacherGroupGetPayload<{
+      include: {
+        teacher: true
+      }
+    }>
+  >[] = [
+    {
+      header: 'Имя',
+      accessorFn: (row) => `${row.teacher.firstName} ${row.teacher.lastName || ''}`,
+    },
+    {
+      header: 'Ставка за индив.',
+      cell: ({ row }) => <BalanceBadge balance={row.original.bid} />,
+    },
+    {
       id: 'actions',
-      cell: ({ row }) => <GroupTeacherActions teacher={row.original.teacher} />,
+      cell: ({ row }) => <GroupTeacherActions tg={row.original} />,
       size: 50,
-    })
-  }
+    },
+  ]
 
-  return <DataTable data={teachers} columns={columns} />
+  return (
+    <DataTable
+      data={group.teachers}
+      columns={columns}
+      defaultColumnVisibility={{
+        actions: user?.role === 'ADMIN' || user?.role === 'OWNER',
+      }}
+    />
+  )
 }
 
 interface DataObject {

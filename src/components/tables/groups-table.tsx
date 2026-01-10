@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 
-import { deleteGroup, GroupWithTeacherAndCourse } from '@/actions/groups'
+import { deleteGroup, getGroups } from '@/actions/groups'
 import { UserData } from '@/actions/users'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,7 +26,9 @@ import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import DataTable from '../data-table'
 
-const getColumns = (users: string[]): ColumnDef<GroupWithTeacherAndCourse>[] => [
+const getColumns = (
+  users: string[]
+): ColumnDef<Awaited<ReturnType<typeof getGroups>>[number]>[] => [
   {
     header: 'Название',
     accessorKey: 'name',
@@ -108,7 +110,7 @@ export default function GroupsTable({
   groups,
 }: {
   user: UserData
-  groups: GroupWithTeacherAndCourse[]
+  groups: Awaited<ReturnType<typeof getGroups>>
 }) {
   const { users } = useData()
   const columns = getColumns(users.flatMap((user) => user.firstName))
@@ -125,7 +127,7 @@ export default function GroupsTable({
   )
 }
 
-function RowActions({ item }: { item: GroupWithTeacherAndCourse }) {
+function RowActions({ item }: { item: Awaited<ReturnType<typeof getGroups>>[number] }) {
   const [isUpdatePending, startUpdateTransition] = useTransition()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [groupName, setGroupName] = useState('')
