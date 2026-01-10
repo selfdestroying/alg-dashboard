@@ -4,7 +4,7 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { DaysOfWeek } from '@/lib/utils'
 import { GroupType } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
-import { Book, Calendar, Clock, MapPin, Tag, Users } from 'lucide-react'
+import { Book, Calendar, Clock, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
 import EditGroupButton from './edit-group-button'
 
 const groupTypeMap: Record<GroupType, string> = {
@@ -30,11 +30,13 @@ export default async function InfoSection({
         )}
       </CardHeader>
       <CardContent>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Book className="h-3 w-3" />
-              Курс
+              <span className="truncate" title="Курс">
+                Курс
+              </span>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <div className="truncate text-sm font-semibold">{group.course.name}</div>
@@ -42,9 +44,11 @@ export default async function InfoSection({
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Calendar className="h-3 w-3" />
-              День занятия
+              <span className="truncate" title="День занятия">
+                День занятия
+              </span>
             </div>
             <div className="truncate text-sm font-semibold">
               {group.dayOfWeek ? DaysOfWeek.long[group.dayOfWeek] : '-'}
@@ -52,25 +56,31 @@ export default async function InfoSection({
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Clock className="h-3 w-3" />
-              Время
+              <span className="truncate" title="Время">
+                Время
+              </span>
             </div>
             <div className="truncate text-sm font-semibold">{group.time}</div>
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <MapPin className="h-3 w-3" />
-              Локация
+              <span className="truncate" title="Локация">
+                Локация
+              </span>
             </div>
             <div className="truncate text-sm font-semibold">{group.location?.name}</div>
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Tag className="h-3 w-3" />
-              Тип
+              <span className="truncate" title="Тип">
+                Тип
+              </span>
             </div>
             <div className="truncate text-sm font-semibold">
               {group.type ? groupTypeMap[group.type] : '-'}
@@ -78,23 +88,51 @@ export default async function InfoSection({
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Users className="h-3 w-3" />
-              Количество учеников
+              <span className="truncate" title="Количество учеников">
+                Количество учеников
+              </span>
             </div>
-            <div className="truncate text-sm font-semibold">{group.students.length}/12</div>
+            <div className="truncate text-sm font-semibold">
+              {group.students.length}/{group.maxStudents}
+            </div>
           </div>
 
           <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium uppercase">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Calendar className="h-3 w-3" />
-              Дата старта
+              <span className="truncate" title="Дата старта">
+                Дата старта
+              </span>
             </div>
             <div className="truncate text-sm font-semibold">
               {toZonedTime(group.startDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}
               {group?.endDate
                 ? ` — ${toZonedTime(group.endDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
                 : ''}{' '}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <ExternalLink className="h-3 w-3" />
+              <span className="truncate" title="Ссылка в amoCRM">
+                Ссылка в БО
+              </span>
+            </div>
+            <div className="text-primary truncate text-sm font-semibold hover:underline">
+              {group.backOfficeUrl ? (
+                <a
+                  href={group.backOfficeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={group.backOfficeUrl}
+                >
+                  {group.backOfficeUrl}
+                </a>
+              ) : (
+                '-'
+              )}
             </div>
           </div>
         </div>

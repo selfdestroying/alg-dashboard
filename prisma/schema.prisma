@@ -57,6 +57,7 @@ model Group {
   endDate       DateTime?
   dayOfWeek     Int?
   time          String?
+  maxStudents   Int            @default(12)
   createdAt     DateTime       @default(now())
   backOfficeUrl String?
   lessonCount   Int?
