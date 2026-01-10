@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useData } from '@/providers/data-provider'
-import { GroupSchema, GroupSchemaType } from '@/schemas/group'
+import { CreateGroupSchema, CreateGroupSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GroupType } from '@prisma/client'
 import { differenceInWeeks, format } from 'date-fns'
@@ -65,15 +65,15 @@ export default function GroupForm({ onSubmit }: { onSubmit?: () => void }) {
   const [hasEndDate, setHasEndDate] = useState(false)
   const { courses, users, locations } = useData()
 
-  const form = useForm<GroupSchemaType>({
-    resolver: zodResolver(GroupSchema),
+  const form = useForm<CreateGroupSchemaType>({
+    resolver: zodResolver(CreateGroupSchema),
     defaultValues: {
       backOfficeUrl: '',
       type: 'GROUP',
     },
   })
 
-  function handleSubmit(values: GroupSchemaType) {
+  function handleSubmit(values: CreateGroupSchemaType) {
     const { teacherId, ...data } = values
     const promise = createGroup({ data: { ...data, name: '' } }, teacherId)
     toast.promise(promise, {

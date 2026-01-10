@@ -1,41 +1,17 @@
 'use server'
 
-import { Option } from '@/components/ui/multiselect'
 import prisma from '@/lib/prisma'
-import { DayOfWeek } from '@/lib/utils'
+import { DayOfWeekShort, DaysOfWeek } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { createLesson, getLessons } from './lessons'
+import { createLesson } from './lessons'
 
-export type GroupWithTeacherAndCourse = Prisma.GroupGetPayload<{
-  include: {
-    teachers: {
-      include: {
-        teacher: {
-          omit: {
-            password: true
-            passwordRequired: true
-            createdAt: true
-          }
-        }
-      }
-    }
-    course: true
-  }
-}>
-
-export const getGroups = async (): Promise<GroupWithTeacherAndCourse[]> => {
+export const getGroups = async () => {
   const groups = await prisma.group.findMany({
     include: {
       teachers: {
         include: {
-          teacher: {
-            omit: {
-              password: true,
-              passwordRequired: true,
-              createdAt: true,
-            },
-          },
+          teacher: true,
         },
       },
       course: true,
@@ -51,12 +27,7 @@ export const getGroup = async (id: number) => {
       location: true,
       teachers: {
         include: {
-          teacher: {
-            omit: {
-              password: true,
-              passwordRequired: true,
-            },
-          },
+          teacher: true,
         },
       },
       course: true,
@@ -77,7 +48,7 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
       id: groupPayload.data.courseId,
     },
   })
-  const groupName = `${course?.name} ${DayOfWeek[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
+  const groupName = `${course?.name} ${DayOfWeekShort[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...groupPayload.data, name: groupName } })
   await prisma.teacherGroup.create({ data: { groupId: group.id, teacherId } })
   if (groupPayload.data.lessonCount) {
@@ -93,16 +64,37 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
   revalidatePath('dashboard/groups')
 }
 
+export const updateGroup = async (payload: Prisma.GroupUpdateArgs, dayOfWeek?: string) => {
+  await prisma.group.update(payload)
+  if (dayOfWeek) {
+    const lessons = await prisma.lesson.findMany({
+      where: { groupId: payload.where.id, date: { gte: new Date() } },
+    })
+    for (const lesson of lessons) {
+      const currentDay = lesson.date.getDay()
+      const targetDay = DaysOfWeek.long.indexOf(dayOfWeek)
+      const diff = targetDay - currentDay
+      lesson.date.setDate(lesson.date.getDate() + diff)
+      console.log('Updating lesson date to:', lesson.date)
+      await prisma.lesson.update({
+        where: { id: lesson.id },
+        data: { date: lesson.date },
+      })
+    }
+  }
+  revalidatePath(`/dashboard/groups/${payload.where.id}`)
+}
+
 export const deleteGroup = async (id: number) => {
   await prisma.group.delete({ where: { id } })
   revalidatePath('dashboard/groups')
 }
 
-export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
-  const { studentId, groupId } = data
+export const createStudentGroup = async (payload: Prisma.StudentGroupUncheckedCreateInput) => {
+  const { studentId, groupId } = payload
 
   await prisma.$transaction(async (tx) => {
-    await tx.studentGroup.create({ data })
+    await tx.studentGroup.create({ data: payload })
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -133,8 +125,8 @@ export const addToGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) 
   revalidatePath(`/dashboard/groups/${groupId}`)
 }
 
-export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateInput) => {
-  const { studentId, groupId } = data
+export const deleteStudentGroup = async (payload: Prisma.StudentGroupUncheckedCreateInput) => {
+  const { studentId, groupId } = payload
 
   await prisma.$transaction(async (tx) => {
     await tx.studentGroup.delete({
@@ -168,89 +160,86 @@ export const removeFromGroup = async (data: Prisma.StudentGroupUncheckedCreateIn
   revalidatePath(`/dashboard/groups/${groupId}`)
 }
 
-export async function updateTeacherGroupBid(
-  bidForLesson: number | null,
-  teacherId: number,
-  groupId: number
-) {
-  await prisma.teacherGroup.update({
-    where: {
-      teacherId_groupId: {
-        teacherId,
-        groupId,
-      },
-    },
-    data: {
-      bidForLesson,
-    },
-  })
-}
-
-export async function updateTeacherGroup(
-  groupId: number,
-  currentTeachers: Option[],
-  newTeachers: Option[]
-) {
-  const currentTeacherIds = currentTeachers.map((teacher) => +teacher.value)
-  const newTeacherIds = newTeachers.map((teacher) => +teacher.value)
-
-  const currentSet = new Set(currentTeacherIds)
-  const newSet = new Set(newTeacherIds)
-
-  const toDelete = currentTeacherIds.filter((id) => !newSet.has(id))
-
-  const toAdd = newTeacherIds.filter((id) => !currentSet.has(id))
-
+export const updateTeacherGroup = async (
+  payload: Prisma.TeacherGroupUpdateArgs,
+  isApplyToLessons: boolean
+) => {
   await prisma.$transaction(async (tx) => {
-    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+    const teacherGroup = await tx.teacherGroup.update(payload)
 
-    if (toDelete.length > 0) {
-      await tx.teacherGroup.deleteMany({
+    if (isApplyToLessons) {
+      await tx.teacherLesson.updateMany({
         where: {
-          groupId,
-          teacherId: { in: toDelete },
-        },
-      })
-      await tx.teacherLesson.deleteMany({
-        where: {
-          teacherId: { in: toDelete },
+          teacherId: teacherGroup.teacherId,
           lesson: {
-            groupId,
-            date: { gte: today },
+            date: { gt: new Date() },
+            groupId: teacherGroup.groupId,
           },
+        },
+        data: {
+          bid: teacherGroup.bid,
         },
       })
     }
+  })
 
-    if (toAdd.length > 0) {
-      await tx.teacherGroup.createMany({
-        data: toAdd.map((teacherId) => ({
-          groupId,
-          teacherId,
-        })),
-        skipDuplicates: true,
-      })
-      const lessons = await getLessons({
+  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+}
+
+export const createTeacherGroup = async (
+  payload: Prisma.TeacherGroupCreateArgs,
+  isApplyToLessons: boolean
+) => {
+  await prisma.$transaction(async (tx) => {
+    const teacherGroup = await tx.teacherGroup.create(payload)
+    if (isApplyToLessons) {
+      const lessons = await tx.lesson.findMany({
         where: {
-          date: { gte: today },
-          groupId: groupId,
+          groupId: teacherGroup.groupId,
+          date: { gt: new Date() },
+          teachers: { none: { teacherId: payload.data.teacherId } },
         },
       })
       for (const lesson of lessons) {
-        await tx.teacherLesson.createMany({
-          data: toAdd.map((teacherId) => ({
-            teacherId,
+        await tx.teacherLesson.create({
+          data: {
             lessonId: lesson.id,
-          })),
-          skipDuplicates: true,
+            teacherId: payload.data.teacherId as number,
+            bid: teacherGroup.bid,
+          },
         })
       }
     }
   })
-
-  revalidatePath(`/dashboard/groups/${groupId}`)
+  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
 }
 
-export async function updateStudentGroup(payload: Prisma.StudentGroupUpdateArgs) {
+export const deleteTeacherGroup = async (
+  payload: Prisma.TeacherGroupDeleteArgs,
+  isApplyToLessons: boolean
+) => {
+  await prisma.$transaction(async (tx) => {
+    const teacherGroup = await tx.teacherGroup.delete({
+      ...payload,
+      include: {
+        group: true,
+      },
+    })
+    if (isApplyToLessons) {
+      await tx.teacherLesson.deleteMany({
+        where: {
+          teacherId: teacherGroup.teacherId,
+          lesson: {
+            date: { gt: new Date() },
+            groupId: teacherGroup.groupId,
+          },
+        },
+      })
+    }
+  })
+  revalidatePath(`/dashboard/groups/${payload.where.groupId}`)
+}
+
+export const updateStudentGroup = async (payload: Prisma.StudentGroupUpdateArgs) => {
   await prisma.studentGroup.update(payload)
 }

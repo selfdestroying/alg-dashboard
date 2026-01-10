@@ -1,5 +1,5 @@
 import { getPaychecks } from '@/actions/paycheck'
-import { getUserByAuth } from '@/actions/users'
+import { getMe } from '@/actions/users'
 import FormDialog from '@/components/button-dialog'
 import PaycheckForm from '@/components/forms/paycheck-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -11,7 +11,7 @@ import { CalendarIcon, MessageSquare, RussianRuble } from 'lucide-react'
 import { ChangePasswordCard } from './change-password-card'
 
 export default async function Page() {
-  const user = await getUserByAuth()
+  const user = await getMe()
 
   if (!user) {
     return <div>User not found</div>

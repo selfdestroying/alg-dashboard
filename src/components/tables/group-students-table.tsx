@@ -1,5 +1,5 @@
 'use client'
-import { getGroup, removeFromGroup } from '@/actions/groups'
+import { deleteStudentGroup, getGroup } from '@/actions/groups'
 import DataTable from '@/components/data-table'
 import DeleteAction from '@/components/delete-action'
 import { Button } from '@/components/ui/button'
@@ -81,7 +81,7 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
         <StudentGroupDialog variant="icon" studentId={row.original.id} fromGroupId={groupId} />
         <DeleteAction
           id={row.original.id}
-          action={() => removeFromGroup({ studentId: row.original.id, groupId })}
+          action={() => deleteStudentGroup({ studentId: row.original.id, groupId })}
           confirmationText={`${row.original.firstName} ${row.original.lastName}`}
         />
       </>
