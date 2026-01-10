@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const DaysOfWeek = {
+  long: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+  short: ['ВСК', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'],
+}
+
 export enum DayOfWeekShort {
   'ВСК' = 0,
   'ПН' = 1,

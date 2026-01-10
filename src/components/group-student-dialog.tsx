@@ -1,6 +1,6 @@
 'use client'
 
-import { addToGroup } from '@/actions/groups'
+import { createStudentGroup } from '@/actions/groups'
 import { cn } from '@/lib/utils'
 import { Student } from '@prisma/client'
 import { CheckIcon, ChevronDownIcon } from 'lucide-react'
@@ -40,7 +40,7 @@ export const GroupStudentDialog: FC<GroupStudenProps> = ({ students, groupId }) 
 
   function handleSubmit() {
     if (fullName) {
-      const ok = addToGroup({
+      const ok = createStudentGroup({
         studentId: students.find(
           (student) => fullName == `${student.firstName} ${student.lastName}`
         )?.id as number,

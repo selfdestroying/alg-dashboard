@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { addToGroup } from './groups'
+import { createStudentGroup } from './groups'
 
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
@@ -34,7 +34,7 @@ export async function returnToGroup(payload: {
 }) {
   const { dismissedId, groupId, studentId } = payload
   await prisma.$transaction(async () => {
-    await addToGroup({ groupId, studentId })
+    await createStudentGroup({ groupId, studentId })
     await removeDismissed({ where: { id: dismissedId } })
   })
 

@@ -1,6 +1,6 @@
 'use client'
 import { addDismissed } from '@/actions/dismissed'
-import { removeFromGroup } from '@/actions/groups'
+import { deleteStudentGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -42,7 +42,7 @@ export default function DismissForm({
   function handleSubmit(values: DismissSchemaType) {
     const promise = Promise.all([
       addDismissed({ data: values }),
-      removeFromGroup({ groupId: values.groupId, studentId: values.studentId }),
+      deleteStudentGroup({ groupId: values.groupId, studentId: values.studentId }),
     ])
     toast.promise(promise, {
       loading: 'Создание группы...',

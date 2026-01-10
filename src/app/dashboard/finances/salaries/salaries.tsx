@@ -68,12 +68,7 @@ export default function Salaries({ userId }: { userId?: number }) {
             },
             group: {
               include: {
-                teachers: {
-                  select: {
-                    teacherId: true,
-                    bidForLesson: true,
-                  },
-                },
+                teachers: true,
               },
             },
           },
@@ -113,7 +108,7 @@ export default function Salaries({ userId }: { userId?: number }) {
             const teacher = tl.teacher
             const bidForLesson = lesson.group.teachers.find(
               (t) => t.teacherId === tl.teacherId
-            )?.bidForLesson
+            )?.bid
             if (!lessonsByTeacher[teacher.id]) {
               lessonsByTeacher[teacher.id] = {
                 teacher: teacher,

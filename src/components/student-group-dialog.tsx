@@ -1,6 +1,6 @@
 'use client'
 
-import { addToGroup, getGroups, removeFromGroup } from '@/actions/groups'
+import { createStudentGroup, deleteStudentGroup, getGroups } from '@/actions/groups'
 import { cn } from '@/lib/utils'
 import { Group } from '@prisma/client'
 import { CheckIcon, ChevronDownIcon, GitCompare } from 'lucide-react'
@@ -53,10 +53,10 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupI
         const targetGroup = groups.find((g) => g.name === fullName)
         if (!targetGroup) throw new Error('Группа не найдена')
 
-        const tasks = [addToGroup({ studentId, groupId: targetGroup.id })]
+        const tasks = [createStudentGroup({ studentId, groupId: targetGroup.id })]
 
         if (fromGroupId && fromGroupId !== targetGroup.id) {
-          tasks.push(removeFromGroup({ studentId, groupId: fromGroupId }))
+          tasks.push(deleteStudentGroup({ studentId, groupId: fromGroupId }))
         }
 
         await Promise.all(tasks)

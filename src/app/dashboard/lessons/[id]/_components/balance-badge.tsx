@@ -3,7 +3,7 @@ import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
 interface BalanceBadgeProps {
-  balance: number
+  balance: number | string
   currency?: string
   className?: string
 }
