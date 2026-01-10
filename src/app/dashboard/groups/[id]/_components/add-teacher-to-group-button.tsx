@@ -23,7 +23,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Group } from '@prisma/client'
 import { Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -35,8 +35,12 @@ interface AddTeacherToGroupButtonProps {
 }
 
 const GroupTeacherSchema = z.object({
-  teacherId: z.number().int().positive(),
-  bid: z.number().int().positive().optional(),
+  teacherId: z.number('Не выбран преподаватель').int().positive(),
+  bid: z
+    .number('Не указана ставка')
+    .int('Ставка должна быть числом')
+    .gte(0, 'Ставка должна быть >= 0')
+    .optional(),
   isApplyToLesson: z.boolean(),
 })
 
@@ -77,6 +81,10 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
     })
   }
 
+  useEffect(() => {
+    form.reset()
+  }, [dialogOpen, form])
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -92,10 +100,10 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
         <GroupTeacherForm form={form} teachers={teachers} onSubmit={handleSubmit} />
 
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="group-teacher-form">
+          <Button disabled={isPending} type="submit" form="group-teacher-form" size={'sm'}>
             Добавить
           </Button>
         </DialogFooter>
@@ -170,7 +178,7 @@ function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
               <Field orientation="horizontal">
                 <FieldLabel
                   htmlFor="toggle-apply-to-lessons"
-                  className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950"
+                  className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950"
                 >
                   <Checkbox
                     id="toggle-apply-to-lessons"

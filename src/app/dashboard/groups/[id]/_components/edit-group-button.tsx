@@ -75,10 +75,10 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
         </DialogHeader>
         <EditGroupForm form={form} onSubmit={handleSubmit} />
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
           </Button>
-          <Button form="edit-group" disabled={isPending}>
+          <Button form="edit-group" disabled={isPending} size={'sm'}>
             Сохранить
           </Button>
         </DialogFooter>

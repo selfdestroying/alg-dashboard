@@ -106,9 +106,7 @@ export default function Salaries({ userId }: { userId?: number }) {
         for (const lesson of lessonsData) {
           for (const tl of lesson.teachers) {
             const teacher = tl.teacher
-            const bidForLesson = lesson.group.teachers.find(
-              (t) => t.teacherId === tl.teacherId
-            )?.bid
+
             if (!lessonsByTeacher[teacher.id]) {
               lessonsByTeacher[teacher.id] = {
                 teacher: teacher,
@@ -117,13 +115,7 @@ export default function Salaries({ userId }: { userId?: number }) {
             }
             lessonsByTeacher[teacher.id].lessons.push({
               ...lesson,
-              price:
-                bidForLesson ??
-                (lesson.group.type == 'GROUP'
-                  ? teacher.bidForLesson
-                  : lesson.group.type == 'INDIVIDUAL'
-                    ? teacher.bidForIndividual
-                    : 0),
+              price: tl.bid,
             })
           }
         }

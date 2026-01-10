@@ -14,6 +14,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,12 +26,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Prisma } from '@prisma/client'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import z from 'zod/v4'
 
 interface UsersActionsProps {
   tg: Prisma.TeacherGroupGetPayload<{
@@ -40,17 +45,36 @@ interface UsersActionsProps {
   }>
 }
 
+const editGroupTeacherSchema = z.object({
+  bid: z
+    .number('Не указана ставка')
+    .int('Ставка должна быть числом')
+    .gte(0, 'Ставка должна быть >= 0'),
+  isApplyToLessons: z.boolean(),
+})
+
+type EditGroupTeacherSchemaType = z.infer<typeof editGroupTeacherSchema>
+
 export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [isApplyToLessons, setIsApplyToLessons] = useState(false)
-  const [bid, setBid] = useState<number>(tg.bid)
+  const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
+  const [deleteCountdown, setDeleteCountdown] = useState(0)
 
-  const handleEdit = () => {
+  const form = useForm<EditGroupTeacherSchemaType>({
+    resolver: zodResolver(editGroupTeacherSchema),
+    defaultValues: {
+      bid: tg.bid,
+      isApplyToLessons: false,
+    },
+  })
+
+  const handleEdit = (data: EditGroupTeacherSchemaType) => {
     startTransition(() => {
-      console.log(isApplyToLessons)
+      const { isApplyToLessons, ...payload } = data
       const ok = updateTeacherGroup(
         {
           where: {
@@ -59,9 +83,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
               groupId: tg.groupId,
             },
           },
-          data: {
-            bid,
-          },
+          data: payload,
         },
         isApplyToLessons
       )
@@ -104,6 +126,35 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
     })
   }
 
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | undefined
+    if (deleteDialogOpen) {
+      const seconds = 3
+      setDeleteCountdown(seconds)
+      setIsDeleteDisabled(true)
+      intervalId = setInterval(() => {
+        setDeleteCountdown((prev) => {
+          if (prev <= 1) {
+            setIsDeleteDisabled(false)
+            if (intervalId) clearInterval(intervalId)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    } else {
+      setIsDeleteDisabled(false)
+      setDeleteCountdown(0)
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [deleteDialogOpen])
+
+  useEffect(() => {
+    form.reset()
+  }, [form, editDialogOpen])
+
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -140,16 +191,13 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Вы уверены, что хотите удалить{' '}
-              <strong>
-                {tg.teacher.firstName} {tg.teacher.lastName || ''}
-              </strong>
-              ?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
-              При удалении записи, будут удалены все связанные с ним сущности. Это действие нельзя
-              будет отменить.
+              Вы уверены что хотите удалить{' '}
+              <b>
+                {tg.teacher.firstName} {tg.teacher.lastName || ''}
+              </b>{' '}
+              из списка преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -168,48 +216,89 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
             <Button variant={'secondary'} size={'sm'} onClick={() => setDeleteDialogOpen(false)}>
               Отмена
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isPending} size={'sm'}>
-              {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isPending || isDeleteDisabled}
+              size={'sm'}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : isDeleteDisabled && deleteCountdown > 0 ? (
+                `Удалить (${deleteCountdown}с)`
+              ) : (
+                'Удалить'
+              )}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="flex flex-col overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
-          <DialogHeader className="contents space-y-0 text-left">
-            <DialogTitle className="border-b px-6 py-4 text-base">Редактировать</DialogTitle>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Редактировать</DialogTitle>
+            <DialogDescription>
+              {tg.teacher.firstName} {tg.teacher.lastName || ''}
+            </DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto">
-            <div className="space-y-2 px-6">
-              <div className="grid w-full items-center gap-3">
-                <Label htmlFor="email">Ставка</Label>
-                <Input
-                  type="number"
-                  id="bid"
-                  defaultValue={bid}
-                  onChange={(e) => setBid(Number(e.target.value))}
-                />
-              </div>
-              <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950">
-                <Checkbox
-                  defaultChecked={isApplyToLessons}
-                  onCheckedChange={(checked) => setIsApplyToLessons(Boolean(checked))}
-                  className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
-                />
-                <div className="grid gap-2 font-normal">
-                  <p className="text-sm leading-none font-medium">Применить к урокам</p>
-                </div>
-              </Label>
-            </div>
-          </div>
-          <DialogFooter className="border-t px-6 py-4">
+
+          <form id="teacher-group-edit-form" onSubmit={form.handleSubmit(handleEdit)}>
+            <FieldGroup className="gap-2">
+              <Controller
+                name="bid"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="form-rhf-input-bid">Ставка</FieldLabel>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </FieldContent>
+                    <Input
+                      id="form-rhf-input-bid"
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="isApplyToLessons"
+                control={form.control}
+                render={({ field }) => (
+                  <Field>
+                    <Field orientation="horizontal">
+                      <FieldLabel
+                        htmlFor="toggle-apply-to-lessons"
+                        className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950"
+                      >
+                        <Checkbox
+                          id="toggle-apply-to-lessons"
+                          name={field.name}
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
+                        />
+                        <div className="grid gap-2 font-normal">
+                          <p className="text-sm leading-none font-medium">Применить к урокам</p>
+                        </div>
+                      </FieldLabel>
+                    </Field>
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </form>
+
+          <DialogFooter>
             <DialogClose asChild>
               <Button variant="secondary" size={'sm'}>
                 Cancel
               </Button>
             </DialogClose>
-            <Button size={'sm'} onClick={handleEdit} disabled={isPending}>
+            <Button size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>

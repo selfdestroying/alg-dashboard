@@ -14,9 +14,6 @@ const generateDayOfWeek = async () => {
 
 const fillTeacherGroupBids = async () => {
   const teacherGroups = await prisma.teacherGroup.findMany({
-    where: {
-      bid: 0,
-    },
     include: {
       teacher: true,
       group: true,
@@ -44,36 +41,52 @@ const fillTeacherGroupBids = async () => {
 }
 
 const fillTeacherLessonBids = async () => {
-  const teacherLessons = await prisma.teacherLesson.findMany({
-    where: {
-      bid: 0,
-    },
-    include: {
-      teacher: true,
-      lesson: {
-        include: {
-          group: {
-            include: {
-              teachers: true,
+  await prisma.$transaction(async (tx) => {
+    const teacherLessons = await tx.teacherLesson.findMany({
+      include: {
+        teacher: true,
+        lesson: {
+          include: {
+            group: {
+              include: {
+                teachers: true,
+              },
             },
           },
         },
       },
-    },
-  })
-  for (const tl of teacherLessons) {
-    await prisma.teacherLesson.update({
-      where: {
-        teacherId_lessonId: {
-          teacherId: tl.teacherId,
-          lessonId: tl.lessonId,
-        },
-      },
-      data: {
-        bid: tl.lesson.group.teachers.find((t) => t.teacherId === tl.teacherId)?.bid,
-      },
     })
-  }
+
+    for (const tl of teacherLessons) {
+      const group = tl.lesson?.group
+      const groupTeacher = group?.teachers?.find((t) => t.teacherId === tl.teacherId)
+
+      let bid = groupTeacher?.bid
+
+      // Fallbacks when group-teacher relation doesn't contain bid
+      if (bid === undefined || bid === null) {
+        if (group?.type === 'GROUP') {
+          bid = tl.teacher?.bidForLesson ?? 0
+        } else if (group?.type === 'INDIVIDUAL') {
+          bid = tl.teacher?.bidForIndividual ?? 0
+        } else {
+          bid = 0
+        }
+      }
+
+      await tx.teacherLesson.update({
+        where: {
+          teacherId_lessonId: {
+            teacherId: tl.teacherId,
+            lessonId: tl.lessonId,
+          },
+        },
+        data: {
+          bid,
+        },
+      })
+    }
+  })
 }
 
 // generateDayOfWeek()
