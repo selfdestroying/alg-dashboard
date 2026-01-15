@@ -41,7 +41,13 @@ export const getStudentWithAttendance = async (id: number) => {
       groups: {
         include: {
           group: {
-            include: { lessons: true },
+            include: {
+              lessons: {
+                orderBy: {
+                  date: 'asc',
+                },
+              },
+            },
           },
         },
       },
