@@ -51,7 +51,7 @@ export default async function InfoSection({
               </span>
             </div>
             <div className="truncate text-sm font-semibold">
-              {group.dayOfWeek ? DaysOfWeek.long[group.dayOfWeek] : '-'}
+              {group.dayOfWeek != null ? DaysOfWeek.long[group.dayOfWeek] : '-'}
             </div>
           </div>
 

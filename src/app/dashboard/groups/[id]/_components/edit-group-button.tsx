@@ -45,14 +45,16 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       time: group.time || undefined,
       backOfficeUrl: group.backOfficeUrl || undefined,
       type: group.type || undefined,
-      dayOfWeek: DaysOfWeek.long[group.startDate.getDay()] || undefined,
+      dayOfWeek: group.dayOfWeek != null ? group.dayOfWeek : undefined,
     },
   })
 
   const handleSubmit = async (data: EditGroupSchemaType) => {
-    const { dayOfWeek, ...rest } = data
     startTransition(async () => {
-      const ok = updateGroup({ where: { id: group.id }, data: rest }, dayOfWeek)
+      const cleanedData = Object.fromEntries(
+        Object.entries(data).filter(([, value]) => value !== undefined)
+      )
+      const ok = updateGroup({ where: { id: group.id }, data: cleanedData })
       toast.promise(ok, {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
@@ -164,7 +166,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
               </FieldContent>
               <Select
                 name={field.name}
-                value={field.value?.toString() || ''}
+                value={field.value != undefined ? field.value.toString() : ''}
                 onValueChange={field.onChange}
               >
                 <SelectTrigger id="form-rhf-select-time" aria-invalid={fieldState.invalid}>
@@ -238,14 +240,14 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
               <Select
                 name={field.name}
                 value={field.value?.toString() || ''}
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(Number(value))}
               >
                 <SelectTrigger id="form-rhf-select-dayOfWeek" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите день недели" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DaysOfWeek.long.map((day) => (
-                    <SelectItem key={day} value={day}>
+                  {DaysOfWeek.long.map((day, index) => (
+                    <SelectItem key={index} value={index.toString()}>
                       {day}
                     </SelectItem>
                   ))}
