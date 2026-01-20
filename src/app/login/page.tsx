@@ -14,42 +14,23 @@ interface GroupedUser {
 export default async function Page() {
   const users = await getUsers({
     include: { role: true },
+    orderBy: { role: { id: 'asc' } },
   })
 
-  const admins = users.filter((user) => user.roleId === 1)
-  const managers = users.filter((user) => user.roleId === 2)
-  const owners = users.filter((user) => user.roleId === 3)
-  const teachers = users.filter((user) => user.roleId === 4)
-
   const groupedUsers = [
-    {
-      value: 'Администраторы',
-      items: admins.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id,
-      })),
-    },
-    {
-      value: 'Владельцы',
-      items: owners.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id,
-      })),
-    },
-    {
-      value: 'Менеджеры',
-      items: managers.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id,
-      })),
-    },
-    {
-      value: 'Преподаватели',
-      items: teachers.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id,
-      })),
-    },
+    ...Object.values(
+      users.reduce<Record<string, GroupedUser>>((acc, user) => {
+        const roleName = user.role.name
+        if (!acc[roleName]) {
+          acc[roleName] = { value: roleName, items: [] }
+        }
+        acc[roleName].items.push({
+          label: getFullName(user.firstName, user.lastName),
+          value: user.id,
+        })
+        return acc
+      }, {})
+    ),
   ]
 
   return (
