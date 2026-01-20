@@ -22,7 +22,6 @@ export default async function Page() {
               teacher: {
                 omit: {
                   password: true,
-                  passwordRequired: true,
                   createdAt: true,
                 },
               },

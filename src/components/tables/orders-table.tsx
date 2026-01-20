@@ -1,8 +1,9 @@
 'use client'
 import { OrderWithProductAndStudent, updateOrder } from '@/actions/orders'
+import useSkipper from '@/hooks/use-skipper'
 import { Order, OrderStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import DataTable from '../data-table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
@@ -10,22 +11,6 @@ const OrderStatusMap: { [key in OrderStatus]: string } = {
   CANCELLED: 'Отменен',
   COMPLETED: 'Выполнен',
   PENDING: 'В ожидании',
-}
-
-function useSkipper() {
-  const shouldSkipRef = useRef(true)
-  const shouldSkip = shouldSkipRef.current
-
-  // Wrap a function with this to skip a pagination reset temporarily
-  const skip = useCallback(() => {
-    shouldSkipRef.current = false
-  }, [])
-
-  useEffect(() => {
-    shouldSkipRef.current = true
-  })
-
-  return [shouldSkip, skip] as const
 }
 
 const getColumns = (

@@ -1,27 +1,13 @@
 'use client'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+
 import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 import { updateUser, UserData } from '@/actions/users'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Field, FieldLabel } from '@/components/ui/field'
 import { useData } from '@/providers/data-provider'
 import { EditUserSchema, EditUserSchemaType } from '@/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Role, UserStatus } from '@prisma/client'
 import { toast } from 'sonner'
 
 interface UserFormProps {
@@ -38,7 +24,6 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
       lastName: user.lastName || '',
       role: user.role,
       status: user.status,
-      passwordRequired: true,
       bidForLesson: user.bidForLesson,
       bidForIndividual: user.bidForIndividual,
     },
@@ -55,7 +40,6 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
           lastName: values.lastName,
           role: values.role,
           status: values.status,
-          passwordRequired: values.passwordRequired,
           bidForLesson: values.bidForLesson,
           bidForIndividual: values.bidForIndividual,
         },
@@ -79,129 +63,86 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
   }
 
   return (
-    <Form {...form}>
-      <form
-        className="@container space-y-6"
-        onSubmit={form.handleSubmit(handleSubmit, (e) => console.log('errors', e))}
-        id="user-form"
-      >
-        <div className="grid grid-cols-12 gap-4">
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                <FormLabel>Имя</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите имя" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <form
+      className="@container space-y-6"
+      onSubmit={form.handleSubmit(handleSubmit, (e) => console.log('errors', e))}
+      id="user-form"
+    >
+      <div className="grid grid-cols-12 gap-4">
+        <Controller
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Имя</FieldLabel>
+              <Input placeholder="Введите имя" type="text" {...field} />
+            </Field>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                <FormLabel>Фамилия</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите фамилию" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Controller
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Фамилия</FieldLabel>
+              <Input placeholder="Введите фамилию" type="text" {...field} />
+            </Field>
+          )}
+        />
 
-          {me?.role === 'ADMIN' ||
-            (me?.role === 'OWNER' && (
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                    <FormLabel>Роль</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Выберите роль" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={Role.MANAGER}>Менеджер</SelectItem>
-                        <SelectItem value={Role.TEACHER}>Преподаватель</SelectItem>
-                        <SelectItem value={Role.ADMIN}>Администратор</SelectItem>
-                        <SelectItem value={Role.OWNER}>Владелец</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <Controller
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Роль</FieldLabel>
+            </Field>
+          )}
+        />
+
+        <Controller
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Статус</FieldLabel>
+            </Field>
+          )}
+        />
+
+        <Controller
+          control={form.control}
+          name="bidForLesson"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Ставка за групповой урок</FieldLabel>
+              <Input
+                placeholder="1100"
+                type="number"
+                {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
               />
-            ))}
+            </Field>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                <FormLabel>Статус</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите статус" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={UserStatus.ACTIVE}>Активен</SelectItem>
-                    <SelectItem value={UserStatus.INACTIVE}>Неактивен</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bidForLesson"
-            render={({ field }) => (
-              <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                <FormLabel>Ставка за групповой урок</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="1100"
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bidForIndividual"
-            render={({ field }) => (
-              <FormItem className="col-span-12 flex flex-col items-start gap-2 space-y-0">
-                <FormLabel>Ставка за индивидуальный урок</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="750"
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </form>
-    </Form>
+        <Controller
+          control={form.control}
+          name="bidForIndividual"
+          render={({ field }) => (
+            <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
+              <FieldLabel>Ставка за индивидуальный урок</FieldLabel>
+              <Input
+                placeholder="750"
+                type="number"
+                {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
+              />
+            </Field>
+          )}
+        />
+      </div>
+    </form>
   )
 }

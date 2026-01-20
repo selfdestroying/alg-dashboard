@@ -1,18 +1,41 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import { defineConfig, globalIgnores } from 'eslint/config'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  eslintConfigPrettier,
+  // Override default ignores of eslint-config-next.
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-const eslintConfig = [
-  ...compat.config({
-    extends: ['next', 'next/core-web-vitals', 'next/typescript', 'prettier'],
-  }),
-]
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    '**/*.config.js',
+    '**/*.config.cjs',
+    '**/*.config.mjs',
+    'scripts/**',
+    'tests/e2e/**',
+    '.prettierrc',
+    '.prettierignore',
+    'postcss.config.mjs',
+    'next.config.ts',
+    'components.json',
+    'node_modules',
+    '.next',
+    'out',
+    'build',
+    'dist',
+    'next-env.d.ts',
+    '*.d.ts',
+    'prisma/migrations',
+    '.DS_Store',
+    '*.log',
+  ]),
+])
 
 export default eslintConfig

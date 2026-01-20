@@ -210,11 +210,12 @@ export default function StudentCard({ student }: StudentCardProps) {
             <div className="space-y-6">
               {student.groups.map((groupData) => (
                 <div key={groupData.group.id} className="space-y-2">
-                  <Button asChild variant="link" size="sm">
-                    <Link href={`/dashboard/groups/${groupData.group.id}`}>
-                      {groupData.group.name}
-                    </Link>
-                  </Button>
+                  <Link
+                    href={`/dashboard/groups/${groupData.group.id}`}
+                    className="text-primary hover:underline"
+                  >
+                    {groupData.group.name}
+                  </Link>
                   <GroupaAttendanceTable
                     data={groupData.group as Awaited<ReturnType<typeof getGroup>>}
                     lessons={groupData.group.lessons}
@@ -285,11 +286,14 @@ function EditableInfoItem({
           onChange={(e) => onChange(field, e.target.value)}
         />
       ) : isLink && value ? (
-        <Button variant="link" asChild size="sm" className="h-fit p-0">
-          <a target="_blank" href={value as string} rel="noopener noreferrer">
-            {value}
-          </a>
-        </Button>
+        <a
+          target="_blank"
+          href={value as string}
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          {value}
+        </a>
       ) : (
         <p className="mt-1 font-medium break-all">
           {value !== null || value !== undefined ? value.toString() : 'Не указано'}

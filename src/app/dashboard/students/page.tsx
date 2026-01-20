@@ -1,36 +1,32 @@
-import { getGroups } from '@/actions/groups'
 import { getStudents } from '@/actions/students'
-import FormDialog from '@/components/button-dialog'
-import StudentForm from '@/components/forms/student-form'
-import { StudentsTable } from '@/components/tables/students-table'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import CreateStudentDialog from './_components/create-student-dialog'
+import StudentsTable from './_components/students-table'
 
 export default async function Page() {
-  const students = await getStudents({})
-  const groups = await getGroups()
+  const students = await getStudents()
 
   return (
-    <>
-      <div className="flex items-center gap-2">
-        <FormDialog
-          title="Добавить ученика"
-          submitButtonProps={{ form: 'student-form' }}
-          FormComponent={StudentForm}
-          formComponentProps={{
-            type: 'create',
-            groups,
-            defaultValues: {
-              firstName: '',
-              lastName: '',
-              age: 0,
-              parentsName: '',
-              crmUrl: '',
-            },
-          }}
-        />
-      </div>
-      <div>
-        <StudentsTable data={students} />
-      </div>
-    </>
+    <div className="grid min-h-0 flex-1 grid-cols-1">
+      <Card>
+        <CardHeader>
+          <CardTitle>Ученики</CardTitle>
+          <CardDescription>Список всех учеников системы</CardDescription>
+          <CardAction>
+            <CreateStudentDialog />
+          </CardAction>
+        </CardHeader>
+        <CardContent className="overflow-hidden">
+          <StudentsTable data={students} />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

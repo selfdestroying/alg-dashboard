@@ -10,7 +10,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import {
   ColumnDef,
@@ -30,7 +29,6 @@ import {
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import { useState } from 'react'
 import BalanceBadge from '../../../lessons/[id]/_components/balance-badge'
-import GroupTeacherActions from './group-teachers-actions'
 
 export type Teacher = { teacher: UserData } & {
   teacherId: number
@@ -41,7 +39,6 @@ interface GroupTeachersTableProps {
   group: Awaited<ReturnType<typeof getGroup>>
 }
 export default function GroupTeachersTable({ group }: GroupTeachersTableProps) {
-  const { user } = useData()
   const columns: ColumnDef<
     Prisma.TeacherGroupGetPayload<{
       include: {
@@ -57,22 +54,9 @@ export default function GroupTeachersTable({ group }: GroupTeachersTableProps) {
       header: 'Ставка за индив.',
       cell: ({ row }) => <BalanceBadge balance={row.original.bid} />,
     },
-    {
-      id: 'actions',
-      cell: ({ row }) => <GroupTeacherActions tg={row.original} />,
-      size: 50,
-    },
   ]
 
-  return (
-    <DataTable
-      data={group.teachers}
-      columns={columns}
-      defaultColumnVisibility={{
-        actions: user?.role === 'ADMIN' || user?.role === 'OWNER',
-      }}
-    />
-  )
+  return <DataTable data={group.teachers} columns={columns} />
 }
 
 interface DataObject {

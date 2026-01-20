@@ -52,10 +52,8 @@ export default function FormDialog<T extends object = object>({
   const Icon = icon ? IconMap[icon] : null
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button {...triggerButtonProps}>
-          {Icon && <Icon />} {title}
-        </Button>
+      <DialogTrigger render={<Button {...triggerButtonProps} />}>
+        {Icon && <Icon />} {title}
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
@@ -70,11 +68,7 @@ export default function FormDialog<T extends object = object>({
           </div>
         </div>
         <DialogFooter className="border-t px-6 py-4">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </DialogClose>
+          <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
           <Button {...submitButtonProps}>Подтвердить</Button>
         </DialogFooter>
       </DialogContent>

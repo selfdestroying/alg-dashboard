@@ -1,6 +1,7 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
+
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createAttendance } from './attendance'
@@ -15,7 +16,6 @@ export type LessonWithGroupAndAttendance = Prisma.LessonGetPayload<{
         teacher: {
           omit: {
             password: true
-            passwordRequired: true
             createdAt: true
           }
         }
@@ -42,7 +42,6 @@ export type LessonWithAttendanceAndGroup = Prisma.LessonGetPayload<{
             teacher: {
               omit: {
                 password: true
-                passwordRequired: true
                 createdAt: true
               }
             }
@@ -73,7 +72,6 @@ export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup
               teacher: {
                 omit: {
                   password: true,
-                  passwordRequired: true,
                   createdAt: true,
                 },
               },

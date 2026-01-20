@@ -40,7 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/*
 
-/public/uploads/*
-/scrapper
-/.vscode
+
+/prisma/generated/prisma
+.vscode/

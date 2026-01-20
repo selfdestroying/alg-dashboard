@@ -1,4 +1,25 @@
-.next
-.vscode
+# Dependencies
 node_modules
-public
+
+# Production
+.next
+out
+build
+
+# Generated files
+*.d.ts
+next-env.d.ts
+
+# Database migrations
+prisma/migrations
+
+# IDE
+.vscode
+.idea
+
+# Uploads
+public/uploads
+
+# Misc
+.DS_Store
+*.log

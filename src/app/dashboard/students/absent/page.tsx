@@ -1,8 +1,12 @@
-import { AbsentAttendanceTable } from '@/components/tables/absent-attendance-table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import prisma from '@/lib/prisma'
+import { getAbsentStatistics } from '@/actions/attendance'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { prisma } from '@/lib/prisma'
+import AbsentAttendanceTable from './_components/absent-attendance-table'
+import AbsentStatistics from './statistics/absent-statistics'
 
 export default async function Page() {
+  const stats = await getAbsentStatistics()
+
   // Выбираем пропуски:
   // 1. Обычные пропуски без отработки
   // 2. Пропуски отработок
@@ -33,13 +37,17 @@ export default async function Page() {
   })
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Пропустившие ученики</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <AbsentAttendanceTable attendance={attendance} />
-      </CardContent>
-    </Card>
+    <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">
+      <AbsentStatistics {...stats} />
+      <Card>
+        <CardHeader>
+          <CardTitle>Ученики</CardTitle>
+          <CardDescription>Список всех учеников системы</CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-hidden">
+          <AbsentAttendanceTable data={attendance} />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

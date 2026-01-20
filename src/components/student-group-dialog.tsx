@@ -73,14 +73,8 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupI
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        {variant === 'icon' ? (
-          <Button variant="ghost" size="icon">
-            <GitCompare />
-          </Button>
-        ) : (
-          <Button>Добавить группу</Button>
-        )}
+      <DialogTrigger render={<Button variant="ghost" size="icon" />}>
+        <GitCompare />
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
@@ -89,26 +83,28 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupI
         <div className="overflow-y-auto px-6 pt-4 pb-6">
           <div className="*:not-first:mt-2">
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal>
-              <PopoverTrigger asChild>
-                <Button
-                  id={id}
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={popoverOpen}
-                  className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
-                >
-                  <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
-                    {fullName ?? 'Выберите группу...'}
-                  </span>
-                  <ChevronDownIcon
-                    size={16}
-                    className="text-muted-foreground/80 shrink-0"
-                    aria-hidden="true"
+              <PopoverTrigger
+                render={
+                  <Button
+                    id={id}
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={popoverOpen}
+                    className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
                   />
-                </Button>
+                }
+              >
+                <span className={cn('truncate', !fullName && 'text-muted-foreground')}>
+                  {fullName ?? 'Выберите группу...'}
+                </span>
+                <ChevronDownIcon
+                  size={16}
+                  className="text-muted-foreground/80 shrink-0"
+                  aria-hidden="true"
+                />
               </PopoverTrigger>
               <PopoverContent
-                className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                className="border-input w-full min-w-(--radix-popper-anchor-width) p-0"
                 align="start"
               >
                 <Command>
@@ -137,11 +133,7 @@ export const StudentGroupDialog: FC<GroupStudenProps> = ({ studentId, fromGroupI
           </div>
         </div>
         <DialogFooter className="border-t px-6 py-4">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </DialogClose>
+          <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
           <Button onClick={handleSubmit}>Подтвердить</Button>
         </DialogFooter>
       </DialogContent>

@@ -1,0 +1,26 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Generated files
+next-env.d.ts
+*.d.ts
+
+# Database
+prisma/migrations
+
+# Misc
+.DS_Store
+*.log
+
+# Config files
+.prettierrc
+.prettierignore
+postcss.config.mjs
+next.config.ts
+components.json

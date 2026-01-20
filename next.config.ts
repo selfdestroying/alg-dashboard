@@ -8,12 +8,7 @@ const nextConfig: NextConfig = {
         hostname: 'images.alg.tw1.ru',
       },
     ],
-  },
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:3000', 'https://pkdvdzkn-3000.inc1.devtunnels.ms'],
-      bodySizeLimit: '5mb',
-    },
-  },
+  } /* config options here */,
 }
+
 export default nextConfig

@@ -129,9 +129,6 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   useEffect(() => {
     let intervalId: ReturnType<typeof setInterval> | undefined
     if (deleteDialogOpen) {
-      const seconds = 3
-      setDeleteCountdown(seconds)
-      setIsDeleteDisabled(true)
       intervalId = setInterval(() => {
         setDeleteCountdown((prev) => {
           if (prev <= 1) {
@@ -142,9 +139,6 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           return prev - 1
         })
       }, 1000)
-    } else {
-      setIsDeleteDisabled(false)
-      setDeleteCountdown(0)
     }
     return () => {
       if (intervalId) clearInterval(intervalId)
@@ -158,10 +152,8 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm">
-            <MoreVertical />
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <MoreVertical />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
@@ -178,6 +170,8 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
+              setDeleteCountdown(3)
+              setIsDeleteDisabled(true)
               setDeleteDialogOpen(true)
               setOpen(false)
             }}
@@ -201,7 +195,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950">
+          <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950">
             <Checkbox
               defaultChecked={isApplyToLessons}
               onCheckedChange={(checked) => setIsApplyToLessons(Boolean(checked))}
@@ -272,7 +266,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
                     <Field orientation="horizontal">
                       <FieldLabel
                         htmlFor="toggle-apply-to-lessons"
-                        className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950"
+                        className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
                       >
                         <Checkbox
                           id="toggle-apply-to-lessons"
@@ -293,11 +287,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           </form>
 
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary" size={'sm'}>
-                Cancel
-              </Button>
-            </DialogClose>
+            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Cancel</DialogClose>
             <Button size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
               Подтвердить
             </Button>

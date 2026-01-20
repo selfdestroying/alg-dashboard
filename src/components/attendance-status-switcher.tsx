@@ -19,8 +19,8 @@ export function AttendanceStatusSwitcher({
 }: AttendanceStatusSwitcherProps) {
   const [isPending, startTransition] = useTransition()
 
-  const handleChange = (newStatus: AttendanceStatus) => {
-    if (newStatus === status) return
+  const handleChange = (newStatus: AttendanceStatus[]) => {
+    if (newStatus[0] === status) return
 
     startTransition(async () => {
       await updateAttendance({
@@ -31,7 +31,7 @@ export function AttendanceStatusSwitcher({
           },
         },
         data: {
-          status: newStatus,
+          status: newStatus[0],
         },
       })
     })
@@ -45,25 +45,28 @@ export function AttendanceStatusSwitcher({
       value={status}
       onValueChange={(v) => v && handleChange(v as AttendanceStatus)}
     >
-      <Tooltip key={'absent'} delayDuration={500}>
+      <Tooltip key={'absent'}>
         {isPending ? (
-          <TooltipTrigger asChild className="h-6">
-            <ToggleGroupItem value={AttendanceStatus.ABSENT} aria-label="absent" disabled>
-              <Loader2 className="animate-spin" />
-            </ToggleGroupItem>
+          <TooltipTrigger
+            render={
+              <ToggleGroupItem value={AttendanceStatus.ABSENT} aria-label="absent" disabled />
+            }
+            className="h-6"
+          >
+            <Loader2 className="animate-spin" />
           </TooltipTrigger>
         ) : (
           <TooltipTrigger
-            asChild
+            render={
+              <ToggleGroupItem
+                value={AttendanceStatus.ABSENT}
+                aria-label="absent"
+                disabled={status === AttendanceStatus.ABSENT || isPending}
+              />
+            }
             className="group h-6 cursor-pointer disabled:border-red-300 disabled:bg-red-100 disabled:opacity-100 disabled:dark:border-red-800 disabled:dark:bg-red-900/20"
           >
-            <ToggleGroupItem
-              value={AttendanceStatus.ABSENT}
-              aria-label="absent"
-              disabled={status === AttendanceStatus.ABSENT || isPending}
-            >
-              <X className="group-disabled:stroke-red-700 group-disabled:dark:stroke-red-300" />
-            </ToggleGroupItem>
+            <X className="group-disabled:stroke-red-700 group-disabled:dark:stroke-red-300" />
           </TooltipTrigger>
         )}
         <TooltipContent>
@@ -71,25 +74,28 @@ export function AttendanceStatusSwitcher({
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip key={'unspecified'} delayDuration={500}>
+      <Tooltip key={'unspecified'}>
         {isPending ? (
-          <TooltipTrigger asChild className="h-6">
-            <ToggleGroupItem value={AttendanceStatus.UNSPECIFIED} aria-label="absent" disabled>
-              <Loader2 className="animate-spin" />
-            </ToggleGroupItem>
+          <TooltipTrigger
+            render={
+              <ToggleGroupItem value={AttendanceStatus.UNSPECIFIED} aria-label="absent" disabled />
+            }
+            className="h-6"
+          >
+            <Loader2 className="animate-spin" />
           </TooltipTrigger>
         ) : (
           <TooltipTrigger
-            asChild
+            render={
+              <ToggleGroupItem
+                value={AttendanceStatus.UNSPECIFIED}
+                aria-label="unspecified"
+                disabled={status === AttendanceStatus.UNSPECIFIED || isPending}
+              />
+            }
             className="group disabled:border-input disabled:bg-accent h-6 cursor-pointer disabled:opacity-100"
           >
-            <ToggleGroupItem
-              value={AttendanceStatus.UNSPECIFIED}
-              aria-label="unspecified"
-              disabled={status === AttendanceStatus.UNSPECIFIED || isPending}
-            >
-              <Minus className="group-disabled:stroke-gray-700 group-disabled:dark:stroke-gray-300" />
-            </ToggleGroupItem>
+            <Minus className="group-disabled:stroke-gray-700 group-disabled:dark:stroke-gray-300" />
           </TooltipTrigger>
         )}
         <TooltipContent>
@@ -97,25 +103,28 @@ export function AttendanceStatusSwitcher({
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip key={'present'} delayDuration={500}>
+      <Tooltip key={'present'}>
         {isPending ? (
-          <TooltipTrigger asChild className="h-6">
-            <ToggleGroupItem value={AttendanceStatus.PRESENT} aria-label="absent" disabled>
-              <Loader2 className="animate-spin" />
-            </ToggleGroupItem>
+          <TooltipTrigger
+            render={
+              <ToggleGroupItem value={AttendanceStatus.PRESENT} aria-label="absent" disabled />
+            }
+            className="h-6"
+          >
+            <Loader2 className="animate-spin" />
           </TooltipTrigger>
         ) : (
           <TooltipTrigger
-            asChild
+            render={
+              <ToggleGroupItem
+                value={AttendanceStatus.PRESENT}
+                aria-label="present"
+                disabled={status === AttendanceStatus.PRESENT || isPending}
+              />
+            }
             className="group h-6 cursor-pointer disabled:border-emerald-300 disabled:bg-emerald-100 disabled:opacity-100 disabled:dark:border-emerald-800 disabled:dark:bg-emerald-900/20"
           >
-            <ToggleGroupItem
-              value={AttendanceStatus.PRESENT}
-              aria-label="present"
-              disabled={status === AttendanceStatus.PRESENT || isPending}
-            >
-              <Check className="group-disabled:stroke-emerald-700 group-disabled:dark:stroke-emerald-300" />
-            </ToggleGroupItem>
+            <Check className="group-disabled:stroke-emerald-700 group-disabled:dark:stroke-emerald-300" />
           </TooltipTrigger>
         )}
         <TooltipContent>

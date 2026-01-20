@@ -3,23 +3,17 @@ import { addDismissed } from '@/actions/dismissed'
 import { deleteStudentGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+
 import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { DismissSchema, DismissSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { Field, FieldLabel } from '../ui/field'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 export default function DismissForm({
   onSubmit,
@@ -53,59 +47,55 @@ export default function DismissForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8" id="dismiss-form">
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 flex gap-4">
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>
-                    Дата отчисления <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <Popover modal>
-                    <PopoverTrigger asChild>
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8" id="dismiss-form">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 flex gap-4">
+          <Controller
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <Field className="w-full">
+                <FieldLabel>
+                  Дата отчисления <span className="text-destructive">*</span>
+                </FieldLabel>
+                <Popover modal>
+                  <PopoverTrigger
+                    render={
                       <Button
                         variant="outline"
                         className="w-full justify-start text-left font-normal"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? format(field.value, 'dd.MM.yyyy') : 'Выбрать дату'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        locale={ru}
                       />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Backoffice URL */}
-          <FormField
-            control={form.control}
-            name="comment"
-            render={({ field }) => (
-              <FormItem className="col-span-12">
-                <FormLabel>Комментарий</FormLabel>
-                <FormControl>
-                  <Input type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                    }
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {field.value ? format(field.value, 'dd.MM.yyyy') : 'Выбрать дату'}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      locale={ru}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
             )}
           />
         </div>
-      </form>
-    </Form>
+
+        {/* Backoffice URL */}
+        <Controller
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <Field className="col-span-12">
+              <FieldLabel>Комментарий</FieldLabel>
+              <Input type="text" {...field} />
+            </Field>
+          )}
+        />
+      </div>
+    </form>
   )
 }

@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { createStudentGroup } from './groups'
@@ -8,7 +8,7 @@ import { createStudentGroup } from './groups'
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
     student: true
-    group: { include: { course: true; teachers: { include: { teacher: true } } } }
+    group: { include: { course: true; location: true; teachers: { include: { teacher: true } } } }
   }
 }>
 
@@ -47,6 +47,7 @@ export async function getDismissedStatistics() {
       group: {
         include: {
           course: true,
+          location: true,
           teachers: {
             include: {
               teacher: true,
@@ -132,12 +133,25 @@ export async function getDismissedStatistics() {
     {} as Record<string, number>
   )
 
+  // Группировка по локациям
+  const locationStats = dismissed.reduce(
+    (acc, item) => {
+      const locationName = item.group.location?.name || 'Не указано'
+      acc[locationName] = (acc[locationName] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
+
   return {
     monthly: Object.entries(monthlyStats)
       .map(([month, count]) => ({ month, count }))
       .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()),
     teachers: teacherStats.sort((a, b) => b.percentage - a.percentage),
     courses: Object.entries(courseStats)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count),
+    locations: Object.entries(locationStats)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),
   }

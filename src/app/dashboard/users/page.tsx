@@ -1,4 +1,3 @@
-import FormDialog from '@/components/button-dialog'
 import {
   Card,
   CardAction,
@@ -7,42 +6,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import prisma from '@/lib/prisma'
-import CreateUserForm from './_components/create-user-form'
+import { prisma } from '@/lib/prisma'
+import CreateUserDialog from './_components/create-user-dialog'
 import UsersTable from './_components/users-table'
 
 export default async function Page() {
   const users = await prisma.user.findMany({
-    omit: {
-      password: true,
-      passwordRequired: true,
+    include: {
+      role: true,
     },
   })
 
   return (
-    <>
+    <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
         <CardHeader>
           <CardTitle>Пользователи</CardTitle>
-          <CardDescription>Список всех пользователей</CardDescription>
+          <CardDescription>Список всех пользователей системы</CardDescription>
           <CardAction>
-            <FormDialog
-              FormComponent={CreateUserForm}
-              title="Добавить пользователя"
-              icon="plus"
-              submitButtonProps={{
-                form: 'user-form',
-              }}
-              triggerButtonProps={{
-                size: 'sm',
-              }}
-            />
+            <CreateUserDialog />
           </CardAction>
         </CardHeader>
-        <CardContent>
-          <UsersTable users={users} />
+        <CardContent className="overflow-hidden">
+          <UsersTable data={users} />
         </CardContent>
       </Card>
-    </>
+    </div>
   )
 }

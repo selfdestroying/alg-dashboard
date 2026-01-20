@@ -1,7 +1,7 @@
 'use server'
 
-import prisma from '@/lib/prisma'
-import { DayOfWeekShort } from '@/lib/utils'
+import { prisma } from '@/lib/prisma'
+import { DaysOfWeek } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
@@ -16,6 +16,12 @@ export const getGroups = async () => {
         },
       },
       course: true,
+      location: true,
+      _count: {
+        select: {
+          students: true,
+        },
+      },
     },
   })
   return groups
@@ -49,7 +55,7 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
       id: groupPayload.data.courseId,
     },
   })
-  const groupName = `${course?.name} ${DayOfWeekShort[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
+  const groupName = `${course?.name} ${DaysOfWeek.short[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...groupPayload.data, name: groupName } })
   await prisma.teacherGroup.create({ data: { groupId: group.id, teacherId } })
   if (groupPayload.data.lessonCount) {

@@ -1,15 +1,9 @@
 'use client'
-import { deleteStudentGroup, getGroup } from '@/actions/groups'
-import DataTable from '@/components/data-table'
-import DeleteAction from '@/components/delete-action'
-import { Button } from '@/components/ui/button'
+import { getFullName } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
-import { ColumnDef } from '@tanstack/react-table'
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
-import { useMemo } from 'react'
-import FormDialog from '../button-dialog'
-import DismissForm from '../forms/dismiss-form'
-import { StudentGroupDialog } from '../student-group-dialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {
@@ -26,7 +20,7 @@ type StudentWithAttendances = Prisma.StudentGetPayload<{
   }
 }>
 
-const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
+const columns: ColumnDef<StudentWithAttendances>[] = [
   {
     id: 'id',
     header: '№',
@@ -37,11 +31,12 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
     header: 'Полное имя',
     accessorFn: (student) => `${student.firstName} ${student.lastName}`,
     cell: ({ row }) => (
-      <Button asChild variant="link" className="h-fit p-0 font-medium">
-        <Link href={`/dashboard/students/${row.original.id}`}>
-          {row.original.firstName} {row.original.lastName}
-        </Link>
-      </Button>
+      <Link
+        href={`/dashboard/students/${row.original.id}`}
+        className="text-primary hover:underline"
+      >
+        {getFullName(row.original.firstName, row.original.lastName)}
+      </Link>
     ),
     meta: { filterVariant: 'text' },
   },
@@ -51,52 +46,64 @@ const getColumns = (groupId: number): ColumnDef<StudentWithAttendances>[] => [
     header: 'Ссылка в amoCRM',
     accessorKey: 'crmUrl',
     cell: ({ row }) => (
-      <Button asChild variant="link" className="h-fit w-fit p-0 font-medium">
-        <a target="_blank" href={row.getValue('crmUrl') || '#'}>
-          {row.getValue('crmUrl') || 'Нет ссылки'}
-        </a>
-      </Button>
+      <a
+        target="_blank"
+        href={row.getValue('crmUrl') || '#'}
+        className="text-primary hover:underline"
+      >
+        {row.getValue('crmUrl') || 'Нет ссылки'}
+      </a>
     ),
     meta: { filterVariant: 'text' },
   },
   { accessorKey: 'login', header: 'Логин', meta: { filterVariant: 'text' } },
   { accessorKey: 'password', header: 'Пароль', meta: { filterVariant: 'text' } },
   { accessorKey: 'coins', header: 'Астрокоины', meta: { filterVariant: 'range' } },
-  {
-    id: 'actions',
-    header: 'Действия',
-    cell: ({ row }) => (
-      <>
-        <FormDialog
-          FormComponent={DismissForm}
-          title=""
-          icon="doorOpen"
-          formComponentProps={{
-            groupId,
-            studentId: row.original.id,
-          }}
-          triggerButtonProps={{ variant: 'ghost', size: 'icon' }}
-          submitButtonProps={{ form: 'dismiss-form' }}
-        />
-        <StudentGroupDialog variant="icon" studentId={row.original.id} fromGroupId={groupId} />
-        <DeleteAction
-          id={row.original.id}
-          action={() => deleteStudentGroup({ studentId: row.original.id, groupId })}
-          confirmationText={`${row.original.firstName} ${row.original.lastName}`}
-        />
-      </>
-    ),
-  },
 ]
 
-export function GroupStudentsTable({
-  students,
-  data,
-}: {
-  data: Awaited<ReturnType<typeof getGroup>>
-  students: StudentWithAttendances[]
-}) {
-  const columns = useMemo(() => getColumns(data.id), [data.id])
+export default function GroupStudentsTable({ data }: { data: StudentWithAttendances[] }) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
 
-  return <DataTable data={students} columns={columns} paginate={false} />
+  return (
+    <div className="flex h-full flex-col gap-2">
+      <Table className="overflow-y-auto">
+        <TableHeader className="bg-card sticky top-0 z-10">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Нет учеников.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
 }

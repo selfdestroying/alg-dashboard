@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { AttendanceStatus, Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
@@ -46,16 +46,20 @@ const updateLessonsBalance = async (
   oldStatus: AttendanceStatus,
   studentId: number
 ) => {
-  if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
+  if (oldStatus === AttendanceStatus.UNSPECIFIED && newStatus !== AttendanceStatus.UNSPECIFIED) {
     await prisma.student.update({
       where: { id: studentId },
       data: { lessonsBalance: { decrement: 1 } },
     })
-  } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
+    return
+  }
+
+  if (oldStatus !== AttendanceStatus.UNSPECIFIED && newStatus === AttendanceStatus.UNSPECIFIED) {
     await prisma.student.update({
       where: { id: studentId },
       data: { lessonsBalance: { increment: 1 } },
     })
+    return
   }
 }
 
@@ -87,12 +91,126 @@ export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateAr
   await prisma.attendance.update(payload)
 }
 
-export const updateDataMock = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
+export const updateDataMock = async (time: number) => {
+  await new Promise((resolve) => setTimeout(resolve, time))
 }
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
   await prisma.attendance.delete(data)
 
   revalidatePath(`/dashboard/lessons/${data.where.lessonId}`)
+}
+
+export const getAbsentStatistics = async () => {
+  const absences = await prisma.attendance.findMany({
+    where: {
+      status: 'ABSENT',
+    },
+    include: {
+      lesson: true,
+      missedMakeup: {
+        include: {
+          makeUpAttendance: true,
+        },
+      },
+    },
+    orderBy: {
+      lesson: {
+        date: 'asc',
+      },
+    },
+  })
+
+  // Calculate average lesson price
+  const aggregate = await prisma.payment.aggregate({
+    _sum: {
+      price: true,
+      lessonCount: true,
+    },
+    where: {
+      lessonCount: { gt: 0 },
+      price: { gt: 0 },
+    },
+  })
+
+  const totalMoney = aggregate._sum.price || 0
+  const totalLessons = aggregate._sum.lessonCount || 0
+  const averagePrice = totalLessons > 0 ? Math.round(totalMoney / totalLessons) : 0
+
+  // Aggregation
+  const monthlyStatsMap = new Map<string, { missed: number; saved: number; timestamp: number }>()
+  const weeklyStatsMap = new Map<string, { missed: number; saved: number; timestamp: number }>()
+
+  absences.forEach((att) => {
+    const date = new Date(att.lesson.date)
+
+    // Monthly Grouping
+    // Key: YYYY-MM
+    const y = date.getFullYear()
+    const m = date.getMonth()
+    const monthKey = `${y}-${String(m + 1).padStart(2, '0')}`
+
+    // Weekly Grouping
+    // Get Monday of the week
+    const d = new Date(date)
+    const day = d.getDay()
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1) // adjust when day is sunday
+    const monday = new Date(d.setDate(diff))
+    monday.setHours(0, 0, 0, 0)
+    const weekKey = monday.toISOString().split('T')[0] // YYYY-MM-DD
+
+    // Check saved status
+    let isSaved = false
+    if (att.missedMakeup?.makeUpAttendance?.status === 'PRESENT') {
+      isSaved = true
+    }
+
+    // Update Monthly
+    if (!monthlyStatsMap.has(monthKey)) {
+      monthlyStatsMap.set(monthKey, { missed: 0, saved: 0, timestamp: new Date(y, m, 1).getTime() })
+    }
+    const mStat = monthlyStatsMap.get(monthKey)!
+    mStat.missed++
+    if (isSaved) mStat.saved++
+
+    // Update Weekly
+    if (!weeklyStatsMap.has(weekKey)) {
+      weeklyStatsMap.set(weekKey, { missed: 0, saved: 0, timestamp: monday.getTime() })
+    }
+    const wStat = weeklyStatsMap.get(weekKey)!
+    wStat.missed++
+    if (isSaved) wStat.saved++
+  })
+
+  // Format and Sort Monthly
+  const monthly = Array.from(monthlyStatsMap.entries())
+    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    .map(([key, val]) => {
+      const dateRep = new Date(val.timestamp)
+      return {
+        name: dateRep.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
+        missed: val.missed,
+        saved: val.saved,
+        missedMoney: val.missed * averagePrice,
+        savedMoney: val.saved * averagePrice,
+        lossMoney: (val.missed - val.saved) * averagePrice,
+      }
+    })
+
+  // Format and Sort Weekly
+  const weekly = Array.from(weeklyStatsMap.entries())
+    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    .map(([key, val]) => {
+      const dateRep = new Date(val.timestamp)
+      return {
+        name: dateRep.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
+        missed: val.missed,
+        saved: val.saved,
+        missedMoney: val.missed * averagePrice,
+        savedMoney: val.saved * averagePrice,
+        lossMoney: (val.missed - val.saved) * averagePrice,
+      }
+    })
+
+  return { averagePrice, monthly, weekly }
 }
