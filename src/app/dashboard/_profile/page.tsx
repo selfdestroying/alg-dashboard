@@ -1,7 +1,5 @@
 import { getPaychecks } from '@/actions/paycheck'
 import { getMe } from '@/actions/users'
-import FormDialog from '@/components/button-dialog'
-import PaycheckForm from '@/components/forms/paycheck-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,19 +34,19 @@ export default async function Page() {
             <CardTitle className="text-2xl font-bold">
               <div className="flex items-center gap-2 text-left">
                 <span className="truncate font-medium">{user.firstName}</span>
-                <Badge variant={'outline'}>{user.role}</Badge>
+                <Badge variant={'outline'}>{user.role.name}</Badge>
               </div>
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <FormDialog
+            {/* <FormDialog
               title="Создать чек"
               FormComponent={PaycheckForm}
               submitButtonProps={{ form: 'paycheck-form' }}
               formComponentProps={{ userId: user.id }}
-            />
+            /> */}
             {paychecks.map((paycheck) => (
               <Card key={paycheck.id}>
                 <CardContent>

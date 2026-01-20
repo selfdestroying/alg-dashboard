@@ -83,10 +83,7 @@ export default function OrdersTable({ orders }: { orders: OrderWithProductAndStu
 
 function StatusAction({ value, onChange }: { value: Order; onChange: (val: OrderStatus) => void }) {
   return (
-    <Select
-      value={value.status != 'PENDING' ? value.status : undefined}
-      onValueChange={(e: OrderStatus) => onChange(e)}
-    >
+    <Select value={value.status != 'PENDING' ? value.status : undefined}>
       <SelectTrigger size="sm">
         <SelectValue placeholder={OrderStatusMap['PENDING']} />
       </SelectTrigger>

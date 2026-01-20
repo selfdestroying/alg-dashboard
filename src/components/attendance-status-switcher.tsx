@@ -39,11 +39,10 @@ export function AttendanceStatusSwitcher({
 
   return (
     <ToggleGroup
-      type="single"
       variant={'outline'}
       size={'sm'}
-      value={status}
-      onValueChange={(v) => v && handleChange(v as AttendanceStatus)}
+      value={[status]}
+      onValueChange={(v) => v && handleChange(v as AttendanceStatus[])}
     >
       <Tooltip key={'absent'}>
         {isPending ? (

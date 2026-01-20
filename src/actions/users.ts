@@ -26,13 +26,10 @@ export const getMe = cache(async (): Promise<UserData | null> => {
   return user
 })
 
-export const getUserById = async (payload: Prisma.UserFindFirstArgs) => {
-  return await prisma.user.findFirst({
-    omit: {
-      password: true,
-    },
-    ...payload,
-  })
+export const getUserById = async <T extends Prisma.UserFindFirstArgs>(
+  payload: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
+) => {
+  return await prisma.user.findFirst(payload)
 }
 
 export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidate?: string) => {

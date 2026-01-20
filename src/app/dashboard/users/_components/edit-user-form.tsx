@@ -5,7 +5,6 @@ import { Controller, useForm } from 'react-hook-form'
 
 import { updateUser, UserData } from '@/actions/users'
 import { Field, FieldLabel } from '@/components/ui/field'
-import { useData } from '@/providers/data-provider'
 import { EditUserSchema, EditUserSchemaType } from '@/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -16,13 +15,12 @@ interface UserFormProps {
 }
 
 export default function EditUserForm({ user, onSubmit }: UserFormProps) {
-  const { user: me } = useData()
   const form = useForm<EditUserSchemaType>({
     resolver: zodResolver(EditUserSchema),
     defaultValues: {
       firstName: user.firstName,
       lastName: user.lastName || '',
-      role: user.role,
+      roleId: user.roleId,
       status: user.status,
       bidForLesson: user.bidForLesson,
       bidForIndividual: user.bidForIndividual,
@@ -38,7 +36,7 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
         data: {
           firstName: values.firstName,
           lastName: values.lastName,
-          role: values.role,
+          roleId: values.roleId,
           status: values.status,
           bidForLesson: values.bidForLesson,
           bidForIndividual: values.bidForIndividual,
@@ -65,7 +63,7 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
   return (
     <form
       className="@container space-y-6"
-      onSubmit={form.handleSubmit(handleSubmit, (e) => console.log('errors', e))}
+      onSubmit={form.handleSubmit(handleSubmit)}
       id="user-form"
     >
       <div className="grid grid-cols-12 gap-4">
@@ -93,7 +91,7 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
 
         <Controller
           control={form.control}
-          name="role"
+          name="roleId"
           render={({ field }) => (
             <Field className="col-span-12 flex flex-col items-start gap-2 space-y-0">
               <FieldLabel>Роль</FieldLabel>
