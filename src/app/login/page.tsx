@@ -11,6 +11,8 @@ interface GroupedUser {
   }[]
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const users = await getUsers({
     include: { role: true },
