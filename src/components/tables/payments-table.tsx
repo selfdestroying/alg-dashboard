@@ -1,10 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-
 import { PaymentsWithStudentAndGroup } from '@/actions/payments'
-import PaymentsActions from '@/app/dashboard/finances/payments/_components/payments-actions'
-import { useData } from '@/providers/data-provider'
 import { ColumnDef } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import Link from 'next/link'
@@ -16,11 +12,12 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
     accessorKey: 'student',
     accessorFn: (item) => `${item.student.firstName} ${item.student.lastName}`,
     cell: ({ row }) => (
-      <Button asChild variant={'link'} size={'sm'} className="h-fit p-0 font-medium">
-        <Link href={`/dashboard/students/${row.original.studentId}`}>
-          {row.getValue('student')}
-        </Link>
-      </Button>
+      <Link
+        href={`/dashboard/students/${row.original.student.id}`}
+        className="text-primary hover:underline"
+      >
+        {row.original.student.firstName} {row.original.student.lastName}
+      </Link>
     ),
     meta: {
       filterVariant: 'text',
@@ -75,13 +72,6 @@ const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
 
 export default function PaymentsTable({ payments }: { payments: PaymentsWithStudentAndGroup[] }) {
   const columns = getColumns()
-  const { user } = useData()
-  if (user?.role !== 'TEACHER') {
-    columns.push({
-      id: 'actions',
-      cell: ({ row }) => <PaymentsActions payment={row.original} />,
-      size: 50,
-    })
-  }
+
   return <DataTable data={payments} columns={columns} paginate />
 }

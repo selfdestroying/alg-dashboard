@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -41,18 +42,20 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
     resolver: zodResolver(editGroupSchema),
     defaultValues: {
       courseId: group.courseId,
-      locationId: group.locationId || undefined,
-      time: group.time || undefined,
-      backOfficeUrl: group.backOfficeUrl || undefined,
-      type: group.type || undefined,
-      dayOfWeek: DaysOfWeek.long[group.startDate.getDay()] || undefined,
+      locationId: group.locationId ?? undefined,
+      time: group.time ?? undefined,
+      backOfficeUrl: group.backOfficeUrl ?? '',
+      type: group.type ?? undefined,
+      dayOfWeek: group.dayOfWeek ?? undefined,
     },
   })
 
-  const handleSubmit = async (data: EditGroupSchemaType) => {
-    const { dayOfWeek, ...rest } = data
-    startTransition(async () => {
-      const ok = updateGroup({ where: { id: group.id }, data: rest }, dayOfWeek)
+  const handleSubmit = (data: EditGroupSchemaType) => {
+    startTransition(() => {
+      const cleanedData = Object.fromEntries(
+        Object.entries(data).filter(([, value]) => value !== undefined)
+      )
+      const ok = updateGroup({ where: { id: group.id }, data: cleanedData })
       toast.promise(ok, {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
@@ -64,10 +67,8 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button size={'icon-sm'} variant={'outline'}>
-          <Pen />
-        </Button>
+      <DialogTrigger render={<Button size={'icon-sm'} variant={'outline'} />}>
+        <Pen />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -78,7 +79,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
           </Button>
-          <Button form="edit-group" disabled={isPending} size={'sm'}>
+          <Button form="edit-group-form" type="submit" disabled={isPending} size={'sm'}>
             Сохранить
           </Button>
         </DialogFooter>
@@ -94,8 +95,9 @@ interface EditGroupFormProps {
 
 function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
   const { courses, locations } = useData()
+
   return (
-    <form id="edit-group" onSubmit={form.handleSubmit(onSubmit)}>
+    <form id="edit-group-form" onSubmit={form.handleSubmit(onSubmit, (err) => console.log(err))}>
       <FieldGroup className="gap-2">
         <Controller
           name="courseId"
@@ -110,16 +112,21 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 name={field.name}
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
+                itemToStringLabel={(itemValue) =>
+                  courses.find((course) => course.id === Number(itemValue))?.name || ''
+                }
               >
                 <SelectTrigger id="form-rhf-select-course" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите курс" />
                 </SelectTrigger>
                 <SelectContent>
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id.toString()}>
-                      {course.name}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id.toString()}>
+                        {course.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
@@ -138,16 +145,21 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 name={field.name}
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
+                itemToStringLabel={(itemValue) =>
+                  locations.find((location) => location.id === Number(itemValue))?.name || ''
+                }
               >
                 <SelectTrigger id="form-rhf-select-location" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите локацию" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location.id} value={location.id.toString()}>
-                      {location.name}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>
+                    {locations.map((location) => (
+                      <SelectItem key={location.id} value={location.id.toString()}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
@@ -164,18 +176,20 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
               </FieldContent>
               <Select
                 name={field.name}
-                value={field.value?.toString() || ''}
+                value={field.value != undefined ? field.value.toString() : ''}
                 onValueChange={field.onChange}
               >
                 <SelectTrigger id="form-rhf-select-time" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите время" />
                 </SelectTrigger>
                 <SelectContent>
-                  {timeSlots.map((timeSlot) => (
-                    <SelectItem key={timeSlot.time} value={timeSlot.time}>
-                      {timeSlot.time}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>
+                    {timeSlots.map((timeSlot) => (
+                      <SelectItem key={timeSlot.time} value={timeSlot.time}>
+                        {timeSlot.time}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
@@ -194,20 +208,31 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 name={field.name}
                 value={field.value?.toString() || ''}
                 onValueChange={field.onChange}
+                itemToStringLabel={(itemValue) =>
+                  itemValue === GroupType.GROUP
+                    ? 'Группа'
+                    : itemValue === GroupType.INDIVIDUAL
+                      ? 'Индив.'
+                      : itemValue === GroupType.INTENSIVE
+                        ? 'Интенсив'
+                        : ''
+                }
               >
                 <SelectTrigger id="form-rhf-select-type" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите тип" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem key={GroupType.GROUP} value={GroupType.GROUP}>
-                    Группа
-                  </SelectItem>
-                  <SelectItem key={GroupType.INDIVIDUAL} value={GroupType.INDIVIDUAL}>
-                    Индив.
-                  </SelectItem>
-                  <SelectItem key={GroupType.INTENSIVE} value={GroupType.INTENSIVE}>
-                    Интенсив
-                  </SelectItem>
+                  <SelectGroup>
+                    <SelectItem key={GroupType.GROUP} value={GroupType.GROUP}>
+                      Группа
+                    </SelectItem>
+                    <SelectItem key={GroupType.INDIVIDUAL} value={GroupType.INDIVIDUAL}>
+                      Индив.
+                    </SelectItem>
+                    <SelectItem key={GroupType.INTENSIVE} value={GroupType.INTENSIVE}>
+                      Интенсив
+                    </SelectItem>
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
@@ -222,10 +247,10 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 <div className="flex items-center gap-2">
                   <FieldLabel htmlFor="form-rhf-select-dayOfWeek">День занятия</FieldLabel>
                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-help text-amber-500" aria-label="Бета">
-                        <AlertTriangle className="h-4 w-4" />
-                      </span>
+                    <TooltipTrigger
+                      render={<span className="cursor-help text-amber-500" aria-label="Бета" />}
+                    >
+                      <AlertTriangle className="h-4 w-4" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <b>Тестовая функция.</b> При изменении этого поля будут пересчитаны будущие
@@ -238,14 +263,15 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
               <Select
                 name={field.name}
                 value={field.value?.toString() || ''}
-                onValueChange={field.onChange}
+                onValueChange={(value) => field.onChange(Number(value))}
+                itemToStringLabel={(itemValue) => DaysOfWeek.full[Number(itemValue)]}
               >
                 <SelectTrigger id="form-rhf-select-dayOfWeek" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите день недели" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DaysOfWeek.long.map((day) => (
-                    <SelectItem key={day} value={day}>
+                  {DaysOfWeek.full.map((day, index) => (
+                    <SelectItem key={index} value={index.toString()}>
                       {day}
                     </SelectItem>
                   ))}

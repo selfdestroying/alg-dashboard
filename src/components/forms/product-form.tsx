@@ -4,11 +4,10 @@ import { ProductSchema, ProductSchemaType } from '@/schemas/product'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Category } from '@prisma/client'
 import { ChangeEvent } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Field, FieldLabel } from '../ui/field'
 import { Input } from '../ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
 
 export default function ProductForm({
@@ -35,144 +34,108 @@ export default function ProductForm({
   }
 
   return (
-    <Form {...form}>
-      <form
-        className="@container space-y-8"
-        onSubmit={form.handleSubmit(handleSubmit)}
-        id="product-form"
-      >
-        <div className="grid grid-cols-12 gap-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Название</FormLabel>
-                <FormControl>
-                  <Input placeholder="" type="text" className=" " {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Описание</FormLabel>
+    <form
+      className="@container space-y-8"
+      onSubmit={form.handleSubmit(handleSubmit)}
+      id="product-form"
+    >
+      <div className="grid grid-cols-12 gap-4">
+        <Controller
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Название</FieldLabel>
+              <Input placeholder="" type="text" className=" " {...field} />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Описание</FieldLabel>
 
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
+              <Textarea {...field} />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Цена</FieldLabel>
+              <Input
+                placeholder=""
+                {...field}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onChange={(e) => {
+                  try {
+                    field.onChange(+e.target.value)
+                  } catch {
+                    field.onChange(0)
+                  }
+                }}
+              />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="quantity"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Количество</FieldLabel>
+              <Input
+                placeholder=""
+                {...field}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                onChange={(e) => {
+                  try {
+                    field.onChange(+e.target.value)
+                  } catch {
+                    field.onChange(0)
+                  }
+                }}
+              />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="categoryId"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Категория</FieldLabel>
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <Field className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
+              <FieldLabel className="flex shrink-0">Изображение</FieldLabel>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Цена</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder=""
-                    {...field}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    onChange={(e) => {
-                      try {
-                        field.onChange(+e.target.value)
-                      } catch {
-                        field.onChange(0)
-                      }
-                    }}
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Количество</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder=""
-                    {...field}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    onChange={(e) => {
-                      try {
-                        field.onChange(+e.target.value)
-                      } catch {
-                        field.onChange(0)
-                      }
-                    }}
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Категория</FormLabel>
-                <Select key="select-0" onValueChange={(value) => field.onChange(+value)}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem className="col-span-12 col-start-auto flex flex-col items-start gap-2 space-y-0 self-end">
-                <FormLabel className="flex shrink-0">Изображение</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      field.onChange(event.target.files![0])
-                    }}
-                    ref={field.ref}
-                    onBlur={field.onBlur}
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </form>
-    </Form>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  field.onChange(event.target.files![0])
+                }}
+                ref={field.ref}
+                onBlur={field.onBlur}
+              />
+            </Field>
+          )}
+        />
+      </div>
+    </form>
   )
 }

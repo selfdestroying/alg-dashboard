@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
 import {
   Table,
   TableBody,
@@ -38,7 +37,6 @@ import {
 import { debounce } from 'es-toolkit'
 import { ArrowDown, ArrowUp, Eye } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import Filter from './filter'
 import { Input } from './ui/input'
 
 declare module '@tanstack/react-table' {
@@ -129,23 +127,12 @@ export default function DataTable<T extends DataObject>({
                 placeholder="Общий поиск..."
               />
             </div>
-            <div className="grid grid-cols-1 items-end gap-2 md:grid-flow-col md:auto-rows-auto md:grid-cols-none">
-              {table
-                .getAllColumns()
-                .map((column) =>
-                  column.getCanFilter() && column.columnDef.meta?.filterVariant != 'text' ? (
-                    <Filter column={column} key={column.id} />
-                  ) : null
-                )}
-            </div>
           </div>
           <div className="w-fit">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Eye className="text-muted-foreground/60" />
-                  Показать/скрыть столбцы
-                </Button>
+              <DropdownMenuTrigger render={<Button variant="outline" />}>
+                <Eye className="text-muted-foreground/60" />
+                Показать/скрыть столбцы
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {table
@@ -249,43 +236,6 @@ export default function DataTable<T extends DataObject>({
         </TableBody>
         <tbody aria-hidden="true" className="table-row h-1"></tbody>
       </Table>
-
-      {/* Pagination */}
-      {table.getRowModel().rows.length > 0 && paginate && (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-muted-foreground flex-1 text-sm whitespace-nowrap" aria-live="polite">
-            Страница{' '}
-            <span className="text-foreground">{table.getState().pagination.pageIndex + 1}</span> из{' '}
-            <span className="text-foreground">{table.getPageCount()}</span>
-          </p>
-          <Pagination className="w-auto">
-            <PaginationContent className="gap-3">
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to previous page"
-                >
-                  Назад
-                </Button>
-              </PaginationItem>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to next page"
-                >
-                  Далее
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
     </div>
   )
 }

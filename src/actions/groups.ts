@@ -1,8 +1,9 @@
 'use server'
 
-import prisma from '@/lib/prisma'
-import { DayOfWeekShort, DaysOfWeek } from '@/lib/utils'
+import { prisma } from '@/lib/prisma'
+import { DaysOfWeek } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
+import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
 import { createLesson } from './lessons'
 
@@ -15,6 +16,12 @@ export const getGroups = async () => {
         },
       },
       course: true,
+      location: true,
+      _count: {
+        select: {
+          students: true,
+        },
+      },
     },
   })
   return groups
@@ -48,7 +55,7 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
       id: groupPayload.data.courseId,
     },
   })
-  const groupName = `${course?.name} ${DayOfWeekShort[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
+  const groupName = `${course?.name} ${DaysOfWeek.short[(groupPayload.data.startDate as Date).getDay()]} ${groupPayload.data.time ?? ''}`
   const group = await prisma.group.create({ data: { ...groupPayload.data, name: groupName } })
   await prisma.teacherGroup.create({ data: { groupId: group.id, teacherId } })
   if (groupPayload.data.lessonCount) {
@@ -64,21 +71,21 @@ export const createGroup = async (groupPayload: Prisma.GroupCreateArgs, teacherI
   revalidatePath('dashboard/groups')
 }
 
-export const updateGroup = async (payload: Prisma.GroupUpdateArgs, dayOfWeek?: string) => {
+export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
   await prisma.group.update(payload)
-  if (dayOfWeek) {
+  const dayOfWeek = payload.data.dayOfWeek
+  if (dayOfWeek != null) {
     const lessons = await prisma.lesson.findMany({
       where: { groupId: payload.where.id, date: { gte: new Date() } },
     })
     for (const lesson of lessons) {
       const currentDay = lesson.date.getDay()
-      const targetDay = DaysOfWeek.long.indexOf(dayOfWeek)
+      const targetDay = dayOfWeek as number
       const diff = targetDay - currentDay
       lesson.date.setDate(lesson.date.getDate() + diff)
-      console.log('Updating lesson date to:', lesson.date)
       await prisma.lesson.update({
         where: { id: lesson.id },
-        data: { date: lesson.date },
+        data: { date: toZonedTime(lesson.date, 'Europe/Moscow') },
       })
     }
   }

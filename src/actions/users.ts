@@ -1,13 +1,15 @@
 'use server'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
 import { Prisma } from '@prisma/client'
+
 import bcrypt from 'bcrypt'
 import { revalidatePath } from 'next/cache'
 import { cache } from 'react'
 
 export type UserData = Prisma.UserGetPayload<{
-  omit: { password: true; passwordRequired: true }
+  include: { role: true }
+  omit: { password: true }
 }>
 
 export const getMe = cache(async (): Promise<UserData | null> => {
@@ -17,19 +19,17 @@ export const getMe = cache(async (): Promise<UserData | null> => {
   }
   const user = await prisma.user.findFirst({
     where: { id: userId },
-    omit: { password: true, passwordRequired: true },
+    include: { role: true },
+    omit: { password: true },
   })
+
   return user
 })
 
-export const getUserById = async (payload: Prisma.UserFindFirstArgs) => {
-  return await prisma.user.findFirst({
-    omit: {
-      password: true,
-      passwordRequired: true,
-    },
-    ...payload,
-  })
+export const getUserById = async <T extends Prisma.UserFindFirstArgs>(
+  payload: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
+) => {
+  return await prisma.user.findFirst(payload)
 }
 
 export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidate?: string) => {
@@ -37,23 +37,22 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidat
   if (pathToRevalidate) revalidatePath(pathToRevalidate)
 }
 
-export const getUsers = async (payload: Prisma.UserFindManyArgs): Promise<UserData[]> => {
-  const users: UserData[] = await prisma.user.findMany({
-    omit: { password: true, passwordRequired: true },
-    ...payload,
-  })
+export const getUsers = async <T extends Prisma.UserFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+) => {
+  const users = await prisma.user.findMany<T>(payload)
   return users
 }
 
-export const createUser = async (data: Prisma.UserCreateInput) => {
-  const hashedPassword = await bcrypt.hash(data.password, 10)
+export const createUser = async (payload: Prisma.UserCreateArgs) => {
+  const hashedPassword = await bcrypt.hash(payload.data.password, 10)
 
   const user = await prisma.user.create({
     data: {
-      ...data,
+      ...payload.data,
       password: hashedPassword,
     },
-    omit: { password: true, passwordRequired: true },
+    omit: { password: true },
   })
   revalidatePath('dashboard/users')
   return user

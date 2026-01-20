@@ -2,22 +2,27 @@
 import { getLessons } from '@/actions/lessons'
 import { getPaychecks } from '@/actions/paycheck'
 import { UserData } from '@/actions/users'
-import { DateRangePicker } from '@/components/date-range-picker'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
-import { getUtcRangeForLocalDays } from '@/utils/time'
 import { PayCheck, Prisma } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
-import { Calendar, ChevronsUpDown, Users } from 'lucide-react'
+import { CalendarIcon, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { DateRange } from 'react-day-picker'
+import { type DateRange } from 'react-day-picker'
 
 export default function Salaries({ userId }: { userId?: number }) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const today = new Date()
+    return {
+      from: new Date(today.getFullYear(), today.getMonth(), 1),
+      to: new Date(today.getFullYear(), today.getMonth() + 1, 0),
+    }
+  })
   const [lessons, setLessons] = useState<
     {
       teacher: UserData
@@ -28,7 +33,6 @@ export default function Salaries({ userId }: { userId?: number }) {
               teacher: {
                 omit: {
                   password: true
-                  passwordRequired: true
                   createdAt: true
                 }
               }
@@ -45,12 +49,15 @@ export default function Salaries({ userId }: { userId?: number }) {
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
-        const { startUtc, endUtc } = getUtcRangeForLocalDays(dateRange)
+        const { startDate, endDate } = {
+          startDate: toZonedTime(dateRange.from, 'Europe/Moscow'),
+          endDate: toZonedTime(dateRange.to, 'Europe/Moscow'),
+        }
         const lessonsData = await getLessons({
           where: {
             date: {
-              gte: startUtc,
-              lte: endUtc,
+              gte: startDate,
+              lte: endDate,
             },
             status: { not: 'CANCELLED' },
             teachers: userId ? { some: { teacherId: userId } } : undefined,
@@ -59,9 +66,11 @@ export default function Salaries({ userId }: { userId?: number }) {
             teachers: {
               include: {
                 teacher: {
+                  include: {
+                    role: true,
+                  },
                   omit: {
                     password: true,
-                    passwordRequired: true,
                   },
                 },
               },
@@ -77,8 +86,8 @@ export default function Salaries({ userId }: { userId?: number }) {
         const paychecksData = await getPaychecks({
           where: {
             date: {
-              gte: startUtc,
-              lte: endUtc,
+              gte: startDate,
+              lte: endDate,
             },
           },
         })
@@ -136,15 +145,14 @@ export default function Salaries({ userId }: { userId?: number }) {
     <Card>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-4">
-          <DateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            calendarProps={{
-              numberOfMonths: 2,
-              disabled: { after: today, before: new Date(2025, 8, 1) },
-              locale: ru,
-            }}
+          <Calendar
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={setDateRange}
+            locale={ru}
           />
+
           <Button variant="outline" onClick={() => setDateRange(undefined)}>
             Сбросить
           </Button>
@@ -166,11 +174,11 @@ export default function Salaries({ userId }: { userId?: number }) {
                       ).toLocaleString()}{' '}
                       ₽
                     </div>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="icon" className="size-8">
-                        <ChevronsUpDown />
-                        <span className="sr-only">Toggle</span>
-                      </Button>
+                    <CollapsibleTrigger
+                      render={<Button variant="ghost" size="icon" className="size-8" />}
+                    >
+                      <ChevronsUpDown />
+                      <span className="sr-only">Toggle</span>
                     </CollapsibleTrigger>
                   </CardTitle>
                 </CardHeader>
@@ -184,7 +192,7 @@ export default function Salaries({ userId }: { userId?: number }) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Calendar className="text-muted-foreground h-4 w-4" />
+                            <CalendarIcon className="text-muted-foreground h-4 w-4" />
                             <span className="font-medium">
                               {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString(
                                 'ru-RU',

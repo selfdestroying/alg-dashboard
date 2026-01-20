@@ -1,15 +1,15 @@
 'use client'
 
 import { getLessons } from '@/actions/lessons'
-import { DateRangePicker } from '@/components/date-range-picker'
+import TableFilter, { TableFilterItem } from '@/components/table-filter'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
-import MultipleSelector, { Option } from '@/components/ui/multiselect'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 import { RevenueSummary } from './revenue-summary'
 import { RevenueTable } from './revenue-table'
@@ -74,9 +74,15 @@ export function transformLessonsToRevenueData(
 }
 
 export default function RevenueClient() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [selectedLocations, setSelectedLocations] = useState<Option[]>([])
-  const [selectedCourses, setSelectedCourses] = useState<Option[]>([])
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const today = new Date()
+    return {
+      from: new Date(today.getFullYear(), today.getMonth(), 1),
+      to: new Date(today.getFullYear(), today.getMonth() + 1, 0),
+    }
+  })
+  const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
+  const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])
 
   const { locations, courses } = useData()
 
@@ -141,46 +147,38 @@ export default function RevenueClient() {
   }, [dateRange, selectedCourses, selectedLocations])
 
   function resetFilters() {
-    setDateRange(undefined)
+    const start = new Date(today.getFullYear(), today.getMonth(), 1)
+    const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+    setDateRange({ from: start, to: end })
     setSelectedLocations([])
     setSelectedCourses([])
   }
 
+  const mappedCourses = useMemo(
+    () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
+    [courses]
+  )
+  const mappedLocations = useMemo(
+    () =>
+      locations.map((location) => ({
+        label: location.name,
+        value: location.id.toString(),
+      })),
+    [locations]
+  )
   return (
     <Card>
-      <CardContent className="space-y-2">
-        <div className="flex items-center gap-2">
-          <DateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            calendarProps={{
-              numberOfMonths: 2,
-              disabled: { after: today, before: new Date(2025, 8, 1) },
-              locale: ru,
-            }}
+      <CardContent className="space-y-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+          <Calendar
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={setDateRange}
+            locale={ru}
           />
-          <MultipleSelector
-            defaultOptions={locations.map((location) => ({
-              label: location.name,
-              value: location.id.toString(),
-            }))}
-            value={selectedLocations}
-            placeholder="Выберите локацию"
-            emptyIndicator={<p className="text-center text-sm">Нет подходящих локаций</p>}
-            hidePlaceholderWhenSelected
-            onChange={setSelectedLocations}
-          />
-          <MultipleSelector
-            defaultOptions={courses.map((course) => ({
-              label: course.name,
-              value: course.id.toString(),
-            }))}
-            value={selectedCourses}
-            placeholder="Выберите курс"
-            emptyIndicator={<p className="text-center text-sm">Нет подходящих курсов</p>}
-            hidePlaceholderWhenSelected
-            onChange={setSelectedCourses}
-          />
+          <TableFilter items={mappedCourses} label="Курс" onChange={setSelectedCourses} />
+          <TableFilter items={mappedLocations} label="Локация" onChange={setSelectedLocations} />
           <Button variant="outline" onClick={resetFilters}>
             Сбросить
           </Button>
@@ -213,12 +211,6 @@ export default function RevenueClient() {
           paymentRate={0 / 0}
         />
         <RevenueTable data={transformLessonsToRevenueData(lessons)} />
-        {/* <RevenueChart
-          data={transformLessonsToRevenueData(lessons).map((item) => ({
-            date: item.date,
-            revenue: item.revenue,
-          }))}
-        /> */}
       </CardContent>
     </Card>
   )

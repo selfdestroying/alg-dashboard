@@ -6,26 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const DaysOfWeek = {
-  long: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-  short: ['ВСК', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'],
+  short: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+  full: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
 }
 
-export enum DayOfWeekShort {
-  'ВСК' = 0,
-  'ПН' = 1,
-  'ВТ' = 2,
-  'СР' = 3,
-  'ЧТ' = 4,
-  'ПТ' = 5,
-  'СБ' = 6,
-}
-
-export enum DayOfWeekLong {
-  'Воскресенье' = 0,
-  'Понедельник' = 1,
-  'Вторник' = 2,
-  'Среда' = 3,
-  'Четверг' = 4,
-  'Пятница' = 5,
-  'Суббота' = 6,
+export function getFullName(firstName: string, lastName: string | null): string {
+  return lastName ? `${firstName} ${lastName}` : firstName
 }

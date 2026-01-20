@@ -1,30 +1,25 @@
 'use server'
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { changePasswordSchema, signInFormSchema } from '@/schemas/auth'
 import bcrypt from 'bcrypt'
 import { redirect } from 'next/navigation'
+import z from 'zod/v4'
 import { createSession, deleteSession } from '../lib/session'
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function sigin(state: any | undefined, formData: FormData): Promise<any | undefined> {
-  const validatedFields = signInFormSchema.safeParse({
-    userId: formData.get('userId'),
-    password: formData.get('password'),
-  })
 
-  if (!validatedFields.success) {
-    return { success: false, message: validatedFields.error.message }
-  }
+export async function login(payload: z.infer<typeof signInFormSchema>) {
+  const {
+    user: { value: userId },
+    password,
+  } = payload
 
-  const { userId, password } = validatedFields.data
-
-  const user = await prisma.user.findFirst({ where: { id: parseInt(userId) } })
+  const user = await prisma.user.findFirst({ where: { id: userId } })
   if (!user) {
-    return { success: false, message: 'User not found' }
+    return { success: false, name: 'user', message: 'Пользователь не найден' }
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password)
   if (!isValidPassword) {
-    return { success: false, message: 'Invalid password' }
+    return { success: false, name: 'password', message: 'Неверный пароль' }
   }
 
   await createSession(user.id)
@@ -68,7 +63,7 @@ export async function changePassword(state: any | undefined, formData: FormData)
   return { success: true, message: 'Пароль успешно изменен' }
 }
 
-export async function signout() {
+export async function logout() {
   await deleteSession()
-  redirect('/auth')
+  redirect('/login')
 }

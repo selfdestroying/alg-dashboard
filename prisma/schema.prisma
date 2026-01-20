@@ -12,15 +12,27 @@ model User {
   firstName        String
   lastName         String?
   password         String
-  role             Role
+  roleId           Int             @default(1)
   status           UserStatus      @default(ACTIVE)
-  passwordRequired Boolean
   bidForLesson     Int             @default(1100)
   bidForIndividual Int             @default(750)
   createdAt        DateTime        @default(now())
+  role             Role            @relation(fields: [roleId], references: [id])
   groups           TeacherGroup[]
   lessons          TeacherLesson[]
   payChecks        PayCheck[]
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  users User[]
 }
 
 model Student {
@@ -249,13 +261,6 @@ model PaymentProduct {
   name        String
   price       Int
   lessonCount Int
-}
-
-enum Role {
-  ADMIN
-  OWNER
-  MANAGER
-  TEACHER
 }
 
 enum GroupType {

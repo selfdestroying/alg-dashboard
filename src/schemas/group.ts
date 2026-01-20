@@ -22,7 +22,7 @@ export const editGroupSchema = z.object({
   type: GroupTypeEnum.optional(),
   time: z.string().optional(),
   backOfficeUrl: z.string().optional(),
-  dayOfWeek: z.string().optional(),
+  dayOfWeek: z.number().int().optional(),
 })
 
 export const StudentGroupSchema = z.object({

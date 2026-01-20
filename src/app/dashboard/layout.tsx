@@ -1,7 +1,12 @@
+import { getCourses } from '@/actions/courses'
 import { getMe } from '@/actions/users'
-import { AppSidebar } from '@/components/app-sidebar'
-import { ModeToggle } from '@/components/mode-toggle'
+import { AppSidebar } from '@/components/sidebar/app-sidebar'
+import { Toaster } from '@/components/toaster'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { prisma } from '@/lib/prisma'
+import { AuthProvider } from '@/providers/auth-provider'
+import { DataProvider } from '@/providers/data-provider'
+import { Folder, Users } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 export default async function Layout({
@@ -10,27 +15,50 @@ export default async function Layout({
   children: React.ReactNode
 }>) {
   const user = await getMe()
+
   if (!user) {
-    return redirect('/auth')
+    return redirect('/login')
   }
+
+  const courses = await getCourses()
+  const locations = await prisma.location.findMany()
+  const users = await prisma.user.findMany({
+    include: {
+      role: true,
+    },
+  })
+  const roles = await prisma.role.findMany()
+
+  const studentsCount = await prisma.student.count()
+  const groupsCount = await prisma.group.count()
 
   return (
     <>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="overflow-hidden px-2 md:px-4 lg:px-6">
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger variant={'outline'} />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <ModeToggle />
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-2">{children}</div>
-        </SidebarInset>
-      </SidebarProvider>
+      <AuthProvider user={user}>
+        <DataProvider courses={courses} locations={locations} users={users} roles={roles}>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="space-y-2 overflow-hidden p-2">
+              <div className="flex items-center justify-between">
+                <SidebarTrigger variant={'outline'} />
+                <div className="bg-card flex items-center gap-2 rounded-md border px-2 py-0.5 text-sm shadow-sm">
+                  <div className="flex items-center gap-1" title="Количество учеников">
+                    <Users className="h-3 w-3" />
+                    <span className="text-xs font-medium">{studentsCount}</span>
+                  </div>
+                  <div className="bg-border h-4.5 w-px" />
+                  <div className="flex items-center gap-1" title="Количество групп">
+                    <Folder className="h-3 w-3" />
+                    <span className="text-xs font-medium">{groupsCount}</span>
+                  </div>
+                </div>
+              </div>
+              {children}
+            </SidebarInset>
+            <Toaster />
+          </SidebarProvider>
+        </DataProvider>
+      </AuthProvider>
     </>
   )
 }

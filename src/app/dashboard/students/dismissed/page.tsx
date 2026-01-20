@@ -1,14 +1,14 @@
 import { getDismissedStatistics } from '@/actions/dismissed'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import prisma from '@/lib/prisma'
-import DismissedStatistics from './dismissed-statistics'
-import DismissedTable from './dismissed-table'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { prisma } from '@/lib/prisma'
+import DismissedStudentsTable from './dismissed-table'
+import DismissedStatistics from './statistics/dismissed-statistics'
 
 export default async function Page() {
   const dismissed = await prisma.dismissed.findMany({
     include: {
       group: {
-        include: { course: true, teachers: { include: { teacher: true } } },
+        include: { course: true, location: true, teachers: { include: { teacher: true } } },
       },
       student: true,
     },
@@ -17,14 +17,15 @@ export default async function Page() {
   const statistics = await getDismissedStatistics()
 
   return (
-    <div className="space-y-2">
+    <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">
       <DismissedStatistics {...statistics} />
       <Card>
         <CardHeader>
-          <CardTitle>Отток</CardTitle>
+          <CardTitle>Ученики</CardTitle>
+          <CardDescription>Список всех учеников системы</CardDescription>
         </CardHeader>
-        <CardContent>
-          <DismissedTable dismissed={dismissed} />
+        <CardContent className="overflow-hidden">
+          <DismissedStudentsTable data={dismissed} />
         </CardContent>
       </Card>
     </div>

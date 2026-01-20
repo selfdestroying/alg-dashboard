@@ -29,10 +29,8 @@ export default function UsersActions({ user }: UsersActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm">
-            <MoreVertical />
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <MoreVertical />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
@@ -59,11 +57,7 @@ export default function UsersActions({ user }: UsersActionsProps) {
             </div>
           </div>
           <DialogFooter className="border-t px-6 py-4">
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancel
-              </Button>
-            </DialogClose>
+            <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
             <Button form="user-form">Подтвердить</Button>
           </DialogFooter>
         </DialogContent>

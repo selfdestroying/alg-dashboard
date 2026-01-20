@@ -47,10 +47,8 @@ export default function PaymentsActions({ payment }: PaymentsActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon-sm">
-            <MoreVertical />
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <MoreVertical />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">

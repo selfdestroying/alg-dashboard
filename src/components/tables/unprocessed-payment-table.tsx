@@ -48,21 +48,21 @@ const getColumns = (students: Student[]): ColumnDef<UnprocessedPayment>[] => [
     accessorKey: 'rawData',
     cell: ({ row }) => (
       <Dialog>
-        <DialogTrigger asChild>
-          <Button variant={'outline'} size={'icon'}>
-            <FileJson />
-          </Button>
+        <DialogTrigger render={<Button variant={'outline'} size={'icon'} />}>
+          <FileJson />
         </DialogTrigger>
         <DialogContent className="flex flex-col gap-0 p-0 sm:max-h-[min(640px,80vh)] sm:max-w-lg [&>button:last-child]:hidden">
           <div className="overflow-y-auto">
             <DialogHeader className="contents space-y-0 text-left">
               <DialogTitle className="sr-only px-6 pt-6">Необработанные данные</DialogTitle>
-              <DialogDescription asChild>
-                <div className="[&_strong]:text-foreground space-y-4 p-6 [&_strong]:font-semibold">
-                  <pre>
-                    <code lang="json">{JSON.stringify(row.original.rawData, null, 2)}</code>
-                  </pre>
-                </div>
+              <DialogDescription
+                render={
+                  <div className="[&_strong]:text-foreground space-y-4 p-6 [&_strong]:font-semibold" />
+                }
+              >
+                <pre>
+                  <code lang="json">{JSON.stringify(row.original.rawData, null, 2)}</code>
+                </pre>
               </DialogDescription>
             </DialogHeader>
           </div>

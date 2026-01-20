@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import { ProductSchemaType } from '@/schemas/product'
 import { Prisma } from '@prisma/client'
 import { randomUUID } from 'crypto'

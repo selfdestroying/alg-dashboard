@@ -1,9 +1,8 @@
 import { getStudents } from '@/actions/students'
 import { getMe, getUsers } from '@/actions/users'
-import { AttendanceTable } from '@/components/tables/attendance-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import prisma from '@/lib/prisma'
-import AttendanceDialog from './_components/attendance-dialog'
+import { prisma } from '@/lib/prisma'
+import AttendanceTable from './_components/attendance-table'
 import InfoSection from './_components/info-section'
 import TeachersSection from './_components/teachers-sections'
 
@@ -17,7 +16,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           teacher: {
             omit: {
               password: true,
-              passwordRequired: true,
             },
           },
         },
@@ -70,19 +68,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="space-y-2">
-      <div className="mt-6 grid gap-2 md:grid-cols-2">
+      <div className="grid gap-2 md:grid-cols-2">
         <InfoSection lesson={lesson} />
-        <TeachersSection teachers={teachers} currentTeachers={lesson.teachers} lesson={lesson} />
+        <TeachersSection />
       </div>
       <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Список учеников</CardTitle>
-          {user?.role !== 'TEACHER' && (
-            <AttendanceDialog lessonId={lesson.id} students={students} />
-          )}
         </CardHeader>
         <CardContent>
-          <AttendanceTable attendance={lesson.attendance} />
+          <AttendanceTable data={lesson.attendance} />
         </CardContent>
       </Card>
     </div>

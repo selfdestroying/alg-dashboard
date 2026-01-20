@@ -1,9 +1,5 @@
-import { getMe, getUsers } from '@/actions/users'
-import DashboardPage from './dashboard'
+import LessonsCalendar from '@/app/dashboard/_components/lessons-calendar'
 
 export default async function Page() {
-  const user = await getMe()
-  const teachers = await getUsers({})
-
-  return <DashboardPage user={user!} teachers={teachers} />
+  return <LessonsCalendar />
 }

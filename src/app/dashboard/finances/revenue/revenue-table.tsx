@@ -53,11 +53,9 @@ export function RevenueTable({ data }: RevenueTableProps) {
                 <span className="text-muted-foreground">0 ₽</span>
               )}
             </div>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
-                <ChevronsUpDown />
-                <span className="sr-only">Toggle</span>
-              </Button>
+            <CollapsibleTrigger render={<Button variant="ghost" size="icon" className="size-8" />}>
+              <ChevronsUpDown />
+              <span className="sr-only">Toggle</span>
             </CollapsibleTrigger>
           </CardTitle>
         </CardHeader>
@@ -81,11 +79,11 @@ export function RevenueTable({ data }: RevenueTableProps) {
                             <span className="text-muted-foreground">0 ₽</span>
                           )}
                         </div>
-                        <CollapsibleTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-8">
-                            <ChevronsUpDown />
-                            <span className="sr-only">Toggle</span>
-                          </Button>
+                        <CollapsibleTrigger
+                          render={<Button variant="ghost" size="icon" className="size-8" />}
+                        >
+                          <ChevronsUpDown />
+                          <span className="sr-only">Toggle</span>
                         </CollapsibleTrigger>
                       </CardTitle>
                     </CardHeader>

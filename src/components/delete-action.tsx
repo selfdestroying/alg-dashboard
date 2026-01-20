@@ -1,4 +1,5 @@
 import { Label } from '@/components/ui/label'
+import { Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import {
@@ -12,9 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './ui/alert-dialog'
-import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Trash2 } from 'lucide-react'
+import { Input } from './ui/input'
 
 interface RowActionsProps {
   children?: React.ReactNode
@@ -41,10 +41,8 @@ export default function DeleteAction({ children, id, action, confirmationText }:
 
   return (
     <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-      <AlertDialogTrigger asChild>
-        <Button size={'icon-sm'} variant={'ghost'}>
-          <Trash2 />
-        </Button>
+      <AlertDialogTrigger render={<Button size={'icon-sm'} variant={'ghost'} />}>
+        <Trash2 />
       </AlertDialogTrigger>
       <AlertDialogTrigger>{children}</AlertDialogTrigger>
       <AlertDialogContent>

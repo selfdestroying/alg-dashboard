@@ -1,7 +1,6 @@
 'use client'
 import { getGroup } from '@/actions/groups'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, getFullName } from '@/lib/utils'
 import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import {
   ColumnDef,
@@ -20,7 +19,6 @@ import { useMemo } from 'react'
 import DragScrollArea from '../drag-scroll-area'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { TableB } from '../ui/table_b'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
@@ -53,29 +51,26 @@ const statusClasses: Record<
   AttendanceStatus | 'TRIAL_PRESENT' | 'TRIAL_ABSENT' | 'TRIAL_UNSPECIFIED',
   string
 > = {
-  PRESENT: 'bg-success dark:bg-success text-white',
-  ABSENT: 'bg-error dark:bg-error text-white',
-  UNSPECIFIED: 'border-accent',
+  PRESENT: 'bg-success/20 text-success',
+  ABSENT: 'bg-destructive/20 text-destructive',
+  UNSPECIFIED: 'bg-muted/20 ',
 
-  TRIAL_ABSENT:
-    'bg-linear-to-r from-info to-error dark:bg-linear-to-r from-info to-error text-white',
-  TRIAL_PRESENT:
-    'bg-linear-to-r from-info to-success dark:bg-linear-to-r from-info to-success text-white',
-  TRIAL_UNSPECIFIED:
-    'bg-linear-to-r from-info to-info dark:bg-linear-to-r from-info to-info text-white',
+  TRIAL_ABSENT: 'bg-linear-to-r from-info/20 to-destructive/20 text-destructive',
+  TRIAL_PRESENT: 'bg-linear-to-r from-info/20 to-success/20 text-success',
+  TRIAL_UNSPECIFIED: 'bg-linear-to-r from-info/20 to-info/20',
 }
 
 const makeupStatusClasses: Record<AttendanceStatus, string> = {
-  PRESENT: 'border-success dark:border-success',
-  ABSENT: 'border-error dark:border-error',
-  UNSPECIFIED: 'border-accent',
+  PRESENT: 'outline-2 outline-success',
+  ABSENT: 'outline-2 outline-destructive',
+  UNSPECIFIED: 'bg-muted/20 ',
 }
 
 const stickyColumnClasses: Record<string, string> = {
   id_header: 'sticky left-0 z-[1]',
   name_header: 'sticky left-8 z-[1]',
-  id: 'sticky left-0 bg-background z-[1]',
-  name: 'sticky left-8 bg-background z-[1]',
+  id: 'sticky left-0 bg-sidebar z-[1]',
+  name: 'sticky left-8 bg-sidebar z-[1]',
 }
 
 // -------------------- Attendance Cell --------------------
@@ -88,8 +83,10 @@ function AttendanceCell({
 }) {
   if (!attendance) {
     return (
-      <div className="text-muted-foreground inline w-fit rounded-lg border-4 px-2">
-        {formatDate(lesson.date)}
+      <div className="inline-block">
+        <div className="text-muted-foreground bg-muted/20 rounded-lg px-2">
+          {formatDate(lesson.date)}
+        </div>
       </div>
     )
   }
@@ -104,49 +101,53 @@ function AttendanceCell({
     : makeupStatusClasses.UNSPECIFIED
 
   return (
-    <Popover modal>
-      <PopoverTrigger
-        className={cn('cursor-pointer rounded-lg border-4 px-2', attendanceStatus, makeUpStatus)}
-      >
-        {formatDate(lesson.date)}
-      </PopoverTrigger>
-      <PopoverContent className="text-xs">
-        <div className="space-y-1">
-          <p>
-            Урок –{' '}
-            <Button asChild variant="link" className="h-fit p-0 font-medium">
-              <Link href={`/dashboard/lessons/${lesson.id}`}>{formatDate(lesson.date)}</Link>
-            </Button>{' '}
-            {attendance.status === 'PRESENT'
-              ? '– Пришел'
-              : attendance.status === 'ABSENT'
-                ? '– Пропустил'
-                : ''}
-          </p>
-          <p>
-            Отработка –{' '}
-            {attendance.missedMakeup ? (
-              <>
-                <Button asChild variant="link" className="h-fit p-0 font-medium">
+    <div className="inline-block">
+      <Popover modal>
+        <PopoverTrigger
+          className={cn('cursor-pointer rounded-lg px-2', attendanceStatus, makeUpStatus)}
+        >
+          {formatDate(lesson.date)}
+        </PopoverTrigger>
+        <PopoverContent className="text-xs">
+          <div className="space-y-1">
+            <p>
+              Урок –{' '}
+              <Link
+                href={`/dashboard/lessons/${attendance.lessonId}`}
+                className="text-primary hover:underline"
+              >
+                {formatDate(attendance.lesson.date)}
+              </Link>{' '}
+              {attendance.status === 'PRESENT'
+                ? '– Пришел'
+                : attendance.status === 'ABSENT'
+                  ? '– Пропустил'
+                  : ''}
+            </p>
+            <p>
+              Отработка –{' '}
+              {attendance.missedMakeup ? (
+                <>
                   <Link
                     href={`/dashboard/lessons/${attendance.missedMakeup.makeUpAttendance.lessonId}`}
+                    className="text-primary hover:underline"
                   >
                     {formatDate(attendance.missedMakeup.makeUpAttendance.lesson.date)}
                   </Link>
-                </Button>
-                {attendance.missedMakeup.makeUpAttendance.status === 'PRESENT'
-                  ? ' – Пришел'
-                  : attendance.missedMakeup.makeUpAttendance.status === 'ABSENT'
-                    ? ' – Пропустил'
-                    : ''}
-              </>
-            ) : (
-              ' Не нужна'
-            )}
-          </p>
-        </div>
-      </PopoverContent>
-    </Popover>
+                  {attendance.missedMakeup.makeUpAttendance.status === 'PRESENT'
+                    ? ' – Пришел'
+                    : attendance.missedMakeup.makeUpAttendance.status === 'ABSENT'
+                      ? ' – Пропустил'
+                      : ''}
+                </>
+              ) : (
+                ' Не нужна'
+              )}
+            </p>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }
 
@@ -163,11 +164,12 @@ const getColumns = (lessons: Lesson[]): ColumnDef<StudentWithAttendances>[] => [
     header: 'Полное имя',
     accessorFn: (student) => `${student.firstName} ${student.lastName}`,
     cell: ({ row }) => (
-      <Button asChild variant="link" className="h-fit p-0 font-medium">
-        <Link href={`/dashboard/students/${row.original.id}`}>
-          {row.original.firstName} {row.original.lastName}
-        </Link>
-      </Button>
+      <Link
+        href={`/dashboard/students/${row.original.id}`}
+        className="text-primary hover:underline"
+      >
+        {getFullName(row.original.firstName, row.original.lastName)}
+      </Link>
     ),
     meta: { filterVariant: 'text' },
   },
@@ -215,7 +217,10 @@ export function GroupaAttendanceTable({
         (lessons.reduce((prev, curr) => prev + (curr.date < new Date() ? 1 : 0), 0) - 1) * 100
       }
     >
-      <TableB className="border-separate border-spacing-0 [&_tr:not(:last-child)_td]:border-b">
+      <table
+        data-slot="table"
+        className="w-full border-separate border-spacing-0 [&_tr:not(:last-child)_td]:border-b"
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -268,14 +273,13 @@ export function GroupaAttendanceTable({
             </TableRow>
           ))}
         </TableHeader>
-        <tbody aria-hidden="true" className="table-row h-1"></tbody>
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
-                className="hover:bg-accent/50 h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                className="h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
               >
                 {row.getVisibleCells().map((cell) => {
                   return (
@@ -300,8 +304,7 @@ export function GroupaAttendanceTable({
             </TableRow>
           )}
         </TableBody>
-        <tbody aria-hidden="true" className="table-row h-1"></tbody>
-      </TableB>
+      </table>
     </DragScrollArea>
   )
 }

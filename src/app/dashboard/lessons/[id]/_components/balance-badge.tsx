@@ -13,9 +13,8 @@ export default function BalanceBadge({ balance }: BalanceBadgeProps) {
 
   return (
     <Badge
-      variant={'success'}
-      className="group h-6 w-14 cursor-pointer text-center"
-      role="button"
+      className="group flex h-6 w-14 cursor-pointer items-center justify-center text-center"
+      variant={'outline'}
       onClick={() => setIsRevealed(!isRevealed)}
     >
       {isRevealed ? (
@@ -23,7 +22,7 @@ export default function BalanceBadge({ balance }: BalanceBadgeProps) {
           {balance.toLocaleString('ru-RU')} ₽
         </span>
       ) : (
-        <span className="inline text-lg group-hover:hidden">⁎⁎⁎</span>
+        <EyeOff className="inline group-hover:hidden" />
       )}
       {isRevealed ? (
         <EyeOff className="hidden group-hover:inline" />

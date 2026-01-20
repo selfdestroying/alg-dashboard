@@ -1,8 +1,5 @@
 import { getPaychecks } from '@/actions/paycheck'
 import { getUserById } from '@/actions/users'
-import EditUserForm from '@/app/dashboard/users/_components/edit-user-form'
-import FormDialog from '@/components/button-dialog'
-import PaycheckForm from '@/components/forms/paycheck-form'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,6 +19,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const user = await getUserById({
     where: {
       id: +id,
+    },
+    include: {
+      role: true,
     },
   })
 
@@ -50,22 +50,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 <span className="truncate font-medium">
                   {user.firstName} {user.lastName}
                 </span>
-                <Badge variant={'outline'}>{userRoleMap[user.role]}</Badge>
-                <Badge variant={user.status == 'ACTIVE' ? 'success' : 'error'}>
-                  {user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}
-                </Badge>
+                <Badge variant={'outline'}>{user.role.name}</Badge>
+                <Badge>{user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}</Badge>
               </div>
             </CardTitle>
           </div>
           <CardAction>
-            <FormDialog
+            {/* <FormDialog
               title="Редактировать пользователя"
               icon="edit"
               FormComponent={EditUserForm}
               formComponentProps={{ user }}
               submitButtonProps={{ form: 'user-form' }}
               triggerButtonProps={{ variant: 'outline', size: 'sm' }}
-            />
+            /> */}
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -84,12 +82,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
           </div>
           <div className="space-y-2">
-            <FormDialog
+            {/* <FormDialog
               title="Создать чек"
               FormComponent={PaycheckForm}
               submitButtonProps={{ form: 'paycheck-form' }}
               formComponentProps={{ userId: user.id }}
-            />
+            /> */}
             {paychecks.map((paycheck) => (
               <Card key={paycheck.id}>
                 <CardContent>

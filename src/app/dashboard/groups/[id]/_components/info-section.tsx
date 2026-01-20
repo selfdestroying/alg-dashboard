@@ -1,5 +1,4 @@
 import { getGroup } from '@/actions/groups'
-import { getMe } from '@/actions/users'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DaysOfWeek } from '@/lib/utils'
 import { GroupType } from '@prisma/client'
@@ -18,16 +17,13 @@ export default async function InfoSection({
 }: {
   group: Awaited<ReturnType<typeof getGroup>>
 }) {
-  const me = await getMe()
   return (
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация о группе</CardTitle>
-        {me?.role !== 'TEACHER' && (
-          <CardAction title="Редактировать группу">
-            <EditGroupButton group={group} />
-          </CardAction>
-        )}
+        <CardAction>
+          <EditGroupButton group={group} />
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +47,7 @@ export default async function InfoSection({
               </span>
             </div>
             <div className="truncate text-sm font-semibold">
-              {group.dayOfWeek ? DaysOfWeek.long[group.dayOfWeek] : '-'}
+              {group.dayOfWeek != null ? DaysOfWeek.full[group.dayOfWeek] : '-'}
             </div>
           </div>
 

@@ -2,10 +2,7 @@
 import { updateLesson } from '@/actions/lessons'
 import { timeSlots } from '@/components/forms/group-form'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -13,22 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useData } from '@/providers/data-provider'
 import { Lesson, LessonStatus } from '@prisma/client'
-import { format } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
-import { ru } from 'date-fns/locale'
-import {
-  BookOpen,
-  CalendarIcon,
-  Check,
-  CircleDotDashed,
-  Clock,
-  Edit,
-  Loader2,
-  Users,
-  X,
-} from 'lucide-react'
+import { BookOpen, CircleDotDashed, Clock, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -61,7 +44,6 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
   )
   const [date, setDate] = useState<Date | undefined>(lesson.date)
   const [status, setStatus] = useState<LessonStatus>(lesson.status)
-  const { user } = useData()
 
   const [isPending, startTransition] = useTransition()
 
@@ -96,7 +78,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
       <CardHeader>
         <CardTitle className="flex flex-row items-center justify-between">
           Информация об уроке
-          {user?.role !== 'TEACHER' &&
+          {/* {user?.role !== 'TEACHER' &&
             (editMode ? (
               <div className="flex gap-2">
                 <Button
@@ -127,7 +109,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
                 <Edit />
                 <span className="hidden lg:inline">Редактировать</span>
               </Button>
-            ))}
+            ))} */}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -137,9 +119,12 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
               <BookOpen className="h-3 w-3" />
               Группа
             </div>
-            <Button asChild variant={'link'} className="h-fit p-0 font-medium">
-              <Link href={`/dashboard/groups/${lesson.group.id}`}>{lesson.group.name}</Link>
-            </Button>
+            <Link
+              href={`/dashboard/groups/${lesson.group.id}`}
+              className="text-primary hover:underline"
+            >
+              {lesson.group.name}
+            </Link>
           </div>
           <div className="space-y-1">
             <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
@@ -150,7 +135,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
           </div>
         </div>
         <div className="my-4 grid grid-cols-2">
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
               <CalendarIcon className="h-3 w-3" />
               Дата
@@ -180,18 +165,14 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
                 })}
               </p>
             )}
-          </div>
+          </div> */}
           <div className="space-y-1">
             <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
               <Clock className="h-3 w-3" />
               Время
             </div>
             {editMode ? (
-              <Select
-                onValueChange={(value) => setTimeSlot({ time: value })}
-                value={timeSlot?.time || ''}
-                disabled={isPending}
-              >
+              <Select value={timeSlot?.time || ''} disabled={isPending}>
                 <SelectTrigger size="sm">
                   <Clock className="h-3 w-3" />
                   <SelectValue placeholder="Выберите время" />
@@ -215,11 +196,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
             Статус
           </div>
           {editMode ? (
-            <Select
-              defaultValue={status}
-              onValueChange={(e: LessonStatus) => setStatus(e)}
-              disabled={isPending}
-            >
+            <Select defaultValue={status} disabled={isPending}>
               <SelectTrigger size="sm">
                 <SelectValue />
               </SelectTrigger>
@@ -245,7 +222,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
               </SelectContent>
             </Select>
           ) : (
-            <Badge variant={LessonStatusBadgeMap[status]}>{LessonStatusTextMap[status]}</Badge>
+            <Badge>{LessonStatusTextMap[status]}</Badge>
           )}
         </div>
       </CardContent>

@@ -26,11 +26,9 @@ export default function AttendanceDialog({ lessonId, students }: AttendanceDialo
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size={'sm'} variant={'outline'}>
-          <Plus />
-          <span className="hidden sm:inline">Добавить ученика</span>
-        </Button>
+      <DialogTrigger render={<Button size={'sm'} variant={'outline'} />}>
+        <Plus />
+        <span className="hidden sm:inline">Добавить ученика</span>
       </DialogTrigger>
       <DialogContent className="flex flex-col gap-0 overflow-y-visible p-0 sm:max-w-lg [&>button:last-child]:top-3.5">
         <DialogHeader className="contents space-y-0 text-left">
@@ -48,11 +46,7 @@ export default function AttendanceDialog({ lessonId, students }: AttendanceDialo
           />
         </div>
         <DialogFooter className="border-t p-4">
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Отмена
-            </Button>
-          </DialogClose>
+          <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
           <Button form="attendance-form" disabled={isPending}>
             {isPending && <Loader2 className="animate-spin" />}
             Подтвердить

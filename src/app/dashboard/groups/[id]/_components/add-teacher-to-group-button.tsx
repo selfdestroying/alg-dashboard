@@ -87,10 +87,8 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size={'icon-sm'}>
-          <Plus />
-        </Button>
+      <DialogTrigger render={<Button variant="outline" size={'icon-sm'} />}>
+        <Plus />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
