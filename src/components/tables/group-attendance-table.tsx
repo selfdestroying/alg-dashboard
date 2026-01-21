@@ -61,9 +61,9 @@ const statusClasses: Record<
 }
 
 const makeupStatusClasses: Record<AttendanceStatus, string> = {
-  PRESENT: 'outline-2 outline-success',
-  ABSENT: 'outline-2 outline-destructive',
-  UNSPECIFIED: 'bg-muted/20 ',
+  PRESENT: 'outline-2 outline-success/50',
+  ABSENT: 'outline-2 outline-destructive/50',
+  UNSPECIFIED: '',
 }
 
 const stickyColumnClasses: Record<string, string> = {

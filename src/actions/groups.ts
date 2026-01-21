@@ -1,9 +1,9 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { DaysOfWeek } from '@/lib/utils'
+import { DaysOfWeek, getNearestWeekday } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
-import { toZonedTime } from 'date-fns-tz'
+import { startOfDay } from 'date-fns'
 import { revalidatePath } from 'next/cache'
 import { createLesson } from './lessons'
 
@@ -76,17 +76,15 @@ export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
   const dayOfWeek = payload.data.dayOfWeek
   if (dayOfWeek != null) {
     const lessons = await prisma.lesson.findMany({
-      where: { groupId: payload.where.id, date: { gte: new Date() } },
+      where: { groupId: payload.where.id, date: { gte: startOfDay(new Date()) } },
     })
+    const nearestWeekDay = getNearestWeekday(dayOfWeek as number)
     for (const lesson of lessons) {
-      const currentDay = lesson.date.getDay()
-      const targetDay = dayOfWeek as number
-      const diff = targetDay - currentDay
-      lesson.date.setDate(lesson.date.getDate() + diff)
       await prisma.lesson.update({
         where: { id: lesson.id },
-        data: { date: toZonedTime(lesson.date, 'Europe/Moscow') },
+        data: { date: nearestWeekDay },
       })
+      nearestWeekDay.setDate(nearestWeekDay.getDate() + 7)
     }
   }
   revalidatePath(`/dashboard/groups/${payload.where.id}`)
