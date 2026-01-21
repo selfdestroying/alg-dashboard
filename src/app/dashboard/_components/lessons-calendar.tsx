@@ -123,7 +123,7 @@ export default function LessonsCalendar() {
       return
     }
     startTransition(() => {
-      const zonedDate = toZonedTime(selectedDay, 'Europe/Moscow')
+      const zonedDate = selectedDay
       getLessons({
         where: {
           date: startOfDay(zonedDate),
