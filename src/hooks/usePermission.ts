@@ -1,7 +1,7 @@
 import { useAuth } from '@/providers/auth-provider'
 import { Permission, RoleCodes, rolePermissions } from '@/shared/permissions'
 
-export function useUiPermission(permission: Permission) {
+export function usePermission(permission: Permission) {
   const user = useAuth()
 
   if (!user) return false

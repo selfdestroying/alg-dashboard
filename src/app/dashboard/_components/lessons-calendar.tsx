@@ -13,7 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { usePermission } from '@/hooks/usePermission'
 import { cn, getFullName } from '@/lib/utils'
+import { useAuth } from '@/providers/auth-provider'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import {
@@ -41,12 +43,24 @@ type LessonWithDetails = Prisma.LessonGetPayload<{
 
 export default function LessonsCalendar() {
   const { courses, locations, users } = useData()
+  const user = useAuth()
+  const canViewOtherLessons = usePermission('VIEW_OTHER_LESSONS')
   const today = toZonedTime(new Date(), 'Europe/Moscow')
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(today)
   const [selectedMonth, setSelectedMonth] = useState<Date>(today)
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
+    if (!canViewOtherLessons) {
+      return [
+        {
+          id: 'teacher',
+          value: [user.id],
+        },
+      ]
+    }
+    return []
+  })
 
   const [isPending, startTransition] = useTransition()
 
@@ -84,6 +98,8 @@ export default function LessonsCalendar() {
   }
 
   const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
+    if (!canViewOtherLessons) return
+
     const userIds = selectedUsers.map((user) => Number(user.value))
     setColumnFilters((old) => {
       const otherFilters = old.filter((filter) => filter.id !== 'teacher')
@@ -114,6 +130,18 @@ export default function LessonsCalendar() {
       })),
     [users]
   )
+
+  const defaultTeacherValue = useMemo(() => {
+    if (!canViewOtherLessons) {
+      return [
+        {
+          label: getFullName(user.firstName, user.lastName),
+          value: user.id.toString(),
+        },
+      ]
+    }
+    return undefined
+  }, [canViewOtherLessons, user])
 
   useEffect(() => {
     if (!selectedDay) {
@@ -184,6 +212,7 @@ export default function LessonsCalendar() {
       <Card className="overflow-y-auto">
         <CardContent>
           <Calendar
+            today={today}
             mode="single"
             selected={selectedDay}
             defaultMonth={selectedDay}
@@ -226,16 +255,24 @@ export default function LessonsCalendar() {
         </CardContent>
         <CardFooter className="">
           <FieldGroup>
-            <TableFilter label="Курс" items={mappedCourses} onChange={handleCourseFilterChange} />
+            <TableFilter
+              label="Курс"
+              items={mappedCourses}
+              onChange={handleCourseFilterChange}
+              disabled={!canViewOtherLessons}
+            />
             <TableFilter
               label="Локация"
               items={mappedLocations}
               onChange={handleLocationFilterChange}
+              disabled={!canViewOtherLessons}
             />
             <TableFilter
               label="Преподаватель"
               items={mappedUsers}
               onChange={handleUserFilterChange}
+              defaultValue={defaultTeacherValue}
+              disabled={!canViewOtherLessons}
             />
           </FieldGroup>
         </CardFooter>
