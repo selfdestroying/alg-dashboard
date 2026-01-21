@@ -12,8 +12,8 @@ import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Field, FieldLabel } from '../ui/field'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { Field, FieldLabel } from '../../../../../components/ui/field'
+import { Popover, PopoverContent, PopoverTrigger } from '../../../../../components/ui/popover'
 
 export default function DismissForm({
   onSubmit,

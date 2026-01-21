@@ -3,8 +3,8 @@
 import { Student, UnprocessedPayment } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { FileJson } from 'lucide-react'
+import PaymentDialogForm from '../../app/dashboard/finances/payments/_components/payment-form'
 import DataTable from '../data-table'
-import PaymentDialogForm from '../forms/payment-form'
 import { Button } from '../ui/button'
 import {
   Dialog,

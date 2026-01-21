@@ -1,8 +1,8 @@
 import { getCategories } from '@/actions/categories'
 import { getProducts } from '@/actions/products'
+import ProductsTable from '@/app/dashboard/shop/products/_components/products-table'
 import FormDialog from '@/components/button-dialog'
 import ProductForm from '@/components/forms/product-form'
-import ProductsTable from '@/components/tables/products-table'
 
 export default async function Page() {
   const products = await getProducts()

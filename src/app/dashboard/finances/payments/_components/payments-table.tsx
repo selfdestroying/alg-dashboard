@@ -4,7 +4,7 @@ import { PaymentsWithStudentAndGroup } from '@/actions/payments'
 import { ColumnDef } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import Link from 'next/link'
-import DataTable from '../data-table'
+import DataTable from '../../../../../components/data-table'
 
 const getColumns = (): ColumnDef<PaymentsWithStudentAndGroup>[] => [
   {

@@ -1,6 +1,6 @@
 import { getCategories } from '@/actions/categories'
+import CategoryForm from '@/app/dashboard/shop/categories/_components/category-form'
 import FormDialog from '@/components/button-dialog'
-import CategoryForm from '@/components/forms/category-form'
 import CategoriesTable from '@/components/tables/categories-table'
 
 export default async function Page() {

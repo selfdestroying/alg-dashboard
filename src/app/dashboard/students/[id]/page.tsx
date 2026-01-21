@@ -1,5 +1,5 @@
 import { getStudentWithAttendance } from '@/actions/students'
-import StudentCard from './student-card'
+import StudentCard from './_components/student-card'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Group } from '@prisma/client'
 import { useId, useState } from 'react'
 import { toast } from 'sonner'
-import { Checkbox } from '../ui/checkbox'
-import { Field, FieldLabel } from '../ui/field'
-import { Label } from '../ui/label'
+import { Checkbox } from '../../../../components/ui/checkbox'
+import { Field, FieldLabel } from '../../../../components/ui/field'
+import { Label } from '../../../../components/ui/label'
 
 interface StudentFormProps {
   type: string

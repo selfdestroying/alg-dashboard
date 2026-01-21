@@ -1,8 +1,8 @@
 'use client'
 import { createCategory } from '@/actions/categories'
 import { toast } from 'sonner'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
+import { Input } from '../../../../../components/ui/input'
+import { Label } from '../../../../../components/ui/label'
 
 export default function CategoryForm({ onSubmit }: { onSubmit?: () => void }) {
   const handleSubmit = (formData: FormData) => {

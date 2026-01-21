@@ -6,7 +6,7 @@ import { Group } from '@prisma/client'
 import { CheckIcon, ChevronDownIcon, GitCompare } from 'lucide-react'
 import { FC, useEffect, useId, useState } from 'react'
 import { toast } from 'sonner'
-import { Button } from './ui/button'
+import { Button } from '../../../../../components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -14,7 +14,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from './ui/command'
+} from '../../../../../components/ui/command'
 import {
   Dialog,
   DialogClose,
@@ -23,8 +23,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+} from '../../../../../components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '../../../../../components/ui/popover'
 
 interface GroupStudenProps {
   variant?: 'button' | 'icon'

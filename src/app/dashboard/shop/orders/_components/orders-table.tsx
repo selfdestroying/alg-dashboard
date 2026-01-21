@@ -4,8 +4,14 @@ import useSkipper from '@/hooks/use-skipper'
 import { Order, OrderStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import DataTable from '../data-table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import DataTable from '../../../../../components/data-table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../../components/ui/select'
 
 const OrderStatusMap: { [key in OrderStatus]: string } = {
   CANCELLED: 'Отменен',
