@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx'
+import { startOfDay } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { twMerge } from 'tailwind-merge'
 
@@ -16,7 +17,7 @@ export function getFullName(firstName: string, lastName: string | null): string 
 }
 
 export function getNearestWeekday(targetDay: number, fromDate = new Date(), includeToday = false) {
-  const date = new Date(toZonedTime(fromDate, 'Europe/Moscow'))
+  const date = startOfDay(new Date(toZonedTime(fromDate, 'Europe/Moscow')))
   const currentDay = date.getDay()
 
   let diff = (targetDay - currentDay + 7) % 7
