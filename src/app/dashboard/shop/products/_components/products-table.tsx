@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { ColumnDef } from '@tanstack/react-table'
 
 import { deleteProduct, ProductWithCategory } from '@/actions/products'
-import DataTable from '../data-table'
-import DeleteAction from '../delete-action'
+import DataTable from '../../../../../components/data-table'
+import DeleteAction from '../../../../../components/delete-action'
 
 const getColumns = (): ColumnDef<ProductWithCategory>[] => [
   {

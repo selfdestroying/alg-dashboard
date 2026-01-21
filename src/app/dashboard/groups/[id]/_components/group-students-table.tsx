@@ -3,7 +3,14 @@ import { getFullName } from '@/lib/utils'
 import { Prisma } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../../../../components/ui/table'
 
 type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {

@@ -2,8 +2,8 @@
 
 import { getGroup } from '@/actions/groups'
 import { StudentWithGroupsAndAttendance, updateStudentCard } from '@/actions/students'
-import { StudentGroupDialog } from '@/components/student-group-dialog'
-import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
+import { GroupaAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
+import { StudentGroupDialog } from '@/app/dashboard/students/[id]/_components/student-group-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

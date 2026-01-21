@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { PaymentProduct } from '@prisma/client'
-import DataTable from '../data-table'
+import DataTable from '../../../../../components/data-table'
 
 const getColumns = (): ColumnDef<PaymentProduct>[] => [
   {
@@ -28,7 +28,7 @@ const getColumns = (): ColumnDef<PaymentProduct>[] => [
     },
   },
   {
-    header: 'Картинка',
+    header: 'Кол-во занятий',
     accessorKey: 'lessonCount',
     meta: {
       filterVariant: 'range',

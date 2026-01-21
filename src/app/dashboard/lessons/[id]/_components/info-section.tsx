@@ -1,6 +1,6 @@
 'use client'
 import { updateLesson } from '@/actions/lessons'
-import { timeSlots } from '@/components/forms/group-form'
+import { timeSlots } from '@/app/dashboard/groups/_components/group-form'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {

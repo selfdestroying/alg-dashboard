@@ -1,6 +1,6 @@
 'use client'
 import { getGroup, updateGroup } from '@/actions/groups'
-import { timeSlots } from '@/components/forms/group-form'
+import { timeSlots } from '@/app/dashboard/groups/_components/group-form'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 
 import { AttendanceWithStudents, updateAttendanceComment } from '@/actions/attendance'
 import AttendanceActions from '@/app/dashboard/lessons/[id]/_components/attendance-actions'
-import { AttendanceStatusSwitcher } from '@/components/attendance-status-switcher'
+import { AttendanceStatusSwitcher } from '@/app/dashboard/lessons/[id]/_components/attendance-status-switcher'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import useSkipper from '@/hooks/use-skipper'
-import { useUiPermission as usePermission } from '@/hooks/usePermission'
+import { usePermission } from '@/hooks/usePermission'
 import { AttendanceStatus, StudentStatus } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'

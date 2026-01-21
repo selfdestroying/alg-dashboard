@@ -6,7 +6,7 @@ import { PaymentProductSchema, PaymentProductSchemaType } from '@/schemas/paymen
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Field, FieldLabel } from '../ui/field'
+import { Field, FieldLabel } from '../../../../../components/ui/field'
 
 interface PaymentProductFormProps {
   onSubmit?: () => void

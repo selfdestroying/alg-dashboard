@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Button } from '../ui/button'
+import { Button } from '../../../../../components/ui/button'
 import {
   Dialog,
   DialogClose,
@@ -20,8 +20,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog'
-import { Field, FieldLabel } from '../ui/field'
+} from '../../../../../components/ui/dialog'
+import { Field, FieldLabel } from '../../../../../components/ui/field'
 
 export default function PaymentDialogForm({
   students,

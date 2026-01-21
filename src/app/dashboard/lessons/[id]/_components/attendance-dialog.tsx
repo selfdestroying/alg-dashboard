@@ -1,5 +1,5 @@
 'use client'
-import { AttendanceForm } from '@/components/forms/attendance-form'
+import { AttendanceForm } from '@/app/dashboard/lessons/[id]/_components/attendance-form'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
