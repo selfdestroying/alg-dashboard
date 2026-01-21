@@ -154,9 +154,6 @@ export const getActiveStudents = async () => {
 
 export async function getActiveStudentStatistics() {
   const activeStudentGroups = await prisma.studentGroup.findMany({
-    where: {
-      status: 'ACTIVE',
-    },
     include: {
       group: {
         include: {
@@ -177,6 +174,8 @@ export async function getActiveStudentStatistics() {
       },
     },
   })
+
+  console.log(activeStudentGroups.length)
 
   // 1. Monthly Statistics (New Students per Month)
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()
