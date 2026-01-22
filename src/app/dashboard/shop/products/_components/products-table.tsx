@@ -3,9 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { ColumnDef } from '@tanstack/react-table'
 
-import { deleteProduct, ProductWithCategory } from '@/actions/products'
-import DataTable from '../../../../../components/data-table'
-import DeleteAction from '../../../../../components/delete-action'
+import { ProductWithCategory } from '@/actions/products'
 
 const getColumns = (): ColumnDef<ProductWithCategory>[] => [
   {
@@ -61,20 +59,12 @@ const getColumns = (): ColumnDef<ProductWithCategory>[] => [
   {
     id: 'actions',
     header: 'Действия',
-    cell: ({ row }) => (
-      <div className="space-x-2">
-        <DeleteAction
-          id={row.original.id}
-          action={deleteProduct}
-          confirmationText={row.original.name}
-        />
-      </div>
-    ),
+    cell: ({ row }) => <div className="space-x-2"></div>,
     enableHiding: false,
   },
 ]
 
 export default function ProductsTable({ products }: { products: ProductWithCategory[] }) {
   const columns = getColumns()
-  return <DataTable data={products} columns={columns} paginate />
+  return <></>
 }

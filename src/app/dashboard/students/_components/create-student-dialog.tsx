@@ -38,9 +38,14 @@ export default function CreateStudentDialog() {
     },
   })
 
-  const onSubmit = (data: CreateStudentSchemaType) => {
+  const onSubmit = (values: CreateStudentSchemaType) => {
     startTransition(() => {
-      const ok = createStudent(data)
+      const ok = createStudent({
+        data: {
+          ...values,
+          Cart: { create: {} },
+        },
+      })
 
       toast.promise(ok, {
         loading: 'Создание ученика...',

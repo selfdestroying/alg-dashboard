@@ -1,5 +1,5 @@
 import { getPaychecks } from '@/actions/paycheck'
-import { getUserById } from '@/actions/users'
+import { getUser } from '@/actions/users'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +16,7 @@ const userRoleMap = {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const user = await getUserById({
+  const user = await getUser({
     where: {
       id: +id,
     },

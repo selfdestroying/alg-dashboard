@@ -98,8 +98,6 @@ export default function LessonsCalendar() {
   }
 
   const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    if (!canViewOtherLessons) return
-
     const userIds = selectedUsers.map((user) => Number(user.value))
     setColumnFilters((old) => {
       const otherFilters = old.filter((filter) => filter.id !== 'teacher')
@@ -130,18 +128,6 @@ export default function LessonsCalendar() {
       })),
     [users]
   )
-
-  const defaultTeacherValue = useMemo(() => {
-    if (!canViewOtherLessons) {
-      return [
-        {
-          label: getFullName(user.firstName, user.lastName),
-          value: user.id.toString(),
-        },
-      ]
-    }
-    return undefined
-  }, [canViewOtherLessons, user])
 
   useEffect(() => {
     if (!selectedDay) {
@@ -253,29 +239,23 @@ export default function LessonsCalendar() {
             }}
           />
         </CardContent>
-        <CardFooter className="">
-          <FieldGroup>
-            <TableFilter
-              label="Курс"
-              items={mappedCourses}
-              onChange={handleCourseFilterChange}
-              disabled={!canViewOtherLessons}
-            />
-            <TableFilter
-              label="Локация"
-              items={mappedLocations}
-              onChange={handleLocationFilterChange}
-              disabled={!canViewOtherLessons}
-            />
-            <TableFilter
-              label="Преподаватель"
-              items={mappedUsers}
-              onChange={handleUserFilterChange}
-              defaultValue={defaultTeacherValue}
-              disabled={!canViewOtherLessons}
-            />
-          </FieldGroup>
-        </CardFooter>
+        {canViewOtherLessons && (
+          <CardFooter>
+            <FieldGroup>
+              <TableFilter label="Курс" items={mappedCourses} onChange={handleCourseFilterChange} />
+              <TableFilter
+                label="Локация"
+                items={mappedLocations}
+                onChange={handleLocationFilterChange}
+              />
+              <TableFilter
+                label="Преподаватель"
+                items={mappedUsers}
+                onChange={handleUserFilterChange}
+              />
+            </FieldGroup>
+          </CardFooter>
+        )}
       </Card>
 
       <Card>

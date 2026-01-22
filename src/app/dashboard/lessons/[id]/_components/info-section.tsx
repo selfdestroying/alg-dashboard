@@ -1,6 +1,6 @@
 'use client'
 import { updateLesson } from '@/actions/lessons'
-import { timeSlots } from '@/app/dashboard/groups/_components/group-form'
+import { timeSlots } from '@/app/dashboard/groups/_components/create-group-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -40,7 +40,7 @@ interface InfoSectionsProps {
 export default function InfoSection({ lesson }: InfoSectionsProps) {
   const [editMode, setEditMode] = useState(false)
   const [timeSlot, setTimeSlot] = useState<(typeof timeSlots)[number] | null>(
-    lesson.time ? { time: lesson.time } : null
+    lesson.time ? { label: lesson.time, value: lesson.time } : null
   )
   const [date, setDate] = useState<Date | undefined>(lesson.date)
   const [status, setStatus] = useState<LessonStatus>(lesson.status)
@@ -49,7 +49,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
 
   const handleCancelEdit = () => {
     setEditMode(false)
-    setTimeSlot(lesson.time ? { time: lesson.time } : null)
+    setTimeSlot(lesson.time ? { label: lesson.time, value: lesson.time } : null)
     setDate(lesson.date)
     setStatus(lesson.status)
   }
@@ -59,7 +59,7 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
       const ok = updateLesson({
         where: { id: lesson.id },
         data: {
-          time: timeSlot?.time,
+          time: timeSlot?.value,
           date: date,
           status: status,
         },
@@ -172,21 +172,21 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
               Время
             </div>
             {editMode ? (
-              <Select value={timeSlot?.time || ''} disabled={isPending}>
+              <Select value={timeSlot?.value || ''} disabled={isPending}>
                 <SelectTrigger size="sm">
                   <Clock className="h-3 w-3" />
                   <SelectValue placeholder="Выберите время" />
                 </SelectTrigger>
                 <SelectContent>
                   {timeSlots.map((slot) => (
-                    <SelectItem key={slot.time} value={slot.time}>
-                      {slot.time}
+                    <SelectItem key={slot.value} value={slot.value}>
+                      {slot.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-sm font-semibold">{timeSlot?.time}</p>
+              <p className="text-sm font-semibold">{timeSlot?.label}</p>
             )}
           </div>
         </div>

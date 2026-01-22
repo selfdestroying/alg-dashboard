@@ -1,8 +1,7 @@
 'use client'
-import { createTeacherGroup } from '@/actions/groups'
+import { createTeacherLesson } from '@/actions/lessons'
 import { getUsers } from '@/actions/users'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -22,8 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { usePermission } from '@/hooks/usePermission'
+import { getFullName } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Group } from '@prisma/client'
+import { Lesson } from '@prisma/client'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
@@ -31,50 +31,46 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import z from 'zod/v4'
 
-interface AddTeacherToGroupButtonProps {
+interface AddTeacherToLessonButtonProps {
   teachers: Awaited<ReturnType<typeof getUsers>>
-  group: Group
+  lesson: Lesson
 }
 
-const GroupTeacherSchema = z.object({
+const LessonTeacherSchema = z.object({
   teacherId: z.number('Не выбран преподаватель').int().positive(),
   bid: z
     .number('Не указана ставка')
     .int('Ставка должна быть числом')
-    .gte(0, 'Ставка должна быть >= 0')
-    .optional(),
-  isApplyToLesson: z.boolean(),
+    .gte(0, 'Ставка должна быть >= 0'),
 })
 
-type GroupTeacherSchemaType = z.infer<typeof GroupTeacherSchema>
+type LessonTeacherSchemaType = z.infer<typeof LessonTeacherSchema>
 
-export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherToGroupButtonProps) {
+export default function AddTeacherToLessonButton({
+  teachers,
+  lesson,
+}: AddTeacherToLessonButtonProps) {
   const canAdd = usePermission('ADD_GROUPTEACHER')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<GroupTeacherSchemaType>({
-    resolver: zodResolver(GroupTeacherSchema),
+  const form = useForm<LessonTeacherSchemaType>({
+    resolver: zodResolver(LessonTeacherSchema),
     defaultValues: {
       teacherId: undefined,
-      bid: group.type === 'INDIVIDUAL' ? 750 : group.type === 'GROUP' ? 1100 : undefined,
-      isApplyToLesson: false,
+      bid: undefined,
     },
   })
 
-  const handleSubmit = (data: GroupTeacherSchemaType) => {
+  const handleSubmit = (data: LessonTeacherSchemaType) => {
     startTransition(() => {
-      console.log(data)
-      const { isApplyToLesson, ...payload } = data
-      const ok = createTeacherGroup(
-        {
-          data: {
-            groupId: group.id,
-            ...payload,
-          },
+      const { ...payload } = data
+      const ok = createTeacherLesson({
+        data: {
+          lessonId: lesson.id,
+          ...payload,
         },
-        isApplyToLesson
-      )
+      })
       toast.promise(ok, {
         loading: 'Добавление преподавателя...',
         success: 'Преподаватель успешно добавлен в группу!',
@@ -102,13 +98,13 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
           <DialogTitle>Добавить преподавателя</DialogTitle>
         </DialogHeader>
 
-        <GroupTeacherForm form={form} teachers={teachers} onSubmit={handleSubmit} />
+        <LessonTeacherForm form={form} teachers={teachers} onSubmit={handleSubmit} />
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="group-teacher-form" size={'sm'}>
+          <Button disabled={isPending} type="submit" form="lesson-teacher-form" size={'sm'}>
             Добавить
           </Button>
         </DialogFooter>
@@ -117,15 +113,15 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
   )
 }
 
-interface GroupTeacherFormProps {
-  form: ReturnType<typeof useForm<GroupTeacherSchemaType>>
+interface LessonTeacherFormProps {
+  form: ReturnType<typeof useForm<LessonTeacherSchemaType>>
   teachers: Awaited<ReturnType<typeof getUsers>>
-  onSubmit: (data: GroupTeacherSchemaType) => void
+  onSubmit: (data: LessonTeacherSchemaType) => void
 }
 
-function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
+function LessonTeacherForm({ form, teachers, onSubmit }: LessonTeacherFormProps) {
   return (
-    <form id="group-teacher-form" onSubmit={form.handleSubmit(onSubmit)}>
+    <form id="lesson-teacher-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
           name="teacherId"
@@ -143,7 +139,7 @@ function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
                 itemToStringLabel={(itemValue) => {
                   const teacher = teachers.find((t) => t.id === Number(itemValue))
                   return teacher
-                    ? `${teacher.firstName} ${teacher.lastName}`
+                    ? getFullName(teacher.firstName, teacher.lastName)
                     : 'Выберите преподавателя'
                 }}
               >
@@ -177,34 +173,9 @@ function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
                 id="form-rhf-input-bid"
                 type="number"
                 {...field}
+                value={field.value ?? ''}
                 onChange={(e) => field.onChange(Number(e.target.value))}
               />
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="isApplyToLesson"
-          control={form.control}
-          render={({ field }) => (
-            <Field>
-              <Field orientation="horizontal">
-                <FieldLabel
-                  htmlFor="toggle-apply-to-lessons"
-                  className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
-                >
-                  <Checkbox
-                    id="toggle-apply-to-lessons"
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
-                  />
-                  <div className="grid gap-1.5 font-normal">
-                    <p className="text-sm leading-none font-medium">Применить к урокам</p>
-                  </div>
-                </FieldLabel>
-              </Field>
             </Field>
           )}
         />

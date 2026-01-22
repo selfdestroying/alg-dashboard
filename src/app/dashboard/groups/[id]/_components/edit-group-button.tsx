@@ -1,6 +1,5 @@
 'use client'
-import { getGroup, updateGroup } from '@/actions/groups'
-import { timeSlots } from '@/app/dashboard/groups/_components/group-form'
+import { updateGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -21,41 +20,42 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { usePermission } from '@/hooks/usePermission'
 import { DaysOfWeek } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import { editGroupSchema, EditGroupSchemaType } from '@/schemas/group'
+import { GroupDTO } from '@/types/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GroupType } from '@prisma/client'
 import { AlertTriangle, Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { timeSlots } from '../../_components/create-group-dialog'
 
 interface EditGroupButtonProps {
-  group: Awaited<ReturnType<typeof getGroup>>
+  group: GroupDTO
 }
 
 export default function EditGroupButton({ group }: EditGroupButtonProps) {
+  const canEdit = usePermission('EDIT_GROUP')
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
     resolver: zodResolver(editGroupSchema),
     defaultValues: {
       courseId: group.courseId,
-      locationId: group.locationId ?? undefined,
-      time: group.time ?? undefined,
+      locationId: group.locationId!,
+      time: group.time!,
       backOfficeUrl: group.backOfficeUrl ?? '',
-      type: group.type ?? undefined,
-      dayOfWeek: group.dayOfWeek ?? undefined,
+      type: group.type!,
+      dayOfWeek: group.dayOfWeek!,
     },
   })
 
   const handleSubmit = (data: EditGroupSchemaType) => {
     startTransition(() => {
-      const cleanedData = Object.fromEntries(
-        Object.entries(data).filter(([, value]) => value !== undefined)
-      )
-      const ok = updateGroup({ where: { id: group.id }, data: cleanedData })
+      const ok = updateGroup({ where: { id: group.id }, data })
       toast.promise(ok, {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
@@ -64,10 +64,13 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       })
     })
   }
+  if (!canEdit) {
+    return null
+  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon-sm'} variant={'outline'} />}>
+      <DialogTrigger render={<Button size={'icon'} />}>
         <Pen />
       </DialogTrigger>
       <DialogContent>
@@ -185,8 +188,8 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 <SelectContent>
                   <SelectGroup>
                     {timeSlots.map((timeSlot) => (
-                      <SelectItem key={timeSlot.time} value={timeSlot.time}>
-                        {timeSlot.time}
+                      <SelectItem key={timeSlot.value} value={timeSlot.value}>
+                        {timeSlot.label}
                       </SelectItem>
                     ))}
                   </SelectGroup>

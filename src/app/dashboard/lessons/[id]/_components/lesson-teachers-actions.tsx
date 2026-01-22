@@ -1,5 +1,5 @@
 'use client'
-import { deleteTeacherGroup, updateTeacherGroup } from '@/actions/groups'
+import { deleteTeacherLesson, updateTeacherLesson } from '@/actions/lessons'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogClose,
@@ -28,7 +27,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { getFullName } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Prisma } from '@prisma/client'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
@@ -38,7 +37,7 @@ import { toast } from 'sonner'
 import z from 'zod/v4'
 
 interface UsersActionsProps {
-  tg: Prisma.TeacherGroupGetPayload<{
+  tl: Prisma.TeacherLessonGetPayload<{
     include: {
       teacher: true
     }
@@ -50,43 +49,37 @@ const editGroupTeacherSchema = z.object({
     .number('Не указана ставка')
     .int('Ставка должна быть числом')
     .gte(0, 'Ставка должна быть >= 0'),
-  isApplyToLessons: z.boolean(),
 })
 
 type EditGroupTeacherSchemaType = z.infer<typeof editGroupTeacherSchema>
 
-export default function GroupTeacherActions({ tg }: UsersActionsProps) {
+export default function LessonTeacherActions({ tl }: UsersActionsProps) {
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const [isApplyToLessons, setIsApplyToLessons] = useState(false)
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
   const form = useForm<EditGroupTeacherSchemaType>({
     resolver: zodResolver(editGroupTeacherSchema),
     defaultValues: {
-      bid: tg.bid,
-      isApplyToLessons: false,
+      bid: tl.bid,
     },
   })
 
   const handleEdit = (data: EditGroupTeacherSchemaType) => {
     startTransition(() => {
-      const { isApplyToLessons, ...payload } = data
-      const ok = updateTeacherGroup(
-        {
-          where: {
-            teacherId_groupId: {
-              teacherId: tg.teacherId,
-              groupId: tg.groupId,
-            },
+      const { ...payload } = data
+      const ok = updateTeacherLesson({
+        where: {
+          teacherId_lessonId: {
+            teacherId: tl.teacherId,
+            lessonId: tl.lessonId,
           },
-          data: payload,
         },
-        isApplyToLessons
-      )
+        data: payload,
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Ставка успешно обновлена',
@@ -94,7 +87,6 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
         finally: () => {
           setEditDialogOpen(false)
           setOpen(false)
-          setIsApplyToLessons(false)
         },
       })
     })
@@ -102,17 +94,14 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
 
   const handleDelete = () => {
     startTransition(() => {
-      const ok = deleteTeacherGroup(
-        {
-          where: {
-            teacherId_groupId: {
-              teacherId: tg.teacherId,
-              groupId: tg.groupId,
-            },
+      const ok = deleteTeacherLesson({
+        where: {
+          teacherId_lessonId: {
+            teacherId: tl.teacherId,
+            lessonId: tl.lessonId,
           },
         },
-        isApplyToLessons
-      )
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Учитель успешно удален',
@@ -120,7 +109,6 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
         finally: () => {
           setDeleteDialogOpen(false)
           setOpen(false)
-          setIsApplyToLessons(false)
         },
       })
     })
@@ -188,23 +176,10 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
             <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
               Вы уверены что хотите удалить{' '}
-              <b>
-                {tg.teacher.firstName} {tg.teacher.lastName || ''}
-              </b>{' '}
-              из списка преподавателей?
+              <b>{getFullName(tl.teacher.firstName, tl.teacher.lastName)}</b> из списка
+              преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
-
-          <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950">
-            <Checkbox
-              defaultChecked={isApplyToLessons}
-              onCheckedChange={(checked) => setIsApplyToLessons(Boolean(checked))}
-              className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
-            />
-            <div className="grid gap-2 font-normal">
-              <p className="text-sm leading-none font-medium">Применить к урокам</p>
-            </div>
-          </Label>
 
           <AlertDialogFooter>
             <Button variant={'secondary'} size={'sm'} onClick={() => setDeleteDialogOpen(false)}>
@@ -233,7 +208,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           <DialogHeader>
             <DialogTitle>Редактировать</DialogTitle>
             <DialogDescription>
-              {tg.teacher.firstName} {tg.teacher.lastName || ''}
+              {getFullName(tl.teacher.firstName, tl.teacher.lastName)}
             </DialogDescription>
           </DialogHeader>
 
@@ -254,32 +229,6 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
-                  </Field>
-                )}
-              />
-
-              <Controller
-                name="isApplyToLessons"
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <Field orientation="horizontal">
-                      <FieldLabel
-                        htmlFor="toggle-apply-to-lessons"
-                        className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
-                      >
-                        <Checkbox
-                          id="toggle-apply-to-lessons"
-                          name={field.name}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
-                        />
-                        <div className="grid gap-2 font-normal">
-                          <p className="text-sm leading-none font-medium">Применить к урокам</p>
-                        </div>
-                      </FieldLabel>
-                    </Field>
                   </Field>
                 )}
               />

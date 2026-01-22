@@ -1,5 +1,4 @@
 'use client'
-import { getGroup } from '@/actions/groups'
 import { cn, getFullName } from '@/lib/utils'
 import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import {
@@ -35,12 +34,9 @@ type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
   }
 }>
 
-type StudentWithAttendances = Prisma.StudentGetPayload<{
+export type StudentWithAttendances = Prisma.StudentGetPayload<{
   include: {
-    groups: true
-
     attendances: {
-      where: { lesson: { groupId: number } }
       include: {
         lesson: true
         asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
@@ -195,19 +191,17 @@ const getColumns = (lessons: Lesson[]): ColumnDef<StudentWithAttendances>[] => [
 ]
 
 // -------------------- Main Component --------------------
-export function GroupaAttendanceTable({
+export function GroupAttendanceTable({
   lessons,
-  students,
   data,
 }: {
-  data: Awaited<ReturnType<typeof getGroup>>
   lessons: Lesson[]
-  students: StudentWithAttendances[]
+  data: StudentWithAttendances[]
 }) {
-  const columns = useMemo(() => getColumns(lessons), [lessons, data.id])
+  const columns = useMemo(() => getColumns(lessons), [lessons])
 
   const table = useReactTable({
-    data: students,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

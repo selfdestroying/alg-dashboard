@@ -3,14 +3,15 @@
 import { Input } from '@/components/ui/input'
 import { Controller, useForm } from 'react-hook-form'
 
-import { updateUser, UserData } from '@/actions/users'
+import { updateUser } from '@/actions/users'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { EditUserSchema, EditUserSchemaType } from '@/schemas/user'
+import { UserDTO } from '@/types/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
 interface UserFormProps {
-  user: UserData
+  user: UserDTO
   onSubmit?: () => void
 }
 
@@ -28,22 +29,19 @@ export default function EditUserForm({ user, onSubmit }: UserFormProps) {
   })
 
   async function handleSubmit(values: EditUserSchemaType) {
-    const ok = updateUser(
-      {
-        where: {
-          id: user.id,
-        },
-        data: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          roleId: values.roleId,
-          status: values.status,
-          bidForLesson: values.bidForLesson,
-          bidForIndividual: values.bidForIndividual,
-        },
+    const ok = updateUser({
+      where: {
+        id: user.id,
       },
-      '/dashboard/users'
-    )
+      data: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        roleId: values.roleId,
+        status: values.status,
+        bidForLesson: values.bidForLesson,
+        bidForIndividual: values.bidForIndividual,
+      },
+    })
 
     toast.promise(ok, {
       loading: 'Создание пользователя...',

@@ -1,4 +1,3 @@
-import { UserData } from '@/actions/users'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,12 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { UserDTO } from '@/types/user'
 import { MoreVertical, Pen } from 'lucide-react'
 import { useState } from 'react'
 import EditUserForm from './edit-user-form'
 
 interface UsersActionsProps {
-  user: UserData
+  user: UserDTO
 }
 
 export default function UsersActions({ user }: UsersActionsProps) {

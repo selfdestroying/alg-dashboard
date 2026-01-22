@@ -1,6 +1,9 @@
 'use client'
-import { getGroup } from '@/actions/groups'
+import DragScrollArea from '@/components/drag-scroll-area'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn, getFullName } from '@/lib/utils'
+import { GroupDTO } from '@/types/group'
 import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import {
   ColumnDef,
@@ -16,9 +19,6 @@ import { toZonedTime } from 'date-fns-tz'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import DragScrollArea from '../drag-scroll-area'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
@@ -194,7 +194,7 @@ export function GroupaAttendanceTable({
   students,
   data,
 }: {
-  data: Awaited<ReturnType<typeof getGroup>>
+  data: GroupDTO
   lessons: Lesson[]
   students: StudentWithAttendances[]
 }) {

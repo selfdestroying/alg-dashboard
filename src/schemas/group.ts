@@ -1,25 +1,44 @@
+import { GroupType } from '@prisma/client'
 import { z } from 'zod/v4'
-import { GroupTypeEnum } from './enums'
 
 export const CreateGroupSchema = z.object({
   // required
-  teacherId: z.number().int().positive(),
-  courseId: z.number().int().positive(),
-  locationId: z.number().int().positive(),
+  name: z.string(),
+  teacher: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
+    },
+    'Выберите преподавателя'
+  ),
+  course: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
+    },
+    'Выберите курс'
+  ),
+  location: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
+    },
+    'Выберите локацию'
+  ),
   startDate: z.date({ error: 'Неверная дата начала' }),
+  type: z.enum(GroupType, 'Выберите тип группы'),
+  time: z.string('Выберите время'),
   // optional
-  type: GroupTypeEnum.optional(),
   endDate: z.date({ error: 'Неверная дата конца' }).optional(),
-  time: z.string().optional(),
   lessonCount: z.number().int().positive().optional(),
   lessonsPerWeek: z.number().int().positive().optional(),
-  backOfficeUrl: z.string().optional(),
+  backOfficeUrl: z.url('Неверный URL').optional(),
 })
 
 export const editGroupSchema = z.object({
   courseId: z.number().int().positive().optional(),
   locationId: z.number().int().positive().optional(),
-  type: GroupTypeEnum.optional(),
+  type: z.enum(GroupType).optional(),
   time: z.string().optional(),
   backOfficeUrl: z.string().optional(),
   dayOfWeek: z.number().int().optional(),

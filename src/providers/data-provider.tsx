@@ -1,12 +1,12 @@
 'use client'
 
-import { UserData } from '@/actions/users'
+import { UserDTO } from '@/types/user'
 import { Course, Location, Role } from '@prisma/client'
 import { createContext, FC, ReactNode, useContext } from 'react'
 
 const DataContext = createContext<{
   courses: Course[]
-  users: UserData[]
+  users: UserDTO[]
   locations: Location[]
   roles: Role[]
 }>({
@@ -18,7 +18,7 @@ const DataContext = createContext<{
 
 interface DataProviderProps {
   courses: Course[]
-  users: UserData[]
+  users: UserDTO[]
   locations: Location[]
   roles: Role[]
   children: ReactNode

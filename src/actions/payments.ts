@@ -9,32 +9,14 @@ export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
   }
 }>
 
-export const getPayments = async (
-  payload?: Prisma.PaymentFindManyArgs
-): Promise<PaymentsWithStudentAndGroup[]> => {
-  const payments = await prisma.payment.findMany({
-    ...payload,
-    include: {
-      student: true,
-    },
-  })
-
-  return payments
-}
-
-export const getUnprocessedPayments = async (payload?: Prisma.UnprocessedPaymentFindManyArgs) => {
-  return await prisma.unprocessedPayment.findMany(payload)
-}
-
-export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentUpdateArgs) => {
-  await prisma.unprocessedPayment.update(payload)
-  revalidatePath('/dashboard/payments')
+export const getPayments = async <T extends Prisma.PaymentFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.PaymentFindManyArgs>
+) => {
+  return await prisma.payment.findMany<T>(payload)
 }
 
 export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
   await prisma.payment.create(payload)
-  // if (isAddToGroup)
-  //   addToGroup({ groupId: data.groupId as number, studentId: data.studentId as number }, false)
   revalidatePath('/dashboard/payments')
 }
 
@@ -59,12 +41,22 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
 }
 
 export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
-  const product = await prisma.paymentProduct.create(payload)
+  await prisma.paymentProduct.create(payload)
   revalidatePath('/dashboard/payments')
-  return product
 }
 
-export const deletePaymentProduct = async (id: number) => {
-  await prisma.paymentProduct.delete({ where: { id } })
+export const deletePaymentProduct = async (payload: Prisma.PaymentProductDeleteArgs) => {
+  await prisma.paymentProduct.delete(payload)
+  revalidatePath('/dashboard/payments')
+}
+
+export const getUnprocessedPayments = async <T extends Prisma.UnprocessedPaymentFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.UnprocessedPaymentFindManyArgs>
+) => {
+  return await prisma.unprocessedPayment.findMany(payload)
+}
+
+export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentUpdateArgs) => {
+  await prisma.unprocessedPayment.update(payload)
   revalidatePath('/dashboard/payments')
 }

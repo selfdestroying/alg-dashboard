@@ -1,8 +1,4 @@
 'use client'
-import { getFullName } from '@/lib/utils'
-import { Prisma } from '@prisma/client'
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import Link from 'next/link'
 import {
   Table,
   TableBody,
@@ -10,65 +6,93 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../../../../components/ui/table'
+} from '@/components/ui/table'
+import { usePermission } from '@/hooks/usePermission'
+import { getFullName } from '@/lib/utils'
+import { Prisma } from '@prisma/client'
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import Link from 'next/link'
+import { useMemo } from 'react'
+import GroupStudentActions from './group-students-actions'
 
-type StudentWithAttendances = Prisma.StudentGetPayload<{
+type StudentWithAttendances = Prisma.StudentGroupGetPayload<{
   include: {
-    groups: true
-
-    attendances: {
-      where: { lesson: { groupId: number } }
+    student: {
       include: {
-        lesson: true
-        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
-        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+        attendances: {
+          where: { lesson: { groupId: number } }
+          include: {
+            lesson: true
+            asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
+            missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+          }
+        }
       }
     }
   }
 }>
 
-const columns: ColumnDef<StudentWithAttendances>[] = [
-  {
-    id: 'id',
-    header: '№',
-    cell: ({ row }) => row.index + 1,
-    size: 10,
-  },
-  {
-    header: 'Полное имя',
-    accessorFn: (student) => `${student.firstName} ${student.lastName}`,
-    cell: ({ row }) => (
-      <Link
-        href={`/dashboard/students/${row.original.id}`}
-        className="text-primary hover:underline"
-      >
-        {getFullName(row.original.firstName, row.original.lastName)}
-      </Link>
-    ),
-    meta: { filterVariant: 'text' },
-  },
-  { header: 'Возраст', accessorKey: 'age', meta: { filterVariant: 'range' } },
-  { header: 'ФИО Родителя', accessorKey: 'parentsName', meta: { filterVariant: 'text' } },
-  {
-    header: 'Ссылка в amoCRM',
-    accessorKey: 'crmUrl',
-    cell: ({ row }) => (
-      <a
-        target="_blank"
-        href={row.getValue('crmUrl') || '#'}
-        className="text-primary hover:underline"
-      >
-        {row.getValue('crmUrl') || 'Нет ссылки'}
-      </a>
-    ),
-    meta: { filterVariant: 'text' },
-  },
-  { accessorKey: 'login', header: 'Логин', meta: { filterVariant: 'text' } },
-  { accessorKey: 'password', header: 'Пароль', meta: { filterVariant: 'text' } },
-  { accessorKey: 'coins', header: 'Астрокоины', meta: { filterVariant: 'range' } },
-]
-
 export default function GroupStudentsTable({ data }: { data: StudentWithAttendances[] }) {
+  const canEdit = usePermission('EDIT_GROUPSTUDENT')
+  const columns: ColumnDef<StudentWithAttendances>[] = useMemo(
+    () => [
+      {
+        id: 'id',
+        header: '№',
+        cell: ({ row }) => row.index + 1,
+        size: 10,
+      },
+      {
+        header: 'Полное имя',
+        accessorFn: (student) => getFullName(student.student.firstName, student.student.lastName),
+        cell: ({ row }) => (
+          <Link
+            href={`/dashboard/students/${row.original.student.id}`}
+            className="text-primary hover:underline"
+          >
+            {getFullName(row.original.student.firstName, row.original.student.lastName)}
+          </Link>
+        ),
+      },
+      {
+        header: 'Ссылка в amo',
+        cell: ({ row }) =>
+          row.original.student.crmUrl ? (
+            <a
+              href={row.original.student.crmUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              {row.original.student.crmUrl ? 'Ссылка' : 'Нет ссылки'}
+            </a>
+          ) : (
+            'Нет ссылки'
+          ),
+      },
+      {
+        header: 'Возраст',
+        cell: ({ row }) => row.original.student.age,
+      },
+      {
+        header: 'Логин',
+        cell: ({ row }) => row.original.student.login,
+      },
+      {
+        header: 'Пароль',
+        cell: ({ row }) => row.original.student.password,
+      },
+      {
+        header: 'Коины',
+        cell: ({ row }) => row.original.student.coins,
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => (canEdit ? <GroupStudentActions sg={row.original} /> : null),
+      },
+    ],
+    [canEdit]
+  )
   const table = useReactTable({
     data,
     columns,

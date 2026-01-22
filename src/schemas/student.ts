@@ -10,8 +10,8 @@ export const CreateStudentSchema = z.object({
   parentsName: z.string('Укажите имя родителя').min(2, 'Укажите имя родителя'),
   crmUrl: z.url('Укажите корректный URL'),
   // optional
-  login: z.string('Укажите логин').min(2, 'Укажите логин').optional(),
-  password: z.string('Укажите пароль').min(2, 'Укажите пароль').optional(),
+  login: z.string('Укажите логин').min(2, 'Укажите логин'),
+  password: z.string('Укажите пароль').min(2, 'Укажите пароль'),
   coins: z.number('Укажите количество монет').optional(),
 })
 

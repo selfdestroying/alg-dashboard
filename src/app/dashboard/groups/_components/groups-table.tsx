@@ -1,9 +1,18 @@
 'use client'
 
-import { getGroups } from '@/actions/groups'
 import TableFilter, { TableFilterItem } from '@/components/table-filter'
+import { Button } from '@/components/ui/button'
 import { Field, FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -14,6 +23,7 @@ import {
 } from '@/components/ui/table'
 import { DaysOfWeek, getFullName } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
+import { GroupDTO } from '@/types/group'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,13 +32,15 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import { debounce } from 'es-toolkit'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
-const columns: ColumnDef<Awaited<ReturnType<typeof getGroups>>[number]>[] = [
+const columns: ColumnDef<GroupDTO>[] = [
   {
     header: 'Группа',
     accessorFn: (value) => value.id,
@@ -87,7 +99,7 @@ const columns: ColumnDef<Awaited<ReturnType<typeof getGroups>>[number]>[] = [
   {
     id: 'studentCount',
     header: 'Учеников',
-    accessorFn: (value) => value._count.students,
+    accessorFn: (value) => value.students.length,
     filterFn: (row, columnId, filterValue) => {
       const [min, max] = filterValue || []
       const value = row.getValue(columnId) as number
@@ -125,7 +137,7 @@ const columns: ColumnDef<Awaited<ReturnType<typeof getGroups>>[number]>[] = [
   },
 ]
 
-export default function GroupsTable({ data }: { data: Awaited<ReturnType<typeof getGroups>> }) {
+export default function GroupsTable({ data }: { data: GroupDTO[] }) {
   const { courses, locations, users } = useData()
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
@@ -157,6 +169,10 @@ export default function GroupsTable({ data }: { data: Awaited<ReturnType<typeof 
   const [studentCountInput, setStudentCountInput] = useState<[string, string]>(['', ''])
   const [globalFilter, setGlobalFilter] = useState('')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
   const table = useReactTable({
     data,
     columns,
@@ -169,11 +185,14 @@ export default function GroupsTable({ data }: { data: Awaited<ReturnType<typeof 
       const groupName = row.original.name.toLowerCase()
       return groupName.includes(searchValue)
     },
+    onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     state: {
       columnFilters,
       globalFilter,
+      pagination,
     },
-    onColumnFiltersChange: setColumnFilters,
   })
 
   const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
@@ -321,6 +340,75 @@ export default function GroupsTable({ data }: { data: Awaited<ReturnType<typeof 
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-end px-4">
+        <div className="flex w-full items-center gap-8 lg:w-fit">
+          <div className="hidden items-center gap-2 lg:flex">
+            <Label htmlFor="rows-per-page">Строк на страницу:</Label>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value))
+              }}
+            >
+              <SelectTrigger id="rows-per-page">
+                <SelectValue placeholder={table.getState().pagination.pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                <SelectGroup>
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            <Label className="flex w-fit items-center justify-center">
+              Страница {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
+            </Label>
+            <Button
+              variant="outline"
+              className="hidden lg:flex"
+              size="icon"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">На первую страницу</span>
+              <ChevronsLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">На предыдущую страницу</span>
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">На следующую страницу</span>
+              <ChevronRight />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden lg:flex"
+              size="icon"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">На последнюю страницу</span>
+              <ChevronsRight />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

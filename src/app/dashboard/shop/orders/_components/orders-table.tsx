@@ -4,7 +4,6 @@ import useSkipper from '@/hooks/use-skipper'
 import { Order, OrderStatus } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import DataTable from '../../../../../components/data-table'
 import {
   Select,
   SelectContent,
@@ -75,16 +74,7 @@ export default function OrdersTable({ orders }: { orders: OrderWithProductAndStu
     [skipAutoResetPageIndex]
   )
 
-  return (
-    <DataTable
-      data={orders}
-      columns={columns}
-      paginate
-      tableOptions={{
-        autoResetPageIndex,
-      }}
-    />
-  )
+  return <></>
 }
 
 function StatusAction({ value, onChange }: { value: Order; onChange: (val: OrderStatus) => void }) {

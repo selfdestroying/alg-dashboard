@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { PaymentProduct } from '@prisma/client'
-import DataTable from '../../../../../components/data-table'
 
 const getColumns = (): ColumnDef<PaymentProduct>[] => [
   {
@@ -42,5 +41,5 @@ export default function PaymentProductsTable({
   paymentProducts: PaymentProduct[]
 }) {
   const columns = getColumns()
-  return <DataTable data={paymentProducts} columns={columns} paginate />
+  return <></>
 }

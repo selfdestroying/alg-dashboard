@@ -1,5 +1,15 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -9,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getFullName } from '@/lib/utils'
-import { Student } from '@prisma/client'
+import { StudentDTO } from '@/types/student'
 import {
   ColumnDef,
   flexRender,
@@ -17,13 +27,15 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import { debounce } from 'es-toolkit'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
-const columns: ColumnDef<Student>[] = [
+const columns: ColumnDef<StudentDTO>[] = [
   {
     header: 'Имя',
     accessorFn: (value) => value.id,
@@ -75,13 +87,17 @@ const columns: ColumnDef<Student>[] = [
   },
 ]
 
-export default function StudentsTable({ data }: { data: Student[] }) {
+export default function StudentsTable({ data }: { data: StudentDTO[] }) {
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []
   )
   const [search, setSearch] = useState<string>('')
   const [globalFilter, setGlobalFilter] = useState('')
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
   const table = useReactTable({
     data,
     columns,
@@ -94,8 +110,12 @@ export default function StudentsTable({ data }: { data: Student[] }) {
       const fullName = getFullName(row.original.firstName, row.original.lastName).toLowerCase()
       return fullName.includes(searchValue)
     },
+    onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
+
     state: {
       globalFilter,
+      pagination,
     },
   })
 
@@ -145,6 +165,75 @@ export default function StudentsTable({ data }: { data: Student[] }) {
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-end px-4">
+        <div className="flex w-full items-center gap-8 lg:w-fit">
+          <div className="hidden items-center gap-2 lg:flex">
+            <Label htmlFor="rows-per-page">Строк на страницу:</Label>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value))
+              }}
+            >
+              <SelectTrigger id="rows-per-page">
+                <SelectValue placeholder={table.getState().pagination.pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                <SelectGroup>
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            <Label className="flex w-fit items-center justify-center">
+              Страница {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
+            </Label>
+            <Button
+              variant="outline"
+              className="hidden lg:flex"
+              size="icon"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">На первую страницу</span>
+              <ChevronsLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">На предыдущую страницу</span>
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">На следующую страницу</span>
+              <ChevronRight />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden lg:flex"
+              size="icon"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">На последнюю страницу</span>
+              <ChevronsRight />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

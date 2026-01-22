@@ -1,6 +1,6 @@
-import { getGroup } from '@/actions/groups'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DaysOfWeek } from '@/lib/utils'
+import { GroupDTO } from '@/types/group'
 import { GroupType } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { Book, Calendar, Clock, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
@@ -12,11 +12,7 @@ const groupTypeMap: Record<GroupType, string> = {
   INTENSIVE: 'Интенсив',
 }
 
-export default async function InfoSection({
-  group,
-}: {
-  group: Awaited<ReturnType<typeof getGroup>>
-}) {
+export default async function InfoSection({ group }: { group: GroupDTO }) {
   return (
     <Card className="shadow-none">
       <CardHeader>

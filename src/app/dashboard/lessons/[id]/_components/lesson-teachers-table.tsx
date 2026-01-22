@@ -14,15 +14,15 @@ import { Prisma } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import GroupTeacherActions from './group-teachers-actions'
+import LessonTeacherActions from './lesson-teachers-actions'
 
-export default function GroupTeachersTable({
+export default function LessonTeachersTable({
   data,
 }: {
-  data: Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>[]
+  data: Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>[]
 }) {
-  const canEdit = usePermission('EDIT_GROUPTEACHER')
-  const columns: ColumnDef<Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>>[] =
+  const canEdit = usePermission('EDIT_TEACHERLESSON')
+  const columns: ColumnDef<Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>>[] =
     useMemo(
       () => [
         {
@@ -42,7 +42,7 @@ export default function GroupTeachersTable({
         },
         {
           id: 'actions',
-          cell: ({ row }) => (canEdit ? <GroupTeacherActions tg={row.original} /> : null),
+          cell: ({ row }) => (canEdit ? <LessonTeacherActions tl={row.original} /> : null),
         },
       ],
       [canEdit]

@@ -1,14 +1,14 @@
 'use client'
 
-import { UserData } from '@/actions/users'
+import { UserDTO } from '@/types/user'
 import { createContext, useContext } from 'react'
 
 interface AuthProviderProps {
-  user: UserData
+  user: UserDTO
   children: React.ReactNode
 }
 
-export const AuthContext = createContext<UserData | null>(null)
+export const AuthContext = createContext<UserDTO | null>(null)
 
 export function AuthProvider({ user, children }: AuthProviderProps) {
   return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>

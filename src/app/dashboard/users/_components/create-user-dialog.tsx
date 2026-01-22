@@ -27,7 +27,7 @@ import {
 import { useData } from '@/providers/data-provider'
 import { CreateUserSchema, CreateUserSchemaType } from '@/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader, Sparkles } from 'lucide-react'
+import { Loader, Plus, Sparkles } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
@@ -75,15 +75,17 @@ export default function CreateUserDialog() {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id="create-user-form">
-        <DialogTrigger render={<Button />}>Создать пользователя</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Создать пользователя</DialogTitle>
-            <DialogDescription>
-              Заполните форму ниже, чтобы создать нового пользователя.
-            </DialogDescription>
-          </DialogHeader>
+      <DialogTrigger render={<Button size={'icon'} />}>
+        <Plus />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Создать пользователя</DialogTitle>
+          <DialogDescription>
+            Заполните форму ниже, чтобы создать нового пользователя.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit(onSubmit)} id="create-user-form">
           <FieldGroup className="no-scrollbar max-h-[60vh] overflow-y-auto">
             <Controller
               control={form.control}
@@ -202,15 +204,15 @@ export default function CreateUserDialog() {
               )}
             />
           </FieldGroup>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button type="submit" form="create-user-form" disabled={isPending}>
-              {isPending && <Loader className="animate-spin" />}
-              Создать
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
+          <Button type="submit" form="create-user-form" disabled={isPending}>
+            {isPending && <Loader className="animate-spin" />}
+            Создать
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   )
 }

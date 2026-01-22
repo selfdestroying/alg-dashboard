@@ -22,6 +22,7 @@ interface TableFilterProps {
   label: string
   items: TableFilterItem[]
   defaultValue?: TableFilterItem[]
+  value?: TableFilterItem[]
   disabled?: boolean
   onChange?: (selectedCourses: TableFilterItem[]) => void
 }
@@ -29,6 +30,7 @@ interface TableFilterProps {
 export default function TableFilter({
   label,
   items,
+  value,
   defaultValue,
   disabled,
   onChange,
@@ -41,7 +43,8 @@ export default function TableFilter({
         multiple
         autoHighlight
         items={items}
-        value={defaultValue}
+        value={value}
+        defaultValue={defaultValue}
         disabled={disabled}
         onValueChange={(values) => onChange && onChange(values)}
       >
