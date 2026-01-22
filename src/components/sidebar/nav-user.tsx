@@ -1,6 +1,5 @@
 'use client'
 import { logout } from '@/actions/auth'
-import { UserData } from '@/actions/users'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -10,10 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
+import { UserDTO } from '@/types/user'
 import { ChevronsUpDown, Loader, LogOut } from 'lucide-react'
 import { useTransition } from 'react'
 
-export default function NavUser({ user }: { user: UserData }) {
+export default function NavUser({ user }: { user: UserDTO }) {
   const [isPending, startTransition] = useTransition()
   const handleLogout = () => {
     startTransition(() => {

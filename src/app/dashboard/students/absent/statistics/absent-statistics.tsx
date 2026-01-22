@@ -44,19 +44,19 @@ interface AbsentStatisticsProps {
 const chartConfig = {
   missed: {
     label: 'Пропущено',
-    color: 'var(--chart-1)', // Red-ish ideally
+    color: 'var(--destructive)', // Red-ish ideally
   },
   saved: {
     label: 'Спасено',
-    color: 'var(--chart-2)', // Green-ish ideally
+    color: 'var(--success)', // Green-ish ideally
   },
   missedMoney: {
     label: 'Пропущено (₽)',
-    color: 'var(--chart-1)', // Red-ish ideally
+    color: 'var(--destructive)', // Red-ish ideally
   },
   savedMoney: {
     label: 'Спасено (₽)',
-    color: 'var(--chart-2)', // Green-ish ideally
+    color: 'var(--success)', // Green-ish ideally
   },
 } satisfies ChartConfig
 
@@ -108,12 +108,12 @@ export default function AbsentStatistics({ averagePrice, monthly, weekly }: Abse
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="fillMissed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1} />
+                <stop offset="5%" stopColor="var(--destructive)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--destructive)" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="fillSaved" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0.1} />
+                <stop offset="5%" stopColor="var(--success)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--success)" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
@@ -151,7 +151,7 @@ export default function AbsentStatistics({ averagePrice, monthly, weekly }: Abse
               type="natural"
               fill="url(#fillMissed)"
               fillOpacity={0.4}
-              stroke="var(--chart-1)" // Red
+              stroke="var(--destructive)" // Red
               stackId="a"
             />
             <Area
@@ -159,7 +159,7 @@ export default function AbsentStatistics({ averagePrice, monthly, weekly }: Abse
               type="natural"
               fill="url(#fillSaved)"
               fillOpacity={0.4}
-              stroke="var(--chart-2)" // Green
+              stroke="var(--success)" // Green
               stackId="b"
             />
           </AreaChart>

@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prisma'
 
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { createAttendance } from './attendance'
 
 export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
   include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
@@ -58,36 +57,10 @@ export const getLessons = async <T extends Prisma.LessonFindManyArgs>(
   return prisma.lesson.findMany(payload)
 }
 
-export const getUpcomingLessons = async (): Promise<LessonWithAttendanceAndGroup[]> => {
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const lessons = await prisma.lesson.findMany({
-    where: { date: { gte: today } },
-    include: {
-      attendance: { include: { student: true } },
-      group: {
-        include: {
-          teachers: {
-            include: {
-              teacher: {
-                omit: {
-                  password: true,
-                  createdAt: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    orderBy: { date: 'asc' },
-  })
-  return lessons
-}
-
-export const getLesson = async (payload: Prisma.LessonFindFirstArgs) => {
-  const lesson = await prisma.lesson.findFirst(payload)
-  return lesson
+export const getLesson = async <T extends Prisma.LessonFindFirstArgs>(
+  payload: Prisma.SelectSubset<T, Prisma.LessonFindFirstArgs>
+) => {
+  return await prisma.lesson.findFirst(payload)
 }
 
 export const updateLesson = async (payload: Prisma.LessonUpdateArgs) => {
@@ -95,30 +68,33 @@ export const updateLesson = async (payload: Prisma.LessonUpdateArgs) => {
   revalidatePath(`/dashboard/lessons/${payload.where.id}`)
 }
 
-export const createLesson = async (data: Prisma.LessonUncheckedCreateInput) => {
-  const lesson = await prisma.lesson.create({ data })
-  const students = await prisma.student.findMany({
-    where: { groups: { some: { groupId: data.groupId } } },
+export const createLesson = async (payload: Prisma.LessonCreateArgs) => {
+  await prisma.$transaction(async (tx) => {
+    const lesson = await tx.lesson.create({
+      ...payload,
+      include: { group: { include: { students: true } } },
+    })
+    const students = lesson.group.students
+    const attendanceRecords = students.map((student) => ({
+      lessonId: lesson.id,
+      studentId: student.studentId,
+      status: 'UNSPECIFIED' as const,
+      comment: '',
+    }))
+    await tx.attendance.createMany({ data: attendanceRecords })
   })
-  students.forEach(
-    async (student) =>
-      await createAttendance({
-        lessonId: lesson.id,
-        studentId: student.id,
-        comment: '',
-        status: 'UNSPECIFIED',
-      })
-  )
 
-  revalidatePath(`dashboard/groups/${data.groupId}`)
+  revalidatePath(`dashboard/groups/${payload.data.groupId}`)
 }
 
-export async function addTeacherToLesson(payload: Prisma.TeacherLessonCreateArgs) {
+// Teacher-Lesson Relations
+
+export async function createTeacherLesson(payload: Prisma.TeacherLessonCreateArgs) {
   await prisma.teacherLesson.create(payload)
   revalidatePath(`/dashboard/lessons/${payload.data.lessonId}`)
 }
 
-export async function removeTeacherFromLesson(payload: Prisma.TeacherLessonDeleteArgs) {
+export async function deleteTeacherLesson(payload: Prisma.TeacherLessonDeleteArgs) {
   await prisma.teacherLesson.delete(payload)
   revalidatePath(`/dashboard/lessons/${payload.where.lessonId}`)
 }

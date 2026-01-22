@@ -1,5 +1,5 @@
 import { getOrders } from '@/actions/orders'
-import OrdersTable from '@/components/tables/orders-table'
+import OrdersTable from '@/app/dashboard/shop/orders/_components/orders-table'
 
 export default async function Page() {
   const orders = await getOrders()

@@ -1,10 +1,11 @@
 import { getStudents } from '@/actions/students'
 import { getMe, getUsers } from '@/actions/users'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { prisma } from '@/lib/prisma'
+import AddTeacherToLessonButton from './_components/add-teacher-to-lesson-button'
 import AttendanceTable from './_components/attendance-table'
 import InfoSection from './_components/info-section'
-import TeachersSection from './_components/teachers-sections'
+import LessonTeachersTable from './_components/lesson-teachers-table'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id
@@ -13,11 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     include: {
       teachers: {
         include: {
-          teacher: {
-            omit: {
-              password: true,
-            },
-          },
+          teacher: true,
         },
       },
       group: {
@@ -68,9 +65,19 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="space-y-2">
-      <div className="grid gap-2 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         <InfoSection lesson={lesson} />
-        <TeachersSection />
+        <Card className="shadow-none">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">Преподаватели</CardTitle>
+            <CardAction>
+              <AddTeacherToLessonButton teachers={teachers} lesson={lesson} />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <LessonTeachersTable data={lesson.teachers} />
+          </CardContent>
+        </Card>
       </div>
       <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">

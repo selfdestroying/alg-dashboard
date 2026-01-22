@@ -7,12 +7,7 @@ import bcrypt from 'bcrypt'
 import { revalidatePath } from 'next/cache'
 import { cache } from 'react'
 
-export type UserData = Prisma.UserGetPayload<{
-  include: { role: true }
-  omit: { password: true }
-}>
-
-export const getMe = cache(async (): Promise<UserData | null> => {
+export const getMe = cache(async () => {
   const { isAuth, userId } = await verifySession()
   if (!isAuth || userId === null) {
     return null
@@ -20,29 +15,10 @@ export const getMe = cache(async (): Promise<UserData | null> => {
   const user = await prisma.user.findFirst({
     where: { id: userId },
     include: { role: true },
-    omit: { password: true },
   })
 
   return user
 })
-
-export const getUserById = async <T extends Prisma.UserFindFirstArgs>(
-  payload: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
-) => {
-  return await prisma.user.findFirst(payload)
-}
-
-export const updateUser = async (payload: Prisma.UserUpdateArgs, pathToRevalidate?: string) => {
-  await prisma.user.update(payload)
-  if (pathToRevalidate) revalidatePath(pathToRevalidate)
-}
-
-export const getUsers = async <T extends Prisma.UserFindManyArgs>(
-  payload?: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
-) => {
-  const users = await prisma.user.findMany<T>(payload)
-  return users
-}
 
 export const createUser = async (payload: Prisma.UserCreateArgs) => {
   const hashedPassword = await bcrypt.hash(payload.data.password, 10)
@@ -56,4 +32,21 @@ export const createUser = async (payload: Prisma.UserCreateArgs) => {
   })
   revalidatePath('dashboard/users')
   return user
+}
+
+export const getUsers = async <T extends Prisma.UserFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+) => {
+  return await prisma.user.findMany<T>(payload)
+}
+
+export const getUser = async <T extends Prisma.UserFindFirstArgs>(
+  payload: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
+) => {
+  return await prisma.user.findFirst(payload)
+}
+
+export const updateUser = async (payload: Prisma.UserUpdateArgs) => {
+  await prisma.user.update(payload)
+  revalidatePath(`dashboard/users/${payload.where.id}`)
 }

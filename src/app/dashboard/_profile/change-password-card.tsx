@@ -1,15 +1,15 @@
 'use client'
 
 import { changePassword } from '@/actions/auth'
-import { UserData } from '@/actions/users'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { UserDTO } from '@/types/user'
 import { Loader2, Lock } from 'lucide-react'
 import { useActionState, useState } from 'react'
 
-export function ChangePasswordCard({ user }: { user: UserData }) {
+export function ChangePasswordCard({ user }: { user: UserDTO }) {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')

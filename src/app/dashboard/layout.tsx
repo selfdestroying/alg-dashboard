@@ -29,7 +29,11 @@ export default async function Layout({
   })
   const roles = await prisma.role.findMany()
 
-  const studentsCount = await prisma.student.count()
+  const studentsCount = await prisma.student.count({
+    where: {
+      dismisseds: { none: {} },
+    },
+  })
   const groupsCount = await prisma.group.count()
 
   return (
@@ -42,7 +46,7 @@ export default async function Layout({
               <div className="flex items-center justify-between">
                 <SidebarTrigger variant={'outline'} />
                 <div className="bg-card flex items-center gap-2 rounded-md border px-2 py-0.5 text-sm shadow-sm">
-                  <div className="flex items-center gap-1" title="Количество учеников">
+                  <div className="flex items-center gap-1" title="Количество активных учеников">
                     <Users className="h-3 w-3" />
                     <span className="text-xs font-medium">{studentsCount}</span>
                   </div>

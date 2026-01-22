@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { PaymentProduct } from '@prisma/client'
-import DataTable from '../data-table'
 
 const getColumns = (): ColumnDef<PaymentProduct>[] => [
   {
@@ -28,7 +27,7 @@ const getColumns = (): ColumnDef<PaymentProduct>[] => [
     },
   },
   {
-    header: 'Картинка',
+    header: 'Кол-во занятий',
     accessorKey: 'lessonCount',
     meta: {
       filterVariant: 'range',
@@ -42,5 +41,5 @@ export default function PaymentProductsTable({
   paymentProducts: PaymentProduct[]
 }) {
   const columns = getColumns()
-  return <DataTable data={paymentProducts} columns={columns} paginate />
+  return <></>
 }

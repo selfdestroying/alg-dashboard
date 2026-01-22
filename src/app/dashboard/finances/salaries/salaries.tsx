@@ -1,13 +1,13 @@
 'use client'
 import { getLessons } from '@/actions/lessons'
 import { getPaychecks } from '@/actions/paycheck'
-import { UserData } from '@/actions/users'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
+import { UserDTO } from '@/types/user'
 import { PayCheck, Prisma } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
@@ -25,7 +25,7 @@ export default function Salaries({ userId }: { userId?: number }) {
   })
   const [lessons, setLessons] = useState<
     {
-      teacher: UserData
+      teacher: UserDTO
       lessons: (Prisma.LessonGetPayload<{
         include: {
           teachers: {
@@ -69,9 +69,6 @@ export default function Salaries({ userId }: { userId?: number }) {
                   include: {
                     role: true,
                   },
-                  omit: {
-                    password: true,
-                  },
                 },
               },
             },
@@ -107,7 +104,7 @@ export default function Salaries({ userId }: { userId?: number }) {
         const lessonsByTeacher: Record<
           number,
           {
-            teacher: UserData
+            teacher: UserDTO
             lessons: ((typeof lessonsData)[0] & { price: number })[]
           }
         > = {}

@@ -13,7 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { usePermission } from '@/hooks/usePermission'
 import { cn, getFullName } from '@/lib/utils'
+import { useAuth } from '@/providers/auth-provider'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import {
@@ -41,12 +43,24 @@ type LessonWithDetails = Prisma.LessonGetPayload<{
 
 export default function LessonsCalendar() {
   const { courses, locations, users } = useData()
+  const user = useAuth()
+  const canViewOtherLessons = usePermission('VIEW_OTHER_LESSONS')
   const today = toZonedTime(new Date(), 'Europe/Moscow')
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(today)
   const [selectedMonth, setSelectedMonth] = useState<Date>(today)
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
+    if (!canViewOtherLessons) {
+      return [
+        {
+          id: 'teacher',
+          value: [user.id],
+        },
+      ]
+    }
+    return []
+  })
 
   const [isPending, startTransition] = useTransition()
 
@@ -184,6 +198,7 @@ export default function LessonsCalendar() {
       <Card className="overflow-y-auto">
         <CardContent>
           <Calendar
+            today={today}
             mode="single"
             selected={selectedDay}
             defaultMonth={selectedDay}
@@ -224,21 +239,23 @@ export default function LessonsCalendar() {
             }}
           />
         </CardContent>
-        <CardFooter className="">
-          <FieldGroup>
-            <TableFilter label="Курс" items={mappedCourses} onChange={handleCourseFilterChange} />
-            <TableFilter
-              label="Локация"
-              items={mappedLocations}
-              onChange={handleLocationFilterChange}
-            />
-            <TableFilter
-              label="Преподаватель"
-              items={mappedUsers}
-              onChange={handleUserFilterChange}
-            />
-          </FieldGroup>
-        </CardFooter>
+        {canViewOtherLessons && (
+          <CardFooter>
+            <FieldGroup>
+              <TableFilter label="Курс" items={mappedCourses} onChange={handleCourseFilterChange} />
+              <TableFilter
+                label="Локация"
+                items={mappedLocations}
+                onChange={handleLocationFilterChange}
+              />
+              <TableFilter
+                label="Преподаватель"
+                items={mappedUsers}
+                onChange={handleUserFilterChange}
+              />
+            </FieldGroup>
+          </CardFooter>
+        )}
       </Card>
 
       <Card>

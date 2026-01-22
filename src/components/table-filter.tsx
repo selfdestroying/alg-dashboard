@@ -22,10 +22,19 @@ interface TableFilterProps {
   label: string
   items: TableFilterItem[]
   defaultValue?: TableFilterItem[]
+  value?: TableFilterItem[]
+  disabled?: boolean
   onChange?: (selectedCourses: TableFilterItem[]) => void
 }
 
-export default function TableFilter({ label, items, defaultValue, onChange }: TableFilterProps) {
+export default function TableFilter({
+  label,
+  items,
+  value,
+  defaultValue,
+  disabled,
+  onChange,
+}: TableFilterProps) {
   const anchor = useComboboxAnchor()
   return (
     <Field>
@@ -34,7 +43,9 @@ export default function TableFilter({ label, items, defaultValue, onChange }: Ta
         multiple
         autoHighlight
         items={items}
+        value={value}
         defaultValue={defaultValue}
+        disabled={disabled}
         onValueChange={(values) => onChange && onChange(values)}
       >
         <ComboboxChips ref={anchor}>

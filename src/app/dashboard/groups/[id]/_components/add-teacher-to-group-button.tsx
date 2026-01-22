@@ -16,10 +16,12 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { usePermission } from '@/hooks/usePermission'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Group } from '@prisma/client'
 import { Plus } from 'lucide-react'
@@ -47,6 +49,7 @@ const GroupTeacherSchema = z.object({
 type GroupTeacherSchemaType = z.infer<typeof GroupTeacherSchema>
 
 export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherToGroupButtonProps) {
+  const canAdd = usePermission('ADD_GROUPTEACHER')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -85,9 +88,13 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
     form.reset()
   }, [dialogOpen, form])
 
+  if (!canAdd) {
+    return null
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button variant="outline" size={'icon-sm'} />}>
+      <DialogTrigger render={<Button size={'icon'} />}>
         <Plus />
       </DialogTrigger>
       <DialogContent>
@@ -133,16 +140,24 @@ function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
                 name={field.name}
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
+                itemToStringLabel={(itemValue) => {
+                  const teacher = teachers.find((t) => t.id === Number(itemValue))
+                  return teacher
+                    ? `${teacher.firstName} ${teacher.lastName}`
+                    : 'Выберите преподавателя'
+                }}
               >
                 <SelectTrigger id="form-rhf-select-teacher" aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder="Выберите преподавателя" />
                 </SelectTrigger>
                 <SelectContent>
-                  {teachers.map((teacher) => (
-                    <SelectItem key={teacher.id} value={teacher.id.toString()}>
-                      {teacher.firstName} {teacher.lastName}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>
+                    {teachers.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.id.toString()}>
+                        {teacher.firstName} {teacher.lastName}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
@@ -176,7 +191,7 @@ function GroupTeacherForm({ form, teachers, onSubmit }: GroupTeacherFormProps) {
               <Field orientation="horizontal">
                 <FieldLabel
                   htmlFor="toggle-apply-to-lessons"
-                  className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-[[aria-checked=true]]:border-violet-600 has-[[aria-checked=true]]:bg-violet-50 dark:has-[[aria-checked=true]]:border-violet-900 dark:has-[[aria-checked=true]]:bg-violet-950"
+                  className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
                 >
                   <Checkbox
                     id="toggle-apply-to-lessons"

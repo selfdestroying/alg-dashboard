@@ -1,12 +1,9 @@
 'use server'
 import { prisma } from '@/lib/prisma'
 import { Group, Prisma, Student } from '@prisma/client'
-import { randomUUID } from 'crypto'
 import { revalidatePath } from 'next/cache'
-import { createStudentGroup } from './groups'
 
 export type StudentWithGroups = Student & { groups: Group[] }
-
 export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
   include: {
     groups: { include: { group: { include: { lessons: true } } } }
@@ -20,143 +17,35 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
   }
 }>
 
-export const getStudents = async (payload?: Prisma.StudentFindManyArgs) => {
-  return await prisma.student.findMany(payload)
-}
-
-export const getStudent = async (id: number): Promise<StudentWithGroups> => {
-  const student = await prisma.student.findFirstOrThrow({
-    where: { id },
-    include: { groups: { include: { group: true } } },
-  })
-  const studentWithGroups = { ...student, groups: student?.groups.map((group) => group.group) }
-  return studentWithGroups
-}
-
-export const getStudentWithAttendance = async (id: number) => {
-  const student = await prisma.student.findFirstOrThrow({
-    where: { id },
-    include: {
-      groups: {
-        include: {
-          group: {
-            include: {
-              lessons: {
-                orderBy: {
-                  date: 'asc',
-                },
-              },
-            },
-          },
-        },
-      },
-      attendances: {
-        include: {
-          lesson: true,
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
-        },
-      },
-    },
-  })
-
-  return student
-}
-
-export const createStudent = async (
-  data: Omit<Prisma.StudentCreateInput, 'login' | 'password'>,
-  groupId?: number
+export const getStudents = async <T extends Prisma.StudentFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.StudentFindManyArgs>
 ) => {
-  const student = await prisma.student.create({
-    data: {
-      ...data,
-      password: 'student',
-      login: `student-${randomUUID().slice(0, 4)}`,
-    },
-  })
-  await prisma.cart.create({
-    data: {
-      studentId: student.id,
-    },
-  })
-  if (groupId) {
-    await createStudentGroup({
-      groupId,
-      studentId: student.id,
-      status: 'ACTIVE',
-    })
-  }
-  revalidatePath('dashboard/students')
+  return await prisma.student.findMany<T>(payload)
 }
 
-export async function updateStudentCard(studentData: Student) {
-  try {
-    const updated = await prisma.student.update({
-      where: { id: studentData.id },
-      data: {
-        firstName: studentData.firstName,
-        lastName: studentData.lastName,
-        age: Number(studentData.age),
-        login: studentData.login,
-        password: studentData.password,
-        coins: Number(studentData.coins),
-        parentsName: studentData.parentsName,
-        crmUrl: studentData.crmUrl,
-        totalLessons: Number(studentData.totalLessons),
-        totalPayments: Number(studentData.totalPayments),
-        lessonsBalance: Number(studentData.lessonsBalance),
-      },
-    })
+export const getStudent = async <T extends Prisma.StudentFindFirstArgs>(
+  payload: Prisma.SelectSubset<T, Prisma.StudentFindFirstArgs>
+) => {
+  return await prisma.student.findFirst<T>(payload)
+}
 
-    // сброс кеша на странице конкретного ученика
-    revalidatePath(`/dashboard/students/${studentData.id}`)
-
-    return updated
-  } catch (err) {
-    console.error('Ошибка при обновлении ученика:', err)
-    throw new Error('Не удалось обновить данные ученика')
-  }
+export const createStudent = async (payload: Prisma.StudentCreateArgs) => {
+  await prisma.student.create(payload)
+  revalidatePath('dashboard/students')
 }
 
 export async function updateStudent(payload: Prisma.StudentUpdateArgs) {
   await prisma.student.update(payload)
+  revalidatePath(`dashboard/students/${payload.where.id}`)
 }
 
-export const deleteStudent = async (id: number) => {
-  await prisma.student.delete({ where: { id } })
+export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {
+  await prisma.student.delete(payload)
   revalidatePath('dashboard/students')
-}
-
-export const getActiveStudents = async () => {
-  const students = await prisma.studentGroup.findMany({
-    include: {
-      group: {
-        include: {
-          location: true,
-          course: true,
-          teachers: {
-            include: {
-              teacher: true,
-            },
-          },
-        },
-      },
-      student: {
-        include: {
-          payments: true,
-        },
-      },
-    },
-  })
-
-  return students
 }
 
 export async function getActiveStudentStatistics() {
   const activeStudentGroups = await prisma.studentGroup.findMany({
-    where: {
-      status: 'ACTIVE',
-    },
     include: {
       group: {
         include: {
@@ -177,6 +66,8 @@ export async function getActiveStudentStatistics() {
       },
     },
   })
+
+  console.log(activeStudentGroups.length)
 
   // 1. Monthly Statistics (New Students per Month)
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()

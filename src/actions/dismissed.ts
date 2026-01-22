@@ -17,7 +17,7 @@ export async function getDismissed(payload: Prisma.DismissedFindFirstArgs) {
   return dismissed
 }
 
-export async function addDismissed(payload: Prisma.DismissedCreateArgs) {
+export async function createDismissed(payload: Prisma.DismissedCreateArgs) {
   await prisma.dismissed.create(payload)
   revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
 }
@@ -34,7 +34,7 @@ export async function returnToGroup(payload: {
 }) {
   const { dismissedId, groupId, studentId } = payload
   await prisma.$transaction(async () => {
-    await createStudentGroup({ groupId, studentId })
+    await createStudentGroup({ data: { groupId, studentId } }, false)
     await removeDismissed({ where: { id: dismissedId } })
   })
 

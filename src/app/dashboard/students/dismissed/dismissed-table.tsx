@@ -87,6 +87,14 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
     },
   },
   {
+    header: 'Комментарий',
+    cell: ({ row }) => (
+      <p className="max-w-52 truncate" title={row.original.comment || ''}>
+        {row.original.comment || '-'}
+      </p>
+    ),
+  },
+  {
     id: 'location',
     header: 'Локация',
     accessorFn: (value) => value.group.location?.id,

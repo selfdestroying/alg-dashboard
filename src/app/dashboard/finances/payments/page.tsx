@@ -1,16 +1,18 @@
 import { getPayments, getUnprocessedPayments } from '@/actions/payments'
-import { getStudents } from '@/actions/students'
-import PaymentProductsTable from '@/components/tables/payment-product-table'
-import PaymentsTable from '@/components/tables/payments-table'
-import UnprocessedPaymentTable from '@/components/tables/unprocessed-payment-table'
+import PaymentsTable from '@/app/dashboard/finances/payments/_components/payments-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { prisma } from '@/lib/prisma'
+import UnprocessedPaymentTable from './_components/unprocessed-payment-table'
 
 export default async function Page() {
-  const payments = await getPayments({ orderBy: { createdAt: 'desc' } })
-  const unprocessedPayments = await getUnprocessedPayments()
-  const students = await getStudents({})
-  const payementProducts = await prisma.paymentProduct.findMany()
+  const payments = await getPayments({
+    include: {
+      student: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  const unprocessedPayments = await getUnprocessedPayments({
+    orderBy: { createdAt: 'desc' },
+  })
 
   return (
     <div className="space-y-2">
@@ -20,7 +22,7 @@ export default async function Page() {
           {/* <PaymentDialogForm students={students} /> */}
         </CardHeader>
         <CardContent>
-          <PaymentsTable payments={payments} />
+          <PaymentsTable data={payments} />
         </CardContent>
       </Card>
 
@@ -29,28 +31,7 @@ export default async function Page() {
           <CardTitle>Неразобранное</CardTitle>
         </CardHeader>
         <CardContent>
-          <UnprocessedPaymentTable unprocessedPayments={unprocessedPayments} students={students} />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex items-center justify-between">
-          <CardTitle>Товары для оплат</CardTitle>
-          {/* <FormDialog
-            title="Добавить товар оплаты"
-            icon="plus"
-            FormComponent={PaymentProductForm}
-            triggerButtonProps={{
-              size: 'sm',
-              variant: 'outline',
-            }}
-            submitButtonProps={{
-              form: 'payment-product-form',
-            }}
-          /> */}
-        </CardHeader>
-        <CardContent>
-          <PaymentProductsTable paymentProducts={payementProducts} />
+          <UnprocessedPaymentTable data={unprocessedPayments} />
         </CardContent>
       </Card>
     </div>

@@ -152,11 +152,11 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent className="w-36">
           <DropdownMenuItem
             onClick={() => {
               setEditDialogOpen(true)
@@ -288,7 +288,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
 
           <DialogFooter>
             <DialogClose render={<Button variant="secondary" size={'sm'} />}>Cancel</DialogClose>
-            <Button size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
+            <Button type="submit" size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>

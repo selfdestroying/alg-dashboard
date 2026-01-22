@@ -7,13 +7,60 @@ export const RoleCodes = {
 
 export const Permission = {
   EDIT_ATTENDANCE: 'EDIT_ATTENDANCE',
+  VIEW_REVENUE: 'VIEW_REVENUE',
+  VIEW_PAYMENTS: 'VIEW_PAYMENTS',
+  VIEW_OTHER_LESSONS: 'VIEW_OTHER_LESSONS',
+  EDIT_GROUP: 'EDIT_GROUP',
+
+  ADD_GROUPTEACHER: 'ADD_GROUPTEACHER',
+  ADD_GROUPSTUDENT: 'ADD_GROUPSTUDENT',
+  ADD_TEACHERLESSON: 'ADD_TEACHERLESSON',
+
+  EDIT_GROUPTEACHER: 'EDIT_GROUPTEACHER',
+  EDIT_GROUPSTUDENT: 'EDIT_GROUPSTUDENT',
+  EDIT_TEACHERLESSON: 'EDIT_TEACHERLESSON',
 } as const
 
 export type Permission = (typeof Permission)[keyof typeof Permission]
 
 export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes], Permission[]> = {
-  admin: [Permission.EDIT_ATTENDANCE],
-  owner: [Permission.EDIT_ATTENDANCE],
-  manager: [Permission.EDIT_ATTENDANCE],
+  admin: [
+    Permission.EDIT_ATTENDANCE,
+    Permission.VIEW_OTHER_LESSONS,
+    Permission.EDIT_GROUP,
+    Permission.ADD_GROUPTEACHER,
+    Permission.ADD_GROUPSTUDENT,
+    Permission.EDIT_GROUPTEACHER,
+    Permission.EDIT_GROUPSTUDENT,
+    Permission.VIEW_PAYMENTS,
+    Permission.VIEW_REVENUE,
+    Permission.EDIT_TEACHERLESSON,
+    Permission.ADD_TEACHERLESSON,
+  ],
+  owner: [
+    Permission.EDIT_ATTENDANCE,
+    Permission.VIEW_OTHER_LESSONS,
+    Permission.EDIT_GROUP,
+    Permission.ADD_GROUPTEACHER,
+    Permission.ADD_GROUPSTUDENT,
+    Permission.EDIT_GROUPTEACHER,
+    Permission.EDIT_GROUPSTUDENT,
+    Permission.VIEW_PAYMENTS,
+    Permission.VIEW_REVENUE,
+    Permission.EDIT_TEACHERLESSON,
+    Permission.ADD_TEACHERLESSON,
+  ],
+  manager: [
+    Permission.EDIT_ATTENDANCE,
+    Permission.VIEW_OTHER_LESSONS,
+    Permission.EDIT_GROUP,
+    Permission.ADD_GROUPTEACHER,
+    Permission.ADD_GROUPSTUDENT,
+    Permission.EDIT_GROUPTEACHER,
+    Permission.EDIT_GROUPSTUDENT,
+    Permission.VIEW_PAYMENTS,
+    Permission.EDIT_TEACHERLESSON,
+    Permission.ADD_TEACHERLESSON,
+  ],
   teacher: [],
 }

@@ -1,5 +1,4 @@
 'use client'
-import { UserData } from '@/actions/users'
 import TableFilter from '@/components/table-filter'
 import {
   Table,
@@ -23,15 +22,16 @@ import {
 } from '@tanstack/react-table'
 
 import { Input } from '@/components/ui/input'
+import { UserDTO } from '@/types/user'
 import { debounce } from 'es-toolkit'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
 interface UsersTableProps {
-  data: UserData[]
+  data: UserDTO[]
 }
 
-const columns: ColumnDef<UserData>[] = [
+const columns: ColumnDef<UserDTO>[] = [
   {
     id: 'user',
     header: 'Полное имя',

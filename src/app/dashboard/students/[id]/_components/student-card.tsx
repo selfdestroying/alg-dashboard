@@ -1,15 +1,13 @@
 'use client'
 
-import { getGroup } from '@/actions/groups'
-import { StudentWithGroupsAndAttendance, updateStudentCard } from '@/actions/students'
-import { StudentGroupDialog } from '@/components/student-group-dialog'
-import { GroupaAttendanceTable } from '@/components/tables/group-attendance-table'
+import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { StudentDTO, StudentWithGroupsAndAttendance } from '@/types/student'
 import {
   Calendar,
   Coins,
@@ -31,14 +29,13 @@ interface StudentCardProps {
 
 export default function StudentCard({ student }: StudentCardProps) {
   const [editMode, setEditMode] = useState(false)
-  const [formData, setFormData] = useState<StudentWithGroupsAndAttendance>(student)
+  const [formData, setFormData] = useState<StudentDTO>(student)
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
-    await updateStudentCard(formData) // нужно реализовать в actions/students
     setEditMode(false)
   }
 
@@ -204,7 +201,7 @@ export default function StudentCard({ student }: StudentCardProps) {
               <Users size={20} />
               Группы
             </h3>
-            <StudentGroupDialog studentId={student.id} />
+            {/* <StudentGroupDialog studentId={student.id} /> */}
           </div>
           {student.groups.length > 0 ? (
             <div className="space-y-6">
@@ -216,11 +213,7 @@ export default function StudentCard({ student }: StudentCardProps) {
                   >
                     {groupData.group.name}
                   </Link>
-                  <GroupaAttendanceTable
-                    data={groupData.group as Awaited<ReturnType<typeof getGroup>>}
-                    lessons={groupData.group.lessons}
-                    students={[student]}
-                  />
+                  <GroupAttendanceTable lessons={groupData.group.lessons} data={[student]} />
                 </div>
               ))}
             </div>

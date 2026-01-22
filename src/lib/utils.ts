@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -12,4 +13,10 @@ export const DaysOfWeek = {
 
 export function getFullName(firstName: string, lastName: string | null): string {
   return lastName ? `${firstName} ${lastName}` : firstName
+}
+
+export function getGroupName(
+  group: Prisma.GroupGetPayload<{ include: { location: true; course: true } }>
+) {
+  return `${group.course.name} ${DaysOfWeek.short[group.dayOfWeek!]} ${group.time}`
 }
