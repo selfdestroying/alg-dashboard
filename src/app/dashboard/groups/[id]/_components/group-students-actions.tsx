@@ -228,7 +228,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-52">
+        <DropdownMenuContent className="w-max">
           <DropdownMenuItem
             onClick={() => {
               setDismissDialogOpen(true)

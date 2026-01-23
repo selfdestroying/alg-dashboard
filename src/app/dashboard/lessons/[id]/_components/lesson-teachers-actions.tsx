@@ -144,7 +144,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-36">
+        <DropdownMenuContent className="w-max">
           <DropdownMenuItem
             onClick={() => {
               setEditDialogOpen(true)

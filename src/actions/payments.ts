@@ -60,3 +60,8 @@ export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymen
   await prisma.unprocessedPayment.update(payload)
   revalidatePath('/dashboard/payments')
 }
+
+export const deleteUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentDeleteArgs) => {
+  await prisma.unprocessedPayment.delete(payload)
+  revalidatePath('/dashboard/payments')
+}

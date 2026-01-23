@@ -1,6 +1,8 @@
 import { getPayments, getUnprocessedPayments } from '@/actions/payments'
+import { getStudents } from '@/actions/students'
 import PaymentsTable from '@/app/dashboard/finances/payments/_components/payments-table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import AddPaymentButton from './_components/add-payment-button'
 import UnprocessedPaymentTable from './_components/unprocessed-payment-table'
 
 export default async function Page() {
@@ -13,13 +15,16 @@ export default async function Page() {
   const unprocessedPayments = await getUnprocessedPayments({
     orderBy: { createdAt: 'desc' },
   })
+  const students = await getStudents({ orderBy: { id: 'asc' } })
 
   return (
     <div className="space-y-2">
       <Card>
         <CardHeader className="flex items-center justify-between">
           <CardTitle>Оплаты</CardTitle>
-          {/* <PaymentDialogForm students={students} /> */}
+          <CardAction>
+            <AddPaymentButton students={students} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <PaymentsTable data={payments} />
@@ -31,7 +36,7 @@ export default async function Page() {
           <CardTitle>Неразобранное</CardTitle>
         </CardHeader>
         <CardContent>
-          <UnprocessedPaymentTable data={unprocessedPayments} />
+          <UnprocessedPaymentTable data={unprocessedPayments} students={students} />
         </CardContent>
       </Card>
     </div>

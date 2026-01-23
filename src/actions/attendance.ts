@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { AttendanceStatus, Prisma } from '@prisma/client'
+import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
 
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
@@ -107,6 +108,7 @@ export const getAbsentStatistics = async () => {
       status: 'ABSENT',
     },
     include: {
+      student: true,
       lesson: true,
       missedMakeup: {
         include: {
@@ -121,8 +123,9 @@ export const getAbsentStatistics = async () => {
     },
   })
 
-  // Calculate average lesson price
-  const aggregate = await prisma.payment.aggregate({
+  // Calculate student rates
+  const payments = await prisma.payment.groupBy({
+    by: ['studentId'],
     _sum: {
       price: true,
       lessonCount: true,
@@ -133,16 +136,37 @@ export const getAbsentStatistics = async () => {
     },
   })
 
-  const totalMoney = aggregate._sum.price || 0
-  const totalLessons = aggregate._sum.lessonCount || 0
-  const averagePrice = totalLessons > 0 ? Math.round(totalMoney / totalLessons) : 0
+  const studentRates = new Map<number, number>()
+  let globalTotalMoney = 0
+  let globalTotalLessons = 0
+
+  payments.forEach((p) => {
+    const price = p._sum.price || 0
+    const count = p._sum.lessonCount || 0
+    globalTotalMoney += price
+    globalTotalLessons += count
+
+    if (count > 0) {
+      studentRates.set(p.studentId, price / count)
+    }
+  })
+
+  const averagePrice =
+    globalTotalLessons > 0 ? Math.round(globalTotalMoney / globalTotalLessons) : 0
 
   // Aggregation
-  const monthlyStatsMap = new Map<string, { missed: number; saved: number; timestamp: number }>()
-  const weeklyStatsMap = new Map<string, { missed: number; saved: number; timestamp: number }>()
+  const monthlyStatsMap = new Map<
+    string,
+    { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
+  >()
+  const weeklyStatsMap = new Map<
+    string,
+    { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
+  >()
 
   absences.forEach((att) => {
-    const date = new Date(att.lesson.date)
+    const date = toZonedTime(new Date(att.lesson.date), 'Europe/Moscow')
+    const rate = att.student.totalPayments / att.student.totalLessons || averagePrice
 
     // Monthly Grouping
     // Key: YYYY-MM
@@ -167,19 +191,39 @@ export const getAbsentStatistics = async () => {
 
     // Update Monthly
     if (!monthlyStatsMap.has(monthKey)) {
-      monthlyStatsMap.set(monthKey, { missed: 0, saved: 0, timestamp: new Date(y, m, 1).getTime() })
+      monthlyStatsMap.set(monthKey, {
+        missed: 0,
+        saved: 0,
+        missedMoney: 0,
+        savedMoney: 0,
+        timestamp: new Date(y, m, 1).getTime(),
+      })
     }
     const mStat = monthlyStatsMap.get(monthKey)!
     mStat.missed++
-    if (isSaved) mStat.saved++
+    mStat.missedMoney += rate
+    if (isSaved) {
+      mStat.saved++
+      mStat.savedMoney += rate
+    }
 
     // Update Weekly
     if (!weeklyStatsMap.has(weekKey)) {
-      weeklyStatsMap.set(weekKey, { missed: 0, saved: 0, timestamp: monday.getTime() })
+      weeklyStatsMap.set(weekKey, {
+        missed: 0,
+        saved: 0,
+        missedMoney: 0,
+        savedMoney: 0,
+        timestamp: monday.getTime(),
+      })
     }
     const wStat = weeklyStatsMap.get(weekKey)!
     wStat.missed++
-    if (isSaved) wStat.saved++
+    wStat.missedMoney += rate
+    if (isSaved) {
+      wStat.saved++
+      wStat.savedMoney += rate
+    }
   })
 
   // Format and Sort Monthly
@@ -191,9 +235,9 @@ export const getAbsentStatistics = async () => {
         name: dateRep.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
         missed: val.missed,
         saved: val.saved,
-        missedMoney: val.missed * averagePrice,
-        savedMoney: val.saved * averagePrice,
-        lossMoney: (val.missed - val.saved) * averagePrice,
+        missedMoney: Math.round(val.missedMoney),
+        savedMoney: Math.round(val.savedMoney),
+        lossMoney: Math.round(val.missedMoney - val.savedMoney),
       }
     })
 
@@ -206,9 +250,9 @@ export const getAbsentStatistics = async () => {
         name: dateRep.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
         missed: val.missed,
         saved: val.saved,
-        missedMoney: val.missed * averagePrice,
-        savedMoney: val.saved * averagePrice,
-        lossMoney: (val.missed - val.saved) * averagePrice,
+        missedMoney: Math.round(val.missedMoney),
+        savedMoney: Math.round(val.savedMoney),
+        lossMoney: Math.round(val.missedMoney - val.savedMoney),
       }
     })
 

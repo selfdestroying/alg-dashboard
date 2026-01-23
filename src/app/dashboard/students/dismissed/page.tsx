@@ -1,7 +1,7 @@
 import { getDismissedStatistics } from '@/actions/dismissed'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { prisma } from '@/lib/prisma'
-import DismissedStudentsTable from './dismissed-table'
+import DismissedStudentsTable from './_components/dismissed-table'
 import DismissedStatistics from './statistics/dismissed-statistics'
 
 export default async function Page() {

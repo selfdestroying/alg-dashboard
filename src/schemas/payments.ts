@@ -1,10 +1,17 @@
 import { z } from 'zod/v4'
 
-export const PaymentSchema = z.object({
-  lessonCount: z.number().int().positive(),
-  price: z.number().int().positive(),
-  leadName: z.string(),
-  productName: z.string(),
+export const AddPaymentSchema = z.object({
+  student: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
+    },
+    'Выберите студента'
+  ),
+  lessonCount: z.number('Укажите количество занятий').positive(),
+  price: z.number('Укажите сумму').positive(),
+  leadName: z.string('Укажите имя лида'),
+  productName: z.string('Укажите название товара'),
 })
 
-export type PaymentSchemaType = z.infer<typeof PaymentSchema>
+export type AddPaymentSchemaType = z.infer<typeof AddPaymentSchema>

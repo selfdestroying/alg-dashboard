@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getFullName } from '@/lib/utils'
+import { cn, getFullName } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import {
   ColumnDef,
@@ -18,12 +18,15 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 
 import { Input } from '@/components/ui/input'
 import { UserDTO } from '@/types/user'
 import { debounce } from 'es-toolkit'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
@@ -79,6 +82,7 @@ export default function UsersTable({ data }: UsersTableProps) {
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []
   )
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -94,9 +98,12 @@ export default function UsersTable({ data }: UsersTableProps) {
       const roleName = row.original.role.name.toLowerCase()
       return fullName.includes(searchValue) || roleName.includes(searchValue)
     },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnFilters,
       globalFilter,
+      sorting,
     },
   })
 
@@ -139,9 +146,31 @@ export default function UsersTable({ data }: UsersTableProps) {
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <div
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={(e) => {
+                        // Enhanced keyboard handling for sorting
+                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault()
+                          header.column.getToggleSortingHandler()?.(e)
+                        }
+                      }}
+                      tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
+                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                  )}
                 </TableHead>
               ))}
             </TableRow>

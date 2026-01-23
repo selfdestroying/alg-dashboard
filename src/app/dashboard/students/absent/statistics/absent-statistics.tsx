@@ -15,6 +15,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -89,16 +90,14 @@ export default function AbsentStatistics({ averagePrice, monthly, weekly }: Abse
               itemValue === 'monthly' ? 'По месяцам' : 'По неделям'
             }
           >
-            <SelectTrigger className="w-40 rounded-lg sm:ml-auto" aria-label="Выберите период">
+            <SelectTrigger aria-label="Выберите период">
               <SelectValue placeholder="Период" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="weekly" className="rounded-lg">
-                По неделям
-              </SelectItem>
-              <SelectItem value="monthly" className="rounded-lg">
-                По месяцам
-              </SelectItem>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="weekly">По неделям</SelectItem>
+                <SelectItem value="monthly">По месяцам</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
