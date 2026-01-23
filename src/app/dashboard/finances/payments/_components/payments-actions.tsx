@@ -47,11 +47,11 @@ export default function PaymentsActions({ payment }: PaymentsActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent className="w-max">
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
@@ -68,17 +68,17 @@ export default function PaymentsActions({ payment }: PaymentsActionsProps) {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Вы уверены, что хотите удалить оплату?</AlertDialogTitle>
+            <AlertDialogTitle>Вы уверены, что хотите отменить оплату?</AlertDialogTitle>
             <AlertDialogDescription>
-              При удалении записи, будут удалены все связанные с ним сущности. Это действие нельзя
-              будет отменить.
+              Это действие отменит оплату и не может быть отменено. Это так же повлияет на баланс
+              ученика
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
             <AlertDialogCancel>Отмена</AlertDialogCancel>
             <Button variant="destructive" disabled={isPending} onClick={handleDelete}>
-              {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
+              {isPending ? <Loader2 className="animate-spin" /> : 'Отменить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
