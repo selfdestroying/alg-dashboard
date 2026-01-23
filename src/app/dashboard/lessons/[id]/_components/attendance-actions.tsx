@@ -147,7 +147,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-52">
+        <DropdownMenuContent className="w-max">
           <DropdownMenuItem
             onClick={() => {
               setStatusOpen(true)

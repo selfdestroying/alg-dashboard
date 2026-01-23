@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getFullName } from '@/lib/utils'
+import { cn, getFullName } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import {
   ColumnDef,
@@ -21,10 +21,13 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import { debounce } from 'es-toolkit'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
@@ -97,7 +100,6 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   {
     id: 'location',
     header: 'Локация',
-    accessorFn: (value) => value.group.location?.id,
     cell: ({ row }) => row.original.group.location?.name,
     filterFn: (row, id, filterValue) => {
       return filterValue.length === 0 || filterValue.includes(row.original.group.location?.id)
@@ -105,6 +107,7 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   },
   {
     header: 'Дата отчисления',
+    accessorKey: 'date',
     cell: ({ row }) =>
       toZonedTime(new Date(row.original.date), 'Europe/Moscow').toLocaleDateString('ru-RU'),
   },
@@ -119,13 +122,17 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [search, setSearch] = useState<string>('')
   const [globalFilter, setGlobalFilter] = useState('')
+  const [sorting, setSorting] = useState<SortingState>([])
   const table = useReactTable({
     data,
     columns,
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedRowModel: getFacetedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
       const fullName = getFullName(
@@ -134,9 +141,14 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
       ).toLowerCase()
       return fullName.includes(searchValue)
     },
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
+
+    onSortingChange: setSorting,
     state: {
       columnFilters,
       globalFilter,
+      sorting,
     },
   })
 
@@ -227,9 +239,31 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <div
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={(e) => {
+                        // Enhanced keyboard handling for sorting
+                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault()
+                          header.column.getToggleSortingHandler()?.(e)
+                        }
+                      }}
+                      tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
+                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                  )}
                 </TableHead>
               ))}
             </TableRow>
