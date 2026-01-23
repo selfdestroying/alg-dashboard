@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getFullName } from '@/lib/utils'
+import { cn, getFullName } from '@/lib/utils'
 import {
   ColumnDef,
   flexRender,
@@ -28,11 +28,20 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import { debounce } from 'es-toolkit'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
@@ -79,6 +88,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     pageIndex: 0,
     pageSize: 10,
   })
+  const [sorting, setSorting] = useState<SortingState>([])
   const table = useReactTable({
     data,
     columns,
@@ -86,6 +96,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedRowModel: getFacetedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
       const fullName = getFullName(
@@ -96,10 +107,12 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     },
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
 
     state: {
       globalFilter,
       pagination,
+      sorting,
     },
   })
 
@@ -121,9 +134,31 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <div
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={(e) => {
+                        // Enhanced keyboard handling for sorting
+                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault()
+                          header.column.getToggleSortingHandler()?.(e)
+                        }
+                      }}
+                      tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
+                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                  )}
                 </TableHead>
               ))}
             </TableRow>

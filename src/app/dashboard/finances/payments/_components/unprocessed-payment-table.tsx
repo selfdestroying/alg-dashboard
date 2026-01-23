@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { UnprocessedPayment } from '@prisma/client'
+import { Student, UnprocessedPayment } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -18,9 +18,19 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileJson } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  FileJson,
+} from 'lucide-react'
 
 import TableFilter, { TableFilterItem } from '@/components/table-filter'
 import { Button } from '@/components/ui/button'
@@ -33,7 +43,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { toZonedTime } from 'date-fns-tz'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   Select,
@@ -45,68 +55,86 @@ import {
 } from '@/components/ui/select'
 
 import { Label } from '@/components/ui/label'
-
-const columns: ColumnDef<UnprocessedPayment>[] = [
-  {
-    id: 'resolved',
-    header: 'Статус',
-    cell: ({ row }) => (
-      <span className={row.original.resolved ? 'text-success' : 'text-destructive'}>
-        {row.original.resolved ? 'Разобрано' : 'Неразобрано'}
-      </span>
-    ),
-    filterFn: (row, id, filterValues) => {
-      if (filterValues.length === 0) return true
-      const isResolved = row.original.resolved
-      if (isResolved && filterValues.includes('resolved')) return true
-      if (!isResolved && filterValues.includes('unresolved')) return true
-      return false
-    },
-  },
-  {
-    header: 'Причина',
-    accessorKey: 'reason',
-  },
-  {
-    header: 'Необработанные данные',
-    accessorKey: 'rawData',
-    cell: ({ row }) => (
-      <Dialog>
-        <DialogTrigger render={<Button variant={'outline'} size={'icon'} />}>
-          <FileJson />
-        </DialogTrigger>
-        <DialogContent className="flex flex-col gap-0 p-0 sm:max-h-[min(640px,80vh)] sm:max-w-lg [&>button:last-child]:hidden">
-          <div className="overflow-y-auto">
-            <DialogHeader className="contents space-y-0 text-left">
-              <DialogTitle className="sr-only px-6 pt-6">Необработанные данные</DialogTitle>
-              <DialogDescription
-                render={
-                  <div className="[&_strong]:text-foreground space-y-4 p-6 [&_strong]:font-semibold" />
-                }
-              >
-                <pre>
-                  <code lang="json">{JSON.stringify(row.original.rawData, null, 2)}</code>
-                </pre>
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-        </DialogContent>
-      </Dialog>
-    ),
-  },
-  {
-    header: 'Дата',
-    accessorKey: 'createdAt',
-    cell: ({ row }) => toZonedTime(row.original.createdAt, 'Europe/Moscow').toLocaleString('ru-RU'),
-  },
-]
+import { cn } from '@/lib/utils'
+import UnprocessedPaymentsActions from './unprocessed-payment-actions'
 
 const filterOptions: TableFilterItem[] = [
   { label: 'Разобрано', value: 'resolved' },
   { label: 'Неразобрано', value: 'unresolved' },
 ]
 
-export default function UnprocessedPaymentTable({ data }: { data: UnprocessedPayment[] }) {
+export default function UnprocessedPaymentTable({
+  data,
+  students,
+}: {
+  data: UnprocessedPayment[]
+  students: Student[]
+}) {
+  const columns: ColumnDef<UnprocessedPayment>[] = useMemo(
+    () => [
+      {
+        id: 'resolved',
+        header: 'Статус',
+        accessorKey: 'resolved',
+        cell: ({ row }) => (
+          <span className={row.original.resolved ? 'text-success' : 'text-destructive'}>
+            {row.original.resolved ? 'Разобрано' : 'Неразобрано'}
+          </span>
+        ),
+        filterFn: (row, id, filterValues) => {
+          if (filterValues.length === 0) return true
+          const isResolved = row.original.resolved
+          if (isResolved && filterValues.includes('resolved')) return true
+          if (!isResolved && filterValues.includes('unresolved')) return true
+          return false
+        },
+      },
+      {
+        header: 'Причина',
+        accessorKey: 'reason',
+      },
+      {
+        header: 'Необработанные данные',
+        accessorKey: 'rawData',
+        cell: ({ row }) => (
+          <Dialog>
+            <DialogTrigger render={<Button variant={'outline'} size={'icon'} />}>
+              <FileJson />
+            </DialogTrigger>
+            <DialogContent className="flex flex-col gap-0 p-0 sm:max-h-[min(640px,80vh)] sm:max-w-lg [&>button:last-child]:hidden">
+              <div className="overflow-y-auto">
+                <DialogHeader className="contents space-y-0 text-left">
+                  <DialogTitle className="sr-only px-6 pt-6">Необработанные данные</DialogTitle>
+                  <DialogDescription
+                    render={
+                      <div className="[&_strong]:text-foreground space-y-4 p-6 [&_strong]:font-semibold" />
+                    }
+                  >
+                    <pre>
+                      <code lang="json">{JSON.stringify(row.original.rawData, null, 2)}</code>
+                    </pre>
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ),
+      },
+      {
+        header: 'Дата',
+        accessorKey: 'createdAt',
+        cell: ({ row }) =>
+          toZonedTime(row.original.createdAt, 'Europe/Moscow').toLocaleString('ru-RU'),
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => (
+          <UnprocessedPaymentsActions students={students} unprocessedPayment={row.original} />
+        ),
+      },
+    ],
+    [students]
+  )
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: 'resolved', value: ['unresolved'] },
   ])
@@ -115,6 +143,7 @@ export default function UnprocessedPaymentTable({ data }: { data: UnprocessedPay
     pageSize: 10,
   })
   const [filterValues, setFilterValues] = useState<TableFilterItem[]>([filterOptions[0]])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -125,9 +154,12 @@ export default function UnprocessedPaymentTable({ data }: { data: UnprocessedPay
     getFacetedRowModel: getFacetedRowModel(),
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnFilters,
       pagination,
+      sorting,
     },
   })
 
@@ -159,9 +191,31 @@ export default function UnprocessedPaymentTable({ data }: { data: UnprocessedPay
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <div
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={(e) => {
+                        // Enhanced keyboard handling for sorting
+                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault()
+                          header.column.getToggleSortingHandler()?.(e)
+                        }
+                      }}
+                      tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
+                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                  )}
                 </TableHead>
               ))}
             </TableRow>

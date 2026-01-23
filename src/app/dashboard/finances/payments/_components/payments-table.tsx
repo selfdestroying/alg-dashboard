@@ -19,19 +19,29 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getFullName } from '@/lib/utils'
+import { cn, getFullName } from '@/lib/utils'
 
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import PaymentsActions from './payments-actions'
 
 const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
   {
@@ -71,9 +81,15 @@ const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
     cell: ({ row }) =>
       toZonedTime(row.original.createdAt, 'Europe/Moscow').toLocaleDateString('ru-RU'),
   },
+  {
+    id: 'actions',
+    cell: ({ row }) => <PaymentsActions payment={row.original} />,
+  },
 ]
 
 export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGroup[] }) {
+  const [sorting, setSorting] = useState<SortingState>([])
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -84,7 +100,9 @@ export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGr
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
-    state: { pagination },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: { pagination, sorting },
   })
 
   return (
@@ -95,9 +113,31 @@ export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGr
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <div
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                      onKeyDown={(e) => {
+                        // Enhanced keyboard handling for sorting
+                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault()
+                          header.column.getToggleSortingHandler()?.(e)
+                        }
+                      }}
+                      tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
+                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  ) : (
+                    flexRender(header.column.columnDef.header, header.getContext())
+                  )}
                 </TableHead>
               ))}
             </TableRow>
