@@ -10,6 +10,7 @@ import {
 import { useAuth } from '@/providers/auth-provider'
 import { ComponentProps } from 'react'
 import NavPlatform from './nav-platform'
+import NavShop from './nav-shop'
 import NavTheme from './nav-theme'
 import NavUser from './nav-user'
 
@@ -24,7 +25,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavPlatform />
-        {/* <NavShop /> */}
+        <NavShop />
       </SidebarContent>
       <SidebarFooter>
         <NavTheme />
