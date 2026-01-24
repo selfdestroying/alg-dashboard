@@ -6,7 +6,17 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const student = await getStudent({
     where: { id: Number(id) },
     include: {
-      groups: { include: { group: { include: { lessons: true } } } },
+      groups: {
+        include: {
+          group: {
+            include: {
+              lessons: {
+                orderBy: { date: 'asc' },
+              },
+            },
+          },
+        },
+      },
       attendances: {
         include: {
           lesson: true,

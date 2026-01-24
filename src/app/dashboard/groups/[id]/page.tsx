@@ -14,7 +14,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const group = await getGroup({
     where: { id: Number(id) },
     include: {
-      lessons: true,
+      lessons: {
+        orderBy: { date: 'asc' },
+      },
       location: true,
       course: true,
       teachers: {
