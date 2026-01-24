@@ -230,7 +230,7 @@ export default function Salaries({ userId }: { userId?: number }) {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Calendar className="text-muted-foreground h-4 w-4" />
+                              <CalendarIcon className="text-muted-foreground h-4 w-4" />
                               <span className="font-medium">
                                 {toZonedTime(paycheck.date, 'Europe/Moscow').toLocaleDateString(
                                   'ru-RU',
