@@ -336,7 +336,7 @@ export default function ProductActions({ product, categories }: ProductActionsPr
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
             <Button type="submit" form="edit-category-form" disabled={isPending}>
               {isPending && <Loader className="animate-spin" />}
-              Создать
+              Сохранить
             </Button>
           </DialogFooter>
         </DialogContent>

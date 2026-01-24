@@ -110,7 +110,7 @@ export default function OrderActions({ order }: OrderActionsProps) {
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
             <Button disabled={isPending} onClick={handleChangeTheme}>
               {isPending && <Loader className="animate-spin" />}
-              Создать
+              Сохранить
             </Button>
           </DialogFooter>
         </DialogContent>
