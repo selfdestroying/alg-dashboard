@@ -6,11 +6,13 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { UserDTO } from '@/types/user'
-import { ChevronsUpDown, Loader, LogOut } from 'lucide-react'
+import { ChevronsUpDown, Loader, LogOut, User } from 'lucide-react'
+import Link from 'next/link'
 import { useTransition } from 'react'
 
 export default function NavUser({ user }: { user: UserDTO }) {
@@ -54,13 +56,13 @@ export default function NavUser({ user }: { user: UserDTO }) {
             <ChevronsUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {/* <DropdownMenuGroup>
-              <DropdownMenuItem render={<Link href={'/dashboard/profile'} />}>
+            <DropdownMenuGroup>
+              <DropdownMenuItem render={<Link href={`/dashboard/users/${user.id}`} />}>
                 <User />
                 Профиль
               </DropdownMenuItem>
-            </DropdownMenuGroup> */}
-            {/* <DropdownMenuSeparator /> */}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem variant="destructive" onClick={handleLogout} disabled={isPending}>
                 <LogOut />
