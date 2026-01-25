@@ -1,7 +1,6 @@
 import { getPaychecks } from '@/actions/paycheck'
 import { getUser } from '@/actions/users'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardAction,
@@ -18,7 +17,9 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item'
+import { getFullName } from '@/lib/utils'
 import { toZonedTime } from 'date-fns-tz'
+import EditUserButton from '../_components/edit-user-dialog'
 import AddCheckButton from './add-check-button'
 
 const userRoleMap = {
@@ -51,46 +52,41 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-col items-center justify-between gap-4 border-b p-4 sm:flex-row">
-          <div className="flex items-center gap-4">
-            <Avatar className="size-12">
-              <AvatarFallback className="bg-primary text-primary-foreground rounded-full text-xl font-bold">
-                {user.firstName?.[0]?.toUpperCase()}
-                {user.lastName?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <CardTitle className="text-2xl font-bold">
-              <div className="flex items-center gap-2 text-left">
-                <span className="truncate font-medium">
-                  {user.firstName} {user.lastName}
-                </span>
-                <Badge variant={'outline'}>{user.role.name}</Badge>
-                <Badge>{user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}</Badge>
-              </div>
-            </CardTitle>
-          </div>
+        <CardHeader>
+          <CardTitle>
+            <div className="flex items-center gap-2">
+              <Avatar>
+                <AvatarFallback>
+                  {user.firstName?.[0]?.toUpperCase()}
+                  {user.lastName?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {getFullName(user.firstName, user.lastName)}
+            </div>
+          </CardTitle>
+          <CardDescription>
+            <span>{user.role.name}</span>
+            {' • '}
+            <span className={user.status === 'ACTIVE' ? 'text-success' : 'text-destructive'}>
+              {user.status == 'ACTIVE' ? 'Активен' : 'Неактивен'}
+            </span>
+          </CardDescription>
           <CardAction>
-            {/* <FormDialog
-              title="Редактировать пользователя"
-              icon="edit"
-              FormComponent={EditUserForm}
-              formComponentProps={{ user }}
-              submitButtonProps={{ form: 'user-form' }}
-              triggerButtonProps={{ variant: 'outline', size: 'sm' }}
-            /> */}
+            <EditUserButton user={user} />
           </CardAction>
         </CardHeader>
+
         <CardContent>
-          <div className="flex w-full items-center gap-2">
+          <div className="flex items-center gap-2">
             <div>
-              <div className="text-muted-foreground text-sm">Ставка за урок</div>
-              <div className="text-lg font-bold">
+              <div className="text-muted-foreground">Ставка за урок</div>
+              <div className="text-sm font-bold">
                 {user.bidForLesson ? user.bidForLesson.toLocaleString() : '—'} ₽
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground text-sm">Ставка за индив.</div>
-              <div className="text-lg font-bold">
+              <div className="text-muted-foreground">Ставка за индив.</div>
+              <div className="text-sm font-bold">
                 {user.bidForIndividual ? user.bidForIndividual.toLocaleString() : '—'} ₽
               </div>
             </div>

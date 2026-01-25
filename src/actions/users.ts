@@ -46,7 +46,54 @@ export const getUser = async <T extends Prisma.UserFindFirstArgs>(
   return await prisma.user.findFirst(payload)
 }
 
-export const updateUser = async (payload: Prisma.UserUpdateArgs) => {
-  await prisma.user.update(payload)
+export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLessons: boolean) => {
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.update(payload)
+    if (isApplyToLessons) {
+      await tx.teacherLesson.updateMany({
+        where: {
+          teacherId: user.id,
+          lesson: {
+            date: { gt: new Date() },
+            group: { type: 'GROUP' },
+          },
+        },
+        data: {
+          bid: user.bidForLesson,
+        },
+      })
+      await tx.teacherLesson.updateMany({
+        where: {
+          teacherId: user.id,
+          lesson: {
+            date: { gt: new Date() },
+            group: { type: 'INDIVIDUAL' },
+          },
+        },
+        data: {
+          bid: user.bidForIndividual,
+        },
+      })
+      await tx.teacherGroup.updateMany({
+        where: {
+          teacherId: user.id,
+          group: { type: 'GROUP' },
+        },
+        data: {
+          bid: user.bidForLesson,
+        },
+      })
+      await tx.teacherGroup.updateMany({
+        where: {
+          teacherId: user.id,
+          group: { type: 'INDIVIDUAL' },
+        },
+        data: {
+          bid: user.bidForIndividual,
+        },
+      })
+    }
+  })
+
   revalidatePath(`dashboard/users/${payload.where.id}`)
 }
