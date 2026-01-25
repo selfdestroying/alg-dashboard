@@ -16,5 +16,5 @@ export async function getPaycheck(payload: Prisma.PayCheckFindFirstArgs) {
 
 export async function createPaycheck(payload: Prisma.PayCheckCreateArgs) {
   await prisma.payCheck.create(payload)
-  revalidatePath('/dashboard/profile')
+  revalidatePath(`/dashboard/users/${payload.data.userId}`)
 }

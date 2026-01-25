@@ -1,8 +1,10 @@
 'use client'
 import { AttendanceWithStudents } from '@/actions/attendance'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -22,6 +24,7 @@ import {
 import { cn, getFullName } from '@/lib/utils'
 import {
   ColumnDef,
+  ColumnFilter,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -32,7 +35,9 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
+import { startOfDay } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
+import { ru } from 'date-fns/locale'
 import { debounce } from 'es-toolkit'
 import {
   ArrowDown,
@@ -44,6 +49,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { DateRange } from 'react-day-picker'
 
 const columns: ColumnDef<AttendanceWithStudents>[] = [
   {
@@ -71,9 +77,17 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
     ),
   },
   {
+    id: 'date',
     header: 'Дата пропуска',
+    accessorKey: 'lesson.date',
     cell: ({ row }) =>
       toZonedTime(new Date(row.original.lesson.date), 'Europe/Moscow').toLocaleDateString('ru-RU'),
+    filterFn: (row, columnId, filterValue) => {
+      const lessonDate = startOfDay(new Date(row.getValue<Date>(columnId)))
+      const fromDate = startOfDay(new Date(filterValue.from))
+      const toDate = startOfDay(new Date(filterValue.to))
+      return lessonDate >= fromDate && lessonDate <= toDate
+    },
   },
 ]
 
@@ -89,6 +103,8 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     pageSize: 10,
   })
   const [sorting, setSorting] = useState<SortingState>([])
+  const [range, setRange] = useState<DateRange | undefined>(undefined)
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([])
   const table = useReactTable({
     data,
     columns,
@@ -108,13 +124,37 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
 
     state: {
       globalFilter,
       pagination,
       sorting,
+      columnFilters,
     },
   })
+
+  const handleDateRangeChangeFilter = (range: DateRange | undefined) => {
+    if (range?.from && range?.to) {
+      const fromDate = startOfDay(range.from)
+      const toDate = startOfDay(range.to)
+
+      setColumnFilters((prev) => {
+        const filtered = prev.filter((filter) => filter.id !== 'date')
+        return [
+          ...filtered,
+          {
+            id: 'date',
+            value: { from: fromDate, to: toDate },
+          },
+        ]
+      })
+    } else {
+      setColumnFilters((prev) => prev.filter((filter) => filter.id !== 'date'))
+    }
+    setRange(range)
+  }
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -127,6 +167,26 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
           }}
           placeholder="Поиск..."
         />
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button id="date" variant="outline" className="w-fit">
+                {range?.from && range?.to
+                  ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+                  : 'Выбрать дату'}
+              </Button>
+            }
+          />
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              selected={range}
+              onSelect={handleDateRangeChangeFilter}
+              captionLayout="dropdown"
+              locale={ru}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <Table className="overflow-y-auto">
         <TableHeader className="bg-card sticky top-0 z-10">

@@ -16,7 +16,7 @@ import {
 import { UserDTO } from '@/types/user'
 import { MoreVertical, Pen } from 'lucide-react'
 import { useState } from 'react'
-import EditUserForm from './edit-user-form'
+import EditUserForm from './edit-user-dialog'
 
 interface UsersActionsProps {
   user: UserDTO

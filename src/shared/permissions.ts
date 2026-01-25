@@ -19,6 +19,9 @@ export const Permission = {
   EDIT_GROUPTEACHER: 'EDIT_GROUPTEACHER',
   EDIT_GROUPSTUDENT: 'EDIT_GROUPSTUDENT',
   EDIT_TEACHERLESSON: 'EDIT_TEACHERLESSON',
+
+  ADD_PAYCHECK: 'ADD_PAYCHECK',
+  EDIT_USER: 'EDIT_USER',
 } as const
 
 export type Permission = (typeof Permission)[keyof typeof Permission]
@@ -36,6 +39,8 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.VIEW_REVENUE,
     Permission.EDIT_TEACHERLESSON,
     Permission.ADD_TEACHERLESSON,
+    Permission.ADD_PAYCHECK,
+    Permission.EDIT_USER,
   ],
   owner: [
     Permission.EDIT_ATTENDANCE,
@@ -49,6 +54,8 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.VIEW_REVENUE,
     Permission.EDIT_TEACHERLESSON,
     Permission.ADD_TEACHERLESSON,
+    Permission.ADD_PAYCHECK,
+    Permission.EDIT_USER,
   ],
   manager: [
     Permission.EDIT_ATTENDANCE,
@@ -61,6 +68,8 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.VIEW_PAYMENTS,
     Permission.EDIT_TEACHERLESSON,
     Permission.ADD_TEACHERLESSON,
+    Permission.ADD_PAYCHECK,
+    Permission.EDIT_USER,
   ],
   teacher: [],
 }
