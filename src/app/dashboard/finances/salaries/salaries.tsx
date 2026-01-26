@@ -3,26 +3,20 @@ import { getLessons } from '@/actions/lessons'
 import { getPaychecks } from '@/actions/paycheck'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { UserDTO } from '@/types/user'
 import { PayCheck, Prisma } from '@prisma/client'
-import { toZonedTime } from 'date-fns-tz'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { type DateRange } from 'react-day-picker'
 
 export default function Salaries({ userId }: { userId?: number }) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const today = new Date()
-    return {
-      from: new Date(today.getFullYear(), today.getMonth(), 1),
-      to: new Date(today.getFullYear(), today.getMonth() + 1, 0),
-    }
-  })
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [lessons, setLessons] = useState<
     {
       teacher: UserDTO
@@ -44,14 +38,14 @@ export default function Salaries({ userId }: { userId?: number }) {
     }[]
   >([])
   const [paychecks, setPaychecks] = useState<PayCheck[]>([])
-  const today = new Date()
 
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
+        console.log(dateRange)
         const { startDate, endDate } = {
-          startDate: toZonedTime(dateRange.from, 'Europe/Moscow'),
-          endDate: toZonedTime(dateRange.to, 'Europe/Moscow'),
+          startDate: fromZonedTime(dateRange.from, 'Europe/Moscow'),
+          endDate: fromZonedTime(dateRange.to, 'Europe/Moscow'),
         }
         const lessonsData = await getLessons({
           where: {
@@ -148,6 +142,14 @@ export default function Salaries({ userId }: { userId?: number }) {
             selected={dateRange}
             onSelect={setDateRange}
             locale={ru}
+            components={{
+              DayButton: (props) => (
+                <CalendarDayButton
+                  {...props}
+                  data-day={props.day.date.toLocaleDateString('ru-RU')}
+                />
+              ),
+            }}
           />
 
           <Button variant="outline" onClick={() => setDateRange(undefined)}>

@@ -2,12 +2,12 @@
 
 import { getLessons } from '@/actions/lessons'
 import TableFilter, { TableFilterItem } from '@/components/table-filter'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
+import { fromZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { useEffect, useMemo, useState } from 'react'
 import { DateRange } from 'react-day-picker'
@@ -96,16 +96,8 @@ export default function RevenueClient() {
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
-        const from = new Date(
-          dateRange.from.getFullYear(),
-          dateRange.from.getMonth(),
-          dateRange.from.getDate()
-        )
-        const to = new Date(
-          dateRange.to.getFullYear(),
-          dateRange.to.getMonth(),
-          dateRange.to.getDate()
-        )
+        const from = fromZonedTime(dateRange.from, 'Europe/Moscow')
+        const to = fromZonedTime(dateRange.to, 'Europe/Moscow')
         const groupFilter: { courseId?: object; locationId?: object } = {}
         if (selectedCourses.length > 0) {
           groupFilter.courseId = { in: selectedCourses.map((course) => +course.value) }
@@ -146,14 +138,6 @@ export default function RevenueClient() {
     getLessonsFromPeriod()
   }, [dateRange, selectedCourses, selectedLocations])
 
-  function resetFilters() {
-    const start = new Date(today.getFullYear(), today.getMonth(), 1)
-    const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-    setDateRange({ from: start, to: end })
-    setSelectedLocations([])
-    setSelectedCourses([])
-  }
-
   const mappedCourses = useMemo(
     () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
     [courses]
@@ -176,12 +160,17 @@ export default function RevenueClient() {
             selected={dateRange}
             onSelect={setDateRange}
             locale={ru}
+            components={{
+              DayButton: (props) => (
+                <CalendarDayButton
+                  {...props}
+                  data-day={props.day.date.toLocaleDateString('ru-RU')}
+                />
+              ),
+            }}
           />
           <TableFilter items={mappedCourses} label="Курс" onChange={setSelectedCourses} />
           <TableFilter items={mappedLocations} label="Локация" onChange={setSelectedLocations} />
-          <Button variant="outline" onClick={resetFilters}>
-            Сбросить
-          </Button>
         </div>
         <RevenueSummary
           totalRevenue={Math.floor(

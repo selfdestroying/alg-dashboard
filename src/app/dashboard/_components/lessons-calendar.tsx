@@ -29,7 +29,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { startOfDay } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { ArrowDown, ArrowUp, Check, X } from 'lucide-react'
 import Link from 'next/link'
@@ -47,10 +47,9 @@ export default function LessonsCalendar() {
   const { courses, locations, users } = useData()
   const user = useAuth()
   const canViewOtherLessons = usePermission('VIEW_OTHER_LESSONS')
-  const today = toZonedTime(new Date(), 'Europe/Moscow')
 
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(today)
-  const [selectedMonth, setSelectedMonth] = useState<Date>(today)
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(() => new Date())
+  const [selectedMonth, setSelectedMonth] = useState<Date>(() => new Date())
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
     if (!canViewOtherLessons) {
@@ -139,10 +138,10 @@ export default function LessonsCalendar() {
       return
     }
     startTransition(() => {
-      const zonedDate = selectedDay
+      const zonedDate = fromZonedTime(startOfDay(selectedDay), 'Europe/Moscow')
       getLessons({
         where: {
-          date: startOfDay(zonedDate),
+          date: zonedDate,
         },
         include: {
           attendance: true,
@@ -158,7 +157,7 @@ export default function LessonsCalendar() {
 
   useEffect(() => {
     startTransition(() => {
-      const zonedDate = toZonedTime(selectedMonth, 'Europe/Moscow')
+      const zonedDate = fromZonedTime(selectedMonth, 'Europe/Moscow')
       const year = zonedDate.getFullYear()
       const month = zonedDate.getMonth()
 
@@ -200,7 +199,6 @@ export default function LessonsCalendar() {
       <Card className="overflow-y-auto">
         <CardContent>
           <Calendar
-            today={today}
             mode="single"
             selected={selectedDay}
             defaultMonth={selectedDay}
@@ -217,7 +215,11 @@ export default function LessonsCalendar() {
                 const dayIndex = daysStatuses[toZonedTime(day.date, 'Europe/Moscow').getDate()]
                 if (!dayIndex) {
                   return (
-                    <CalendarDayButton {...props} day={day}>
+                    <CalendarDayButton
+                      {...props}
+                      day={day}
+                      data-day={day.date.toLocaleDateString('ru-RU')}
+                    >
                       {children}
                     </CalendarDayButton>
                   )
@@ -233,6 +235,7 @@ export default function LessonsCalendar() {
                     {...props}
                     day={day}
                     className={cn(statusClassNames[dayStatus] || '', 'transition-none')}
+                    data-day={day.date.toLocaleDateString('ru-RU')}
                   >
                     {children}
                   </CalendarDayButton>

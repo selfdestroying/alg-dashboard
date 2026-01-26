@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import {
   Combobox,
   ComboboxContent,
@@ -323,6 +323,14 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                           selected={field.value}
                           onSelect={field.onChange}
                           locale={ru}
+                          components={{
+                            DayButton: (props) => (
+                              <CalendarDayButton
+                                {...props}
+                                data-day={props.day.date.toLocaleDateString('ru-RU')}
+                              />
+                            ),
+                          }}
                         />
                       </PopoverContent>
                     </Popover>

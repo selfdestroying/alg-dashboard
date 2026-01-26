@@ -1,6 +1,6 @@
 import { getLessons } from '@/actions/lessons'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -10,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { format, startOfDay } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
+import { format } from 'date-fns'
+import { fromZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { Dispatch, SetStateAction, useState } from 'react'
@@ -30,7 +30,7 @@ export default function CreateMakeUpForm({
 
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date)
-    const zodedDate = startOfDay(toZonedTime(date, 'Europe/Moscow'))
+    const zodedDate = fromZonedTime(date, 'Europe/Moscow')
     getLessons({
       where: { date: zodedDate },
       include: {
@@ -80,6 +80,14 @@ export default function CreateMakeUpForm({
             locale={ru}
             selected={selectedDate}
             required
+            components={{
+              DayButton: (props) => (
+                <CalendarDayButton
+                  {...props}
+                  data-day={props.day.date.toLocaleDateString('ru-RU')}
+                />
+              ),
+            }}
           />
         </PopoverContent>
       </Popover>

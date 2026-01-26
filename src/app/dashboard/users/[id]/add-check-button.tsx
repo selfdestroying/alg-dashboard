@@ -1,7 +1,7 @@
 'use client'
 import { createPaycheck } from '@/actions/paycheck'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import {
   Dialog,
   DialogContent,
@@ -125,6 +125,14 @@ export default function AddCheckButton({ user }: AddCheckButtonProps) {
                     selected={field.value}
                     onSelect={field.onChange}
                     locale={ru}
+                    components={{
+                      DayButton: (props) => (
+                        <CalendarDayButton
+                          {...props}
+                          data-day={props.day.date.toLocaleDateString('ru-RU')}
+                        />
+                      ),
+                    }}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

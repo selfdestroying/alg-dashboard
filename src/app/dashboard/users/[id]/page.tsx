@@ -118,7 +118,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 </ItemContent>
                 <ItemFooter>
                   <span>
-                    {toZonedTime(paycheck.createdAt, 'Europe/Moscow').toLocaleDateString('ru-RU')}
+                    {toZonedTime(paycheck.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}
                   </span>
                   <span className="font-bold">{paycheck.amount.toLocaleString()} ₽</span>
                 </ItemFooter>

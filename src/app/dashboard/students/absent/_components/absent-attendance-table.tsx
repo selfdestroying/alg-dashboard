@@ -1,7 +1,7 @@
 'use client'
 import { AttendanceWithStudents } from '@/actions/attendance'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -36,7 +36,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { startOfDay } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { debounce } from 'es-toolkit'
 import {
@@ -137,8 +137,10 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
 
   const handleDateRangeChangeFilter = (range: DateRange | undefined) => {
     if (range?.from && range?.to) {
-      const fromDate = startOfDay(range.from)
-      const toDate = startOfDay(range.to)
+      const fromDate = fromZonedTime(range.from, 'Europe/Moscow')
+      const toDate = fromZonedTime(range.to, 'Europe/Moscow')
+
+      console.log({ fromDate, toDate })
 
       setColumnFilters((prev) => {
         const filtered = prev.filter((filter) => filter.id !== 'date')
@@ -182,8 +184,15 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
               mode="range"
               selected={range}
               onSelect={handleDateRangeChangeFilter}
-              captionLayout="dropdown"
               locale={ru}
+              components={{
+                DayButton: (props) => (
+                  <CalendarDayButton
+                    {...props}
+                    data-day={props.day.date.toLocaleDateString('ru-RU')}
+                  />
+                ),
+              }}
             />
           </PopoverContent>
         </Popover>
