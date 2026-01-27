@@ -3,14 +3,11 @@
 import { updateStudent } from '@/actions/students'
 import AddStudentToGroupButton from '@/app/dashboard/groups/[id]/_components/add-student-to-group-button'
 import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { getFullName } from '@/lib/utils'
 import { GroupDTO } from '@/types/group'
 import { StudentWithGroupsAndAttendance } from '@/types/student'
 import {
@@ -25,7 +22,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState, useTransition } from 'react'
-import EditStudentDialog from './edit-student-dialog'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
@@ -49,180 +45,155 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
     })
   }
   return (
-    <Card>
-      {/* Header */}
-      <CardHeader>
-        <CardTitle>
-          <div className="flex items-center gap-2">
-            <Avatar>
-              <AvatarFallback>
-                {student.firstName?.[0]?.toUpperCase()}
-                {student.lastName?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            {getFullName(student.firstName, student.lastName)}
+    <>
+      <Section title="Общие сведения" icon={User}>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Возраст</Label>
           </div>
-        </CardTitle>
-        <CardAction>
-          <EditStudentDialog student={student} />
-        </CardAction>
-      </CardHeader>
+          <p className="mt-1 font-medium">{student.age ?? 'Не указан'}</p>
+        </div>
+      </Section>
 
-      <CardContent className="space-y-6">
-        {/* Общие сведения */}
-        <Section title="Общие сведения" icon={User}>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Возраст</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.age ?? 'Не указан'}</p>
+      <Separator />
+
+      <Section title="Оплаты" icon={ReceiptRussianRuble}>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Сумма всех оплат</Label>
           </div>
-        </Section>
-
-        <Separator />
-
-        <Section title="Оплаты" icon={ReceiptRussianRuble}>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Сумма всех оплат</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.totalPayments ?? 'Не указан'}</p>
+          <p className="mt-1 font-medium">{student.totalPayments ?? 'Не указан'}</p>
+        </div>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Всего уроков</Label>
           </div>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Всего уроков</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.totalLessons ?? 'Не указан'}</p>
+          <p className="mt-1 font-medium">{student.totalLessons ?? 'Не указан'}</p>
+        </div>
+
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Средняя стоимость урока</Label>
           </div>
+          <p className="mt-1 font-medium">{student.totalPayments / student.totalLessons}</p>
+        </div>
 
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Средняя стоимость урока</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.totalPayments / student.totalLessons}</p>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Баланс уроков</Label>
           </div>
+          <p className="mt-1 font-medium">{student.lessonsBalance}</p>
+        </div>
+      </Section>
 
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Баланс уроков</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.lessonsBalance}</p>
+      <Separator />
+
+      <Section title="Учётная запись" icon={Lock}>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Логин</Label>
           </div>
-        </Section>
+          <p className="mt-1 font-medium">{student.login}</p>
+        </div>
 
-        <Separator />
-
-        {/* Учётная запись */}
-        <Section title="Учётная запись" icon={Lock}>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Логин</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.login}</p>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Пароль</Label>
           </div>
+          <p className="mt-1 font-medium">{student.password}</p>
+        </div>
 
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Пароль</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.password}</p>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Астрокоины</Label>
           </div>
-
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Астрокоины</Label>
-            </div>
-            <div className="flex gap-2">
-              <p className="mt-1 font-medium">{student.coins ?? 'Не указан'}</p>
-              <div>
-                <Field orientation={'horizontal'}>
-                  <Input
-                    className="w-24"
-                    type="number"
-                    value={inc ?? ''}
-                    onChange={(e) => setInc(Number(e.target.value))}
-                    disabled={isPending}
-                  />
-                  <Button size={'icon'} onClick={handleAddCoins} disabled={isPending || !inc}>
-                    {isPending ? <Loader className="animate-spin" /> : <Plus />}
-                  </Button>
-                </Field>
-              </div>
+          <div className="flex gap-2">
+            <p className="mt-1 font-medium">{student.coins ?? 'Не указан'}</p>
+            <div>
+              <Field orientation={'horizontal'}>
+                <Input
+                  className="w-24"
+                  type="number"
+                  value={inc ?? ''}
+                  onChange={(e) => setInc(Number(e.target.value))}
+                  disabled={isPending}
+                />
+                <Button size={'icon'} onClick={handleAddCoins} disabled={isPending || !inc}>
+                  {isPending ? <Loader className="animate-spin" /> : <Plus />}
+                </Button>
+              </Field>
             </div>
           </div>
-        </Section>
+        </div>
+      </Section>
 
-        <Separator />
+      <Separator />
 
-        {/* Родители */}
-        <Section title="Родители" icon={User}>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>ФИО Родителя</Label>
-            </div>
-            <p className="mt-1 font-medium">{student.parentsName ?? 'Не указано'}</p>
+      <Section title="Родители" icon={User}>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>ФИО Родителя</Label>
           </div>
-        </Section>
+          <p className="mt-1 font-medium">{student.parentsName ?? 'Не указано'}</p>
+        </div>
+      </Section>
 
-        <Separator />
+      <Separator />
 
-        {/* Ссылки */}
-        <Section title="Ссылки и интеграции" icon={LinkIcon}>
-          <div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <Label>Ссылка в CRM</Label>
-            </div>
-            <p className="mt-1 font-medium">
-              {student.crmUrl ? (
-                <a
-                  href={student.crmUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+      <Section title="Ссылки и интеграции" icon={LinkIcon}>
+        <div>
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Label>Ссылка в CRM</Label>
+          </div>
+          <p className="mt-1 font-medium">
+            {student.crmUrl ? (
+              <a
+                href={student.crmUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Ссылка
+              </a>
+            ) : (
+              'Не указано'
+            )}
+          </p>
+        </div>
+      </Section>
+
+      <Separator />
+
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
+            <Users size={20} />
+            Группы
+          </h3>
+          <AddStudentToGroupButton groups={groups} student={student} />
+        </div>
+        {student.groups.length > 0 ? (
+          <div className="space-y-6">
+            {student.groups.map((groupData) => (
+              <div key={groupData.group.id} className="space-y-2">
+                <Link
+                  href={`/dashboard/groups/${groupData.group.id}`}
                   className="text-primary hover:underline"
                 >
-                  Ссылка
-                </a>
-              ) : (
-                'Не указано'
-              )}
-            </p>
+                  {groupData.group.name}
+                </Link>
+                <GroupAttendanceTable lessons={groupData.group.lessons} data={[student]} />
+              </div>
+            ))}
           </div>
-        </Section>
-
-        <Separator />
-
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
-              <Users size={20} />
-              Группы
-            </h3>
-            <AddStudentToGroupButton groups={groups} student={student} />
-          </div>
-          {student.groups.length > 0 ? (
-            <div className="space-y-6">
-              {student.groups.map((groupData) => (
-                <div key={groupData.group.id} className="space-y-2">
-                  <Link
-                    href={`/dashboard/groups/${groupData.group.id}`}
-                    className="text-primary hover:underline"
-                  >
-                    {groupData.group.name}
-                  </Link>
-                  <GroupAttendanceTable lessons={groupData.group.lessons} data={[student]} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">Ученик не состоит в группах.</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        ) : (
+          <p className="text-muted-foreground">Ученик не состоит в группах.</p>
+        )}
+      </div>
+    </>
   )
 }
 
-/* ----------- Вспомогательные компоненты ----------- */
 function Section({
   title,
   icon: Icon,
