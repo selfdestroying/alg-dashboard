@@ -94,14 +94,14 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
           <div className="flex flex-col">
             <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Calendar className="h-3 w-3" />
-              <span className="truncate" title="Дата старта">
-                Дата старта
+              <span className="truncate" title="Период">
+                Период
               </span>
             </div>
             <div className="truncate text-sm font-semibold">
               {toZonedTime(group.startDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}
               {group?.endDate
-                ? ` — ${toZonedTime(group.endDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
+                ? ` - ${toZonedTime(group.endDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
                 : ''}{' '}
             </div>
           </div>

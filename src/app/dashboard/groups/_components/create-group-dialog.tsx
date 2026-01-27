@@ -2,20 +2,12 @@
 
 import { Controller, useForm } from 'react-hook-form'
 
-import { updateDataMock } from '@/actions/attendance'
+import { createGroup } from '@/actions/groups'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -24,12 +16,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { getFullName } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import { CreateGroupSchema, CreateGroupSchemaType } from '@/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader } from 'lucide-react'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
+import { CalendarIcon, Loader, Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { toast } from 'sonner'
 
 export const timeSlots = [
   { label: '09:00', value: '09:00' },
@@ -59,6 +65,7 @@ export const timeSlots = [
 
 export default function CreateGroupDialog() {
   const { courses, users, locations } = useData()
+  const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const form = useForm<CreateGroupSchemaType>({
@@ -68,8 +75,7 @@ export default function CreateGroupDialog() {
       backOfficeUrl: undefined,
       time: undefined,
       type: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      dateRange: undefined,
       course: undefined,
       location: undefined,
       teacher: undefined,
@@ -80,7 +86,27 @@ export default function CreateGroupDialog() {
   const onSubmit = (values: CreateGroupSchemaType) => {
     startTransition(() => {
       console.log(values)
-      updateDataMock(1000)
+      const { course, location, teacher, dateRange, ...payload } = values
+      const ok = createGroup({
+        data: {
+          ...payload,
+          courseId: course.value,
+          locationId: location.value,
+          teachers: { create: [{ teacherId: teacher.value }] },
+          startDate: dateRange.from,
+          endDate: dateRange.to,
+          dayOfWeek: dateRange.from.getDay(),
+        },
+      })
+      toast.promise(ok, {
+        loading: 'Создание группы...',
+        success: 'Группа успешно создана!',
+        error: 'Не удалось создать группу. Попробуйте еще раз.',
+        finally: () => {
+          setDialogOpen(false)
+          form.reset()
+        },
+      })
     })
   }
 
@@ -98,15 +124,24 @@ export default function CreateGroupDialog() {
   }))
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button />}>Создать группу</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Создать группу</DialogTitle>
-          <DialogDescription>Заполните форму ниже, чтобы создать новую группу.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} id="create-group-form">
-          <FieldGroup className="no-scrollbar max-h-[60vh] overflow-y-auto">
+    <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+      <SheetTrigger render={<Button size={'icon'} />}>
+        <Plus />
+      </SheetTrigger>
+      <SheetContent
+        side={isMobile ? 'bottom' : 'right'}
+        className="data-[side=bottom]:max-h-[70vh]"
+      >
+        <SheetHeader>
+          <SheetTitle>Создать группу</SheetTitle>
+          <SheetDescription>Заполните форму ниже, чтобы создать новую группу.</SheetDescription>
+        </SheetHeader>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          id="create-group-form"
+          className="overflow-auto px-6 py-2"
+        >
+          <FieldGroup>
             <Controller
               control={form.control}
               name="course"
@@ -259,6 +294,64 @@ export default function CreateGroupDialog() {
             />
             <Controller
               control={form.control}
+              name="dateRange"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="dateRange-field">Период</FieldLabel>
+                  <Popover modal>
+                    <PopoverTrigger
+                      render={<Button variant="outline" />}
+                      aria-invalid={fieldState.invalid}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {field.value
+                        ? `${format(field.value.from, 'dd.MM.yyyy')} - ${format(field.value.to, 'dd.MM.yyyy')}`
+                        : 'Выбрать период'}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        id="dateRange-field"
+                        mode="range"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        locale={ru}
+                        components={{
+                          DayButton: (props) => (
+                            <CalendarDayButton
+                              {...props}
+                              data-day={props.day.date.toLocaleDateString('ru-RU')}
+                            />
+                          ),
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="lessonCount"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="lessonCount-field">Количество занятий</FieldLabel>
+                  <Input
+                    id="lessonCount-field"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
               name="backOfficeUrl"
               disabled={isPending}
               render={({ field, fieldState }) => (
@@ -276,14 +369,14 @@ export default function CreateGroupDialog() {
             />
           </FieldGroup>
         </form>
-        <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
           <Button type="submit" form="create-group-form" disabled={isPending}>
             {isPending && <Loader className="animate-spin" />}
             Создать
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

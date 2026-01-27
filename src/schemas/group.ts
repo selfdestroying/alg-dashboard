@@ -25,12 +25,24 @@ export const CreateGroupSchema = z.object({
     },
     'Выберите локацию'
   ),
-  startDate: z.date({ error: 'Неверная дата начала' }),
+  dateRange: z
+    .object(
+      {
+        from: z.date('Выберите дату начала'),
+        to: z.date('Выберите дату окончания'),
+      },
+      'Выберите период'
+    )
+    .refine((data) => data.to > data.from, {
+      message: 'Дата окончания должна быть позже даты начала',
+      path: ['to'],
+    }),
   type: z.enum(GroupType, 'Выберите тип группы'),
   time: z.string('Выберите время'),
+  lessonCount: z
+    .number('Введите количество занятий')
+    .positive('Количество занятий должно быть положительным'),
   // optional
-  endDate: z.date({ error: 'Неверная дата конца' }).optional(),
-  lessonCount: z.number().int().positive().optional(),
   lessonsPerWeek: z.number().int().positive().optional(),
   backOfficeUrl: z.url('Неверный URL').optional(),
 })
