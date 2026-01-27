@@ -3,7 +3,6 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { createStudentGroup } from './groups'
 
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
@@ -33,9 +32,46 @@ export async function returnToGroup(payload: {
   studentId: number
 }) {
   const { dismissedId, groupId, studentId } = payload
-  await prisma.$transaction(async () => {
-    await createStudentGroup({ data: { groupId, studentId } }, false)
-    await removeDismissed({ where: { id: dismissedId } })
+  await prisma.$transaction(async (tx) => {
+    await tx.dismissed.delete({ where: { id: dismissedId } })
+    const lastAttendance = await tx.attendance.findFirst({
+      where: {
+        studentId,
+        lesson: {
+          groupId,
+        },
+      },
+      include: {
+        lesson: true,
+      },
+      orderBy: {
+        lesson: { date: 'desc' },
+      },
+    })
+    await tx.studentGroup.create({
+      data: {
+        studentId,
+        groupId,
+      },
+    })
+    if (lastAttendance) {
+      const lessons = await tx.lesson.findMany({
+        where: {
+          groupId,
+          date: { gt: lastAttendance.lesson.date },
+        },
+      })
+      for (const lesson of lessons) {
+        await tx.attendance.create({
+          data: {
+            lessonId: lesson.id,
+            studentId,
+            status: 'UNSPECIFIED',
+            comment: '',
+          },
+        })
+      }
+    }
   })
 
   revalidatePath('/dashboard/dismissed')

@@ -73,7 +73,7 @@ export default function DismissedActions({
           <MoreVertical />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent className={'w-max'}>
           <DropdownMenuItem onClick={handleReturnToGroup}>
             <Undo />
             Вернуть в группу
@@ -87,7 +87,7 @@ export default function DismissedActions({
               setOpen(false)
             }}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 />
             Удалить
           </DropdownMenuItem>
         </DropdownMenuContent>

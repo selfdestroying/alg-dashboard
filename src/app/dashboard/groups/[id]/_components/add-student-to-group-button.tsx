@@ -20,7 +20,8 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { usePermission } from '@/hooks/usePermission'
-import { getFullName } from '@/lib/utils'
+import { getFullName, getGroupName } from '@/lib/utils'
+import { GroupDTO } from '@/types/group'
 import { StudentDTO } from '@/types/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Group } from '@prisma/client'
@@ -32,52 +33,87 @@ import { toast } from 'sonner'
 import z from 'zod/v4'
 
 interface AddStudentToGroupButtonProps {
-  students: StudentDTO[]
-  group: Group
+  students?: StudentDTO[]
+  group?: Group // When adding a student to this group
+  groups?: GroupDTO[] // When adding this student to a group
+  student?: StudentDTO
 }
 
-const GroupStudentSchema = z.object({
-  student: z.object(
+const Schema = z.object({
+  target: z.object(
     {
       label: z.string(),
       value: z.number(),
     },
-    'Выберите студента'
+    'Выберите значение'
   ),
   isApplyToLesson: z.boolean(),
 })
 
-type GroupStudentSchemaType = z.infer<typeof GroupStudentSchema>
+type SchemaType = z.infer<typeof Schema>
 
-export default function AddStudentToGroupButton({ students, group }: AddStudentToGroupButtonProps) {
+export default function AddStudentToGroupButton({
+  students,
+  group,
+  groups,
+  student,
+}: AddStudentToGroupButtonProps) {
   const canAdd = usePermission('ADD_GROUPSTUDENT')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<GroupStudentSchemaType>({
-    resolver: zodResolver(GroupStudentSchema),
+  // Determine the mode
+  const isAddToGroup = !!group && !!students
+  const isAddToStudent = !!student && !!groups
+
+  const items = useMemo(() => {
+    if (isAddToGroup && students) {
+      return students.map((s) => ({
+        label: getFullName(s.firstName, s.lastName),
+        value: s.id,
+      }))
+    }
+    if (isAddToStudent && groups) {
+      return groups.map((g) => ({
+        label: getGroupName(g),
+        value: g.id,
+      }))
+    }
+    return []
+  }, [isAddToGroup, isAddToStudent, students, groups])
+
+  const form = useForm<SchemaType>({
+    resolver: zodResolver(Schema),
     defaultValues: {
-      student: undefined,
+      target: undefined,
       isApplyToLesson: false,
     },
   })
 
-  const handleSubmit = (data: GroupStudentSchemaType) => {
+  const handleSubmit = (data: SchemaType) => {
     startTransition(() => {
-      const { isApplyToLesson, student } = data
+      const { isApplyToLesson, target } = data
+
+      const groupId = isAddToGroup ? group!.id : target.value
+      const studentId = isAddToGroup ? target.value : student!.id
+
       const ok = createStudentGroup(
         {
           data: {
-            groupId: group.id,
-            studentId: student.value,
+            groupId,
+            studentId,
           },
         },
         isApplyToLesson
       )
+      const successMessage = isAddToGroup
+        ? 'Студент успешно добавлен в группу!'
+        : 'Группа успешно добавлена студенту!'
+
       toast.promise(ok, {
-        loading: 'Добавление преподавателя...',
-        success: 'Преподаватель успешно добавлен в группу!',
-        error: 'Не удалось добавить преподавателя в группу.',
+        loading: 'Добавление...',
+        success: successMessage,
+        error: 'Не удалось добавить.',
         finally: () => setDialogOpen(false),
       })
     })
@@ -87,9 +123,13 @@ export default function AddStudentToGroupButton({ students, group }: AddStudentT
     form.reset()
   }, [dialogOpen, form])
 
-  if (!canAdd) {
+  if ((!isAddToGroup && !isAddToStudent) || !canAdd) {
     return null
   }
+
+  const dialogTitle = isAddToGroup ? 'Добавить студента' : 'Добавить в группу'
+  const label = isAddToGroup ? 'Студент' : 'Группа'
+  const emptyMessage = isAddToGroup ? 'Нет доступных студентов' : 'Нет доступных групп'
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -98,16 +138,22 @@ export default function AddStudentToGroupButton({ students, group }: AddStudentT
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Добавить преподавателя</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
 
-        <GroupStudentForm form={form} students={students} onSubmit={handleSubmit} />
+        <AddEntityForm
+          form={form}
+          items={items}
+          label={label}
+          emptyMessage={emptyMessage}
+          onSubmit={handleSubmit}
+        />
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="group-student-form" size={'sm'}>
+          <Button disabled={isPending} type="submit" form="add-entity-form" size={'sm'}>
             Добавить
           </Button>
         </DialogFooter>
@@ -116,42 +162,36 @@ export default function AddStudentToGroupButton({ students, group }: AddStudentT
   )
 }
 
-interface GroupStudentFormProps {
-  form: ReturnType<typeof useForm<GroupStudentSchemaType>>
-  students: StudentDTO[]
-  onSubmit: (data: GroupStudentSchemaType) => void
+interface AddEntityFormProps {
+  form: ReturnType<typeof useForm<SchemaType>>
+  items: { label: string; value: number }[]
+  label: string
+  emptyMessage: string
+  onSubmit: (data: SchemaType) => void
 }
 
-function GroupStudentForm({ form, students, onSubmit }: GroupStudentFormProps) {
-  const mappedStudents = useMemo(
-    () =>
-      students.map((student) => ({
-        label: getFullName(student.firstName, student.lastName),
-        value: student.id,
-      })),
-    [students]
-  )
+function AddEntityForm({ form, items, label, emptyMessage, onSubmit }: AddEntityFormProps) {
   return (
-    <form id="group-student-form" onSubmit={form.handleSubmit(onSubmit)}>
+    <form id="add-entity-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
-          name="student"
+          name="target"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="form-rhf-select-student">Студент</FieldLabel>
+              <FieldLabel htmlFor="form-rhf-select-target">{label}</FieldLabel>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               <Combobox
-                items={mappedStudents}
+                items={items}
                 value={field.value || ''}
                 onValueChange={field.onChange}
                 isItemEqualToValue={(itemValue, selectedValue) =>
                   itemValue.value === selectedValue.value
                 }
               >
-                <ComboboxInput id="form-rhf-select-student" aria-invalid={fieldState.invalid} />
+                <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
                 <ComboboxContent>
-                  <ComboboxEmpty>Нет доступных студентов</ComboboxEmpty>
+                  <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
                       <ComboboxItem key={item.value} value={item}>

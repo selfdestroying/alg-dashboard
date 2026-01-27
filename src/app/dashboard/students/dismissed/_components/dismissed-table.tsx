@@ -30,6 +30,7 @@ import { debounce } from 'es-toolkit'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import DismissedActions from './dismissed-actions'
 
 const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   {
@@ -110,6 +111,17 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
     accessorKey: 'date',
     cell: ({ row }) =>
       toZonedTime(new Date(row.original.date), 'Europe/Moscow').toLocaleDateString('ru-RU'),
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+      <DismissedActions
+        dismissedId={row.original.id}
+        groupId={row.original.groupId}
+        studentId={row.original.studentId}
+        studentName={getFullName(row.original.student.firstName, row.original.student.lastName)}
+      />
+    ),
   },
 ]
 

@@ -12,6 +12,7 @@ export default async function Page() {
       },
       student: true,
     },
+    orderBy: { date: 'desc' },
   })
 
   const statistics = await getDismissedStatistics()
