@@ -3,17 +3,17 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 
 import { updateStudent } from '@/actions/students'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePermission } from '@/hooks/usePermission'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -89,24 +89,27 @@ export default function EditStudentDialog({ student }: { student: Student }) {
   if (!canEdit) return null
 
   return (
-    <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
-      <SheetTrigger render={<Button size="icon" />}>
-        <Pen />
-      </SheetTrigger>
-      <SheetContent
-        className="data-[side=bottom]:max-h-[70vh]"
-        side={isMobile ? 'bottom' : 'right'}
-      >
-        <SheetHeader>
-          <SheetTitle>Редактировать ученика</SheetTitle>
-          <SheetDescription>
+    <Drawer
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      direction={isMobile ? 'bottom' : 'right'}
+    >
+      <DrawerTrigger asChild>
+        <Button size="icon">
+          <Pen />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Редактировать ученика</DrawerTitle>
+          <DrawerDescription>
             Заполните форму ниже, чтобы отредактировать данные ученика.
-          </SheetDescription>
-        </SheetHeader>
+          </DrawerDescription>
+        </DrawerHeader>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id="create-student-form"
-          className="no-scrollbar overflow-auto px-6 py-2"
+          className="no-scrollbar overflow-y-auto px-4"
         >
           <FieldGroup>
             <Controller
@@ -290,14 +293,16 @@ export default function EditStudentDialog({ student }: { student: Student }) {
             />
           </FieldGroup>
         </form>
-        <SheetFooter>
-          <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="outline">Отмена</Button>
+          </DrawerClose>
           <Button type="submit" form="create-student-form" disabled={isPending}>
             {isPending && <Loader className="animate-spin" />}
             Сохранить
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
