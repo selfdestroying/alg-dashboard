@@ -11,39 +11,42 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 
-import { createStudent } from '@/actions/students'
+import { updateStudent } from '@/actions/students'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { usePermission } from '@/hooks/usePermission'
 import { CreateStudentSchema, CreateStudentSchemaType } from '@/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Student } from '@prisma/client'
 import { Loader, Pen, Sparkles } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-export default function CreateStudentDialog() {
+export default function EditStudentDialog({ student }: { student: Student }) {
+  const canEdit = usePermission('EDIT_STUDENT')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const form = useForm<CreateStudentSchemaType>({
     resolver: zodResolver(CreateStudentSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      age: 0,
-      parentsName: '',
-      crmUrl: '',
-      login: '',
-      password: '',
-      coins: 0,
+      firstName: student.firstName,
+      lastName: student.lastName || '',
+      age: student.age || undefined,
+      parentsName: student.parentsName || '',
+      crmUrl: student.crmUrl || '',
+      login: student.login,
+      password: student.password,
+      coins: student.coins,
     },
   })
 
   const onSubmit = (values: CreateStudentSchemaType) => {
     startTransition(() => {
-      const ok = createStudent({
+      const ok = updateStudent({
+        where: { id: student.id },
         data: {
           ...values,
-          Cart: { create: {} },
         },
       })
 
@@ -53,11 +56,12 @@ export default function CreateStudentDialog() {
         error: 'Ошибка при создании ученика.',
         finally: () => {
           setDialogOpen(false)
-          form.reset()
         },
       })
     })
   }
+
+  if (!canEdit) return null
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -108,6 +112,7 @@ export default function CreateStudentDialog() {
                     id="age-field"
                     {...field}
                     type="number"
+                    value={field.value ?? ''}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                     aria-invalid={fieldState.invalid}
                   />

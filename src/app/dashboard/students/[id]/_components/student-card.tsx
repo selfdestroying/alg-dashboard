@@ -1,207 +1,203 @@
 'use client'
 
+import { updateStudent } from '@/actions/students'
+import AddStudentToGroupButton from '@/app/dashboard/groups/[id]/_components/add-student-to-group-button'
 import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { StudentDTO, StudentWithGroupsAndAttendance } from '@/types/student'
+import { getFullName } from '@/lib/utils'
+import { GroupDTO } from '@/types/group'
+import { StudentWithGroupsAndAttendance } from '@/types/student'
 import {
-  Calendar,
-  Coins,
   Link as LinkIcon,
+  Loader,
   Lock,
   LucideProps,
-  Presentation,
+  Plus,
   ReceiptRussianRuble,
-  RussianRuble,
   User,
   Users,
 } from 'lucide-react'
 import Link from 'next/link'
-import { ForwardRefExoticComponent, RefAttributes, useState } from 'react'
+import { ForwardRefExoticComponent, RefAttributes, useState, useTransition } from 'react'
+import EditStudentDialog from './edit-student-dialog'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
+  groups: GroupDTO[]
 }
 
-export default function StudentCard({ student }: StudentCardProps) {
-  const [editMode, setEditMode] = useState(false)
-  const [formData, setFormData] = useState<StudentDTO>(student)
-
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+export default function StudentCard({ student, groups }: StudentCardProps) {
+  const [inc, setInc] = useState<number | undefined>()
+  const [isPending, startTransition] = useTransition()
+  const handleAddCoins = () => {
+    startTransition(() => {
+      if (inc) {
+        updateStudent({
+          where: { id: student.id },
+          data: {
+            coins: { increment: inc },
+          },
+        })
+        setInc(undefined)
+      }
+    })
   }
-
-  const handleSave = async () => {
-    setEditMode(false)
-  }
-
   return (
     <Card>
       {/* Header */}
-      <CardHeader className="flex flex-col items-center justify-between gap-4 border-b p-4 sm:flex-row">
-        <div className="flex items-center gap-4">
-          <Avatar className="size-12">
-            <AvatarFallback className="bg-primary text-primary-foreground rounded-full text-xl font-bold">
-              {student.firstName?.[0]?.toUpperCase()}
-              {student.lastName?.[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <CardTitle className="text-2xl font-bold">
-            <div className="flex gap-2">
-              <EditableInfoItem
-                field="firstName"
-                value={formData.firstName}
-                editable={editMode}
-                onChange={handleChange}
-              />
-              <EditableInfoItem
-                field="lastName"
-                value={formData.lastName ?? ''}
-                editable={editMode}
-                onChange={handleChange}
-              />
-            </div>
-            {/* {formData.firstName} {formData.lastName} */}
-          </CardTitle>
-        </div>
-        <div className="flex gap-2">
-          {editMode ? (
-            <>
-              <Button onClick={handleSave}>Сохранить</Button>
-              <Button variant="outline" onClick={() => setEditMode(false)}>
-                Отмена
-              </Button>
-            </>
-          ) : (
-            <Button onClick={() => setEditMode(true)}>Редактировать</Button>
-          )}
-        </div>
+      <CardHeader>
+        <CardTitle>
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarFallback>
+                {student.firstName?.[0]?.toUpperCase()}
+                {student.lastName?.[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {getFullName(student.firstName, student.lastName)}
+          </div>
+        </CardTitle>
+        <CardAction>
+          <EditStudentDialog student={student} />
+        </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-6 p-6">
+      <CardContent className="space-y-6">
         {/* Общие сведения */}
         <Section title="Общие сведения" icon={User}>
-          <EditableInfoItem
-            icon={Calendar}
-            label="Возраст"
-            field="age"
-            value={formData.age}
-            editable={editMode}
-            onChange={handleChange}
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Возраст</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.age ?? 'Не указан'}</p>
+          </div>
         </Section>
 
         <Separator />
 
         <Section title="Оплаты" icon={ReceiptRussianRuble}>
-          <EditableInfoItem
-            icon={RussianRuble}
-            label="Сумма всех оплат"
-            field="totalPayments"
-            value={formData.totalPayments}
-            editable={editMode}
-            onChange={handleChange}
-          />
-          <EditableInfoItem
-            icon={Presentation}
-            label="Сумма всех уроков"
-            field="totalLessons"
-            value={formData.totalLessons}
-            editable={editMode}
-            onChange={handleChange}
-          />
-          <EditableInfoItem
-            icon={RussianRuble}
-            label="Ставка за урок"
-            field=""
-            value={formData.totalPayments / formData.totalLessons}
-            editable={false}
-            onChange={handleChange}
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Сумма всех оплат</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.totalPayments ?? 'Не указан'}</p>
+          </div>
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Всего уроков</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.totalLessons ?? 'Не указан'}</p>
+          </div>
 
-          <EditableInfoItem
-            icon={Presentation}
-            label="Баланс уроков"
-            field="lessonsBalance"
-            value={formData.lessonsBalance}
-            editable={editMode}
-            onChange={handleChange}
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Средняя стоимость урока</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.totalPayments / student.totalLessons}</p>
+          </div>
+
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Баланс уроков</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.lessonsBalance}</p>
+          </div>
         </Section>
 
         <Separator />
 
         {/* Учётная запись */}
         <Section title="Учётная запись" icon={Lock}>
-          <EditableInfoItem
-            icon={User}
-            label="Логин"
-            field="login"
-            value={formData.login}
-            editable={editMode}
-            onChange={handleChange}
-          />
-          <EditableInfoItem
-            icon={Lock}
-            label="Пароль"
-            field="password"
-            value={formData.password}
-            editable={editMode}
-            onChange={handleChange}
-          />
-          <EditableInfoItem
-            icon={Coins}
-            label="Астрокоины"
-            field="coins"
-            value={formData.coins.toString()}
-            editable={editMode}
-            onChange={handleChange}
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Логин</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.login}</p>
+          </div>
+
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Пароль</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.password}</p>
+          </div>
+
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Астрокоины</Label>
+            </div>
+            <div className="flex gap-2">
+              <p className="mt-1 font-medium">{student.coins ?? 'Не указан'}</p>
+              <div>
+                <Field orientation={'horizontal'}>
+                  <Input
+                    className="w-24"
+                    type="number"
+                    value={inc ?? ''}
+                    onChange={(e) => setInc(Number(e.target.value))}
+                    disabled={isPending}
+                  />
+                  <Button size={'icon'} onClick={handleAddCoins} disabled={isPending || !inc}>
+                    {isPending ? <Loader className="animate-spin" /> : <Plus />}
+                  </Button>
+                </Field>
+              </div>
+            </div>
+          </div>
         </Section>
 
         <Separator />
 
         {/* Родители */}
         <Section title="Родители" icon={User}>
-          <EditableInfoItem
-            icon={User}
-            label="ФИО Родителя"
-            field="parentsName"
-            value={formData.parentsName ?? ''}
-            editable={editMode}
-            onChange={handleChange}
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>ФИО Родителя</Label>
+            </div>
+            <p className="mt-1 font-medium">{student.parentsName ?? 'Не указано'}</p>
+          </div>
         </Section>
 
         <Separator />
 
         {/* Ссылки */}
         <Section title="Ссылки и интеграции" icon={LinkIcon}>
-          <EditableInfoItem
-            icon={LinkIcon}
-            label="Ссылка в amoCRM"
-            field="crmUrl"
-            value={formData.crmUrl ?? ''}
-            editable={editMode}
-            onChange={handleChange}
-            isLink
-          />
+          <div>
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Label>Ссылка в CRM</Label>
+            </div>
+            <p className="mt-1 font-medium">
+              {student.crmUrl ? (
+                <a
+                  href={student.crmUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Ссылка
+                </a>
+              ) : (
+                'Не указано'
+              )}
+            </p>
+          </div>
         </Section>
 
         <Separator />
 
-        {/* Groups */}
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
               <Users size={20} />
               Группы
             </h3>
-            {/* <StudentGroupDialog studentId={student.id} /> */}
+            <AddStudentToGroupButton groups={groups} student={student} />
           </div>
           {student.groups.length > 0 ? (
             <div className="space-y-6">
@@ -243,55 +239,6 @@ function Section({
         {title}
       </h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">{children}</div>
-    </div>
-  )
-}
-
-function EditableInfoItem({
-  icon: Icon,
-  label,
-  value,
-  field,
-  editable,
-  onChange,
-  isLink = false,
-}: {
-  icon?: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
-  label?: string
-  value: string | number
-  field: string
-  editable: boolean
-  onChange: (field: string, newValue: string) => void
-  isLink?: boolean
-}) {
-  return (
-    <div>
-      {Icon && label && (
-        <div className="text-muted-foreground flex items-center gap-2">
-          <Icon size={16} />
-          <Label>{label}</Label>
-        </div>
-      )}
-      {editable ? (
-        <Input
-          className="mt-1"
-          value={value ?? ''}
-          onChange={(e) => onChange(field, e.target.value)}
-        />
-      ) : isLink && value ? (
-        <a
-          target="_blank"
-          href={value as string}
-          rel="noopener noreferrer"
-          className="text-primary hover:underline"
-        >
-          {value}
-        </a>
-      ) : (
-        <p className="mt-1 font-medium break-all">
-          {value !== null || value !== undefined ? value.toString() : 'Не указано'}
-        </p>
-      )}
     </div>
   )
 }
