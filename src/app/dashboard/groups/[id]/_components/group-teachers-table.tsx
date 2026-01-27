@@ -29,7 +29,7 @@ export default function GroupTeachersTable({
           header: 'Преподаватель',
           cell: ({ row }) => (
             <Link
-              href={`/teachers/${row.original.teacher.id}`}
+              href={`/dashboard/users/${row.original.teacher.id}`}
               className="text-primary hover:underline"
             >
               {getFullName(row.original.teacher.firstName, row.original.teacher.lastName)}
