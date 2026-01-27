@@ -1,34 +1,56 @@
 'use client'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 
 import { updateStudent } from '@/actions/students'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { usePermission } from '@/hooks/usePermission'
-import { CreateStudentSchema, CreateStudentSchemaType } from '@/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Student } from '@prisma/client'
 import { Loader, Pen, Sparkles } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import z from 'zod/v4'
+
+export const EditStudentSchema = z.object({
+  firstName: z.string('Укажите имя').min(2, 'Укажите имя'),
+  lastName: z.string('Укажите фамилию').min(2, 'Укажите фамилию'),
+  age: z
+    .number('Укажите возраст')
+    .gte(6, 'Укажите возраст не менее 6')
+    .lte(17, 'Укажите возраст не более 17'),
+  parentsName: z.string('Укажите имя родителя').min(2, 'Укажите имя родителя'),
+  crmUrl: z.url('Укажите корректный URL'),
+  // optional
+  login: z.string('Укажите логин').min(2, 'Укажите логин'),
+  password: z.string('Укажите пароль').min(2, 'Укажите пароль'),
+  coins: z.number('Укажите количество монет').optional(),
+  lessonsBalance: z.number('Укажите баланс уроков').optional(),
+  totalPayments: z.number('Укажите сумму всех оплат').optional(),
+  totalLessons: z.number('Укажите количество всех уроков').optional(),
+})
+
+export type EditStudentSchemaType = z.infer<typeof EditStudentSchema>
 
 export default function EditStudentDialog({ student }: { student: Student }) {
   const canEdit = usePermission('EDIT_STUDENT')
+  const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const form = useForm<CreateStudentSchemaType>({
-    resolver: zodResolver(CreateStudentSchema),
+  const form = useForm<EditStudentSchemaType>({
+    resolver: zodResolver(EditStudentSchema),
     defaultValues: {
       firstName: student.firstName,
       lastName: student.lastName || '',
@@ -38,10 +60,13 @@ export default function EditStudentDialog({ student }: { student: Student }) {
       login: student.login,
       password: student.password,
       coins: student.coins,
+      lessonsBalance: student.lessonsBalance,
+      totalPayments: student.totalPayments,
+      totalLessons: student.totalLessons,
     },
   })
 
-  const onSubmit = (values: CreateStudentSchemaType) => {
+  const onSubmit = (values: EditStudentSchemaType) => {
     startTransition(() => {
       const ok = updateStudent({
         where: { id: student.id },
@@ -64,19 +89,26 @@ export default function EditStudentDialog({ student }: { student: Student }) {
   if (!canEdit) return null
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id="create-student-form">
-        <DialogTrigger render={<Button size="icon" />}>
-          <Pen />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Создать ученика</DialogTitle>
-            <DialogDescription>
-              Заполните форму ниже, чтобы создать нового ученика.
-            </DialogDescription>
-          </DialogHeader>
-          <FieldGroup className="no-scrollbar max-h-[60vh] overflow-y-auto">
+    <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+      <SheetTrigger render={<Button size="icon" />}>
+        <Pen />
+      </SheetTrigger>
+      <SheetContent
+        className="data-[side=bottom]:max-h-[70vh]"
+        side={isMobile ? 'bottom' : 'right'}
+      >
+        <SheetHeader>
+          <SheetTitle>Редактировать ученика</SheetTitle>
+          <SheetDescription>
+            Заполните форму ниже, чтобы отредактировать данные ученика.
+          </SheetDescription>
+        </SheetHeader>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          id="create-student-form"
+          className="no-scrollbar overflow-auto px-6 py-2"
+        >
+          <FieldGroup>
             <Controller
               control={form.control}
               name="firstName"
@@ -199,16 +231,73 @@ export default function EditStudentDialog({ student }: { student: Student }) {
                 </Field>
               )}
             />
+
+            <Controller
+              control={form.control}
+              name="lessonsBalance"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="lessonsBalance-field">Баланс уроков</FieldLabel>
+                  <Input
+                    id="lessonsBalance-field"
+                    {...field}
+                    type="number"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="totalPayments"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="totalPayments-field">Сумма всех оплат</FieldLabel>
+                  <Input
+                    id="totalPayments-field"
+                    {...field}
+                    type="number"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="totalLessons"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="totalLessons-field">Всего уроков</FieldLabel>
+                  <Input
+                    id="totalLessons-field"
+                    {...field}
+                    type="number"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
           </FieldGroup>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button type="submit" form="create-student-form" disabled={isPending}>
-              {isPending && <Loader className="animate-spin" />}
-              Создать
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
+        </form>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
+          <Button type="submit" form="create-student-form" disabled={isPending}>
+            {isPending && <Loader className="animate-spin" />}
+            Сохранить
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

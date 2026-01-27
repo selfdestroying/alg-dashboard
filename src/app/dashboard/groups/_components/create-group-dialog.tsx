@@ -139,7 +139,7 @@ export default function CreateGroupDialog() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id="create-group-form"
-          className="overflow-auto px-6 py-2"
+          className="no-scrollbar overflow-auto px-6 py-2"
         >
           <FieldGroup>
             <Controller
