@@ -21,16 +21,21 @@ import {
 } from '@/components/ui/table'
 import { cn, getFullName } from '@/lib/utils'
 
+import { Input } from '@/components/ui/input'
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
+import { debounce } from 'es-toolkit'
 import {
   ArrowDown,
   ArrowUp,
@@ -40,7 +45,7 @@ import {
   ChevronsRight,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import PaymentsActions from './payments-actions'
 
 const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
@@ -89,24 +94,50 @@ const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
 
 export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGroup[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
-
+  const handleSearch = useMemo(
+    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
+    []
+  )
+  const [search, setSearch] = useState<string>('')
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   })
+  const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedRowModel: getFacetedRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchValue = String(filterValue).toLowerCase()
+      const fullName = getFullName(
+        row.original.student.firstName,
+        row.original.student.lastName
+      ).toLowerCase()
+      return fullName.includes(searchValue)
+    },
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    state: { pagination, sorting },
+    state: { pagination, sorting, globalFilter },
   })
 
   return (
     <div className="flex h-full flex-col gap-2">
+      <div className="flex flex-col items-end gap-2 md:flex-row">
+        <Input
+          value={search ?? ''}
+          onChange={(e) => {
+            setSearch(e.target.value)
+            handleSearch(e.target.value)
+          }}
+          placeholder="Поиск..."
+        />
+      </div>
       <Table className="overflow-y-auto">
         <TableHeader className="bg-card sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
