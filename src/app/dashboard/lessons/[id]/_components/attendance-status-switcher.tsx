@@ -62,7 +62,7 @@ const switcherVariant = cva(['cursor-pointer'], {
 })
 
 export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitcherProps) {
-  const canSelectWarned = usePermission('CAN_SELECT_WARNED')
+  const canSelectWarned = usePermission('SELECT_WARNED')
   const [isPending, startTransition] = useTransition()
   const [status, setStatus] = useState<AttendanceStatus>(attendance.status)
   const [isWarned, setIsWarned] = useState<boolean | null>(attendance.isWarned)
