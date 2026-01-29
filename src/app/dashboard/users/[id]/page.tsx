@@ -9,25 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemFooter,
-  ItemGroup,
-  ItemTitle,
-} from '@/components/ui/item'
+import { ItemGroup } from '@/components/ui/item'
 import { getFullName } from '@/lib/utils'
-import { toZonedTime } from 'date-fns-tz'
 import EditUserButton from '../_components/edit-user-dialog'
-import AddCheckButton from './add-check-button'
-
-const userRoleMap = {
-  ADMIN: 'Админ',
-  OWNER: 'Владелец',
-  TEACHER: 'Учитель',
-  MANAGER: 'Менеджер',
-}
+import AddCheckButton from './_components/add-check-button'
+import PayChecksTable from './_components/paycheks-table'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -48,6 +34,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     where: {
       userId: user.id,
     },
+    orderBy: { date: 'asc' },
   })
   return (
     <>
@@ -110,20 +97,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </CardHeader>
         <CardContent>
           <ItemGroup>
-            {paychecks.map((paycheck) => (
-              <Item key={paycheck.id} variant={'muted'} size={'sm'}>
-                <ItemContent>
-                  <ItemTitle>Чек #{paycheck.id}</ItemTitle>
-                  <ItemDescription>{paycheck.comment}</ItemDescription>
-                </ItemContent>
-                <ItemFooter>
-                  <span>
-                    {toZonedTime(paycheck.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}
-                  </span>
-                  <span className="font-bold">{paycheck.amount.toLocaleString()} ₽</span>
-                </ItemFooter>
-              </Item>
-            ))}
+            <PayChecksTable data={paychecks} user={user} />
           </ItemGroup>
         </CardContent>
       </Card>

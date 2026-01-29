@@ -52,13 +52,7 @@ const getColumns = (
     },
     {
       header: 'Статус',
-      cell: ({ row }) => (
-        <AttendanceStatusSwitcher
-          lessonId={row.original.lessonId}
-          studentId={row.original.studentId}
-          status={row.original.status}
-        />
-      ),
+      cell: ({ row }) => <AttendanceStatusSwitcher attendance={row.original} />,
     },
     {
       header: 'Отработка',

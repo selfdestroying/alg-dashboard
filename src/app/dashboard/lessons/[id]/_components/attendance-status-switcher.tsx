@@ -1,135 +1,228 @@
 'use client'
 import { updateAttendance } from '@/actions/attendance'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { AttendanceStatus } from '@prisma/client'
-import { Check, Loader2, Minus, X } from 'lucide-react'
-import { useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Toggle } from '@/components/ui/toggle'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { usePermission } from '@/hooks/usePermission'
+import { Attendance, AttendanceStatus } from '@prisma/client'
+import { cva } from 'class-variance-authority'
+import { AlertCircle, Check, Loader, Minus, X } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
 
 interface AttendanceStatusSwitcherProps {
-  lessonId: number
-  studentId: number
-  status: AttendanceStatus
+  attendance: Attendance
 }
 
-export function AttendanceStatusSwitcher({
-  lessonId,
-  studentId,
-  status,
-}: AttendanceStatusSwitcherProps) {
-  const [isPending, startTransition] = useTransition()
+const switcherVariant = cva(['cursor-pointer'], {
+  variants: {
+    variant: {
+      absent: {},
+      present: {},
+      unspecified: {},
+    },
+    active: {
+      true: {},
+      false: {},
+    },
+  },
+  compoundVariants: [
+    {
+      variant: 'absent',
+      active: true,
+      className:
+        'border-destructive aria-pressed:bg-destructive/20 text-destructive aria-pressed:opacity-100',
+    },
+    {
+      variant: 'absent',
+      active: false,
+      className: '',
+    },
+    {
+      variant: 'present',
+      active: true,
+      className: 'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
+    },
+    {
+      variant: 'present',
+      active: false,
+      className: '',
+    },
+    {
+      variant: 'unspecified',
+      active: true,
+      className: '',
+    },
+    {
+      variant: 'unspecified',
+      active: false,
+      className: '',
+    },
+  ],
+})
 
-  const handleChange = (newStatus: AttendanceStatus[]) => {
-    if (newStatus[0] === status) return
+export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitcherProps) {
+  const canSelectWarned = usePermission('SELECT_WARNED')
+  const [isPending, startTransition] = useTransition()
+  const [status, setStatus] = useState<AttendanceStatus>(attendance.status)
+  const [isWarned, setIsWarned] = useState<boolean | null>(attendance.isWarned)
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (status === attendance.status) return
 
     startTransition(async () => {
       await updateAttendance({
         where: {
           studentId_lessonId: {
-            studentId: studentId,
-            lessonId: lessonId,
+            studentId: attendance.studentId,
+            lessonId: attendance.lessonId,
           },
         },
         data: {
-          status: newStatus[0],
+          status,
+          isWarned,
         },
       })
     })
-  }
+  }, [status, isWarned, attendance.lessonId, attendance.studentId, attendance.status])
 
   return (
-    <ToggleGroup
-      variant={'outline'}
-      size={'sm'}
-      value={[status]}
-      onValueChange={(v) => v && handleChange(v as AttendanceStatus[])}
-    >
-      <Tooltip key={'absent'}>
-        {isPending ? (
-          <TooltipTrigger
-            render={
-              <ToggleGroupItem value={AttendanceStatus.ABSENT} aria-label="absent" disabled />
-            }
-            className="h-6"
-          >
-            <Loader2 className="animate-spin" />
-          </TooltipTrigger>
-        ) : (
-          <TooltipTrigger
-            render={
-              <ToggleGroupItem
-                value={AttendanceStatus.ABSENT}
-                aria-label="absent"
-                disabled={status === AttendanceStatus.ABSENT || isPending}
+    <TooltipProvider delay={300}>
+      <div className="flex items-center gap-2">
+        {canSelectWarned ? (
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <PopoverTrigger
+                    render={
+                      <Toggle
+                        size={'sm'}
+                        variant="outline"
+                        className={switcherVariant({
+                          variant: 'absent',
+                          active: status === 'ABSENT',
+                        })}
+                        pressed={status === 'ABSENT'}
+                        disabled={isPending || status === 'ABSENT'}
+                      >
+                        {isPending ? <Loader className="animate-spin" /> : <X />}
+                      </Toggle>
+                    }
+                  />
+                }
               />
-            }
-            className="group h-6 cursor-pointer disabled:border-red-300 disabled:bg-red-100 disabled:opacity-100 disabled:dark:border-red-800 disabled:dark:bg-red-900/20"
-          >
-            <X className="group-disabled:stroke-red-700 group-disabled:dark:stroke-red-300" />
-          </TooltipTrigger>
-        )}
-        <TooltipContent>
-          <p>Отсутствует</p>
-        </TooltipContent>
-      </Tooltip>
 
-      <Tooltip key={'unspecified'}>
-        {isPending ? (
-          <TooltipTrigger
-            render={
-              <ToggleGroupItem value={AttendanceStatus.UNSPECIFIED} aria-label="absent" disabled />
-            }
-            className="h-6"
-          >
-            <Loader2 className="animate-spin" />
-          </TooltipTrigger>
-        ) : (
-          <TooltipTrigger
-            render={
-              <ToggleGroupItem
-                value={AttendanceStatus.UNSPECIFIED}
-                aria-label="unspecified"
-                disabled={status === AttendanceStatus.UNSPECIFIED || isPending}
-              />
-            }
-            className="group disabled:border-input disabled:bg-accent h-6 cursor-pointer disabled:opacity-100"
-          >
-            <Minus className="group-disabled:stroke-gray-700 group-disabled:dark:stroke-gray-300" />
-          </TooltipTrigger>
-        )}
-        <TooltipContent>
-          <p>Не отмечен</p>
-        </TooltipContent>
-      </Tooltip>
+              <TooltipContent>
+                <p>Отсутствует</p>
+              </TooltipContent>
+            </Tooltip>
 
-      <Tooltip key={'present'}>
-        {isPending ? (
-          <TooltipTrigger
-            render={
-              <ToggleGroupItem value={AttendanceStatus.PRESENT} aria-label="absent" disabled />
-            }
-            className="h-6"
-          >
-            <Loader2 className="animate-spin" />
-          </TooltipTrigger>
+            <PopoverContent className="w-fit">
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant={'destructive'}
+                  onClick={() => {
+                    setStatus('ABSENT')
+                    setPopoverOpen(false)
+                  }}
+                >
+                  Не предупредили (-1)
+                </Button>
+                <Button
+                  className="bg-success/10 text-success hover:bg-success/20"
+                  onClick={() => {
+                    setStatus('ABSENT')
+                    setIsWarned(true)
+                    setPopoverOpen(false)
+                  }}
+                >
+                  Предупредили (0)
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         ) : (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Toggle
+                  size={'sm'}
+                  variant="outline"
+                  className={switcherVariant({ variant: 'absent', active: isPending })}
+                  pressed={status === 'ABSENT'}
+                  onClick={() => {
+                    setStatus('ABSENT')
+                    setIsWarned(false)
+                  }}
+                  disabled={isPending || status === 'ABSENT'}
+                >
+                  {isPending ? <Loader className="animate-spin" /> : <X />}
+                </Toggle>
+              }
+            />
+
+            <TooltipContent>
+              <p>Отсутствует</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+
+        <Tooltip>
           <TooltipTrigger
             render={
-              <ToggleGroupItem
-                value={AttendanceStatus.PRESENT}
-                aria-label="present"
-                disabled={status === AttendanceStatus.PRESENT || isPending}
-              />
+              <Toggle
+                size={'sm'}
+                variant="outline"
+                className={switcherVariant({ variant: 'unspecified', active: isPending })}
+                pressed={status === 'UNSPECIFIED'}
+                onClick={() => {
+                  setStatus('UNSPECIFIED')
+                  setIsWarned(null)
+                }}
+                disabled={isPending || status === 'UNSPECIFIED'}
+              >
+                {isPending ? <Loader className="animate-spin" /> : <Minus />}
+              </Toggle>
             }
-            className="group h-6 cursor-pointer disabled:border-emerald-300 disabled:bg-emerald-100 disabled:opacity-100 disabled:dark:border-emerald-800 disabled:dark:bg-emerald-900/20"
-          >
-            <Check className="group-disabled:stroke-emerald-700 group-disabled:dark:stroke-emerald-300" />
-          </TooltipTrigger>
+          />
+
+          <TooltipContent>
+            <p>Не отмечен</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger
+            className={switcherVariant({ variant: 'present', active: status === 'PRESENT' })}
+            render={
+              <Toggle
+                size={'sm'}
+                variant="outline"
+                pressed={status === 'PRESENT'}
+                onClick={() => {
+                  setStatus('PRESENT')
+                  setIsWarned(null)
+                }}
+                disabled={isPending || status === 'PRESENT'}
+              >
+                {isPending ? <Loader className="animate-spin" /> : <Check />}
+              </Toggle>
+            }
+          />
+
+          <TooltipContent>
+            <p>Присутствует (-1)</p>
+          </TooltipContent>
+        </Tooltip>
+        {isWarned !== null && isWarned && (
+          <Tooltip>
+            <TooltipTrigger render={<AlertCircle className="text-warning size-4" />} />
+            <TooltipContent>Предупредили</TooltipContent>
+          </Tooltip>
         )}
-        <TooltipContent>
-          <p>Присутствует</p>
-        </TooltipContent>
-      </Tooltip>
-    </ToggleGroup>
+      </div>
+    </TooltipProvider>
   )
 }

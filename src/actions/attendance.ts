@@ -42,30 +42,48 @@ const updateCoins = async (
   }
 }
 
+const isLessonCharged = (status: AttendanceStatus, isWarned: boolean): boolean => {
+  if (status === AttendanceStatus.PRESENT) return true
+  if (status === AttendanceStatus.ABSENT && !isWarned) return true
+  return false
+}
+
+const getLessonsBalanceDelta = (
+  oldStatus: AttendanceStatus,
+  newStatus: AttendanceStatus,
+  oldIsWarned: boolean | null,
+  newIsWarned: boolean | null
+): number => {
+  const wasCharged = isLessonCharged(oldStatus, oldIsWarned === true)
+
+  const isCharged = isLessonCharged(newStatus, newIsWarned === true)
+
+  if (wasCharged === isCharged) return 0
+  return isCharged ? -1 : +1
+}
+
 const updateLessonsBalance = async (
   newStatus: AttendanceStatus,
   oldStatus: AttendanceStatus,
-  studentId: number
+  studentId: number,
+  isWarned: boolean | null,
+  oldIsWarned: boolean | null
 ) => {
-  if (oldStatus === AttendanceStatus.UNSPECIFIED && newStatus !== AttendanceStatus.UNSPECIFIED) {
-    await prisma.student.update({
-      where: { id: studentId },
-      data: { lessonsBalance: { decrement: 1 } },
-    })
-    return
-  }
+  const delta = getLessonsBalanceDelta(oldStatus, newStatus, oldIsWarned, isWarned)
 
-  if (oldStatus !== AttendanceStatus.UNSPECIFIED && newStatus === AttendanceStatus.UNSPECIFIED) {
-    await prisma.student.update({
-      where: { id: studentId },
-      data: { lessonsBalance: { increment: 1 } },
-    })
-    return
-  }
+  if (delta === 0) return
+
+  await prisma.student.update({
+    where: { id: studentId },
+    data: {
+      lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
+    },
+  })
 }
 
 export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => {
   const status = payload.data.status
+  const isWarned = payload.data.isWarned
   if (status) {
     const oldAttendance = await prisma.attendance.findFirst({
       where: {
@@ -79,7 +97,9 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
         await updateLessonsBalance(
           status as AttendanceStatus,
           oldAttendance.status,
-          oldAttendance.studentId
+          oldAttendance.studentId,
+          isWarned as boolean | null,
+          oldAttendance.isWarned
         )
       }
     }

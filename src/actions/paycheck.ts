@@ -18,3 +18,13 @@ export async function createPaycheck(payload: Prisma.PayCheckCreateArgs) {
   await prisma.payCheck.create(payload)
   revalidatePath(`/dashboard/users/${payload.data.userId}`)
 }
+
+export async function updatePaycheck(payload: Prisma.PayCheckUpdateArgs) {
+  await prisma.payCheck.update(payload)
+  revalidatePath(`/dashboard/users/${payload.data.userId}`)
+}
+
+export async function deletePaycheck(payload: Prisma.PayCheckDeleteArgs) {
+  await prisma.payCheck.delete(payload)
+  revalidatePath(`/dashboard/users/${payload.where.userId}`)
+}

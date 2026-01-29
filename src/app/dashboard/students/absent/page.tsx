@@ -7,21 +7,18 @@ import AbsentStatistics from './statistics/absent-statistics'
 export default async function Page() {
   const stats = await getAbsentStatistics()
 
-  // Выбираем пропуски:
-  // 1. Обычные пропуски без отработки
-  // 2. Пропуски отработок
-  // Исключаем пропуски, для которых была назначена отработка (независимо от её статуса)
   const attendance = await prisma.attendance.findMany({
     where: {
       status: 'ABSENT',
       OR: [
-        // Обычные пропуски без отработки (не является отработкой)
         {
           AND: [{ missedMakeup: { is: null } }, { asMakeupFor: { is: null } }],
         },
-        // Пропуски отработок (сама отработка была пропущена)
         { asMakeupFor: { isNot: null } },
       ],
+      student: {
+        dismisseds: { none: {} },
+      },
     },
     include: {
       student: true,
