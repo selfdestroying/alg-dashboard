@@ -16,7 +16,7 @@ model User {
   status           UserStatus      @default(ACTIVE)
   bidForLesson     Int             @default(1100)
   bidForIndividual Int             @default(750)
-  createdAt        DateTime        @default(now())
+  createdAt        DateTime        @default(now()) @db.Timestamptz
   role             Role            @relation(fields: [roleId], references: [id])
   groups           TeacherGroup[]
   lessons          TeacherLesson[]
@@ -29,8 +29,8 @@ model Role {
   name        String
   description String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz
 
   users User[]
 }
@@ -42,11 +42,11 @@ model Student {
   login               String
   password            String
   age                 Int
-  birthDate           DateTime?
+  birthDate           DateTime?            @db.Timestamptz
   parentsName         String?
   parentsPhone        String?
   crmUrl              String?
-  createdAt           DateTime             @default(now())
+  createdAt           DateTime             @default(now()) @db.Timestamptz
   coins               Int                  @default(0)
   lessonsBalance      Int                  @default(0)
   totalLessons        Int                  @default(0)
@@ -65,12 +65,12 @@ model Group {
   name          String
   courseId      Int
   type          GroupType?
-  startDate     DateTime
-  endDate       DateTime?
+  startDate     DateTime       @db.Timestamptz
+  endDate       DateTime?      @db.Timestamptz
   dayOfWeek     Int?
   time          String?
   maxStudents   Int            @default(12)
-  createdAt     DateTime       @default(now())
+  createdAt     DateTime       @default(now()) @db.Timestamptz
   backOfficeUrl String?
   lessonCount   Int?
   lessonPerWeek Int?
@@ -87,8 +87,8 @@ model PayCheck {
   id        Int      @id @default(autoincrement())
   amount    Int
   comment   String
-  date      DateTime
-  createdAt DateTime @default(now())
+  date      DateTime @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
 }
@@ -120,7 +120,7 @@ model Dismissed {
   studentId Int
   groupId   Int
   comment   String
-  date      DateTime
+  date      DateTime @db.Timestamptz
   group     Group    @relation(fields: [groupId], references: [id])
   student   Student  @relation(fields: [studentId], references: [id])
 }
@@ -148,9 +148,9 @@ model TeacherLesson {
 model Lesson {
   id         Int             @id @default(autoincrement())
   groupId    Int
-  date       DateTime
+  date       DateTime        @db.Timestamptz
   time       String?
-  createdAt  DateTime        @default(now())
+  createdAt  DateTime        @default(now()) @db.Timestamptz
   status     LessonStatus    @default(ACTIVE)
   attendance Attendance[]
   group      Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -183,7 +183,7 @@ model MakeUp {
 model Payment {
   id           Int      @id @default(autoincrement())
   studentId    Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime @default(now()) @db.Timestamptz
   lessonCount  Int      @default(0)
   price        Int      @default(0)
   bidForLesson Int      @default(0)
@@ -197,7 +197,7 @@ model UnprocessedPayment {
   rawData   Json
   reason    String
   resolved  Boolean
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz
   studentId Int?
   student   Student? @relation(fields: [studentId], references: [id])
 }
@@ -205,7 +205,7 @@ model UnprocessedPayment {
 model Cart {
   id        Int        @id @default(autoincrement())
   studentId Int        @unique
-  createdAt DateTime   @default(now())
+  createdAt DateTime   @default(now()) @db.Timestamptz
   Student   Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   CartItem  CartItem[]
 }
@@ -215,7 +215,7 @@ model CartItem {
   cartId    Int
   productId Int
   quantity  Int
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz
   Cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -250,7 +250,7 @@ model Order {
   productId Int
   studentId Int
   status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now())
+  createdAt DateTime    @default(now()) @db.Timestamptz
   product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   student   Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
