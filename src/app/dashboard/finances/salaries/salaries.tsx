@@ -7,16 +7,27 @@ import { Calendar, CalendarDayButton } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
+import { usePermission } from '@/hooks/usePermission'
+import { getFullName } from '@/lib/utils'
+import { useAuth } from '@/providers/auth-provider'
 import { UserDTO } from '@/types/user'
-import { PayCheck, Prisma } from '@prisma/client'
+import { GroupType, PayCheck, Prisma } from '@prisma/client'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, ChevronsUpDown, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { type DateRange } from 'react-day-picker'
 
-export default function Salaries({ userId }: { userId?: number }) {
+const groupTypeMap: Record<GroupType, string> = {
+  GROUP: 'Группа',
+  INDIVIDUAL: 'Индив.',
+  INTENSIVE: 'Интенсив',
+}
+
+export default function Salaries() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const canViewSalary = usePermission('VIEW_OTHER_SALARY')
+  const user = useAuth()
   const [lessons, setLessons] = useState<
     {
       teacher: UserDTO
@@ -42,7 +53,6 @@ export default function Salaries({ userId }: { userId?: number }) {
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
-        console.log(dateRange)
         const { startDate, endDate } = {
           startDate: fromZonedTime(dateRange.from, 'Europe/Moscow'),
           endDate: fromZonedTime(dateRange.to, 'Europe/Moscow'),
@@ -54,10 +64,11 @@ export default function Salaries({ userId }: { userId?: number }) {
               lte: endDate,
             },
             status: { not: 'CANCELLED' },
-            teachers: userId ? { some: { teacherId: userId } } : undefined,
+            teachers: !canViewSalary ? { some: { teacherId: user.id } } : undefined,
           },
           include: {
             teachers: {
+              where: !canViewSalary ? { teacherId: user.id } : undefined,
               include: {
                 teacher: {
                   include: {
@@ -66,11 +77,7 @@ export default function Salaries({ userId }: { userId?: number }) {
                 },
               },
             },
-            group: {
-              include: {
-                teachers: true,
-              },
-            },
+            group: true,
           },
           orderBy: { date: 'asc' },
         })
@@ -130,7 +137,7 @@ export default function Salaries({ userId }: { userId?: number }) {
     }
 
     getLessonsFromPeriod()
-  }, [dateRange])
+  }, [dateRange, canViewSalary, user.id])
 
   return (
     <Card>
@@ -164,7 +171,7 @@ export default function Salaries({ userId }: { userId?: number }) {
                   <CardTitle className="flex items-center justify-between gap-2 text-lg">
                     <div className="flex items-center gap-2">
                       <Users className="text-muted-foreground h-5 w-5" />
-                      {r.teacher.firstName} {r.teacher.lastName} -{' '}
+                      {getFullName(r.teacher.firstName, r.teacher.lastName)} -{' '}
                       {(
                         r.lessons.reduce((prev, curr) => prev + curr.price, 0) +
                         paychecks
@@ -219,7 +226,9 @@ export default function Salaries({ userId }: { userId?: number }) {
 
                         <div className="flex items-center justify-between text-sm">
                           <span className="font-medium">{lesson.group.name}</span>
-                          <Badge variant="outline">{lesson.group.type}</Badge>
+                          <Badge variant="outline">
+                            {lesson.group.type ? groupTypeMap[lesson.group.type] : '-'}
+                          </Badge>
                         </div>
                       </div>
                     ))}
