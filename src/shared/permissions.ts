@@ -24,6 +24,8 @@ export const Permission = {
   EDIT_USER: 'EDIT_USER',
 
   EDIT_STUDENT: 'EDIT_STUDENT',
+
+  CAN_SELECT_WARNED: 'CAN_SELECT_WARNED',
 } as const
 
 export type Permission = (typeof Permission)[keyof typeof Permission]
@@ -44,6 +46,7 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.ADD_PAYCHECK,
     Permission.EDIT_USER,
     Permission.EDIT_STUDENT,
+    Permission.CAN_SELECT_WARNED,
   ],
   owner: [
     Permission.EDIT_ATTENDANCE,
@@ -60,6 +63,7 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.ADD_PAYCHECK,
     Permission.EDIT_USER,
     Permission.EDIT_STUDENT,
+    Permission.CAN_SELECT_WARNED,
   ],
   manager: [
     Permission.EDIT_ATTENDANCE,
@@ -75,6 +79,7 @@ export const rolePermissions: Record<(typeof RoleCodes)[keyof typeof RoleCodes],
     Permission.ADD_PAYCHECK,
     Permission.EDIT_USER,
     Permission.EDIT_STUDENT,
+    Permission.CAN_SELECT_WARNED,
   ],
   teacher: [],
 }

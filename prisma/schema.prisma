@@ -163,6 +163,7 @@ model Attendance {
   studentId     Int
   status        AttendanceStatus
   comment       String
+  isWarned      Boolean?
   studentStatus StudentStatus    @default(ACTIVE)
   lesson        Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   student       Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
