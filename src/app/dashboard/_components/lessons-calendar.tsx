@@ -28,12 +28,12 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { startOfDay } from 'date-fns'
+import { endOfMonth, startOfDay, startOfMonth } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { ArrowDown, ArrowUp, Check, X } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useMemo, useState, useTransition } from 'react'
+import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 
 type LessonWithDetails = Prisma.LessonGetPayload<{
   include: {
@@ -48,17 +48,14 @@ export default function LessonsCalendar() {
   const user = useAuth()
   const canViewOtherLessons = usePermission('VIEW_OTHER_LESSONS')
 
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(() => new Date())
-  const [selectedMonth, setSelectedMonth] = useState<Date>(() => new Date())
+  const today = toZonedTime(new Date(), 'Europe/Moscow')
+
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(today)
+  const [selectedMonth, setSelectedMonth] = useState<Date>(today)
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
     if (!canViewOtherLessons) {
-      return [
-        {
-          id: 'teacher',
-          value: [user.id],
-        },
-      ]
+      return [{ id: 'teacher', value: [user.id] }]
     }
     return []
   })
@@ -68,50 +65,29 @@ export default function LessonsCalendar() {
   const [daysStatuses, setDaysStatuses] = useState<Record<number, boolean[]>>({})
   const [selectedDayLessons, setSelectedDayLessons] = useState<LessonWithDetails[]>([])
 
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
+  // Универсальный обработчик для всех фильтров
+  const handleFilterChange = useCallback((filterId: string, items: TableFilterItem[]) => {
+    const ids = items.map((item) => Number(item.value))
+    setColumnFilters((prev) => {
+      const otherFilters = prev.filter((filter) => filter.id !== filterId)
+      return ids.length > 0 ? [...otherFilters, { id: filterId, value: ids }] : otherFilters
     })
-  }
+  }, [])
 
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
+  const handleCourseFilterChange = useCallback(
+    (items: TableFilterItem[]) => handleFilterChange('course', items),
+    [handleFilterChange]
+  )
 
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
+  const handleLocationFilterChange = useCallback(
+    (items: TableFilterItem[]) => handleFilterChange('location', items),
+    [handleFilterChange]
+  )
 
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
+  const handleUserFilterChange = useCallback(
+    (items: TableFilterItem[]) => handleFilterChange('teacher', items),
+    [handleFilterChange]
+  )
 
   const mappedCourses = useMemo(
     () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
@@ -131,18 +107,19 @@ export default function LessonsCalendar() {
   )
 
   useEffect(() => {
+    let isCancelled = false
+
     if (!selectedDay) {
       startTransition(() => {
         setSelectedDayLessons([])
       })
       return
     }
+
     startTransition(() => {
       const zonedDate = fromZonedTime(startOfDay(selectedDay), 'Europe/Moscow')
       getLessons({
-        where: {
-          date: zonedDate,
-        },
+        where: { date: zonedDate },
         include: {
           attendance: true,
           group: { include: { course: true, location: true } },
@@ -150,34 +127,39 @@ export default function LessonsCalendar() {
         },
         orderBy: { time: 'asc' },
       }).then((lessons) => {
-        setSelectedDayLessons(lessons)
+        if (!isCancelled) {
+          setSelectedDayLessons(lessons)
+        }
       })
     })
+
+    return () => {
+      isCancelled = true
+    }
   }, [selectedDay])
 
   useEffect(() => {
-    startTransition(() => {
-      const zonedDate = fromZonedTime(selectedMonth, 'Europe/Moscow')
-      const year = zonedDate.getFullYear()
-      const month = zonedDate.getMonth()
+    let isCancelled = false
 
-      const startOfMonth = new Date(year, month, 1)
-      const startOfNextMonth = new Date(year, month + 1, 1)
+    startTransition(() => {
+      const from = startOfMonth(selectedMonth)
+      const to = endOfMonth(selectedMonth)
       getLessons({
         where: {
           date: {
-            gte: startOfDay(startOfMonth),
-            lt: startOfDay(startOfNextMonth),
+            gte: from,
+            lte: to,
           },
           status: 'ACTIVE',
         },
-        include: {
-          attendance: {
-            select: { status: true },
-          },
+        select: {
+          date: true,
+          attendance: { select: { status: true } },
         },
         orderBy: [{ date: 'asc' }, { time: 'asc' }],
       }).then((lessons) => {
+        if (isCancelled) return
+
         const statuses: Record<number, boolean[]> = {}
         lessons.forEach((lesson) => {
           const day = toZonedTime(lesson.date, 'Europe/Moscow').getDate()
@@ -192,6 +174,10 @@ export default function LessonsCalendar() {
         setDaysStatuses(statuses)
       })
     })
+
+    return () => {
+      isCancelled = true
+    }
   }, [selectedMonth])
 
   return (
@@ -199,9 +185,10 @@ export default function LessonsCalendar() {
       <Card className="overflow-y-auto">
         <CardContent>
           <Calendar
+            today={today}
             mode="single"
             selected={selectedDay}
-            defaultMonth={selectedDay}
+            month={selectedMonth}
             onSelect={setSelectedDay}
             onMonthChange={setSelectedMonth}
             classNames={{ week: 'flex gap-2 mt-2' }}
@@ -212,7 +199,8 @@ export default function LessonsCalendar() {
             disableNavigation={isPending}
             components={{
               DayButton: ({ children, day, ...props }) => {
-                const dayIndex = daysStatuses[toZonedTime(day.date, 'Europe/Moscow').getDate()]
+                const dayIndex = daysStatuses[day.date.getDate()]
+
                 if (!dayIndex) {
                   return (
                     <CalendarDayButton
@@ -224,17 +212,17 @@ export default function LessonsCalendar() {
                     </CalendarDayButton>
                   )
                 }
-                const dayStatus = dayIndex.some((status) => status) ? 'unmarked' : 'marked'
-                const statusClassNames = {
-                  unmarked: 'bg-destructive/20 text-destructive',
-                  marked: 'bg-success/20 text-success',
-                }
+
+                const hasUnmarked = dayIndex.some((status) => status)
+                const statusClassName = hasUnmarked
+                  ? 'bg-destructive/20 text-destructive'
+                  : 'bg-success/20 text-success'
 
                 return (
                   <CalendarDayButton
                     {...props}
                     day={day}
-                    className={cn(statusClassNames[dayStatus] || '', 'transition-none')}
+                    className={cn(statusClassName, 'transition-none')}
                     data-day={day.date.toLocaleDateString('ru-RU')}
                   >
                     {children}
@@ -285,7 +273,7 @@ interface DataTableProps {
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
 }
 
-const columns: ColumnDef<LessonWithDetails>[] = [
+const getColumns = (): ColumnDef<LessonWithDetails>[] => [
   {
     header: 'Урок',
     cell: (info) => (
@@ -377,6 +365,9 @@ const columns: ColumnDef<LessonWithDetails>[] = [
 
 function DataTable({ data, columnFilters, setColumnFilters }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
+
+  const columns = useMemo(() => getColumns(), [])
+
   const table = useReactTable({
     data,
     columns,
