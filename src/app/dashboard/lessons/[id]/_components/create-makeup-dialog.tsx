@@ -54,7 +54,6 @@ export default function CreateMakeUpForm({
           value: lesson.id,
         }))
       )
-      console.log(lessons)
     })
   }
 

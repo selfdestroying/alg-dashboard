@@ -130,7 +130,7 @@ export default function EditUserButton({ user }: EditUserButtonProps) {
           <DialogTitle>Редактировать пользователя</DialogTitle>
           <DialogDescription>Измените информацию о пользователе ниже.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit, (err) => console.log(err))} id="edit-user-form">
+        <form onSubmit={form.handleSubmit(onSubmit)} id="edit-user-form">
           <FieldGroup>
             <Controller
               control={form.control}

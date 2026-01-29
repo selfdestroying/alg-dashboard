@@ -54,7 +54,6 @@ export default function AddCheckButton({ user }: AddCheckButtonProps) {
 
   const onSubmit = (values: AddCheckSchemaType) => {
     startTransition(() => {
-      console.log(values)
       const ok = createPaycheck({
         data: {
           userId: user.id,

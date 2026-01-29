@@ -143,7 +143,6 @@ export default function OrdersTable({ data }: { data: OrderWithProductAndStudent
 
   const handleStatusFilterChange = (selectedStatuses: TableFilterItem[]) => {
     setFilterValues(selectedStatuses)
-    console.log('Selected Statuses:', selectedStatuses)
     const selectedValues = selectedStatuses.map((status) => status.value)
     setColumnFilters((prev) => {
       const otherFilters = prev.filter((filter) => filter.id !== 'status')

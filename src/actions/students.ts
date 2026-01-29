@@ -67,8 +67,6 @@ export async function getActiveStudentStatistics() {
     },
   })
 
-  console.log(activeStudentGroups.length)
-
   // 1. Monthly Statistics (New Students per Month)
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()
   activeStudentGroups.forEach((sg) => {

@@ -64,7 +64,6 @@ export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
     }
 
     nearestWeekDay.setDate(nearestWeekDay.getDate() + diff)
-    console.log(nearestWeekDay)
     for (const lesson of lessons) {
       await prisma.lesson.update({
         where: { id: lesson.id },

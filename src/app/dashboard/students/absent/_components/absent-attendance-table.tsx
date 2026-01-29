@@ -140,8 +140,6 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
       const fromDate = fromZonedTime(range.from, 'Europe/Moscow')
       const toDate = fromZonedTime(range.to, 'Europe/Moscow')
 
-      console.log({ fromDate, toDate })
-
       setColumnFilters((prev) => {
         const filtered = prev.filter((filter) => filter.id !== 'date')
         return [

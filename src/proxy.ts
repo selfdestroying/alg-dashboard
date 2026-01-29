@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifySession } from './lib/session'
 
 export default async function proxy(req: NextRequest) {
-  console.log('Middleware invoked for:', req.nextUrl.pathname)
   const path = req.nextUrl.pathname
 
   const { isAuth } = await verifySession()

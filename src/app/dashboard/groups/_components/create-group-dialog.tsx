@@ -85,7 +85,6 @@ export default function CreateGroupDialog() {
 
   const onSubmit = (values: CreateGroupSchemaType) => {
     startTransition(() => {
-      console.log(values)
       const { course, location, teacher, dateRange, ...payload } = values
       const ok = createGroup({
         data: {

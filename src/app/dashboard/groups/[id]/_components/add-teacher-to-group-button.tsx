@@ -64,7 +64,6 @@ export default function AddTeacherToGroupButton({ teachers, group }: AddTeacherT
 
   const handleSubmit = (data: GroupTeacherSchemaType) => {
     startTransition(() => {
-      console.log(data)
       const { isApplyToLesson, ...payload } = data
       const ok = createTeacherGroup(
         {

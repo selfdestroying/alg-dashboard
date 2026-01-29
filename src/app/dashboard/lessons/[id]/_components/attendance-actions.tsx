@@ -104,7 +104,6 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
   }
 
   const handleCreateMakeUp = () => {
-    console.log(selectedLesson)
     try {
       if (!selectedLesson) {
         toast.error('Пожалуйста, выберите урок для отработки.')

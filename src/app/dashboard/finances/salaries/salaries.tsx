@@ -42,7 +42,6 @@ export default function Salaries({ userId }: { userId?: number }) {
   useEffect(() => {
     async function getLessonsFromPeriod() {
       if (dateRange && dateRange.from && dateRange.to) {
-        console.log(dateRange)
         const { startDate, endDate } = {
           startDate: fromZonedTime(dateRange.from, 'Europe/Moscow'),
           endDate: fromZonedTime(dateRange.to, 'Europe/Moscow'),
