@@ -1,9 +1,10 @@
 import { getGroups } from '@/actions/groups'
-import { getStudent } from '@/actions/students'
+import { getStudent, getStudentLessonsBalanceHistory } from '@/actions/students'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getFullName } from '@/lib/utils'
 import EditStudentDialog from './_components/edit-student-dialog'
+import LessonsBalanceHistory from './_components/lessons-balance-history'
 import StudentCard from './_components/student-card'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +34,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   })
 
   if (!student) return <div>Ошибка при получении ученика</div>
+
+  const lessonsBalanceHistory = await getStudentLessonsBalanceHistory(student.id, 50)
 
   const groups = await getGroups({
     where: {
@@ -79,6 +82,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </CardHeader>
         <CardContent className="space-y-6">
           <StudentCard student={student} groups={groups} />
+          <LessonsBalanceHistory history={lessonsBalanceHistory} />
         </CardContent>
       </Card>
     </div>

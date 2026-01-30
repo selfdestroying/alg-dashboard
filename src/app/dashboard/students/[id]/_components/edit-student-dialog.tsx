@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePermission } from '@/hooks/usePermission'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student } from '@prisma/client'
+import { Student, StudentLessonsBalanceChangeReason } from '@prisma/client'
 import { Loader, Pen, Sparkles } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -68,12 +68,22 @@ export default function EditStudentDialog({ student }: { student: Student }) {
 
   const onSubmit = (values: EditStudentSchemaType) => {
     startTransition(() => {
-      const ok = updateStudent({
-        where: { id: student.id },
-        data: {
-          ...values,
+      const ok = updateStudent(
+        {
+          where: { id: student.id },
+          data: {
+            ...values,
+          },
         },
-      })
+        {
+          lessonsBalance: {
+            reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
+            meta: {
+              source: 'edit-student-dialog',
+            },
+          },
+        }
+      )
 
       toast.promise(ok, {
         loading: 'Создание ученика...',

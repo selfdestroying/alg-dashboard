@@ -38,7 +38,7 @@ import { Input } from '@/components/ui/input'
 import { getFullName } from '@/lib/utils'
 import { AddPaymentSchema, AddPaymentSchemaType } from '@/schemas/payments'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student, UnprocessedPayment } from '@prisma/client'
+import { Student, StudentLessonsBalanceChangeReason, UnprocessedPayment } from '@prisma/client'
 import { Check, CircleX, Loader2, MoreVertical } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -79,23 +79,37 @@ export default function UnprocessedPaymentsActions({
   const onSubmit = (values: AddPaymentSchemaType) => {
     startTransition(() => {
       const { student, ...payload } = values
-      const ok = updateStudent({
-        where: { id: student.value },
-        data: {
-          lessonsBalance: { increment: payload.lessonCount },
-          totalLessons: { increment: payload.lessonCount },
-          totalPayments: { increment: payload.price },
-          payments: {
-            create: {
-              lessonCount: payload.lessonCount,
-              price: payload.price,
-              bidForLesson: payload.price / payload.lessonCount,
-              leadName: payload.leadName,
-              productName: payload.productName,
+      const ok = updateStudent(
+        {
+          where: { id: student.value },
+          data: {
+            lessonsBalance: { increment: payload.lessonCount },
+            totalLessons: { increment: payload.lessonCount },
+            totalPayments: { increment: payload.price },
+            payments: {
+              create: {
+                lessonCount: payload.lessonCount,
+                price: payload.price,
+                bidForLesson: payload.price / payload.lessonCount,
+                leadName: payload.leadName,
+                productName: payload.productName,
+              },
             },
           },
         },
-      }).then(() =>
+        {
+          lessonsBalance: {
+            reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
+            meta: {
+              lessonCount: payload.lessonCount,
+              price: payload.price,
+              leadName: payload.leadName,
+              productName: payload.productName,
+              unprocessedPaymentId: unprocessedPayment.id,
+            },
+          },
+        }
+      ).then(() =>
         updateUnprocessedPayment({
           where: { id: unprocessedPayment?.id },
           data: { resolved: true },
