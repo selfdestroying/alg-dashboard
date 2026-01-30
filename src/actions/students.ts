@@ -1,6 +1,12 @@
 'use server'
+import {
+  type LessonsBalanceAudit,
+  parseLessonsBalanceChange,
+  requireActorUserId,
+  writeLessonsBalanceHistoryTx,
+} from '@/lib/lessons-balance'
 import { prisma } from '@/lib/prisma'
-import { Group, Prisma, Student } from '@prisma/client'
+import { Group, Prisma, Student, StudentLessonsBalanceChangeReason } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export type StudentWithGroups = Student & { groups: Group[] }
@@ -34,9 +40,84 @@ export const createStudent = async (payload: Prisma.StudentCreateArgs) => {
   revalidatePath('dashboard/students')
 }
 
-export async function updateStudent(payload: Prisma.StudentUpdateArgs) {
-  await prisma.student.update(payload)
-  revalidatePath(`dashboard/students/${payload.where.id}`)
+export async function updateStudent(
+  payload: Prisma.StudentUpdateArgs,
+  audit?: {
+    lessonsBalance?: LessonsBalanceAudit
+  }
+) {
+  const lessonsBalanceChange = parseLessonsBalanceChange(
+    (payload.data as Prisma.StudentUpdateInput | undefined)?.lessonsBalance
+  )
+
+  const studentId = payload.where.id
+  if (!studentId) {
+    await prisma.student.update(payload)
+    return
+  }
+
+  if (!lessonsBalanceChange) {
+    await prisma.student.update(payload)
+    revalidatePath(`dashboard/students/${studentId}`)
+    return
+  }
+
+  if (!audit?.lessonsBalance) {
+    throw new Error('Для изменения баланса уроков требуется указать причину')
+  }
+
+  const lessonsBalanceAudit = audit.lessonsBalance
+  const actorUserId = await requireActorUserId()
+
+  await prisma.$transaction(async (tx) => {
+    const student = await tx.student.findUnique({
+      where: { id: studentId },
+      select: { lessonsBalance: true },
+    })
+
+    if (!student) throw new Error('Ученик не найден')
+
+    const balanceBefore = student.lessonsBalance
+
+    const updated = await tx.student.update({
+      where: { id: studentId },
+      data: payload.data as Prisma.StudentUpdateInput,
+      select: { lessonsBalance: true },
+    })
+
+    const balanceAfter = updated.lessonsBalance
+    const delta = balanceAfter - balanceBefore
+
+    await writeLessonsBalanceHistoryTx(tx, {
+      studentId,
+      actorUserId,
+      reason: lessonsBalanceAudit.reason,
+      delta,
+      balanceBefore,
+      balanceAfter,
+      comment: lessonsBalanceAudit.comment,
+      meta: lessonsBalanceAudit.meta,
+    })
+  })
+
+  revalidatePath(`dashboard/students/${studentId}`)
+
+  if (lessonsBalanceAudit.reason === StudentLessonsBalanceChangeReason.PAYMENT_CREATED) {
+    revalidatePath('/dashboard/finances/payments')
+  }
+}
+
+export async function getStudentLessonsBalanceHistory(studentId: number, take = 50) {
+  return await prisma.studentLessonsBalanceHistory.findMany({
+    where: { studentId },
+    take,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      actorUser: {
+        select: { firstName: true, lastName: true },
+      },
+    },
+  })
 }
 
 export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {

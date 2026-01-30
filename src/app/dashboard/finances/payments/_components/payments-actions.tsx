@@ -40,6 +40,7 @@ export default function PaymentsActions({ payment }: PaymentsActionsProps) {
         loading: 'Отмена оплаты...',
         success: 'Оплата успешно отменена',
         error: 'Не удалось отменить оплату',
+        finally: () => setConfirmOpen(false),
       })
     })
   }

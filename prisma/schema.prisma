@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id               Int             @id @default(autoincrement())
-  firstName        String
-  lastName         String?
-  password         String
-  roleId           Int             @default(1)
-  status           UserStatus      @default(ACTIVE)
-  bidForLesson     Int             @default(1100)
-  bidForIndividual Int             @default(750)
-  createdAt        DateTime        @default(now())
-  role             Role            @relation(fields: [roleId], references: [id])
-  groups           TeacherGroup[]
-  lessons          TeacherLesson[]
-  payChecks        PayCheck[]
+  id                    Int                            @id @default(autoincrement())
+  firstName             String
+  lastName              String?
+  password              String
+  roleId                Int                            @default(1)
+  status                UserStatus                     @default(ACTIVE)
+  bidForLesson          Int                            @default(1100)
+  bidForIndividual      Int                            @default(750)
+  createdAt             DateTime                       @default(now())
+  role                  Role                           @relation(fields: [roleId], references: [id])
+  groups                TeacherGroup[]
+  lessons               TeacherLesson[]
+  payChecks             PayCheck[]
+  lessonsBalanceChanges StudentLessonsBalanceHistory[]
 }
 
 model Role {
@@ -36,28 +37,48 @@ model Role {
 }
 
 model Student {
-  id                  Int                  @id @default(autoincrement())
-  firstName           String
-  lastName            String?
-  login               String
-  password            String
-  age                 Int
-  birthDate           DateTime?
-  parentsName         String?
-  parentsPhone        String?
-  crmUrl              String?
-  createdAt           DateTime             @default(now())
-  coins               Int                  @default(0)
-  lessonsBalance      Int                  @default(0)
-  totalLessons        Int                  @default(0)
-  totalPayments       Int                  @default(0)
-  attendances         Attendance[]
-  Cart                Cart?
-  Order               Order[]
-  payments            Payment[]
-  groups              StudentGroup[]
-  unprocessedPayments UnprocessedPayment[]
-  dismisseds          Dismissed[]
+  id                    Int                            @id @default(autoincrement())
+  firstName             String
+  lastName              String?
+  login                 String
+  password              String
+  age                   Int
+  birthDate             DateTime?
+  parentsName           String?
+  parentsPhone          String?
+  crmUrl                String?
+  createdAt             DateTime                       @default(now())
+  coins                 Int                            @default(0)
+  lessonsBalance        Int                            @default(0)
+  totalLessons          Int                            @default(0)
+  totalPayments         Int                            @default(0)
+  attendances           Attendance[]
+  Cart                  Cart?
+  Order                 Order[]
+  payments              Payment[]
+  groups                StudentGroup[]
+  unprocessedPayments   UnprocessedPayment[]
+  dismisseds            Dismissed[]
+  lessonsBalanceHistory StudentLessonsBalanceHistory[]
+}
+
+model StudentLessonsBalanceHistory {
+  id            Int                               @id @default(autoincrement())
+  studentId     Int
+  actorUserId   Int?
+  reason        StudentLessonsBalanceChangeReason
+  delta         Int
+  balanceBefore Int
+  balanceAfter  Int
+  comment       String?
+  meta          Json?
+  createdAt     DateTime                          @default(now())
+
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  actorUser User?   @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([studentId, createdAt])
+  @@index([actorUserId, createdAt])
 }
 
 model Group {
@@ -296,4 +317,15 @@ enum StudentStatus {
 enum UserStatus {
   ACTIVE
   INACTIVE
+}
+
+enum StudentLessonsBalanceChangeReason {
+  PAYMENT_CREATED
+  PAYMENT_CANCELLED
+  ATTENDANCE_PRESENT_CHARGED
+  ATTENDANCE_ABSENT_CHARGED
+  MAKEUP_ATTENDED_CHARGED
+  ATTENDANCE_REVERTED
+  MAKEUP_GRANTED
+  MANUAL_SET
 }

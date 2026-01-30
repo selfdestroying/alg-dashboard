@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { getFullName } from '@/lib/utils'
 import { AddPaymentSchema, AddPaymentSchemaType } from '@/schemas/payments'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student, UnprocessedPayment } from '@prisma/client'
+import { Student, StudentLessonsBalanceChangeReason, UnprocessedPayment } from '@prisma/client'
 import { Plus } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -60,23 +60,36 @@ export default function AddPaymentButton({
   const onSubmit = (values: AddPaymentSchemaType) => {
     startTransition(() => {
       const { student, ...payload } = values
-      const ok = updateStudent({
-        where: { id: student.value },
-        data: {
-          lessonsBalance: { increment: payload.lessonCount },
-          totalLessons: { increment: payload.lessonCount },
-          totalPayments: { increment: payload.price },
-          payments: {
-            create: {
+      const ok = updateStudent(
+        {
+          where: { id: student.value },
+          data: {
+            lessonsBalance: { increment: payload.lessonCount },
+            totalLessons: { increment: payload.lessonCount },
+            totalPayments: { increment: payload.price },
+            payments: {
+              create: {
+                lessonCount: payload.lessonCount,
+                price: payload.price,
+                bidForLesson: payload.price / payload.lessonCount,
+                leadName: payload.leadName,
+                productName: payload.productName,
+              },
+            },
+          },
+        },
+        {
+          lessonsBalance: {
+            reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
+            meta: {
               lessonCount: payload.lessonCount,
               price: payload.price,
-              bidForLesson: payload.price / payload.lessonCount,
               leadName: payload.leadName,
               productName: payload.productName,
             },
           },
-        },
-      }).then(
+        }
+      ).then(
         () =>
           unprocessedPayment &&
           updateUnprocessedPayment({

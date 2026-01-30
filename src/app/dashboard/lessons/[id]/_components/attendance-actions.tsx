@@ -45,7 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { StudentStatus } from '@prisma/client'
+import { StudentLessonsBalanceChangeReason, StudentStatus } from '@prisma/client'
 import { CalendarCog, CalendarPlus, Loader2, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -124,10 +124,22 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
             missedAttendanceId: attendance.id,
             makeUpAttendaceId: a.id,
           })
-          await updateStudent({
-            where: { id: attendance.studentId },
-            data: { lessonsBalance: { increment: 1 } },
-          })
+          await updateStudent(
+            {
+              where: { id: attendance.studentId },
+              data: { lessonsBalance: { increment: 1 } },
+            },
+            {
+              lessonsBalance: {
+                reason: StudentLessonsBalanceChangeReason.MAKEUP_GRANTED,
+                meta: {
+                  missedAttendanceId: attendance.id,
+                  makeUpAttendaceId: a.id,
+                  makeUpLessonId: selectedLesson?.value,
+                },
+              },
+            }
+          )
         })(),
         {
           loading: 'Сохраняем...',

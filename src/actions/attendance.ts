@@ -1,7 +1,8 @@
 'use server'
 
+import { requireActorUserId, writeLessonsBalanceHistoryTx } from '@/lib/lessons-balance'
 import { prisma } from '@/lib/prisma'
-import { AttendanceStatus, Prisma } from '@prisma/client'
+import { AttendanceStatus, Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
 
@@ -25,17 +26,18 @@ export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInp
 }
 
 const updateCoins = async (
+  tx: Prisma.TransactionClient,
   newStatus: AttendanceStatus,
   oldStatus: AttendanceStatus,
   studentId: number
 ) => {
   if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
-    await prisma.student.update({
+    await tx.student.update({
       where: { id: studentId },
       data: { coins: { increment: 10 } },
     })
   } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
-    await prisma.student.update({
+    await tx.student.update({
       where: { id: studentId },
       data: { coins: { decrement: 10 } },
     })
@@ -62,49 +64,103 @@ const getLessonsBalanceDelta = (
   return isCharged ? -1 : +1
 }
 
-const updateLessonsBalance = async (
-  newStatus: AttendanceStatus,
-  oldStatus: AttendanceStatus,
-  studentId: number,
-  isWarned: boolean | null,
-  oldIsWarned: boolean | null
-) => {
-  const delta = getLessonsBalanceDelta(oldStatus, newStatus, oldIsWarned, isWarned)
-
-  if (delta === 0) return
-
-  await prisma.student.update({
-    where: { id: studentId },
-    data: {
-      lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
-    },
-  })
-}
-
 export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => {
   const status = payload.data.status
   const isWarned = payload.data.isWarned
-  if (status) {
-    const oldAttendance = await prisma.attendance.findFirst({
-      where: {
-        studentId: payload.where.studentId_lessonId?.studentId,
-        lessonId: payload.where.studentId_lessonId?.lessonId,
-      },
-    })
-    if (oldAttendance) {
-      if (oldAttendance.studentStatus !== 'TRIAL') {
-        await updateCoins(status as AttendanceStatus, oldAttendance.status, oldAttendance.studentId)
-        await updateLessonsBalance(
+  const studentId = payload.where.studentId_lessonId?.studentId
+  const lessonId = payload.where.studentId_lessonId?.lessonId
+
+  await prisma.$transaction(async (tx) => {
+    if (status && studentId && lessonId) {
+      const oldAttendance = await tx.attendance.findFirst({
+        where: {
+          studentId,
+          lessonId,
+        },
+        select: {
+          id: true,
+          studentId: true,
+          lessonId: true,
+          status: true,
+          isWarned: true,
+          studentStatus: true,
+          asMakeupFor: { select: { id: true } },
+        },
+      })
+
+      if (oldAttendance && oldAttendance.studentStatus !== 'TRIAL') {
+        await updateCoins(
+          tx,
           status as AttendanceStatus,
           oldAttendance.status,
-          oldAttendance.studentId,
-          isWarned as boolean | null,
-          oldAttendance.isWarned
+          oldAttendance.studentId
         )
+
+        const delta = getLessonsBalanceDelta(
+          oldAttendance.status,
+          status as AttendanceStatus,
+          oldAttendance.isWarned,
+          isWarned as boolean | null
+        )
+
+        if (delta !== 0) {
+          const actorUserId = await requireActorUserId()
+          const student = await tx.student.findUnique({
+            where: { id: oldAttendance.studentId },
+            select: { lessonsBalance: true },
+          })
+          if (!student) throw new Error('Ученик не найден')
+
+          const balanceBefore = student.lessonsBalance
+          const updated = await tx.student.update({
+            where: { id: oldAttendance.studentId },
+            data: {
+              lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
+            },
+            select: { lessonsBalance: true },
+          })
+
+          const balanceAfter = updated.lessonsBalance
+          const isMakeupAttendance = Boolean(oldAttendance.asMakeupFor)
+
+          const reason = (() => {
+            if (delta >= 0) return StudentLessonsBalanceChangeReason.ATTENDANCE_REVERTED
+
+            // delta < 0 => списание 1 урока
+            if (isMakeupAttendance) {
+              return StudentLessonsBalanceChangeReason.MAKEUP_ATTENDED_CHARGED
+            }
+
+            if (status === AttendanceStatus.PRESENT) {
+              return StudentLessonsBalanceChangeReason.ATTENDANCE_PRESENT_CHARGED
+            }
+
+            return StudentLessonsBalanceChangeReason.ATTENDANCE_ABSENT_CHARGED
+          })()
+
+          await writeLessonsBalanceHistoryTx(tx, {
+            studentId: oldAttendance.studentId,
+            actorUserId,
+            reason,
+            delta: balanceAfter - balanceBefore,
+            balanceBefore,
+            balanceAfter,
+            meta: {
+              attendanceId: oldAttendance.id,
+              lessonId: oldAttendance.lessonId,
+              oldStatus: oldAttendance.status,
+              newStatus: status,
+              oldIsWarned: oldAttendance.isWarned,
+              newIsWarned: isWarned,
+              isMakeupAttendance,
+            },
+          })
+        }
       }
     }
-  }
-  await prisma.attendance.update(payload)
+
+    await tx.attendance.update(payload)
+  })
   revalidatePath(`/dashboard/lessons/${payload.where.studentId_lessonId?.lessonId}`)
 }
 
