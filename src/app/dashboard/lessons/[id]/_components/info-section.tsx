@@ -1,229 +1,111 @@
-'use client'
-import { updateLesson } from '@/actions/lessons'
-import { timeSlots } from '@/app/dashboard/groups/_components/create-group-dialog'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Lesson, LessonStatus } from '@prisma/client'
-import { BookOpen, CircleDotDashed, Clock, Users } from 'lucide-react'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getGroupName } from '@/lib/utils'
+import { LessonStatus, Prisma } from '@prisma/client'
+import { cva } from 'class-variance-authority'
+import { Book, Clock, MapPin, Users } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
 
-const LessonStatusBadgeMap: Record<LessonStatus, 'info' | 'success' | 'error'> = {
-  ACTIVE: 'success',
-  CANCELLED: 'error',
-}
-const LessonStatusTextMap: Record<LessonStatus, string> = {
+const lessonStatusMap: Record<LessonStatus, string> = {
   ACTIVE: 'Активен',
   CANCELLED: 'Отменен',
 }
 
+const lessonStatusVariants = cva('', {
+  variants: {
+    status: {
+      ACTIVE: 'text-success',
+      CANCELLED: 'text-destructive',
+    },
+  },
+  defaultVariants: {
+    status: 'ACTIVE',
+  },
+})
+
 interface InfoSectionsProps {
-  lesson: Lesson & {
-    group: {
-      id: number
-      name: string
-      _count: {
-        students: number
+  lesson: Prisma.LessonGetPayload<{
+    include: {
+      group: {
+        include: {
+          _count: { select: { students: true } }
+          course: true
+          location: true
+        }
       }
+      attendance: true
     }
-  }
+  }>
 }
 
 export default function InfoSection({ lesson }: InfoSectionsProps) {
-  const [editMode, setEditMode] = useState(false)
-  const [timeSlot, setTimeSlot] = useState<(typeof timeSlots)[number] | null>(
-    lesson.time ? { label: lesson.time, value: lesson.time } : null
-  )
-  const [date, setDate] = useState<Date | undefined>(lesson.date)
-  const [status, setStatus] = useState<LessonStatus>(lesson.status)
-
-  const [isPending, startTransition] = useTransition()
-
-  const handleCancelEdit = () => {
-    setEditMode(false)
-    setTimeSlot(lesson.time ? { label: lesson.time, value: lesson.time } : null)
-    setDate(lesson.date)
-    setStatus(lesson.status)
-  }
-
-  const handleSaveEdit = () => {
-    startTransition(() => {
-      const ok = updateLesson({
-        where: { id: lesson.id },
-        data: {
-          time: timeSlot?.value,
-          date: date,
-          status: status,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Сохранение изменений...',
-        success: 'Изменения успешно сохранены',
-        error: (e) => e.message,
-      })
-      setEditMode(false)
-    })
-  }
-
   return (
     <Card className="shadow-none">
       <CardHeader>
-        <CardTitle className="flex flex-row items-center justify-between">
-          Информация об уроке
-          {/* {user?.role !== 'TEACHER' &&
-            (editMode ? (
-              <div className="flex gap-2">
-                <Button
-                  size={'sm'}
-                  variant={'ghost'}
-                  onClick={handleCancelEdit}
-                  disabled={isPending}
-                >
-                  {isPending ? <Loader2 className="animate-spin" /> : <X />}
-                  <span className="hidden sm:inline">Отмена</span>
-                </Button>
-                <Button
-                  size={'sm'}
-                  onClick={handleSaveEdit}
-                  disabled={
-                    isPending ||
-                    (timeSlot?.time === lesson.time &&
-                      date === lesson.date &&
-                      status === lesson.status)
-                  }
-                >
-                  {isPending ? <Loader2 className="animate-spin" /> : <Check />}
-                  <span className="hidden sm:inline">Сохранить</span>
-                </Button>
-              </div>
-            ) : (
-              <Button size={'sm'} variant={'outline'} onClick={() => setEditMode(!editMode)}>
-                <Edit />
-                <span className="hidden lg:inline">Редактировать</span>
-              </Button>
-            ))} */}
-        </CardTitle>
+        <CardTitle>Информация об уроке</CardTitle>
+        <CardAction></CardAction>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 grid grid-cols-2">
-          <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 truncate overflow-hidden text-xs font-medium tracking-wide uppercase">
-              <BookOpen className="h-3 w-3" />
-              Группа
+        <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <Book className="h-3 w-3" />
+              <span className="truncate" title="Курс">
+                Группа
+              </span>
             </div>
-            <Link
-              href={`/dashboard/groups/${lesson.group.id}`}
-              className="text-primary hover:underline"
-            >
-              {lesson.group.name}
-            </Link>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <Link
+                href={`/dashboard/groups/${lesson.group.id}`}
+                className="text-primary truncate hover:underline"
+              >
+                {getGroupName(lesson.group)}
+              </Link>
+            </div>
           </div>
-          <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
-              <Users className="h-3 w-3" />
-              Количество учеников
-            </div>
-            <p className="text-sm font-semibold">{lesson.group._count.students}/12</p>
-          </div>
-        </div>
-        <div className="my-4 grid grid-cols-2">
-          {/* <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
-              <CalendarIcon className="h-3 w-3" />
-              Дата
-            </div>
-            {editMode ? (
-              <Popover>
-                <PopoverTrigger asChild disabled={isPending}>
-                  <Button
-                    variant="outline"
-                    className="justify-start text-left font-normal"
-                    size={'sm'}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, 'dd.MM.yyyy') : 'Выбрать дату'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={date} onSelect={setDate} locale={ru} />
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <p className="text-sm font-semibold">
-                {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            )}
-          </div> */}
-          <div className="space-y-1">
-            <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
+
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Clock className="h-3 w-3" />
-              Время
+              <span className="truncate" title="Время">
+                Время
+              </span>
             </div>
-            {editMode ? (
-              <Select value={timeSlot?.value || ''} disabled={isPending}>
-                <SelectTrigger size="sm">
-                  <Clock className="h-3 w-3" />
-                  <SelectValue placeholder="Выберите время" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((slot) => (
-                    <SelectItem key={slot.value} value={slot.value}>
-                      {slot.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <p className="text-sm font-semibold">{timeSlot?.label}</p>
-            )}
+            <div className="truncate">{lesson.group.time}</div>
           </div>
-        </div>
-        <div className="space-y-1">
-          <div className="text-muted-foreground/60 flex items-center gap-1 truncate text-xs font-medium tracking-wide uppercase">
-            <CircleDotDashed className="h-3 w-3" />
-            Статус
+
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <MapPin className="h-3 w-3" />
+              <span className="truncate" title="Локация">
+                Локация
+              </span>
+            </div>
+            <div className="truncate">{lesson.group.location?.name}</div>
           </div>
-          {editMode ? (
-            <Select defaultValue={status} disabled={isPending}>
-              <SelectTrigger size="sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={LessonStatus.ACTIVE}>
-                  <div className="space-x-2">
-                    <div
-                      className="inline-block size-2 rounded-full bg-emerald-700 dark:bg-emerald-300"
-                      aria-hidden="true"
-                    ></div>
-                    <span>Активный</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value={LessonStatus.CANCELLED}>
-                  <div className="space-x-2">
-                    <div
-                      className="inline-block size-2 rounded-full bg-red-700 dark:bg-red-300"
-                      aria-hidden="true"
-                    ></div>
-                    <span>Отменённый</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          ) : (
-            <Badge>{LessonStatusTextMap[status]}</Badge>
-          )}
+
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <Users className="h-3 w-3" />
+              <span className="truncate" title="Количество учеников">
+                Количество учеников
+              </span>
+            </div>
+            <div className="truncate">
+              {lesson.attendance.length}/{lesson.group.maxStudents}
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <Users className="h-3 w-3" />
+              <span className="truncate" title="Количество учеников">
+                Статус
+              </span>
+            </div>
+            <div className={lessonStatusVariants({ status: lesson.status })}>
+              {lessonStatusMap[lesson.status]}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

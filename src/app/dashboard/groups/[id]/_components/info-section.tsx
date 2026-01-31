@@ -31,7 +31,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <div className="truncate text-sm font-semibold">{group.course.name}</div>
+              <div className="truncate">{group.course.name}</div>
             </div>
           </div>
 
@@ -42,7 +42,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 День занятия
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">
+            <div className="truncate">
               {group.dayOfWeek != null ? DaysOfWeek.full[group.dayOfWeek] : '-'}
             </div>
           </div>
@@ -54,7 +54,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Время
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">{group.time}</div>
+            <div className="truncate">{group.time}</div>
           </div>
 
           <div className="flex flex-col">
@@ -64,7 +64,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Локация
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">{group.location?.name}</div>
+            <div className="truncate">{group.location?.name}</div>
           </div>
 
           <div className="flex flex-col">
@@ -74,9 +74,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Тип
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">
-              {group.type ? groupTypeMap[group.type] : '-'}
-            </div>
+            <div className="truncate">{group.type ? groupTypeMap[group.type] : '-'}</div>
           </div>
 
           <div className="flex flex-col">
@@ -86,7 +84,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Количество учеников
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">
+            <div className="truncate">
               {group.students.length}/{group.maxStudents}
             </div>
           </div>
@@ -98,7 +96,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Период
               </span>
             </div>
-            <div className="truncate text-sm font-semibold">
+            <div className="truncate">
               {toZonedTime(group.startDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}
               {group?.endDate
                 ? ` - ${toZonedTime(group.endDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
@@ -112,7 +110,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Ссылка в БО
               </span>
             </div>
-            <div className="text-primary truncate text-sm font-semibold hover:underline">
+            <div className="text-primary truncate hover:underline">
               {group.backOfficeUrl ? (
                 <a
                   href={group.backOfficeUrl}
