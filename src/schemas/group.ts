@@ -25,18 +25,13 @@ export const CreateGroupSchema = z.object({
     },
     'Выберите локацию'
   ),
-  dateRange: z
-    .object(
-      {
-        from: z.date('Выберите дату начала'),
-        to: z.date('Выберите дату окончания'),
-      },
-      'Выберите период'
-    )
-    .refine((data) => data.to > data.from, {
-      message: 'Дата окончания должна быть позже даты начала',
-      path: ['to'],
-    }),
+  dateRange: z.object(
+    {
+      from: z.date('Выберите дату начала'),
+      to: z.date('Выберите дату окончания'),
+    },
+    'Выберите период'
+  ),
   type: z.enum(GroupType, 'Выберите тип группы'),
   time: z.string('Выберите время'),
   lessonCount: z

@@ -87,12 +87,28 @@ export default function CreateGroupDialog() {
     startTransition(() => {
       console.log(values)
       const { course, location, teacher, dateRange, ...payload } = values
+      const user = users.find((user) => user.id === teacher.value)
+
+      const lessons = Array.from({ length: values.lessonCount ?? 0 }).map((_, index) => {
+        const date = new Date(dateRange!.from)
+        date.setDate(date.getDate() + index * 7)
+        return { date, time: values.time! }
+      })
+
       const ok = createGroup({
         data: {
           ...payload,
           courseId: course.value,
           locationId: location.value,
-          teachers: { create: [{ teacherId: teacher.value }] },
+          teachers: {
+            create: [
+              {
+                teacherId: user?.id as number,
+                bid: values.type === 'GROUP' ? user?.bidForLesson : user?.bidForIndividual,
+              },
+            ],
+          },
+          lessons: { createMany: { data: lessons } },
           startDate: dateRange.from,
           endDate: dateRange.to,
           dayOfWeek: dateRange.from.getDay(),
