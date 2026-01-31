@@ -4,6 +4,7 @@ import { getUsers } from '@/actions/users'
 import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
 import GroupStudentsTable from '@/app/dashboard/groups/[id]/_components/group-students-table'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import AddLessonButton from './_components/add-lesson-button'
 import AddStudentToGroupButton from './_components/add-student-to-group-button'
 import AddTeacherToGroupButton from './_components/add-teacher-to-group-button'
 import GroupTeachersTable from './_components/group-teachers-table'
@@ -84,6 +85,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card>
         <CardHeader>
           <CardTitle>Посещаемость</CardTitle>
+          <CardAction>
+            <AddLessonButton group={group} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <GroupAttendanceTable lessons={group.lessons} data={studentsInGroup} />

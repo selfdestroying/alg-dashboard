@@ -69,20 +69,7 @@ export const updateLesson = async (payload: Prisma.LessonUpdateArgs) => {
 }
 
 export const createLesson = async (payload: Prisma.LessonCreateArgs) => {
-  await prisma.$transaction(async (tx) => {
-    const lesson = await tx.lesson.create({
-      ...payload,
-      include: { group: { include: { students: true } } },
-    })
-    const students = lesson.group.students
-    const attendanceRecords = students.map((student) => ({
-      lessonId: lesson.id,
-      studentId: student.studentId,
-      status: 'UNSPECIFIED' as const,
-      comment: '',
-    }))
-    await tx.attendance.createMany({ data: attendanceRecords })
-  })
+  await prisma.lesson.create(payload)
 
   revalidatePath(`dashboard/groups/${payload.data.groupId}`)
 }
