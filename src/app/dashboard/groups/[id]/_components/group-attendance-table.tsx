@@ -12,7 +12,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
-import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import DragScrollArea from '../../../../../components/drag-scroll-area'
@@ -217,10 +216,7 @@ export function GroupAttendanceTable({
         (lessons.reduce((prev, curr) => prev + (curr.date < new Date() ? 1 : 0), 0) - 1) * 100
       }
     >
-      <table
-        data-slot="table"
-        className="w-full border-separate border-spacing-0 [&_tr:not(:last-child)_td]:border-b"
-      >
+      <table data-slot="table" className="w-full [&_tr:not(:last-child)_td]:border-b">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -228,45 +224,11 @@ export function GroupAttendanceTable({
                 return (
                   <TableHead
                     key={header.id}
-                    style={{ width: `${header.getSize()}px` }}
-                    className={cn(
-                      'bg-sidebar border-border relative h-9 border-y select-none first:rounded-l-lg first:border-l last:rounded-r-lg last:border-r',
-                      stickyColumnClasses[header.id + '_header']
-                    )}
+                    className={cn(stickyColumnClasses[header.id + '_header'])}
                   >
-                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                      <div
-                        className={cn(
-                          header.column.getCanSort() &&
-                            'flex h-full cursor-pointer items-center gap-2 select-none'
-                        )}
-                        onClick={header.column.getToggleSortingHandler()}
-                        onKeyDown={(e) => {
-                          // Enhanced keyboard handling for sorting
-                          if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
-                            e.preventDefault()
-                            header.column.getToggleSortingHandler()?.(e)
-                          }
-                        }}
-                        tabIndex={header.column.getCanSort() ? 0 : undefined}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: (
-                            <ArrowUp className="shrink-0 opacity-60" size={16} aria-hidden="true" />
-                          ),
-                          desc: (
-                            <ArrowDown
-                              className="shrink-0 opacity-60"
-                              size={16}
-                              aria-hidden="true"
-                            />
-                          ),
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
-                    )}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 )
               })}
@@ -276,20 +238,10 @@ export function GroupAttendanceTable({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-              >
+              <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        'h-[inherit] overflow-hidden last:py-0',
-                        stickyColumnClasses[cell.column.id]
-                      )}
-                    >
+                    <TableCell key={cell.id} className={cn(stickyColumnClasses[cell.column.id])}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   )
@@ -297,7 +249,7 @@ export function GroupAttendanceTable({
               </TableRow>
             ))
           ) : (
-            <TableRow className="hover:bg-transparent [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
               </TableCell>
