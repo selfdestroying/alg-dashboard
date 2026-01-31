@@ -20,19 +20,21 @@ export const getGroup = async <T extends Prisma.GroupFindFirstArgs>(
 
 export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
   await prisma.$transaction(async (tx) => {
-    const group = await tx.group.create(payload)
-    if (payload.data.lessonCount) {
-      const lessonDate = group.startDate
-      for (let i = 0; i < payload.data.lessonCount; i++) {
-        await tx.lesson.create({
-          data: {
-            groupId: group.id,
-            time: group.time,
-            date: lessonDate,
-          },
-        })
-        lessonDate.setDate(lessonDate.getDate() + 7)
-      }
+    const group = await tx.group.create({
+      ...payload,
+      include: {
+        teachers: { select: { bid: true, teacherId: true } },
+        lessons: { select: { id: true } },
+      },
+    })
+    for (const lesson of group.lessons) {
+      await tx.teacherLesson.create({
+        data: {
+          lessonId: lesson.id,
+          teacherId: group.teachers[0].teacherId,
+          bid: group.teachers[0].bid,
+        },
+      })
     }
   })
 

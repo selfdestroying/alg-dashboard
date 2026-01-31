@@ -2,8 +2,10 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { getGroupName } from '@/lib/utils'
 import { LessonStatus, Prisma } from '@prisma/client'
 import { cva } from 'class-variance-authority'
+import { toZonedTime } from 'date-fns-tz'
 import { Book, Clock, MapPin, Users } from 'lucide-react'
 import Link from 'next/link'
+import EditLessonButton from './edit-lesson-button'
 
 const lessonStatusMap: Record<LessonStatus, string> = {
   ACTIVE: 'Активен',
@@ -42,7 +44,9 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация об уроке</CardTitle>
-        <CardAction></CardAction>
+        <CardAction>
+          <EditLessonButton lesson={lesson} />
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
@@ -70,7 +74,19 @@ export default function InfoSection({ lesson }: InfoSectionsProps) {
                 Время
               </span>
             </div>
-            <div className="truncate">{lesson.group.time}</div>
+            <div className="truncate">{lesson.time}</div>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
+              <Clock className="h-3 w-3" />
+              <span className="truncate" title="Время">
+                Дата
+              </span>
+            </div>
+            <div className="truncate">
+              {toZonedTime(lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}
+            </div>
           </div>
 
           <div className="flex flex-col">
