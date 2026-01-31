@@ -150,7 +150,10 @@ export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitche
                 <Toggle
                   size={'sm'}
                   variant="outline"
-                  className={switcherVariant({ variant: 'absent', active: isPending })}
+                  className={switcherVariant({
+                    variant: 'absent',
+                    active: status === 'ABSENT',
+                  })}
                   pressed={status === 'ABSENT'}
                   onClick={() => {
                     setStatus('ABSENT')
