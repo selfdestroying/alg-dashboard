@@ -1,7 +1,8 @@
 import { getStudents } from '@/actions/students'
-import { getMe, getUsers } from '@/actions/users'
+import { getUsers } from '@/actions/users'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { prisma } from '@/lib/prisma'
+import AddAttendanceButton from './_components/add-attendance-button'
 import AddTeacherToLessonButton from './_components/add-teacher-to-lesson-button'
 import AttendanceTable from './_components/attendance-table'
 import InfoSection from './_components/info-section'
@@ -21,6 +22,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         include: {
           _count: { select: { students: true } },
           students: { include: { student: true } },
+          course: true,
+          location: true,
         },
       },
       attendance: {
@@ -58,7 +61,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       id: { notIn: lesson?.teachers.map((t) => t.teacherId) },
     },
   })
-  const user = await getMe()
+
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
   }
@@ -82,6 +85,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Список учеников</CardTitle>
+          <CardAction>
+            <AddAttendanceButton lessonId={lesson.id} students={students} />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <AttendanceTable data={lesson.attendance} />
