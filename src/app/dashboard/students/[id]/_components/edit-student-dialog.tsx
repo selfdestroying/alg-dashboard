@@ -92,12 +92,11 @@ export default function EditStudentDialog({ student }: { student: Student }) {
     <Sheet
       open={dialogOpen}
       onOpenChange={setDialogOpen}
-      direction={isMobile ? 'bottom' : 'right'}
     >
       <SheetTrigger render={<Button size="icon" />}>
         <Pen />
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent side={isMobile ? 'bottom' : 'right'} className="data-[side=bottom]:max-h-[70vh]">
         <SheetHeader>
           <SheetTitle>Редактировать ученика</SheetTitle>
           <SheetDescription>
