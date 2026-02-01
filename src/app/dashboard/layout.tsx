@@ -6,7 +6,6 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { prisma } from '@/lib/prisma'
 import { AuthProvider } from '@/providers/auth-provider'
 import { DataProvider } from '@/providers/data-provider'
-import { Folder, Users } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 export default async function Layout({
@@ -29,13 +28,6 @@ export default async function Layout({
   })
   const roles = await prisma.role.findMany()
 
-  const studentsCount = await prisma.student.count({
-    where: {
-      dismisseds: { none: {} },
-    },
-  })
-  const groupsCount = await prisma.group.count()
-
   return (
     <>
       <AuthProvider user={user}>
@@ -45,17 +37,6 @@ export default async function Layout({
             <SidebarInset className="space-y-2 overflow-hidden p-2">
               <div className="flex items-center justify-between">
                 <SidebarTrigger variant={'outline'} />
-                <div className="bg-card flex items-center gap-2 rounded-md border px-2 py-0.5 text-sm shadow-sm">
-                  <div className="flex items-center gap-1" title="Количество активных учеников">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs font-medium">{studentsCount}</span>
-                  </div>
-                  <div className="bg-border h-4.5 w-px" />
-                  <div className="flex items-center gap-1" title="Количество групп">
-                    <Folder className="h-3 w-3" />
-                    <span className="text-xs font-medium">{groupsCount}</span>
-                  </div>
-                </div>
               </div>
               {children}
             </SidebarInset>

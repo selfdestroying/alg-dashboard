@@ -251,7 +251,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                   <FieldLabel htmlFor="form-rhf-select-dayOfWeek">День занятия</FieldLabel>
                   <Tooltip>
                     <TooltipTrigger
-                      render={<span className="cursor-help text-amber-500" aria-label="Бета" />}
+                      render={<span className="text-warning cursor-help" aria-label="Бета" />}
                     >
                       <AlertTriangle className="h-4 w-4" />
                     </TooltipTrigger>

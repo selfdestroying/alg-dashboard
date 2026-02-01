@@ -68,13 +68,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div>
               <div className="text-muted-foreground">Ставка за урок</div>
               <div className="text-sm font-bold">
-                {user.bidForLesson ? user.bidForLesson.toLocaleString() : '—'} ₽
+                {user.bidForLesson ? user.bidForLesson.toLocaleString() : '-'} ₽
               </div>
             </div>
             <div>
               <div className="text-muted-foreground">Ставка за индив.</div>
               <div className="text-sm font-bold">
-                {user.bidForIndividual ? user.bidForIndividual.toLocaleString() : '—'} ₽
+                {user.bidForIndividual ? user.bidForIndividual.toLocaleString() : '-'} ₽
               </div>
             </div>
           </div>

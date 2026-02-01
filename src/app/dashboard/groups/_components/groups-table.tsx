@@ -63,7 +63,7 @@ const columns: ColumnDef<GroupDTO>[] = [
     header: 'День',
     accessorKey: 'dayOfWeek',
     cell: ({ row }) =>
-      row.original.dayOfWeek !== null ? DaysOfWeek.full[row.original.dayOfWeek] : '—',
+      row.original.dayOfWeek !== null ? DaysOfWeek.full[row.original.dayOfWeek] : '-',
   },
   {
     header: 'Время',

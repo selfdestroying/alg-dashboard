@@ -7,12 +7,12 @@ import { Book, Clock, MapPin, Users } from 'lucide-react'
 import Link from 'next/link'
 import EditLessonButton from './edit-lesson-button'
 
-const lessonStatusMap: Record<LessonStatus, string> = {
+export const lessonStatusMap: Record<LessonStatus, string> = {
   ACTIVE: 'Активен',
   CANCELLED: 'Отменен',
 }
 
-const lessonStatusVariants = cva('', {
+export const lessonStatusVariants = cva('', {
   variants: {
     status: {
       ACTIVE: 'text-success',

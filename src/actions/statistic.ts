@@ -2,7 +2,11 @@
 import { prisma } from '@/lib/prisma'
 
 export const getStatistics = async (userId: number) => {
-  const totalStudents = await prisma.student.count()
+  const totalStudents = await prisma.student.count({
+    where: {
+      AND: [{ groups: { some: {} } }],
+    },
+  })
   const totalGroups = await prisma.group.count()
 
   const totalPersonalGroups = await prisma.group.count({
