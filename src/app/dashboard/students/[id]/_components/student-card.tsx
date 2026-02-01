@@ -8,6 +8,7 @@ import { Field } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { getGroupName } from '@/lib/utils'
 import { GroupDTO } from '@/types/group'
 import { StudentWithGroupsAndAttendance } from '@/types/student'
 import {
@@ -180,7 +181,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
                   href={`/dashboard/groups/${groupData.group.id}`}
                   className="text-primary hover:underline"
                 >
-                  {groupData.group.name}
+                  {getGroupName(groupData.group)}
                 </Link>
                 <GroupAttendanceTable lessons={groupData.group.lessons} data={[student]} />
               </div>

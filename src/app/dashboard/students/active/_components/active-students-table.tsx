@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn, getFullName } from '@/lib/utils'
+import { cn, getFullName, getGroupName } from '@/lib/utils'
 import { useData } from '@/providers/data-provider'
 import { Prisma } from '@prisma/client'
 import {
@@ -91,7 +91,7 @@ const columns: ColumnDef<ActiveStudent>[] = [
         href={`/dashboard/groups/${row.original.groupId}`}
         className="text-primary hover:underline"
       >
-        {row.original.group.name}
+        {getGroupName(row.original.group)}
       </Link>
     ),
     filterFn: (row, columnId, filterValue) => {
@@ -289,7 +289,7 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
                     <div
                       className={cn(
                         header.column.getCanSort() &&
-                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                        'flex w-fit cursor-pointer items-center gap-2 select-none'
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                       onKeyDown={(e) => {

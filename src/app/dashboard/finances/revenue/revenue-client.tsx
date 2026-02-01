@@ -13,17 +13,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 import { RevenueSummary } from './revenue-summary'
 import { RevenueTable } from './revenue-table'
+import { getGroupName } from '@/lib/utils'
 
 export function transformLessonsToRevenueData(
   lessons: Prisma.LessonGetPayload<{
-    include: { attendance: { include: { student: true } }; group: true }
+    include: { attendance: { include: { student: true } }; group: { include: { course: true, location: true } } }
   }>[]
 ) {
   // Группируем уроки по дате
   const groupedByDate: Record<
     string,
     Prisma.LessonGetPayload<{
-      include: { attendance: { include: { student: true } }; group: true }
+      include: { attendance: { include: { student: true } }; group: { include: { course: true, location: true } } }
     }>[]
   > = {}
 
@@ -52,7 +53,7 @@ export function transformLessonsToRevenueData(
     ),
     lessons: lessons.map((lesson) => ({
       time: lesson.time || '—',
-      group: `${lesson.group.name}`,
+      group: `${getGroupName(lesson.group)}`,
       teacher: '—', // можно будет добавить, если есть связь с преподавателем
       revenue: Math.floor(
         lesson.attendance.reduce(
@@ -88,7 +89,7 @@ export default function RevenueClient() {
 
   const [lessons, setLessons] = useState<
     Prisma.LessonGetPayload<{
-      include: { attendance: { include: { student: true } }; group: true }
+      include: { attendance: { include: { student: true } }; group: { include: { course: true, location: true } } }
     }>[]
   >([])
   const today = new Date()
@@ -123,7 +124,12 @@ export default function RevenueClient() {
                 student: true,
               },
             },
-            group: true,
+            group: {
+              include: {
+                course: true,
+                location: true
+              }
+            },
           },
           orderBy: {
             date: 'asc',

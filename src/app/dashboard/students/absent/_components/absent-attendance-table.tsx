@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn, getFullName } from '@/lib/utils'
+import { cn, getFullName, getGroupName } from '@/lib/utils'
 import {
   ColumnDef,
   ColumnFilter,
@@ -72,7 +72,7 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
         href={`/dashboard/groups/${row.original.lesson.group.id}`}
         className="text-primary hover:underline"
       >
-        {row.original.lesson.group.name}
+        {getGroupName(row.original.lesson.group)}
       </Link>
     ),
   },
@@ -207,7 +207,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
                     <div
                       className={cn(
                         header.column.getCanSort() &&
-                          'flex w-fit cursor-pointer items-center gap-2 select-none'
+                        'flex w-fit cursor-pointer items-center gap-2 select-none'
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                       onKeyDown={(e) => {

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { usePermission } from '@/hooks/usePermission'
-import { getFullName } from '@/lib/utils'
+import { getFullName, getGroupName } from '@/lib/utils'
 import { useAuth } from '@/providers/auth-provider'
 import { UserDTO } from '@/types/user'
 import { GroupType, PayCheck, Prisma } from '@prisma/client'
@@ -43,7 +43,12 @@ export default function Salaries() {
               }
             }
           }
-          group: true
+          group: {
+            include: {
+              course: true,
+              location: true
+            }
+          }
         }
       }> & { price: number })[]
     }[]
@@ -77,7 +82,12 @@ export default function Salaries() {
                 },
               },
             },
-            group: true,
+            group: {
+              include: {
+                course: true,
+                location: true
+              }
+            },
           },
           orderBy: { date: 'asc' },
         })
@@ -225,7 +235,7 @@ export default function Salaries() {
                         <Separator className="my-2" />
 
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium">{lesson.group.name}</span>
+                          <span className="font-medium">{getGroupName(lesson.group)}</span>
                           <Badge variant="outline">
                             {lesson.group.type ? groupTypeMap[lesson.group.type] : '-'}
                           </Badge>

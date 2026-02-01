@@ -39,7 +39,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           student: true,
           lesson: {
             include: {
-              group: true,
+              group: {
+                include: {
+                  course: true,
+                  location: true
+                }
+              },
             },
           },
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },

@@ -19,6 +19,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               lessons: {
                 orderBy: { date: 'asc' },
               },
+              course: true,
+              location: true
             },
           },
         },

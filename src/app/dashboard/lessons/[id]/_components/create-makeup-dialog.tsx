@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getGroupName } from '@/lib/utils'
 import { format } from 'date-fns'
 import { fromZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
@@ -42,13 +43,15 @@ export default function CreateMakeUpForm({
                 teacher: true,
               },
             },
+            course: true,
+            location: true
           },
         },
       },
     }).then((l) => {
       setLessons(
         l.map((lesson) => ({
-          label: `${lesson.group.name} - ${lesson.group.teachers
+          label: `${getGroupName(lesson.group)} - ${lesson.group.teachers
             .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
             .join(', ')}`,
           value: lesson.id,

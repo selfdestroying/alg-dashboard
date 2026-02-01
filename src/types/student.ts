@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client'
 
 export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
   include: {
-    groups: { include: { group: { include: { lessons: true } } } }
+    groups: { include: { group: { include: { lessons: true, course: true, location: true } } } }
     attendances: {
       include: {
         lesson: true
