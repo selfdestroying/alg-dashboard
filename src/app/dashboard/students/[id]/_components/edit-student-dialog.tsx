@@ -1,18 +1,7 @@
 'use client'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-
 import { updateStudent } from '@/actions/students'
 import { Button } from '@/components/ui/button'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePermission } from '@/hooks/usePermission'
@@ -23,6 +12,7 @@ import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import z from 'zod/v4'
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 export const EditStudentSchema = z.object({
   firstName: z.string('Укажите имя').min(2, 'Укажите имя'),
@@ -99,23 +89,21 @@ export default function EditStudentDialog({ student }: { student: Student }) {
   if (!canEdit) return null
 
   return (
-    <Drawer
+    <Sheet
       open={dialogOpen}
       onOpenChange={setDialogOpen}
       direction={isMobile ? 'bottom' : 'right'}
     >
-      <DrawerTrigger asChild>
-        <Button size="icon">
-          <Pen />
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Редактировать ученика</DrawerTitle>
-          <DrawerDescription>
+      <SheetTrigger render={<Button size="icon" />}>
+        <Pen />
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Редактировать ученика</SheetTitle>
+          <SheetDescription>
             Заполните форму ниже, чтобы отредактировать данные ученика.
-          </DrawerDescription>
-        </DrawerHeader>
+          </SheetDescription>
+        </SheetHeader>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id="create-student-form"
@@ -303,16 +291,16 @@ export default function EditStudentDialog({ student }: { student: Student }) {
             />
           </FieldGroup>
         </form>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">Отмена</Button>
-          </DrawerClose>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline" />}>
+            Отмена
+          </SheetClose>
           <Button type="submit" form="create-student-form" disabled={isPending}>
             {isPending && <Loader className="animate-spin" />}
             Сохранить
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }
