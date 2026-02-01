@@ -44,7 +44,7 @@ export default function CreateMakeUpForm({
               },
             },
             course: true,
-            location: true
+            location: true,
           },
         },
       },

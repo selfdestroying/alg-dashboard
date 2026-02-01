@@ -12,7 +12,16 @@ import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import z from 'zod/v4'
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 export const EditStudentSchema = z.object({
   firstName: z.string('Укажите имя').min(2, 'Укажите имя'),
@@ -89,14 +98,14 @@ export default function EditStudentDialog({ student }: { student: Student }) {
   if (!canEdit) return null
 
   return (
-    <Sheet
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-    >
+    <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
       <SheetTrigger render={<Button size="icon" />}>
         <Pen />
       </SheetTrigger>
-      <SheetContent side={isMobile ? 'bottom' : 'right'} className="data-[side=bottom]:max-h-[70vh]">
+      <SheetContent
+        side={isMobile ? 'bottom' : 'right'}
+        className="data-[side=bottom]:max-h-[70vh]"
+      >
         <SheetHeader>
           <SheetTitle>Редактировать ученика</SheetTitle>
           <SheetDescription>
@@ -291,9 +300,7 @@ export default function EditStudentDialog({ student }: { student: Student }) {
           </FieldGroup>
         </form>
         <SheetFooter>
-          <SheetClose render={<Button variant="outline" />}>
-            Отмена
-          </SheetClose>
+          <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
           <Button type="submit" form="create-student-form" disabled={isPending}>
             {isPending && <Loader className="animate-spin" />}
             Сохранить

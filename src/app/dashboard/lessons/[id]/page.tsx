@@ -42,8 +42,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               group: {
                 include: {
                   course: true,
-                  location: true
-                }
+                  location: true,
+                },
               },
             },
           },

@@ -20,7 +20,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 orderBy: { date: 'asc' },
               },
               course: true,
-              location: true
+              location: true,
             },
           },
         },

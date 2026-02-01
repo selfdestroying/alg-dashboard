@@ -28,7 +28,7 @@ export default async function Page() {
             include: {
               course: true,
               location: true,
-            }
+            },
           },
         },
       },

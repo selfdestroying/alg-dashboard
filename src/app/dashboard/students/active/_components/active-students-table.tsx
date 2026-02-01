@@ -289,7 +289,7 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
                     <div
                       className={cn(
                         header.column.getCanSort() &&
-                        'flex w-fit cursor-pointer items-center gap-2 select-none'
+                          'flex w-fit cursor-pointer items-center gap-2 select-none'
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                       onKeyDown={(e) => {

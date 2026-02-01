@@ -13,7 +13,7 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
       include: {
         group: {
           include: {
-            course: true,
+            course: true
             location: true
           }
         }
