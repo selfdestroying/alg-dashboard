@@ -136,6 +136,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
                   missedAttendanceId: attendance.id,
                   makeUpAttendaceId: a.id,
                   makeUpLessonId: selectedLesson?.value,
+                  makeUpLessonName: selectedLesson.label,
                 },
               },
             }
