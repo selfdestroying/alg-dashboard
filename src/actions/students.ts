@@ -114,10 +114,19 @@ export async function getStudentLessonsBalanceHistory(studentId: number, take = 
     orderBy: { createdAt: 'desc' },
     include: {
       actorUser: {
-        select: { firstName: true, lastName: true },
+        include: {
+          role: true,
+        },
       },
     },
   })
+}
+
+export async function updateStudentBalanceHistory(
+  payload: Prisma.StudentLessonsBalanceHistoryUpdateArgs
+) {
+  const history = await prisma.studentLessonsBalanceHistory.update(payload)
+  revalidatePath(`/dashboard/students/${history.studentId}`)
 }
 
 export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {

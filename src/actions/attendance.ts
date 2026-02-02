@@ -2,6 +2,7 @@
 
 import { requireActorUserId, writeLessonsBalanceHistoryTx } from '@/lib/lessons-balance'
 import { prisma } from '@/lib/prisma'
+import { getGroupName } from '@/lib/utils'
 import { AttendanceStatus, Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
 import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
@@ -82,14 +83,18 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
           studentId,
           lessonId,
         },
-        select: {
-          id: true,
-          studentId: true,
-          lessonId: true,
-          status: true,
-          isWarned: true,
-          studentStatus: true,
-          asMakeupFor: { select: { id: true } },
+        include: {
+          lesson: {
+            include: {
+              group: {
+                include: {
+                  course: true,
+                  location: true,
+                },
+              },
+            },
+          },
+          asMakeupFor: true,
         },
       })
 
@@ -143,6 +148,10 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
             return StudentLessonsBalanceChangeReason.ATTENDANCE_ABSENT_CHARGED
           })()
 
+          const lessonName =
+            getGroupName(oldAttendance.lesson.group) +
+            ` ${toZonedTime(oldAttendance.lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
+
           await writeLessonsBalanceHistoryTx(tx, {
             studentId: oldAttendance.studentId,
             actorUserId,
@@ -153,6 +162,8 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
             meta: {
               attendanceId: oldAttendance.id,
               lessonId: oldAttendance.lessonId,
+              lessonName,
+
               oldStatus: oldAttendance.status,
               newStatus: status,
               oldIsWarned: oldAttendance.isWarned,
