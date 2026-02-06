@@ -1,0 +1,236 @@
+'use client'
+import { createStudentGroup } from '@/src/actions/groups'
+import { Button } from '@/src/components/ui/button'
+import { Checkbox } from '@/src/components/ui/checkbox'
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/src/components/ui/combobox'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/src/components/ui/dialog'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
+import { usePermission } from '@/src/hooks/usePermission'
+import { getFullName, getGroupName } from '@/src/lib/utils'
+import { GroupDTO } from '@/types/group'
+import { StudentDTO } from '@/types/student'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Group } from '@prisma/client'
+import { Plus } from 'lucide-react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
+
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import z from 'zod/v4'
+
+interface AddStudentToGroupButtonProps {
+  students?: StudentDTO[]
+  group?: Group // When adding a student to this group
+  groups?: GroupDTO[] // When adding this student to a group
+  student?: StudentDTO
+}
+
+const Schema = z.object({
+  target: z.object(
+    {
+      label: z.string(),
+      value: z.number(),
+    },
+    'Выберите значение'
+  ),
+  isApplyToLesson: z.boolean(),
+})
+
+type SchemaType = z.infer<typeof Schema>
+
+export default function AddStudentToGroupButton({
+  students,
+  group,
+  groups,
+  student,
+}: AddStudentToGroupButtonProps) {
+  const canAdd = usePermission('ADD_GROUPSTUDENT')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
+
+  // Determine the mode
+  const isAddToGroup = !!group && !!students
+  const isAddToStudent = !!student && !!groups
+
+  const items = useMemo(() => {
+    if (isAddToGroup && students) {
+      return students.map((s) => ({
+        label: getFullName(s.firstName, s.lastName),
+        value: s.id,
+      }))
+    }
+    if (isAddToStudent && groups) {
+      return groups.map((g) => ({
+        label: getGroupName(g),
+        value: g.id,
+      }))
+    }
+    return []
+  }, [isAddToGroup, isAddToStudent, students, groups])
+
+  const form = useForm<SchemaType>({
+    resolver: zodResolver(Schema),
+    defaultValues: {
+      target: undefined,
+      isApplyToLesson: false,
+    },
+  })
+
+  const handleSubmit = (data: SchemaType) => {
+    startTransition(() => {
+      const { isApplyToLesson, target } = data
+
+      const groupId = isAddToGroup ? group!.id : target.value
+      const studentId = isAddToGroup ? target.value : student!.id
+
+      const ok = createStudentGroup(
+        {
+          data: {
+            groupId,
+            studentId,
+          },
+        },
+        isApplyToLesson
+      )
+      const successMessage = isAddToGroup
+        ? 'Студент успешно добавлен в группу!'
+        : 'Группа успешно добавлена студенту!'
+
+      toast.promise(ok, {
+        loading: 'Добавление...',
+        success: successMessage,
+        error: 'Не удалось добавить.',
+        finally: () => setDialogOpen(false),
+      })
+    })
+  }
+
+  useEffect(() => {
+    form.reset()
+  }, [dialogOpen, form])
+
+  if ((!isAddToGroup && !isAddToStudent) || !canAdd) {
+    return null
+  }
+
+  const dialogTitle = isAddToGroup ? 'Добавить студента' : 'Добавить в группу'
+  const label = isAddToGroup ? 'Студент' : 'Группа'
+  const emptyMessage = isAddToGroup ? 'Нет доступных студентов' : 'Нет доступных групп'
+
+  return (
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger render={<Button size={'icon'} />}>
+        <Plus />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+        </DialogHeader>
+
+        <AddEntityForm
+          form={form}
+          items={items}
+          label={label}
+          emptyMessage={emptyMessage}
+          onSubmit={handleSubmit}
+        />
+
+        <DialogFooter>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+            Отмена
+          </Button>
+          <Button disabled={isPending} type="submit" form="add-entity-form" size={'sm'}>
+            Добавить
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+interface AddEntityFormProps {
+  form: ReturnType<typeof useForm<SchemaType>>
+  items: { label: string; value: number }[]
+  label: string
+  emptyMessage: string
+  onSubmit: (data: SchemaType) => void
+}
+
+function AddEntityForm({ form, items, label, emptyMessage, onSubmit }: AddEntityFormProps) {
+  return (
+    <form id="add-entity-form" onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup className="gap-2">
+        <Controller
+          name="target"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor="form-rhf-select-target">{label}</FieldLabel>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              <Combobox
+                items={items}
+                value={field.value || ''}
+                onValueChange={field.onChange}
+                isItemEqualToValue={(itemValue, selectedValue) =>
+                  itemValue.value === selectedValue.value
+                }
+              >
+                <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
+                <ComboboxContent>
+                  <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </Field>
+          )}
+        />
+
+        <Controller
+          name="isApplyToLesson"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <Field orientation="horizontal">
+                <FieldLabel
+                  htmlFor="toggle-apply-to-lessons"
+                  className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
+                >
+                  <Checkbox
+                    id="toggle-apply-to-lessons"
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
+                  />
+                  <div className="grid gap-1.5 font-normal">
+                    <p className="text-sm leading-none font-medium">Применить к урокам</p>
+                  </div>
+                </FieldLabel>
+              </Field>
+            </Field>
+          )}
+        />
+      </FieldGroup>
+    </form>
+  )
+}

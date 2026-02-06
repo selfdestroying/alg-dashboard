@@ -1,0 +1,55 @@
+import { getAbsentStatistics } from '@/src/actions/attendance'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
+import prisma from '@/src/lib/prisma'
+import AbsentAttendanceTable from './_components/absent-attendance-table'
+import AbsentStatistics from './statistics/absent-statistics'
+
+export default async function Page() {
+  const stats = await getAbsentStatistics()
+
+  const attendance = await prisma.attendance.findMany({
+    where: {
+      status: 'ABSENT',
+      OR: [
+        {
+          AND: [{ missedMakeup: { is: null } }, { asMakeupFor: { is: null } }],
+        },
+        { asMakeupFor: { isNot: null } },
+      ],
+      student: {
+        dismisseds: { none: {} },
+      },
+    },
+    include: {
+      student: true,
+      lesson: {
+        include: {
+          group: {
+            include: {
+              course: true,
+              location: true,
+            },
+          },
+        },
+      },
+      asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+      missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+    },
+    orderBy: [{ lesson: { date: 'desc' } }],
+  })
+
+  return (
+    <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">
+      <AbsentStatistics {...stats} />
+      <Card>
+        <CardHeader>
+          <CardTitle>Ученики</CardTitle>
+          <CardDescription>Список всех учеников системы</CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-hidden">
+          <AbsentAttendanceTable data={attendance} />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
