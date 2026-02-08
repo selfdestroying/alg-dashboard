@@ -125,7 +125,11 @@ export async function getStudentLessonsBalanceHistory(studentId: number, take = 
     take,
     orderBy: { createdAt: 'desc' },
     include: {
-      actorUser: true,
+      actorUser: {
+        include: {
+          role: true,
+        },
+      },
     },
   })
 }
