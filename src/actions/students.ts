@@ -2,12 +2,17 @@
 import {
   type LessonsBalanceAudit,
   parseLessonsBalanceChange,
-  requireActorUserId,
   writeLessonsBalanceHistoryTx,
-} from '@/lib/lessons-balance'
-import { prisma } from '@/lib/prisma'
-import { Group, Prisma, Student, StudentLessonsBalanceChangeReason } from '@prisma/client'
+} from '@/src/lib/lessons-balance'
+import prisma from '@/src/lib/prisma'
+
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Group, Prisma, Student } from '../../prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
+import { auth } from '../lib/auth'
+import { protocol, rootDomain } from '../lib/utils'
 
 export type StudentWithGroups = Student & { groups: Group[] }
 export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
@@ -67,7 +72,13 @@ export async function updateStudent(
   }
 
   const lessonsBalanceAudit = audit.lessonsBalance
-  const actorUserId = await requireActorUserId()
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
 
   await prisma.$transaction(async (tx) => {
     const student = await tx.student.findUnique({
@@ -89,8 +100,9 @@ export async function updateStudent(
     const delta = balanceAfter - balanceBefore
 
     await writeLessonsBalanceHistoryTx(tx, {
+      organizationId: session.members[0].organizationId,
       studentId,
-      actorUserId,
+      actorUserId: Number(session.user.id),
       reason: lessonsBalanceAudit.reason,
       delta,
       balanceBefore,
@@ -113,11 +125,7 @@ export async function getStudentLessonsBalanceHistory(studentId: number, take = 
     take,
     orderBy: { createdAt: 'desc' },
     include: {
-      actorUser: {
-        include: {
-          role: true,
-        },
-      },
+      actorUser: true,
     },
   })
 }
@@ -134,8 +142,9 @@ export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {
   revalidatePath('dashboard/students')
 }
 
-export async function getActiveStudentStatistics() {
+export async function getActiveStudentStatistics(organizationId: number) {
   const activeStudentGroups = await prisma.studentGroup.findMany({
+    where: { organizationId },
     include: {
       group: {
         include: {
@@ -156,8 +165,6 @@ export async function getActiveStudentStatistics() {
       },
     },
   })
-
-  console.log(activeStudentGroups.length)
 
   // 1. Monthly Statistics (New Students per Month)
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()

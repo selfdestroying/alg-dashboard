@@ -1,4 +1,4 @@
-import { GroupType } from '@prisma/client'
+import { GroupType } from '@/prisma/generated/enums'
 import { z } from 'zod/v4'
 
 export const CreateGroupSchema = z.object({
@@ -7,21 +7,21 @@ export const CreateGroupSchema = z.object({
   teacher: z.object(
     {
       label: z.string(),
-      value: z.number(),
+      value: z.string(),
     },
     'Выберите преподавателя'
   ),
   course: z.object(
     {
       label: z.string(),
-      value: z.number(),
+      value: z.string(),
     },
     'Выберите курс'
   ),
   location: z.object(
     {
       label: z.string(),
-      value: z.number(),
+      value: z.string(),
     },
     'Выберите локацию'
   ),

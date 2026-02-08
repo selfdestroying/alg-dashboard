@@ -1,9 +1,9 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
+import prisma from '@/src/lib/prisma'
 
-import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '../../prisma/generated/client'
 
 export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
   include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }

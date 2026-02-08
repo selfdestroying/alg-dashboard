@@ -43,5 +43,5 @@ next-env.d.ts
 public/*
 
 
-/prisma/generated/prisma
+/prisma/generated
 .vscode/

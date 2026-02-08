@@ -1,8 +1,12 @@
 'use server'
-import { requireActorUserId, writeLessonsBalanceHistoryTx } from '@/lib/lessons-balance'
-import { prisma } from '@/lib/prisma'
-import { Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
+import { writeLessonsBalanceHistoryTx } from '@/src/lib/lessons-balance'
+import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Prisma, StudentLessonsBalanceChangeReason } from '../../prisma/generated/client'
+import { auth } from '../lib/auth'
+import { protocol, rootDomain } from '../lib/utils'
 
 export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
   include: {
@@ -27,7 +31,14 @@ export const deletePayment = async (payload: Prisma.PaymentDeleteArgs) => {
 }
 
 export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
-  const actorUserId = await requireActorUserId()
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
+
   await prisma.$transaction(async (tx) => {
     const payment = await tx.payment.delete(payload)
 
@@ -49,8 +60,9 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
 
     const balanceAfter = balanceBefore - payment.lessonCount
     await writeLessonsBalanceHistoryTx(tx, {
+      organizationId: session.members[0].organizationId,
       studentId: payment.studentId,
-      actorUserId,
+      actorUserId: Number(session.user.id),
       reason: StudentLessonsBalanceChangeReason.PAYMENT_CANCELLED,
       delta: balanceAfter - balanceBefore,
       balanceBefore,

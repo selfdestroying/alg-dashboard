@@ -1,10 +1,10 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
-import { Course } from '@prisma/client'
-import { cache } from 'react'
+import prisma from '@/src/lib/prisma'
+import { Prisma } from '../../prisma/generated/client'
 
-export const getCourses = cache(async (): Promise<Course[]> => {
-  const courses = await prisma.course.findMany()
-  return courses
-})
+export const getCourses = async <T extends Prisma.CourseFindManyArgs>(
+  payload?: Prisma.SelectSubset<T, Prisma.CourseFindManyArgs>
+) => {
+  return await prisma.course.findMany(payload)
+}

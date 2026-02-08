@@ -1,37 +1,22 @@
 'use server'
-import { prisma } from '@/lib/prisma'
-import { verifySession } from '@/lib/session'
-import { Prisma } from '@prisma/client'
+import prisma from '@/src/lib/prisma'
 
-import bcrypt from 'bcrypt'
 import { revalidatePath } from 'next/cache'
-import { cache } from 'react'
+import { headers } from 'next/headers'
+import { Prisma } from '../../prisma/generated/client'
+import { auth } from '../lib/auth'
 
-export const getMe = cache(async () => {
-  const { isAuth, userId } = await verifySession()
-  if (!isAuth || userId === null) {
-    return null
+export interface UserCreateParams {
+  email: string
+  password: string
+  name: string
+  role: 'user' | 'admin' | 'owner' | ('user' | 'admin' | 'owner')[]
+  data: {
+    firstName: string
+    lastName: string
+    bidForLesson: number
+    bidForIndividual: number
   }
-  const user = await prisma.user.findFirst({
-    where: { id: userId },
-    include: { role: true },
-  })
-
-  return user
-})
-
-export const createUser = async (payload: Prisma.UserCreateArgs) => {
-  const hashedPassword = await bcrypt.hash(payload.data.password, 10)
-
-  const user = await prisma.user.create({
-    data: {
-      ...payload.data,
-      password: hashedPassword,
-    },
-    omit: { password: true },
-  })
-  revalidatePath('dashboard/users')
-  return user
 }
 
 export const getUsers = async <T extends Prisma.UserFindManyArgs>(
@@ -44,6 +29,10 @@ export const getUser = async <T extends Prisma.UserFindFirstArgs>(
   payload: Prisma.SelectSubset<T, Prisma.UserFindFirstArgs>
 ) => {
   return await prisma.user.findFirst(payload)
+}
+
+export const createUser = async (params: UserCreateParams) => {
+  return await auth.api.createUser({ body: params, headers: await headers() })
 }
 
 export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLessons: boolean) => {

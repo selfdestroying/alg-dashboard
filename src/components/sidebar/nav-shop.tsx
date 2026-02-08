@@ -1,5 +1,9 @@
 'use client'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/src/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -9,9 +13,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from '@/components/ui/sidebar'
-import { useAuth } from '@/providers/auth-provider'
-import { RoleCodes } from '@/shared/permissions'
+} from '@/src/components/ui/sidebar'
+import { RoleCodes } from '@/src/shared/permissions.old'
 import { ChevronRight, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 
@@ -41,20 +44,18 @@ const navLists = [
 ]
 
 export default function NavShop() {
-  const { role } = useAuth()
-
   const filteredNavList = navLists
-    .map((item) => ({
-      ...item,
-      items: item.items.filter((subItem) =>
-        subItem.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes])
-      ),
-    }))
-    .filter(
-      (item) =>
-        item.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes]) &&
-        item.items.length > 0
-    )
+  // .map((item) => ({
+  //   ...item,
+  //   items: item.items.filter((subItem) =>
+  //     subItem.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes])
+  //   ),
+  // }))
+  // .filter(
+  //   (item) =>
+  //     item.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes]) &&
+  //     item.items.length > 0
+  // )
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Магазин</SidebarGroupLabel>

@@ -6,21 +6,19 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from '@/components/ui/sidebar'
-import { useAuth } from '@/providers/auth-provider'
+} from '@/src/components/ui/sidebar'
 import { ComponentProps } from 'react'
+import NavOrganization from './nav-organization'
 import NavPlatform from './nav-platform'
 import NavShop from './nav-shop'
 import NavTheme from './nav-theme'
 import NavUser from './nav-user'
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
-  const user = useAuth()
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarHeader>
 
       <SidebarContent>
@@ -29,6 +27,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavTheme />
+        <NavOrganization />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,8 +1,8 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '../../prisma/generated/client'
 
 export const getCategories = async <T extends Prisma.CategoryFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.CategoryFindManyArgs>

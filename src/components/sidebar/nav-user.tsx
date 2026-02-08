@@ -1,6 +1,5 @@
 'use client'
-import { logout } from '@/actions/auth'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,20 +7,43 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
-import { UserDTO } from '@/types/user'
+} from '@/src/components/ui/dropdown-menu'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
+import { useActiveMemberQuery } from '@/src/data/member/active-member-query'
+import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
 import { ChevronsUpDown, Loader, LogOut, User } from 'lucide-react'
 import Link from 'next/link'
-import { useTransition } from 'react'
 
-export default function NavUser({ user }: { user: UserDTO }) {
-  const [isPending, startTransition] = useTransition()
-  const handleLogout = () => {
-    startTransition(() => {
-      logout()
-    })
+import { OrganizationRole } from '@/src/lib/auth'
+import { useRouter } from 'next/navigation'
+import { Skeleton } from '../ui/skeleton'
+
+export const memberRoleLabels = {
+  owner: 'Владелец',
+  manager: 'Менеджер',
+  teacher: 'Учитель',
+} as const satisfies Record<OrganizationRole, string>
+
+export default function NavUser() {
+  const router = useRouter()
+  const { data, isLoading } = useActiveMemberQuery()
+  const { mutate, isPending: isSignOutPending } = useSignOutMutation()
+
+  if (isLoading) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className="bg-sidebar-accent text-sidebar-accent-foreground cursor-not-allowed"
+          >
+            <Skeleton className="h-full w-full" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
   }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -34,37 +56,44 @@ export default function NavUser({ user }: { user: UserDTO }) {
               />
             }
           >
-            {isPending ? (
+            {isLoading ? (
               <Loader className="animate-spin" />
             ) : (
               <>
                 <Avatar>
-                  <AvatarImage alt={user.firstName + ' ' + user.lastName} />
-                  <AvatarFallback>
-                    {user.firstName[0]}
-                    {user.lastName ? user.lastName[0] : ''}
-                  </AvatarFallback>
+                  <AvatarImage alt={data?.user.name} />
+                  <AvatarFallback>{data?.user.name[0]}</AvatarFallback>
                 </Avatar>
               </>
             )}
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user.firstName} {user.lastName}
+              <span className="truncate font-medium">{data?.user.name}</span>
+              <span className="text-muted-foreground truncate text-xs">
+                {data?.role ? memberRoleLabels[data?.role] : '-'}
               </span>
-              <span className="text-muted-foreground truncate text-xs">{user.role.name}</span>
             </div>
             <ChevronsUpDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              <DropdownMenuItem render={<Link href={`/dashboard/users/${user.id}`} />}>
+              <DropdownMenuItem render={<Link href={`/me`} />}>
                 <User />
                 Профиль
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem variant="destructive" onClick={handleLogout} disabled={isPending}>
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isSignOutPending}
+                onClick={() =>
+                  mutate(undefined, {
+                    onSuccess: () => {
+                      router.push('/')
+                    },
+                  })
+                }
+              >
                 <LogOut />
                 Выйти
               </DropdownMenuItem>
