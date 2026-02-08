@@ -94,7 +94,7 @@ export function ChartByTeacher({ data }: { data: ChartData[] }) {
             <Bar dataKey="percentage" fill="var(--color-dismissed)" radius={4}>
               <LabelList
                 dataKey="teacherName"
-                formatter={(value) => (value ? value.toString().split(' ')[0] : '')}
+                formatter={(value: string) => (value ? value.toString().split(' ')[0] : '')}
                 position="insideLeft"
                 offset={8}
                 className="fill-foreground"

@@ -6,11 +6,11 @@ import * as React from 'react'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { cn } from '@/src/lib/utils'
+import { RefCallBack } from 'react-hook-form'
 
 interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  ref: React.RefObject<HTMLInputElement>
+  ref: RefCallBack
 }
-
 const PasswordInput = ({ ref, className, ...props }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = React.useState(false)
   const disabled = props.value === '' || props.value === undefined || props.disabled

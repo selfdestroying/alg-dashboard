@@ -1,4 +1,4 @@
-import { AttendanceStatus, StudentStatus } from '@prisma/client'
+import { AttendanceStatus, StudentStatus } from '@/prisma/generated/enums'
 import { z } from 'zod/v4'
 
 export const AttendanceSchema = z.object({

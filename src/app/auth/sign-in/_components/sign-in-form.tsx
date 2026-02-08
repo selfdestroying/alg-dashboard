@@ -91,7 +91,7 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
           <Controller
             name="password"
             control={form.control}
-            render={({ field, fieldState }) => (
+            render={({ field: { ref, ...field }, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="sign-in-password">Пароль</FieldLabel>
@@ -105,6 +105,7 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
                 {showPasswordToggle ? (
                   <PasswordInput
                     {...field}
+                    ref={ref}
                     id="sign-in-password"
                     placeholder="Password"
                     aria-invalid={fieldState.invalid}
