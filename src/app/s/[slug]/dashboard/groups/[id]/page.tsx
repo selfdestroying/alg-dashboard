@@ -1,19 +1,29 @@
-import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
-import GroupStudentsTable from '@/app/dashboard/groups/[id]/_components/group-students-table'
 import { getGroup } from '@/src/actions/groups'
 import { getStudents } from '@/src/actions/students'
-import { getUsers } from '@/src/actions/users'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import AddLessonButton from './_components/add-lesson-button'
 import AddStudentToGroupButton from './_components/add-student-to-group-button'
 import AddTeacherToGroupButton from './_components/add-teacher-to-group-button'
+import { GroupAttendanceTable } from './_components/group-attendance-table'
+import GroupStudentsTable from './_components/group-students-table'
 import GroupTeachersTable from './_components/group-teachers-table'
 import InfoSection from './_components/info-section'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const id = (await params).id
   const group = await getGroup({
-    where: { id: Number(id) },
+    where: { id: Number(id), organizationId: session.members[0].organizationId },
     include: {
       lessons: {
         orderBy: { date: 'asc' },
@@ -47,16 +57,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     return <div>Группа не найдена</div>
   }
 
-  const teachers = await getUsers({
-    where: {
-      groups: {
-        none: { teacherId: { in: group.teachers.map((gt) => gt.teacherId) } },
-      },
-    },
-  })
-
   const students = await getStudents({
     where: {
+      organizationId: session.members[0].organizationId,
       groups: {
         none: { studentId: { in: group.students.map((gs) => gs.studentId) } },
       },
@@ -73,7 +76,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <CardHeader>
             <CardTitle>Преподаватели</CardTitle>
             <CardAction>
-              <AddTeacherToGroupButton group={group} teachers={teachers} />
+              <AddTeacherToGroupButton group={group} />
             </CardAction>
           </CardHeader>
           <CardContent>

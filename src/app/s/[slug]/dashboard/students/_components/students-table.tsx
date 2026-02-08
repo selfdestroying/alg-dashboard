@@ -1,4 +1,5 @@
 'use client'
+import { Student } from '@/prisma/generated/client'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
@@ -19,7 +20,6 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { cn, getFullName } from '@/src/lib/utils'
-import { StudentDTO } from '@/types/student'
 import {
   ColumnDef,
   flexRender,
@@ -44,7 +44,7 @@ import {
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
-const columns: ColumnDef<StudentDTO>[] = [
+const columns: ColumnDef<Student>[] = [
   {
     header: 'Имя',
     accessorFn: (value) => value.id,
@@ -96,7 +96,7 @@ const columns: ColumnDef<StudentDTO>[] = [
   },
 ]
 
-export default function StudentsTable({ data }: { data: StudentDTO[] }) {
+export default function StudentsTable({ data }: { data: Student[] }) {
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []

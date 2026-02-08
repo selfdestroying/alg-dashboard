@@ -1,6 +1,7 @@
+import { Prisma } from '@/prisma/generated/client'
+import { LessonStatus } from '@/prisma/generated/enums'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { getGroupName } from '@/src/lib/utils'
-import { LessonStatus, Prisma } from '@prisma/client'
 import { cva } from 'class-variance-authority'
 import { toZonedTime } from 'date-fns-tz'
 import { Book, Clock, MapPin, Users } from 'lucide-react'

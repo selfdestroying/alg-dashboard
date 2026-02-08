@@ -1,4 +1,5 @@
 'use client'
+import { PayCheck } from '@/prisma/generated/client'
 import { Button } from '@/src/components/ui/button'
 import { Label } from '@/src/components/ui/label'
 import {
@@ -18,8 +19,6 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { cn } from '@/src/lib/utils'
-import { UserDTO } from '@/types/user'
-import { PayCheck } from '@prisma/client'
 import {
   ColumnDef,
   flexRender,
@@ -44,7 +43,13 @@ import {
 import { useState } from 'react'
 import PayCheckActions from './paycheck-actions'
 
-export default function PayChecksTable({ data, user }: { data: PayCheck[]; user: UserDTO }) {
+export default function PayChecksTable({
+  data,
+  userName,
+}: {
+  data: PayCheck[]
+  userName: string
+}) {
   const columns: ColumnDef<PayCheck>[] = [
     {
       header: 'Дата',
@@ -68,7 +73,7 @@ export default function PayChecksTable({ data, user }: { data: PayCheck[]; user:
     },
     {
       id: 'actions',
-      cell: ({ row }) => <PayCheckActions paycheck={row.original} user={user} />,
+      cell: ({ row }) => <PayCheckActions paycheck={row.original} userName={userName} />,
     },
   ]
   const [pagination, setPagination] = useState({
@@ -111,7 +116,6 @@ export default function PayChecksTable({ data, user }: { data: PayCheck[]; user:
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                       onKeyDown={(e) => {
-                        // Enhanced keyboard handling for sorting
                         if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
                           e.preventDefault()
                           header.column.getToggleSortingHandler()?.(e)
@@ -147,7 +151,7 @@ export default function PayChecksTable({ data, user }: { data: PayCheck[]; user:
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                Нет учеников.
+                Нет чеков.
               </TableCell>
             </TableRow>
           )}

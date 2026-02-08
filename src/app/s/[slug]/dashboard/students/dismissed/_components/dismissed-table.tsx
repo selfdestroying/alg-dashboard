@@ -3,6 +3,7 @@ import { DismissedWithStudentAndGroup } from '@/src/actions/dismissed'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -11,8 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
+import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
+import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
+import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
-import { useData } from '@/src/providers/data-provider'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -29,7 +33,7 @@ import { toZonedTime } from 'date-fns-tz'
 import { debounce } from 'es-toolkit'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import DismissedActions from './dismissed-actions'
 
 const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
@@ -126,7 +130,8 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
 ]
 
 export default function DismissedStudentsTable({ data }: { data: DismissedWithStudentAndGroup[] }) {
-  const { courses, locations, users } = useData()
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []
@@ -164,67 +169,9 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
     },
   })
 
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
-    })
+  if (isSessionLoading || !session) {
+    return <Skeleton className="h-full w-full" />
   }
-
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
-
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setColumnFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
-
-  const mappedCourses = useMemo(
-    () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
-    [courses]
-  )
-  const mappedLocations = useMemo(
-    () => locations.map((location) => ({ label: location.name, value: location.id.toString() })),
-    [locations]
-  )
-  const mappedUsers = useMemo(
-    () =>
-      users.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id.toString(),
-      })),
-    [users]
-  )
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -237,13 +184,7 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
           }}
           placeholder="Поиск..."
         />
-        <TableFilter label="Курс" items={mappedCourses} onChange={handleCourseFilterChange} />
-        <TableFilter
-          label="Локация"
-          items={mappedLocations}
-          onChange={handleLocationFilterChange}
-        />
-        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
+        <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
       </FieldGroup>
       <Table className="overflow-y-auto">
         <TableHeader className="bg-card sticky top-0 z-10">
@@ -302,5 +243,93 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
         </TableBody>
       </Table>
     </div>
+  )
+}
+
+interface FiltersProps {
+  organizationId: number
+  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
+}
+
+function Filters({ organizationId, setFilters }: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
+  const { data: locations, isLoading: isLocationsLoading } =
+    useMappedLocationListQuery(organizationId)
+  const { data: mappedUsers, isLoading: isMembersLoading } =
+    useMappedMemberListQuery(organizationId)
+
+  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
+    return (
+      <>
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </>
+    )
+  }
+
+  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
+    const courseIds = selectedCourses.map((course) => Number(course.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'course')
+
+      return [
+        ...otherFilters,
+        {
+          id: 'course',
+          value: courseIds,
+        },
+      ]
+    })
+  }
+
+  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
+    const locationIds = selectedLocations.map((location) => Number(location.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'location')
+
+      return [
+        ...otherFilters,
+        {
+          id: 'location',
+          value: locationIds,
+        },
+      ]
+    })
+  }
+
+  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
+    const userIds = selectedUsers.map((user) => Number(user.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
+
+      return [
+        ...otherFilters,
+        {
+          id: 'teacher',
+          value: userIds,
+        },
+      ]
+    })
+  }
+
+  return (
+    <>
+      {courses ? (
+        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {locations ? (
+        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {mappedUsers ? (
+        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+    </>
   )
 }

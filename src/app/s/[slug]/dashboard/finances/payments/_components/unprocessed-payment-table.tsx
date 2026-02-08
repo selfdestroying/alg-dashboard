@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/src/components/ui/dialog'
-import { Student, UnprocessedPayment } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -54,6 +53,7 @@ import {
   SelectValue,
 } from '@/src/components/ui/select'
 
+import { Student, UnprocessedPayment } from '@/prisma/generated/client'
 import { Label } from '@/src/components/ui/label'
 import { cn } from '@/src/lib/utils'
 import UnprocessedPaymentsActions from './unprocessed-payment-actions'

@@ -1,8 +1,7 @@
 'use client'
 
+import { PaymentProduct } from '@/prisma/generated/client'
 import { ColumnDef } from '@tanstack/react-table'
-
-import { PaymentProduct } from '@prisma/client'
 
 const getColumns = (): ColumnDef<PaymentProduct>[] => [
   {

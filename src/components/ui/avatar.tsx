@@ -1,9 +1,9 @@
 'use client'
 
-import * as React from 'react'
 import { Avatar as AvatarPrimitive } from '@base-ui/react/avatar'
+import * as React from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/src/lib/utils'
 
 function Avatar({
   className,
@@ -90,4 +90,4 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>) 
   )
 }
 
-export { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarBadge }
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage }

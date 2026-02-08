@@ -1,5 +1,5 @@
 'use client'
-import BalanceBadge from '@/app/dashboard/lessons/[id]/_components/balance-badge'
+import { Prisma } from '@/prisma/generated/client'
 import {
   Table,
   TableBody,
@@ -8,12 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
-import { usePermission } from '@/src/hooks/usePermission'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { getFullName } from '@/src/lib/utils'
-import { Prisma } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
+import BalanceBadge from './balance-badge'
 import LessonTeacherActions from './lesson-teachers-actions'
 
 export default function LessonTeachersTable({
@@ -21,7 +21,7 @@ export default function LessonTeachersTable({
 }: {
   data: Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>[]
 }) {
-  const canEdit = usePermission('EDIT_TEACHERLESSON')
+  const canEdit = useOrganizationPermissionQuery({ teacherLesson: ['update'] })
   const columns: ColumnDef<Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>>[] =
     useMemo(
       () => [

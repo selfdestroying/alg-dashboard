@@ -1,0 +1,131 @@
+import { Avatar, AvatarFallback } from '@/src/components/ui/avatar'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/src/components/ui/card'
+import { ItemGroup } from '@/src/components/ui/item'
+import { auth, OrganizationRole } from '@/src/lib/auth'
+import prisma from '@/src/lib/prisma'
+import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import EditUserButton from '../_components/edit-user-dialog'
+import AddCheckButton from './_components/add-check-button'
+import PayChecksTable from './_components/paycheks-table'
+
+const memberRoleLabels = {
+  owner: 'Владелец',
+  manager: 'Менеджер',
+  teacher: 'Учитель',
+} as const satisfies Record<OrganizationRole, string>
+
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
+
+  const { id } = await params
+  const member = await prisma.member.findFirst({
+    where: {
+      id: Number(id),
+      organizationId: session.members[0].organizationId,
+    },
+    include: {
+      user: true,
+    },
+  })
+
+  if (!member) {
+    return <div>Сотрудник не найден.</div>
+  }
+
+  const paychecks = await prisma.payCheck.findMany({
+    where: {
+      userId: member.userId,
+      organizationId: session.members[0].organizationId,
+    },
+    orderBy: { date: 'asc' },
+  })
+
+  const roleLabel = memberRoleLabels[member.role as OrganizationRole] ?? member.role ?? '-'
+  console.log(memberRoleLabels)
+  return (
+    <div className="space-y-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <div className="flex items-center gap-2">
+              <Avatar>
+                <AvatarFallback>
+                  {member.user.firstName?.[0]?.toUpperCase()}
+                  {member.user.lastName?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {getFullName(member.user.firstName, member.user.lastName)}
+            </div>
+          </CardTitle>
+          <CardDescription>
+            <span>{roleLabel}</span>
+            {' • '}
+            <span className={!member.user.banned ? 'text-success' : 'text-destructive'}>
+              {!member.user.banned ? 'Активен' : 'Неактивен'}
+            </span>
+          </CardDescription>
+          <CardAction>
+            <EditUserButton member={member} />
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <div>
+              <div className="text-muted-foreground">Ставка за урок</div>
+              <div className="text-sm font-bold">
+                {member.user.bidForLesson ? member.user.bidForLesson.toLocaleString() : '-'} ₽
+              </div>
+            </div>
+            <div>
+              <div className="text-muted-foreground">Ставка за индив.</div>
+              <div className="text-sm font-bold">
+                {member.user.bidForIndividual ? member.user.bidForIndividual.toLocaleString() : '-'}{' '}
+                ₽
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Чеки</CardTitle>
+          <CardDescription>
+            <span>Всего чеков: {paychecks.length}</span>
+            {' • '}
+            <span>
+              Сумма:{' '}
+              {paychecks.reduce((acc, paycheck) => acc + paycheck.amount, 0).toLocaleString()} ₽
+            </span>
+          </CardDescription>
+          <CardAction>
+            <AddCheckButton
+              organizationId={session.members[0].organizationId}
+              userId={member.userId}
+              userName={member.user.name}
+            />
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <ItemGroup>
+            <PayChecksTable data={paychecks} userName={member.user.name} />
+          </ItemGroup>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

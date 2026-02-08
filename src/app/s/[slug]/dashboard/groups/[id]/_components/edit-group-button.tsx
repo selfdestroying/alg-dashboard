@@ -1,5 +1,5 @@
 'use client'
-import { editGroupSchema, EditGroupSchemaType } from '@/schemas/group'
+import { GroupType } from '@/prisma/generated/enums'
 import { updateGroup } from '@/src/actions/groups'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -20,13 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { usePermission } from '@/src/hooks/usePermission'
+import { useCourseListQuery } from '@/src/data/course/course-list-query'
+import { useLocationListQuery } from '@/src/data/location/location-list-query'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { DaysOfWeek } from '@/src/lib/utils'
-import { useData } from '@/src/providers/data-provider'
-import { GroupDTO } from '@/types/group'
+import { editGroupSchema, EditGroupSchemaType } from '@/src/schemas/group'
+import { GroupDTO } from '@/src/types/group'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { GroupType } from '@prisma/client'
 import { AlertTriangle, Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -38,7 +41,9 @@ interface EditGroupButtonProps {
 }
 
 export default function EditGroupButton({ group }: EditGroupButtonProps) {
-  const canEdit = usePermission('EDIT_GROUP')
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
+  const { data: hasPermission } = useOrganizationPermissionQuery({ group: ['update'] })
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
@@ -64,7 +69,11 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       })
     })
   }
-  if (!canEdit) {
+  if (isSessionLoading || !session) {
+    return <Skeleton className="h-full w-full" />
+  }
+
+  if (!hasPermission?.success) {
     return null
   }
 
@@ -77,7 +86,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
         <DialogHeader>
           <DialogTitle>Редактировать группу</DialogTitle>
         </DialogHeader>
-        <EditGroupForm form={form} onSubmit={handleSubmit} />
+        <EditGroupForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
             Отмена
@@ -94,10 +103,16 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
 interface EditGroupFormProps {
   form: ReturnType<typeof useForm<EditGroupSchemaType>>
   onSubmit: (data: EditGroupSchemaType) => void
+  organizationId: number
 }
 
-function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
-  const { courses, locations } = useData()
+function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
+  const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery(organizationId)
+  const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery(organizationId)
+
+  if (isLocationsLoading || isCoursesLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
 
   return (
     <form id="edit-group-form" onSubmit={form.handleSubmit(onSubmit, (err) => console.log(err))}>
@@ -116,7 +131,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
                 itemToStringLabel={(itemValue) =>
-                  courses.find((course) => course.id === Number(itemValue))?.name || ''
+                  courses?.find((course) => course.id === Number(itemValue))?.name || ''
                 }
               >
                 <SelectTrigger id="form-rhf-select-course" aria-invalid={fieldState.invalid}>
@@ -124,7 +139,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {courses.map((course) => (
+                    {courses?.map((course) => (
                       <SelectItem key={course.id} value={course.id.toString()}>
                         {course.name}
                       </SelectItem>
@@ -149,7 +164,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
                 itemToStringLabel={(itemValue) =>
-                  locations.find((location) => location.id === Number(itemValue))?.name || ''
+                  locations?.find((location) => location.id === Number(itemValue))?.name || ''
                 }
               >
                 <SelectTrigger id="form-rhf-select-location" aria-invalid={fieldState.invalid}>
@@ -157,7 +172,7 @@ function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {locations.map((location) => (
+                    {locations?.map((location) => (
                       <SelectItem key={location.id} value={location.id.toString()}>
                         {location.name}
                       </SelectItem>

@@ -1,8 +1,8 @@
 'use client'
+import { Prisma } from '@/prisma/generated/client'
 import { createLesson } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
-import { Checkbox } from '@/src/components/ui/checkbox'
 import {
   Dialog,
   DialogClose,
@@ -22,8 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Prisma } from '@prisma/client'
 import { ru } from 'date-fns/locale'
 import { Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -33,18 +34,19 @@ import { z } from 'zod/v4'
 import { timeSlots } from '../../_components/create-group-dialog'
 
 interface AddLessonButtonProps {
-  group: Prisma.GroupGetPayload<{ include: { students: true } }>
+  group: Prisma.GroupGetPayload<{ include: { students: true; teachers: true } }>
 }
 
 const AddLessonSchema = z.object({
   date: z.date('Выберите дату урока'),
   time: z.string('Введите время урока'),
-  isAddStudents: z.boolean(),
 })
 
 type AddLessonSchemaType = z.infer<typeof AddLessonSchema>
 
 export default function AddLessonButton({ group }: AddLessonButtonProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm({
@@ -52,29 +54,36 @@ export default function AddLessonButton({ group }: AddLessonButtonProps) {
     defaultValues: {
       date: undefined,
       time: undefined,
-      isAddStudents: true,
     },
   })
 
   const handleSubmit = (values: AddLessonSchemaType) => {
     startTransition(() => {
-      const { isAddStudents, ...payload } = values
+      const { ...payload } = values
       const attendances = group.students.map((student) => ({
+        organizationId,
         studentId: student.studentId,
         status: 'UNSPECIFIED' as const,
         comment: '',
       }))
+      const teacherLessons = group.teachers.map((teacher) => ({
+        organizationId,
+        teacherId: teacher.teacherId,
+        bid: teacher.bid,
+      }))
       const ok = createLesson({
         data: {
           ...payload,
+          organizationId,
           groupId: group.id,
-          attendance: isAddStudents
-            ? {
-                createMany: {
-                  data: attendances,
-                },
-              }
-            : undefined,
+          attendance: {
+            createMany: {
+              data: attendances,
+            },
+          },
+          teachers: {
+            createMany: { data: teacherLessons },
+          },
         },
       })
       toast.promise(ok, {
@@ -87,6 +96,10 @@ export default function AddLessonButton({ group }: AddLessonButtonProps) {
         },
       })
     })
+  }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (
@@ -158,33 +171,6 @@ export default function AddLessonButton({ group }: AddLessonButtonProps) {
                     </SelectContent>
                   </Select>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              name="isAddStudents"
-              control={form.control}
-              render={({ field }) => (
-                <Field>
-                  <Field orientation="horizontal">
-                    <FieldLabel
-                      htmlFor="toggle-apply-to-lessons"
-                      className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950"
-                    >
-                      <Checkbox
-                        id="toggle-apply-to-lessons"
-                        name={field.name}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
-                      />
-                      <div className="grid gap-1.5 font-normal">
-                        <p className="text-sm leading-none font-medium">
-                          Добавить всех студентов из группы
-                        </p>
-                      </div>
-                    </FieldLabel>
-                  </Field>
                 </Field>
               )}
             />

@@ -1,4 +1,5 @@
 'use client'
+import { PayCheck } from '@/prisma/generated/client'
 import { deletePaycheck, updatePaycheck } from '@/src/actions/paycheck'
 import {
   AlertDialog,
@@ -27,11 +28,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { usePermission } from '@/src/hooks/usePermission'
-import { useAuth } from '@/src/providers/auth-provider'
-import { UserDTO } from '@/types/user'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { PayCheck } from '@prisma/client'
 import { ru } from 'date-fns/locale'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -41,26 +38,25 @@ import { z } from 'zod/v4'
 
 interface AddCheckButtonProps {
   paycheck: PayCheck
-  user: UserDTO
+  userName: string
 }
 
 const AddCheckSchema = z.object({
-  amount: z.number('Укажите корректную сумму').min(0, 'Сумма должна быть неотрицательной'),
+  amount: z
+    .number('Укажите корректную сумму')
+    .min(0, 'Сумма должна быть неотрицательной'),
   date: z.date('Укажите корректную дату'),
   comment: z.string('Укажите комментарий').max(255),
 })
 
 type AddCheckSchemaType = z.infer<typeof AddCheckSchema>
 
-export default function PayCheckActions({ paycheck, user }: AddCheckButtonProps) {
+export default function PayCheckActions({ paycheck, userName }: AddCheckButtonProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [isDeleteDisabled, setIsDeleteDisabled] = useState<boolean>(false)
   const [deleteCountdown, setDeleteCountdown] = useState<number>(0)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
-
-  const me = useAuth()
-  const canEditPaycheck = usePermission('EDIT_PAYCHECK')
 
   const [isPending, startTransition] = useTransition()
 
@@ -82,7 +78,7 @@ export default function PayCheckActions({ paycheck, user }: AddCheckButtonProps)
       toast.promise(ok, {
         loading: 'Редактирование чека...',
         success: 'Чек успешно отредактирован!',
-        error: 'Ошибка при редактровании чека.',
+        error: 'Ошибка при редактировании чека.',
         finally: () => {
           form.reset()
           setDialogOpen(false)
@@ -130,10 +126,6 @@ export default function PayCheckActions({ paycheck, user }: AddCheckButtonProps)
     }
   }, [deleteDialogOpen])
 
-  if (user.id !== me.id && !canEditPaycheck) {
-    return null
-  }
-
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -172,7 +164,8 @@ export default function PayCheckActions({ paycheck, user }: AddCheckButtonProps)
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
-              Вы уверены что хотите удалить <b>Чек № {paycheck.id}</b> из списка преподавателей?
+              Вы уверены что хотите удалить <b>Чек № {paycheck.id}</b> из списка
+              преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -202,9 +195,7 @@ export default function PayCheckActions({ paycheck, user }: AddCheckButtonProps)
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Добавить чек</DialogTitle>
-            <DialogDescription>
-              Добавить чек для {user.firstName} {user.lastName}
-            </DialogDescription>
+            <DialogDescription>Добавить чек для {userName}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={form.handleSubmit(onSubmit)} id="add-paycheck-form">

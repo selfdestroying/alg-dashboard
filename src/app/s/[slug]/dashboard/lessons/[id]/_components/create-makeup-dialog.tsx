@@ -10,12 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { getGroupName } from '@/src/lib/utils'
 import { format } from 'date-fns'
 import { fromZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState, useTransition } from 'react'
 
 interface CreateMakeUpDialogProps {
   selectedLesson: { label: string; value: number } | null
@@ -26,39 +28,46 @@ export default function CreateMakeUpForm({
   selectedLesson,
   setSelectedLesson,
 }: CreateMakeUpDialogProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [lessons, setLessons] = useState<{ label: string; value: number }[]>([])
+  const [isPending, startTransition] = useTransition()
 
-  const handleSelectDate = (date: Date) => {
-    setSelectedDate(date)
-    const zodedDate = fromZonedTime(date, 'Europe/Moscow')
-    getLessons({
-      where: { date: zodedDate },
-      include: {
-        attendance: { include: { student: true } },
-        group: {
-          include: {
-            teachers: {
-              include: {
-                teacher: true,
+  useEffect(() => {
+    startTransition(() => {
+      const zodedDate = fromZonedTime(selectedDate, 'Europe/Moscow')
+      getLessons({
+        where: { date: zodedDate, organizationId },
+        include: {
+          attendance: { include: { student: true } },
+          group: {
+            include: {
+              teachers: {
+                include: {
+                  teacher: true,
+                },
               },
+              course: true,
+              location: true,
             },
-            course: true,
-            location: true,
           },
         },
-      },
-    }).then((l) => {
-      setLessons(
-        l.map((lesson) => ({
-          label: `${getGroupName(lesson.group)} - ${lesson.group.teachers
-            .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
-            .join(', ')}`,
-          value: lesson.id,
-        }))
-      )
-      console.log(lessons)
+      }).then((l) => {
+        setLessons(
+          l.map((lesson) => ({
+            label: `${getGroupName(lesson.group)} - ${lesson.group.teachers
+              .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
+              .join(', ')}`,
+            value: lesson.id,
+          }))
+        )
+      })
     })
+  }, [organizationId, selectedDate])
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (
@@ -79,7 +88,7 @@ export default function CreateMakeUpForm({
         <PopoverContent className="w-auto p-0">
           <Calendar
             mode="single"
-            onSelect={handleSelectDate}
+            onSelect={setSelectedDate}
             locale={ru}
             selected={selectedDate}
             required

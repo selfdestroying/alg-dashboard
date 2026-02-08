@@ -1,4 +1,5 @@
 'use client'
+import { Prisma } from '@/prisma/generated/client'
 import { createDismissed } from '@/src/actions/dismissed'
 import { deleteStudentGroup, getGroups, updateStudentGroup } from '@/src/actions/groups'
 import {
@@ -40,7 +41,6 @@ import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Prisma } from '@prisma/client'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, DoorOpen, GitCompare, Loader2, MoreVertical, Trash } from 'lucide-react'

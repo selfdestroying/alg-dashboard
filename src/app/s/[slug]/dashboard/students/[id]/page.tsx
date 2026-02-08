@@ -2,12 +2,22 @@ import { getGroups } from '@/src/actions/groups'
 import { getStudent, getStudentLessonsBalanceHistory } from '@/src/actions/students'
 import { Avatar, AvatarFallback } from '@/src/components/ui/avatar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { getFullName } from '@/src/lib/utils'
+import { auth } from '@/src/lib/auth'
+import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import EditStudentDialog from './_components/edit-student-dialog'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
 import StudentCard from './_components/student-card'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const { id } = await params
   const student = await getStudent({
     where: { id: Number(id) },

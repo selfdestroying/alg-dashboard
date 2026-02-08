@@ -1,7 +1,8 @@
 import 'server-only'
 
-import { verifySession } from '@/lib/session'
-import { Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
+import { Prisma } from '@/prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+import { verifySession } from '@/src/lib/session'
 
 export type LessonsBalanceAudit = {
   reason: StudentLessonsBalanceChangeReason
@@ -42,6 +43,7 @@ export async function requireActorUserId() {
 export async function writeLessonsBalanceHistoryTx(
   tx: Prisma.TransactionClient,
   args: {
+    organizationId: number
     studentId: number
     actorUserId: number
     reason: StudentLessonsBalanceChangeReason
@@ -64,6 +66,7 @@ export async function writeLessonsBalanceHistoryTx(
       balanceAfter: args.balanceAfter,
       comment: args.comment,
       meta: args.meta as Prisma.InputJsonValue,
+      organizationId: args.organizationId,
     },
   })
 }

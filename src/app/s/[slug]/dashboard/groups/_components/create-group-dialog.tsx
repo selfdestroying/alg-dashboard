@@ -2,7 +2,6 @@
 
 import { Controller, useForm } from 'react-hook-form'
 
-import { CreateGroupSchema, CreateGroupSchemaType } from '@/schemas/group'
 import { createGroup } from '@/src/actions/groups'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
@@ -27,9 +26,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/src/components/ui/sheet'
+import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
+import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
+import { useMappedMemberListQuery, useMemberListQuery } from '@/src/data/member/member-list-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { useIsMobile } from '@/src/hooks/use-mobile'
-import { getFullName } from '@/src/lib/utils'
-import { useData } from '@/src/providers/data-provider'
+import { CreateGroupSchema, CreateGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -64,7 +66,18 @@ export const timeSlots = [
 ]
 
 export default function CreateGroupDialog() {
-  const { courses, users, locations } = useData()
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
+  const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery(
+    organizationId!
+  )
+  const { data: mappedLocations, isLoading: isLocationsLoading } = useMappedLocationListQuery(
+    organizationId!
+  )
+  const { data: mappedMembers, isLoading: isMappedMembersLoading } = useMappedMemberListQuery(
+    organizationId!
+  )
+  const { data: members, isLoading: isMembersLoading } = useMemberListQuery(organizationId!)
   const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -85,26 +98,30 @@ export default function CreateGroupDialog() {
 
   const onSubmit = (values: CreateGroupSchemaType) => {
     startTransition(() => {
-      console.log(values)
       const { course, location, teacher, dateRange, ...payload } = values
-      const user = users.find((user) => user.id === teacher.value)
+      const member = members?.find((member) => member.userId === Number(teacher.value))
 
       const lessons = Array.from({ length: values.lessonCount ?? 0 }).map((_, index) => {
         const date = new Date(dateRange!.from)
         date.setDate(date.getDate() + index * 7)
-        return { date, time: values.time! }
+        return { date, time: values.time!, organizationId }
       })
 
       const ok = createGroup({
         data: {
           ...payload,
-          courseId: course.value,
-          locationId: location.value,
+          organizationId,
+          courseId: Number(course.value),
+          locationId: Number(location.value),
           teachers: {
             create: [
               {
-                teacherId: user?.id as number,
-                bid: values.type === 'GROUP' ? user?.bidForLesson : user?.bidForIndividual,
+                organizationId,
+                teacherId: Number(member?.userId) as number,
+                bid:
+                  values.type === 'GROUP'
+                    ? member?.user?.bidForLesson
+                    : member?.user.bidForIndividual,
               },
             ],
           },
@@ -126,18 +143,9 @@ export default function CreateGroupDialog() {
     })
   }
 
-  const mappedCourses = courses.map((course) => ({
-    value: course.id,
-    label: course.name,
-  }))
-  const mappedLocations = locations.map((location) => ({
-    value: location.id,
-    label: location.name,
-  }))
-  const mappedTeachers = users.map((user) => ({
-    value: user.id,
-    label: getFullName(user.firstName, user.lastName),
-  }))
+  if (isMappedMembersLoading || isLocationsLoading || isCoursesLoading || isMembersLoading) {
+    return null
+  }
 
   return (
     <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -153,7 +161,7 @@ export default function CreateGroupDialog() {
           <SheetDescription>Заполните форму ниже, чтобы создать новую группу.</SheetDescription>
         </SheetHeader>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
           id="create-group-form"
           className="no-scrollbar overflow-auto px-6 py-2"
         >
@@ -177,7 +185,7 @@ export default function CreateGroupDialog() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {mappedCourses.map((course) => (
+                        {mappedCourses?.map((course) => (
                           <SelectItem key={course.value} value={course}>
                             {course.label}
                           </SelectItem>
@@ -208,7 +216,7 @@ export default function CreateGroupDialog() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {mappedLocations.map((location) => (
+                        {mappedLocations?.map((location) => (
                           <SelectItem key={location.value} value={location}>
                             {location.label}
                           </SelectItem>
@@ -239,7 +247,7 @@ export default function CreateGroupDialog() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {mappedTeachers.map((teacher) => (
+                        {mappedMembers?.map((teacher) => (
                           <SelectItem key={teacher.value} value={teacher}>
                             {teacher.label}
                           </SelectItem>

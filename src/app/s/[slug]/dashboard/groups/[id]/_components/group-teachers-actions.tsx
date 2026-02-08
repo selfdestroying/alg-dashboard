@@ -1,4 +1,5 @@
 'use client'
+import { Prisma } from '@/prisma/generated/client'
 import { deleteTeacherGroup, updateTeacherGroup } from '@/src/actions/groups'
 import {
   AlertDialog,
@@ -30,7 +31,6 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/c
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Prisma } from '@prisma/client'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -198,6 +198,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           <Label className="hover:bg-accent/50 flex items-start gap-2 rounded-lg border p-2 has-aria-checked:border-violet-600 has-aria-checked:bg-violet-50 dark:has-aria-checked:border-violet-900 dark:has-aria-checked:bg-violet-950">
             <Checkbox
               defaultChecked={isApplyToLessons}
+              checked={isApplyToLessons}
               onCheckedChange={(checked) => setIsApplyToLessons(Boolean(checked))}
               className="data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 data-[state=checked]:text-white dark:data-[state=checked]:border-violet-700 dark:data-[state=checked]:bg-violet-700"
             />

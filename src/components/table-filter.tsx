@@ -9,8 +9,8 @@ import {
   ComboboxList,
   ComboboxValue,
   useComboboxAnchor,
-} from '@/components/ui/combobox'
-import { Field, FieldLabel } from '@/components/ui/field'
+} from '@/src/components/ui/combobox'
+import { Field, FieldLabel } from '@/src/components/ui/field'
 import React from 'react'
 
 export interface TableFilterItem {

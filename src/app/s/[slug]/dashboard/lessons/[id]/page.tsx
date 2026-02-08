@@ -1,7 +1,10 @@
 import { getStudents } from '@/src/actions/students'
-import { getUsers } from '@/src/actions/users'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
 import prisma from '@/src/lib/prisma'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import AddAttendanceButton from './_components/add-attendance-button'
 import AddTeacherToLessonButton from './_components/add-teacher-to-lesson-button'
 import AttendanceTable from './_components/attendance-table'
@@ -9,9 +12,16 @@ import InfoSection from './_components/info-section'
 import LessonTeachersTable from './_components/lesson-teachers-table'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const id = (await params).id
   const lesson = await prisma.lesson.findFirst({
-    where: { id: +id },
+    where: { id: +id, organizationId: session.members[0].organizationId },
     include: {
       teachers: {
         include: {
@@ -59,11 +69,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const students = await getStudents({
     where: {
       id: { notIn: lesson?.attendance.map((a) => a.studentId) },
-    },
-  })
-  const teachers = await getUsers({
-    where: {
-      id: { notIn: lesson?.teachers.map((t) => t.teacherId) },
+      organizationId: session.members[0].organizationId,
     },
   })
 
@@ -79,7 +85,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">Преподаватели</CardTitle>
             <CardAction>
-              <AddTeacherToLessonButton teachers={teachers} lesson={lesson} />
+              <AddTeacherToLessonButton lesson={lesson} />
             </CardAction>
           </CardHeader>
           <CardContent className="space-y-2">

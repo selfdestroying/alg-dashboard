@@ -50,7 +50,7 @@ export function ChartByCourse({ data }: { data: ChartData[] }) {
             />
             <XAxis dataKey="count" type="number" hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-            <Bar dataKey="count" layout="vertical" fill="var(--color-count)" radius={4}>
+            <Bar dataKey="count" fill="var(--color-count)" radius={4}>
               <LabelList
                 dataKey="count"
                 position="insideLeft"

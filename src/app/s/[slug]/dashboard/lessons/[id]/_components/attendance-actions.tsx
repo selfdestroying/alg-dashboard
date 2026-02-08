@@ -1,7 +1,7 @@
 // components/DeleteDropdown.tsx
 'use client'
 
-import { StudentStatusMap } from '@/app/dashboard/lessons/[id]/_components/attendance-table'
+import { StudentLessonsBalanceChangeReason, StudentStatus } from '@/prisma/generated/enums'
 import {
   AttendanceWithStudents,
   createAttendance,
@@ -45,13 +45,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
-import { StudentLessonsBalanceChangeReason, StudentStatus } from '@prisma/client'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { CalendarCog, CalendarPlus, Loader2, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import { StudentStatusMap } from './attendance-table'
 import CreateMakeUpForm from './create-makeup-dialog'
 
 const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents }) => {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [makeupOpen, setMakeupOpen] = useState(false)
@@ -92,7 +96,10 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
 
   const handleStudentStatusConfirm = () => {
     startStudentStatusTransition(() => {
-      const ok = updateAttendance({ where: { id: attendance.id }, data: { studentStatus } })
+      const ok = updateAttendance({
+        where: { id: attendance.id, organizationId },
+        data: { studentStatus },
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Успешно!',
@@ -104,7 +111,6 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
   }
 
   const handleCreateMakeUp = () => {
-    console.log(selectedLesson)
     try {
       if (!selectedLesson) {
         toast.error('Пожалуйста, выберите урок для отработки.')
@@ -115,18 +121,20 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
           if (attendance.missedMakeup && attendance.missedMakeup.makeUpAttendaceId)
             await deleteAttendance({ where: { id: attendance.missedMakeup.makeUpAttendaceId } })
           const a = await createAttendance({
+            organizationId,
             studentId: attendance.studentId,
             lessonId: selectedLesson?.value,
             comment: '',
             status: 'UNSPECIFIED',
           })
           await createMakeUp({
+            organizationId,
             missedAttendanceId: attendance.id,
             makeUpAttendaceId: a.id,
           })
           await updateStudent(
             {
-              where: { id: attendance.studentId },
+              where: { id: attendance.studentId, organizationId },
               data: { lessonsBalance: { increment: 1 } },
             },
             {
@@ -151,6 +159,10 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
     } catch (e) {
       console.error(e)
     }
+  }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (

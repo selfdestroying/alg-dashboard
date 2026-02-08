@@ -1,6 +1,7 @@
 'use client'
 
-import { AddPaymentSchema, AddPaymentSchemaType } from '@/schemas/payments'
+import { Student, UnprocessedPayment } from '@/prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 import { deleteUnprocessedPayment, updateUnprocessedPayment } from '@/src/actions/payments'
 import { updateStudent } from '@/src/actions/students'
 import {
@@ -37,8 +38,8 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { getFullName } from '@/src/lib/utils'
+import { AddPaymentSchema, AddPaymentSchemaType } from '@/src/schemas/payments'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student, StudentLessonsBalanceChangeReason, UnprocessedPayment } from '@prisma/client'
 import { Check, CircleX, Loader2, MoreVertical } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'

@@ -1,7 +1,10 @@
 'use client'
+import { Attendance } from '@/prisma/generated/client'
+import { AttendanceStatus } from '@/prisma/generated/enums'
 import { updateAttendance } from '@/src/actions/attendance'
 import { Button } from '@/src/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { Toggle } from '@/src/components/ui/toggle'
 import {
   Tooltip,
@@ -9,8 +12,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/src/components/ui/tooltip'
-import { usePermission } from '@/src/hooks/usePermission'
-import { Attendance, AttendanceStatus } from '@prisma/client'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { cva } from 'class-variance-authority'
 import { AlertCircle, Check, Loader, Minus, X } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -67,7 +70,11 @@ const switcherVariant = cva(['cursor-pointer'], {
 })
 
 export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitcherProps) {
-  const canSelectWarned = usePermission('SELECT_WARNED')
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
+  const { data: hasPermission } = useOrganizationPermissionQuery({
+    studentLesson: ['selectWarned'],
+  })
   const [isPending, startTransition] = useTransition()
   const [status, setStatus] = useState<AttendanceStatus>(attendance.status)
   const [isWarned, setIsWarned] = useState<boolean | null>(attendance.isWarned)
@@ -92,10 +99,14 @@ export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitche
     })
   }, [status, isWarned, attendance.lessonId, attendance.studentId, attendance.status])
 
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
+
   return (
     <TooltipProvider delay={300}>
       <div className="flex items-center gap-2">
-        {canSelectWarned ? (
+        {hasPermission?.success ? (
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <Tooltip>
               <TooltipTrigger

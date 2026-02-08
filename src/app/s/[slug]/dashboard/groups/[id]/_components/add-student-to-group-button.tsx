@@ -1,4 +1,5 @@
 'use client'
+import { Group } from '@/prisma/generated/client'
 import { createStudentGroup } from '@/src/actions/groups'
 import { Button } from '@/src/components/ui/button'
 import { Checkbox } from '@/src/components/ui/checkbox'
@@ -19,12 +20,13 @@ import {
   DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { usePermission } from '@/src/hooks/usePermission'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { getFullName, getGroupName } from '@/src/lib/utils'
-import { GroupDTO } from '@/types/group'
-import { StudentDTO } from '@/types/student'
+import { GroupDTO } from '@/src/types/group'
+import { StudentDTO } from '@/src/types/student'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Group } from '@prisma/client'
 import { Plus } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 
@@ -58,7 +60,9 @@ export default function AddStudentToGroupButton({
   groups,
   student,
 }: AddStudentToGroupButtonProps) {
-  const canAdd = usePermission('ADD_GROUPSTUDENT')
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
+  const { data: hasPermission } = useOrganizationPermissionQuery({ studentGroup: ['create'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -100,6 +104,7 @@ export default function AddStudentToGroupButton({
       const ok = createStudentGroup(
         {
           data: {
+            organizationId,
             groupId,
             studentId,
           },
@@ -123,13 +128,17 @@ export default function AddStudentToGroupButton({
     form.reset()
   }, [dialogOpen, form])
 
-  if ((!isAddToGroup && !isAddToStudent) || !canAdd) {
+  if ((!isAddToGroup && !isAddToStudent) || !hasPermission) {
     return null
   }
 
   const dialogTitle = isAddToGroup ? 'Добавить студента' : 'Добавить в группу'
   const label = isAddToGroup ? 'Студент' : 'Группа'
   const emptyMessage = isAddToGroup ? 'Нет доступных студентов' : 'Нет доступных групп'
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

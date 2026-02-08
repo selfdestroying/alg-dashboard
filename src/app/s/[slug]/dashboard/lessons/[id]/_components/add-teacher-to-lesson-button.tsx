@@ -1,6 +1,6 @@
 'use client'
+import { Lesson } from '@/prisma/generated/client'
 import { createTeacherLesson } from '@/src/actions/lessons'
-import { getUsers } from '@/src/actions/users'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -20,10 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
-import { usePermission } from '@/src/hooks/usePermission'
-import { getFullName } from '@/src/lib/utils'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useMemberListQuery } from '@/src/data/member/member-list-query'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Lesson } from '@prisma/client'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
@@ -32,7 +33,6 @@ import { toast } from 'sonner'
 import z from 'zod/v4'
 
 interface AddTeacherToLessonButtonProps {
-  teachers: Awaited<ReturnType<typeof getUsers>>
   lesson: Lesson
 }
 
@@ -46,11 +46,10 @@ const LessonTeacherSchema = z.object({
 
 type LessonTeacherSchemaType = z.infer<typeof LessonTeacherSchema>
 
-export default function AddTeacherToLessonButton({
-  teachers,
-  lesson,
-}: AddTeacherToLessonButtonProps) {
-  const canAdd = usePermission('ADD_GROUPTEACHER')
+export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonButtonProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
+  const { data: hasPermission } = useOrganizationPermissionQuery({ teacherLesson: ['create'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -67,6 +66,7 @@ export default function AddTeacherToLessonButton({
       const { ...payload } = data
       const ok = createTeacherLesson({
         data: {
+          organizationId,
           lessonId: lesson.id,
           ...payload,
         },
@@ -84,8 +84,12 @@ export default function AddTeacherToLessonButton({
     form.reset()
   }, [dialogOpen, form])
 
-  if (!canAdd) {
+  if (!hasPermission?.success) {
     return null
+  }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (
@@ -98,7 +102,7 @@ export default function AddTeacherToLessonButton({
           <DialogTitle>Добавить преподавателя</DialogTitle>
         </DialogHeader>
 
-        <LessonTeacherForm form={form} teachers={teachers} onSubmit={handleSubmit} />
+        <LessonTeacherForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
@@ -115,11 +119,16 @@ export default function AddTeacherToLessonButton({
 
 interface LessonTeacherFormProps {
   form: ReturnType<typeof useForm<LessonTeacherSchemaType>>
-  teachers: Awaited<ReturnType<typeof getUsers>>
   onSubmit: (data: LessonTeacherSchemaType) => void
+  organizationId: number
 }
 
-function LessonTeacherForm({ form, teachers, onSubmit }: LessonTeacherFormProps) {
+function LessonTeacherForm({ form, onSubmit, organizationId }: LessonTeacherFormProps) {
+  const { data: members, isLoading: isMembersLoading } = useMemberListQuery(organizationId)
+
+  if (isMembersLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
   return (
     <form id="lesson-teacher-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
@@ -137,10 +146,8 @@ function LessonTeacherForm({ form, teachers, onSubmit }: LessonTeacherFormProps)
                 value={field.value?.toString() || ''}
                 onValueChange={(value) => field.onChange(Number(value))}
                 itemToStringLabel={(itemValue) => {
-                  const teacher = teachers.find((t) => t.id === Number(itemValue))
-                  return teacher
-                    ? getFullName(teacher.firstName, teacher.lastName)
-                    : 'Выберите преподавателя'
+                  const teacher = members?.find((t) => t.id === Number(itemValue))
+                  return teacher ? teacher.user.name : 'Выберите преподавателя'
                 }}
               >
                 <SelectTrigger id="form-rhf-select-teacher" aria-invalid={fieldState.invalid}>
@@ -148,9 +155,9 @@ function LessonTeacherForm({ form, teachers, onSubmit }: LessonTeacherFormProps)
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {teachers.map((teacher) => (
-                      <SelectItem key={teacher.id} value={teacher.id.toString()}>
-                        {teacher.firstName} {teacher.lastName}
+                    {members?.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.userId.toString()}>
+                        {teacher.user.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>

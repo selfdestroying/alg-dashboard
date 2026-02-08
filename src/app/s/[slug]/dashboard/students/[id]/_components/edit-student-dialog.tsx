@@ -1,4 +1,7 @@
 'use client'
+import { Student } from '@/prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+
 import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
@@ -13,10 +16,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/src/components/ui/sheet'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useIsMobile } from '@/src/hooks/use-mobile'
-import { usePermission } from '@/src/hooks/usePermission'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student, StudentLessonsBalanceChangeReason } from '@prisma/client'
 import { Loader, Pen, Sparkles } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -44,7 +46,7 @@ export const EditStudentSchema = z.object({
 export type EditStudentSchemaType = z.infer<typeof EditStudentSchema>
 
 export default function EditStudentDialog({ student }: { student: Student }) {
-  const canEdit = usePermission('EDIT_STUDENT')
+  const { data: hasPermission } = useOrganizationPermissionQuery({ student: ['update'] })
   const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -95,7 +97,7 @@ export default function EditStudentDialog({ student }: { student: Student }) {
     })
   }
 
-  if (!canEdit) return null
+  if (!hasPermission) return null
 
   return (
     <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>

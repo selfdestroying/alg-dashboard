@@ -144,7 +144,7 @@ export default function AbsentStatistics({ averagePrice, monthly, weekly }: Abse
                 />
               }
             />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent payload={undefined} />} />
             <Area
               dataKey={viewMode === 'count' ? 'missed' : 'missedMoney'}
               type="natural"

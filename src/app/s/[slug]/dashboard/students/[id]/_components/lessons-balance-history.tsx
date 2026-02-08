@@ -1,4 +1,9 @@
 'use client'
+import {
+  AttendanceStatus,
+  StudentLessonsBalanceChangeReason,
+  User,
+} from '@/prisma/generated/client'
 import { updateStudentBalanceHistory } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -27,9 +32,7 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { getFullName } from '@/src/lib/utils'
-import { UserDTO } from '@/types/user'
-import { AttendanceStatus, StudentLessonsBalanceChangeReason } from '@prisma/client'
-import { JsonValue } from '@prisma/client/runtime/library'
+import { JsonValue } from '@prisma/client/runtime/client'
 import { toZonedTime } from 'date-fns-tz'
 import { MoreVertical } from 'lucide-react'
 import Link from 'next/link'
@@ -44,7 +47,7 @@ type HistoryRow = {
   balanceBefore: number
   balanceAfter: number
   comment: string | null
-  actorUser: UserDTO | null
+  actorUser: User | null
   meta: JsonValue | null
 }
 

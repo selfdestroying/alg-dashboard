@@ -1,4 +1,5 @@
 'use client'
+import { Student } from '@/prisma/generated/client'
 import { createAttendance } from '@/src/actions/attendance'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -28,8 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student } from '@prisma/client'
 import { Loader2, Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -60,6 +62,8 @@ const Schema = z.object({
 type SchemaType = z.infer<typeof Schema>
 
 export default function AddAttendanceButton({ lessonId, students }: AddAttendanceButtonProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const form = useForm<SchemaType>({
@@ -74,6 +78,7 @@ export default function AddAttendanceButton({ lessonId, students }: AddAttendanc
     startTransition(() => {
       const { studentStatus, target } = data
       const ok = createAttendance({
+        organizationId,
         lessonId,
         studentId: target.value,
         studentStatus: studentStatus,
@@ -91,6 +96,10 @@ export default function AddAttendanceButton({ lessonId, students }: AddAttendanc
         },
       })
     })
+  }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (

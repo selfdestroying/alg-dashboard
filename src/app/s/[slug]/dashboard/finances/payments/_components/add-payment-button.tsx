@@ -1,8 +1,9 @@
 'use client'
+import { Student, UnprocessedPayment } from '@/prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 import { updateUnprocessedPayment } from '@/src/actions/payments'
 import { updateStudent } from '@/src/actions/students'
 
-import { AddPaymentSchema, AddPaymentSchemaType } from '@/schemas/payments'
 import { Button } from '@/src/components/ui/button'
 import {
   Combobox,
@@ -22,9 +23,11 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { getFullName } from '@/src/lib/utils'
+import { AddPaymentSchema, AddPaymentSchemaType } from '@/src/schemas/payments'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Student, StudentLessonsBalanceChangeReason, UnprocessedPayment } from '@prisma/client'
 import { Plus } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -37,6 +40,8 @@ export default function AddPaymentButton({
   students: Student[]
   unprocessedPayment?: UnprocessedPayment
 }) {
+  const { data: sesison, isLoading: isSeessionLoading } = useSessionQuery()
+  const organizationId = sesison?.members[0]?.organizationId
   const mappedStudents = useMemo(
     () =>
       students.map((student) => ({
@@ -62,13 +67,14 @@ export default function AddPaymentButton({
       const { student, ...payload } = values
       const ok = updateStudent(
         {
-          where: { id: student.value },
+          where: { id: student.value, organizationId },
           data: {
             lessonsBalance: { increment: payload.lessonCount },
             totalLessons: { increment: payload.lessonCount },
             totalPayments: { increment: payload.price },
             payments: {
               create: {
+                organizationId,
                 lessonCount: payload.lessonCount,
                 price: payload.price,
                 bidForLesson: payload.price / payload.lessonCount,
@@ -93,7 +99,7 @@ export default function AddPaymentButton({
         () =>
           unprocessedPayment &&
           updateUnprocessedPayment({
-            where: { id: unprocessedPayment?.id || 0 },
+            where: { id: unprocessedPayment?.id || 0, organizationId },
             data: { resolved: true },
           })
       )
@@ -108,6 +114,11 @@ export default function AddPaymentButton({
       })
     })
   }
+
+  if (isSeessionLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger render={<Button size={'icon'} />}>

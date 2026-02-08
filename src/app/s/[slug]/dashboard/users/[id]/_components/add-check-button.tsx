@@ -13,9 +13,6 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { usePermission } from '@/src/hooks/usePermission'
-import { useAuth } from '@/src/providers/auth-provider'
-import { UserDTO } from '@/types/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import { Plus } from 'lucide-react'
@@ -25,21 +22,26 @@ import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
 interface AddCheckButtonProps {
-  user: UserDTO
+  organizationId: number
+  userId: number
+  userName: string
 }
 
 const AddCheckSchema = z.object({
-  amount: z.number('Укажите корректную сумму').min(0, 'Сумма должна быть неотрицательной'),
+  amount: z
+    .number('Укажите корректную сумму')
+    .min(0, 'Сумма должна быть неотрицательной'),
   date: z.date('Укажите корректную дату'),
   comment: z.string('Укажите комментарий').max(255),
 })
 
 type AddCheckSchemaType = z.infer<typeof AddCheckSchema>
 
-export default function AddCheckButton({ user }: AddCheckButtonProps) {
-  const me = useAuth()
-  const canAddPaycheck = usePermission('ADD_PAYCHECK')
-
+export default function AddCheckButton({
+  organizationId,
+  userId,
+  userName,
+}: AddCheckButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -54,10 +56,10 @@ export default function AddCheckButton({ user }: AddCheckButtonProps) {
 
   const onSubmit = (values: AddCheckSchemaType) => {
     startTransition(() => {
-      console.log(values)
       const ok = createPaycheck({
         data: {
-          userId: user.id,
+          organizationId,
+          userId,
           ...values,
         },
       })
@@ -73,10 +75,6 @@ export default function AddCheckButton({ user }: AddCheckButtonProps) {
     })
   }
 
-  if (user.id !== me.id && !canAddPaycheck) {
-    return null
-  }
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger
@@ -89,9 +87,7 @@ export default function AddCheckButton({ user }: AddCheckButtonProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Добавить чек</DialogTitle>
-          <DialogDescription>
-            Добавить чек для {user.firstName} {user.lastName}
-          </DialogDescription>
+          <DialogDescription>Добавить чек для {userName}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} id="add-paycheck-form">

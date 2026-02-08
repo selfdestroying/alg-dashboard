@@ -1,11 +1,15 @@
 'use server'
 
-import { requireActorUserId, writeLessonsBalanceHistoryTx } from '@/lib/lessons-balance'
-import { prisma } from '@/lib/prisma'
-import { getGroupName } from '@/lib/utils'
-import { AttendanceStatus, Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
+import { writeLessonsBalanceHistoryTx } from '@/src/lib/lessons-balance'
+import prisma from '@/src/lib/prisma'
+import { getGroupName, protocol, rootDomain } from '@/src/lib/utils'
 import { toZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Prisma } from '../../prisma/generated/client'
+import { AttendanceStatus, StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
+import { auth } from '../lib/auth'
 
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
   include: {
@@ -71,6 +75,12 @@ const getLessonsBalanceDelta = (
 }
 
 export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const status = payload.data.status
   const isWarned = payload.data.isWarned
   const studentId = payload.where.studentId_lessonId?.studentId
@@ -114,7 +124,6 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
         )
 
         if (delta !== 0) {
-          const actorUserId = await requireActorUserId()
           const student = await tx.student.findUnique({
             where: { id: oldAttendance.studentId },
             select: { lessonsBalance: true },
@@ -153,8 +162,9 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
             ` ${toZonedTime(oldAttendance.lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
 
           await writeLessonsBalanceHistoryTx(tx, {
+            organizationId: session.members[0].organizationId,
             studentId: oldAttendance.studentId,
-            actorUserId,
+            actorUserId: Number(session.user.id),
             reason,
             delta: balanceAfter - balanceBefore,
             balanceBefore,
@@ -194,9 +204,10 @@ export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
   revalidatePath(`/dashboard/lessons/${data.where.lessonId}`)
 }
 
-export const getAbsentStatistics = async () => {
+export const getAbsentStatistics = async (organizationId: number) => {
   const absences = await prisma.attendance.findMany({
     where: {
+      organizationId,
       status: 'ABSENT',
     },
     include: {
@@ -223,6 +234,7 @@ export const getAbsentStatistics = async () => {
       lessonCount: true,
     },
     where: {
+      organizationId,
       lessonCount: { gt: 0 },
       price: { gt: 0 },
     },

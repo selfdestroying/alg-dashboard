@@ -1,4 +1,5 @@
 'use client'
+import { Prisma } from '@/prisma/generated/client'
 import {
   Table,
   TableBody,
@@ -7,9 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
-import { usePermission } from '@/src/hooks/usePermission'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { getFullName } from '@/src/lib/utils'
-import { Prisma } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
@@ -33,7 +33,9 @@ type StudentWithAttendances = Prisma.StudentGroupGetPayload<{
 }>
 
 export default function GroupStudentsTable({ data }: { data: StudentWithAttendances[] }) {
-  const canEdit = usePermission('EDIT_GROUPSTUDENT')
+  const { data: hasPermission } = useOrganizationPermissionQuery({
+    studentGroup: ['update'],
+  })
   const columns: ColumnDef<StudentWithAttendances>[] = useMemo(
     () => [
       {
@@ -88,10 +90,11 @@ export default function GroupStudentsTable({ data }: { data: StudentWithAttendan
       },
       {
         id: 'actions',
-        cell: ({ row }) => (canEdit ? <GroupStudentActions sg={row.original} /> : null),
+        cell: ({ row }) =>
+          hasPermission?.success ? <GroupStudentActions sg={row.original} /> : null,
       },
     ],
-    [canEdit]
+    [hasPermission?.success]
   )
   const table = useReactTable({
     data,

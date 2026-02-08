@@ -1,7 +1,6 @@
 'use client'
 
-import AddStudentToGroupButton from '@/app/dashboard/groups/[id]/_components/add-student-to-group-button'
-import { GroupAttendanceTable } from '@/app/dashboard/groups/[id]/_components/group-attendance-table'
+import { Prisma } from '@/prisma/generated/client'
 import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Field } from '@/src/components/ui/field'
@@ -9,8 +8,7 @@ import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Separator } from '@/src/components/ui/separator'
 import { getGroupName } from '@/src/lib/utils'
-import { GroupDTO } from '@/types/group'
-import { StudentWithGroupsAndAttendance } from '@/types/student'
+import { StudentWithGroupsAndAttendance } from '@/src/types/student'
 import {
   Link as LinkIcon,
   Loader,
@@ -23,10 +21,19 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ForwardRefExoticComponent, RefAttributes, useState, useTransition } from 'react'
+import AddStudentToGroupButton from '../../../groups/[id]/_components/add-student-to-group-button'
+import { GroupAttendanceTable } from '../../../groups/[id]/_components/group-attendance-table'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
-  groups: GroupDTO[]
+  groups: Prisma.GroupGetPayload<{
+    include: {
+      location: true
+      course: true
+      students: true
+      teachers: { include: { teacher: true } }
+    }
+  }>[]
 }
 
 export default function StudentCard({ student, groups }: StudentCardProps) {
@@ -45,6 +52,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
       }
     })
   }
+
   return (
     <>
       <Section title="Общие сведения" icon={User}>

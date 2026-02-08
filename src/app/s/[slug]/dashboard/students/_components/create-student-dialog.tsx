@@ -1,27 +1,31 @@
 'use client'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 
-import { CreateStudentSchema, CreateStudentSchemaType } from '@/schemas/student'
 import { createStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/src/components/ui/sheet'
+import { useSessionQuery } from '@/src/data/user/session-query'
+import { useIsMobile } from '@/src/hooks/use-mobile'
+import { CreateStudentSchema, CreateStudentSchemaType } from '@/src/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader, Pen, Sparkles } from 'lucide-react'
+import { Loader, Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 export default function CreateStudentDialog() {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const form = useForm<CreateStudentSchemaType>({
@@ -43,6 +47,7 @@ export default function CreateStudentDialog() {
       const ok = createStudent({
         data: {
           ...values,
+          organizationId: session?.members[0].organizationId,
           Cart: { create: {} },
         },
       })
@@ -60,18 +65,23 @@ export default function CreateStudentDialog() {
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id="create-student-form">
-        <DialogTrigger render={<Button size="icon" />}>
-          <Pen />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Создать ученика</DialogTitle>
-            <DialogDescription>
-              Заполните форму ниже, чтобы создать нового ученика.
-            </DialogDescription>
-          </DialogHeader>
+    <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+      <SheetTrigger render={<Button size="icon" />} disabled={isSessionLoading}>
+        {isSessionLoading ? <Loader className="animate-spin" /> : <Plus />}
+      </SheetTrigger>
+      <SheetContent
+        side={isMobile ? 'bottom' : 'right'}
+        className="data-[side=bottom]:max-h-[70vh]"
+      >
+        <SheetHeader>
+          <SheetTitle>Создать ученика</SheetTitle>
+          <SheetDescription>Заполните форму ниже, чтобы создать нового ученика.</SheetDescription>
+        </SheetHeader>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          id="create-student-form"
+          className="no-scrollbar overflow-auto px-6 py-2"
+        >
           <FieldGroup className="no-scrollbar max-h-[60vh] overflow-y-auto">
             <Controller
               control={form.control}
@@ -160,7 +170,7 @@ export default function CreateStudentDialog() {
                 <Field>
                   <div className="flex w-full items-center justify-between">
                     <FieldLabel htmlFor="password-field">Пароль</FieldLabel>
-                    <Button
+                    {/* <Button
                       type="button"
                       variant="ghost"
                       size="sm"
@@ -169,7 +179,7 @@ export default function CreateStudentDialog() {
                     >
                       <Sparkles className="mr-1 h-3 w-3" />
                       Сгенерировать
-                    </Button>
+                    </Button> */}
                   </div>
                   <Input id="password-field" {...field} aria-invalid={fieldState.invalid} />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -195,15 +205,15 @@ export default function CreateStudentDialog() {
               )}
             />
           </FieldGroup>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button type="submit" form="create-student-form" disabled={isPending}>
-              {isPending && <Loader className="animate-spin" />}
-              Создать
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
+        </form>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
+          <Button type="submit" form="create-student-form" disabled={isPending}>
+            {isPending && <Loader className="animate-spin" />}
+            Создать
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

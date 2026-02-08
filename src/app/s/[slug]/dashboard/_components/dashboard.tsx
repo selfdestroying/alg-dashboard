@@ -18,6 +18,7 @@ import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useDayStatusesQuery, useLessonListQuery } from '@/src/data/lesson/lesson-list-query'
 import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { cn, getFullName } from '@/src/lib/utils'
 import {
@@ -135,16 +136,33 @@ type LessonWithDetails = Prisma.LessonGetPayload<{
 }>
 
 export default function Dashboard() {
-  const { data, isLoading: isSessionLoading } = useSessionQuery()
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const { data: hasPermission, isLoading: isPermissionLoading } = useOrganizationPermissionQuery({
+    lesson: ['readAll'],
+  })
 
   const [selectedDay, setSelectedDay] = useState<Date>(startOfDay(new Date()))
   const [filters, setFilters] = useState<ColumnFiltersState>([])
   const dayKey = useMemo(() => startOfDay(selectedDay), [selectedDay])
   const columns = useMemo(() => LESSON_COLUMNS, [])
 
-  const { data: lessons } = useLessonListQuery(Number(data?.members[0].organizationId), dayKey)
+  const organizationId = session?.members?.[0]?.organizationId
+  const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
+  const canReadAllLessons = !!hasPermission?.success
+  const lockedTeacherId = !canReadAllLessons ? session?.user?.id : undefined
+  const effectiveFilters = useMemo(() => {
+    if (!lockedTeacherId) return filters
+    const otherFilters = filters.filter((filter) => filter.id !== 'teacher')
+    return [
+      ...otherFilters,
+      {
+        id: 'teacher',
+        value: [lockedTeacherId],
+      },
+    ]
+  }, [filters, lockedTeacherId])
 
-  if (isSessionLoading) {
+  if (isSessionLoading || isPermissionLoading || !session) {
     return <Skeleton className="h-full w-full" />
   }
 
@@ -153,19 +171,24 @@ export default function Dashboard() {
       <Card className="overflow-y-auto">
         <CardContent>
           <LessonCalendar
-            organizationId={data!.members[0].organizationId}
+            organizationId={organizationId!}
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
           />
         </CardContent>
         <CardFooter>
-          <Filters organizationId={data!.members[0].organizationId} setFilters={setFilters} />
+          <Filters
+            organizationId={organizationId!}
+            setFilters={setFilters}
+            lockedTeacherId={lockedTeacherId}
+            disableTeacherFilter={!!lockedTeacherId}
+          />
         </CardFooter>
       </Card>
 
       <Card>
         <CardContent className="overflow-y-auto">
-          <DataTable data={lessons ?? []} columns={columns} filters={filters} />
+          <DataTable data={lessons ?? []} columns={columns} filters={effectiveFilters} />
         </CardContent>
       </Card>
     </div>
@@ -248,9 +271,16 @@ function LessonDayButton({ day, children, daysStatuses, ...props }: CalendarDayB
 interface FiltersProps {
   organizationId: number
   setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
+  lockedTeacherId?: string | number
+  disableTeacherFilter?: boolean
 }
 
-function Filters({ organizationId, setFilters }: FiltersProps) {
+function Filters({
+  organizationId,
+  setFilters,
+  lockedTeacherId,
+  disableTeacherFilter,
+}: FiltersProps) {
   const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
   const { data: locations, isLoading: isLocationsLoading } =
     useMappedLocationListQuery(organizationId)
@@ -298,6 +328,7 @@ function Filters({ organizationId, setFilters }: FiltersProps) {
   }
 
   const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
+    if (disableTeacherFilter) return
     const userIds = selectedUsers.map((user) => Number(user.value))
     setFilters((old) => {
       const otherFilters = old.filter((filter) => filter.id !== 'teacher')
@@ -312,6 +343,11 @@ function Filters({ organizationId, setFilters }: FiltersProps) {
     })
   }
 
+  const lockedTeacherValue =
+    lockedTeacherId && mappedUsers
+      ? mappedUsers.find((user) => user.value === lockedTeacherId.toString())
+      : undefined
+
   return (
     <FieldGroup>
       {courses ? (
@@ -325,7 +361,13 @@ function Filters({ organizationId, setFilters }: FiltersProps) {
         <Skeleton className="h-8 w-full" />
       )}
       {mappedUsers ? (
-        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
+        <TableFilter
+          label="Преподаватель"
+          items={mappedUsers}
+          onChange={handleUserFilterChange}
+          disabled={disableTeacherFilter}
+          value={lockedTeacherValue ? [lockedTeacherValue] : undefined}
+        />
       ) : (
         <Skeleton className="h-8 w-full" />
       )}

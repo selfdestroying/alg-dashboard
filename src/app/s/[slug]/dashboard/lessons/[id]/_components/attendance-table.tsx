@@ -1,8 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 
-import AttendanceActions from '@/app/dashboard/lessons/[id]/_components/attendance-actions'
-import { AttendanceStatusSwitcher } from '@/app/dashboard/lessons/[id]/_components/attendance-status-switcher'
+import { AttendanceStatus, StudentStatus } from '@/prisma/generated/enums'
 import { AttendanceWithStudents, updateAttendanceComment } from '@/src/actions/attendance'
 import { Input } from '@/src/components/ui/input'
 import {
@@ -13,14 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import useSkipper from '@/src/hooks/use-skipper'
-import { usePermission } from '@/src/hooks/usePermission'
-import { AttendanceStatus, StudentStatus } from '@prisma/client'
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import { debounce, DebouncedFunction } from 'es-toolkit'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import AttendanceActions from './attendance-actions'
+import { AttendanceStatusSwitcher } from './attendance-status-switcher'
 
 export const StudentStatusMap: { [key in StudentStatus]: string } = {
   ACTIVE: 'Ученик',
@@ -123,9 +123,9 @@ export default function AttendanceTable({ data }: { data: AttendanceWithStudents
   )
   const columns = getColumns(handleUpdate)
 
-  const canEdit = usePermission('EDIT_ATTENDANCE')
+  const { data: hasPermission } = useOrganizationPermissionQuery({ studentLesson: ['update'] })
 
-  if (canEdit) {
+  if (hasPermission?.success) {
     columns.push({
       id: 'actions',
 

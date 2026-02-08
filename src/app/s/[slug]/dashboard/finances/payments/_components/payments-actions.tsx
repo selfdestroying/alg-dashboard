@@ -1,5 +1,6 @@
 'use client'
 
+import { Payment } from '@/prisma/generated/client'
 import { cancelPayment } from '@/src/actions/payments'
 import {
   AlertDialog,
@@ -17,7 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
-import { Payment } from '@prisma/client'
 import { CircleX, Loader2, MoreVertical } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'

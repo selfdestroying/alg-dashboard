@@ -1,6 +1,10 @@
 'use client'
+import { Lesson, Prisma } from '@/prisma/generated/client'
+import { AttendanceStatus } from '@/prisma/generated/enums'
+import DragScrollArea from '@/src/components/drag-scroll-area'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { cn, getFullName } from '@/src/lib/utils'
-import { AttendanceStatus, Lesson, Prisma } from '@prisma/client'
 import {
   ColumnDef,
   flexRender,
@@ -15,15 +19,6 @@ import { toZonedTime } from 'date-fns-tz'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import DragScrollArea from '../../../../../components/drag-scroll-area'
-import { Popover, PopoverContent, PopoverTrigger } from '../../../../../components/ui/popover'
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../../../../components/ui/table'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{

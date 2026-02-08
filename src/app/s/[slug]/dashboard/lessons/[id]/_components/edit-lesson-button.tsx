@@ -1,6 +1,6 @@
 'use client'
 
-import { timeSlots } from '@/app/dashboard/groups/_components/create-group-dialog'
+import { Lesson } from '@/prisma/generated/client'
 import { updateLesson } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
@@ -24,13 +24,13 @@ import {
   SelectValue,
 } from '@/src/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Lesson } from '@prisma/client'
 import { ru } from 'date-fns/locale'
 import { Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
+import { timeSlots } from '../../../groups/_components/create-group-dialog'
 
 interface EditLessonButtonProps {
   lesson: Lesson

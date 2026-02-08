@@ -1,4 +1,5 @@
 'use client'
+import { Prisma } from '@/prisma/generated/client'
 import { deleteTeacherLesson, updateTeacherLesson } from '@/src/actions/lessons'
 import {
   AlertDialog,
@@ -29,7 +30,6 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/c
 import { Input } from '@/src/components/ui/input'
 import { getFullName } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Prisma } from '@prisma/client'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
