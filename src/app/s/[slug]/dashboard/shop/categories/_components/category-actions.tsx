@@ -1,5 +1,6 @@
 'use client'
 
+import { Category } from '@/prisma/generated/client'
 import { deleteCategory, updateCategory } from '@/src/actions/categories'
 import {
   AlertDialog,
@@ -31,7 +32,6 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Category } from '@prisma/client'
 import { Loader, Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'

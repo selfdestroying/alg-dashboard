@@ -1,5 +1,6 @@
 'use client'
 
+import { Order } from '@/prisma/generated/client'
 import { changeOrderStatus, OrderWithProductAndStudent } from '@/src/actions/orders'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -27,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
-import { Order } from '@prisma/client'
 import { Loader, MoreVertical, Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -43,7 +43,7 @@ export default function OrderActions({ order }: OrderActionsProps) {
   const [isPending, startTransition] = useTransition()
   const [status, setStatus] = useState<Order['status']>(order.status)
 
-  const handleChangeTheme = () => {
+  const handleChangeStatus = () => {
     startTransition(() => {
       const ok = changeOrderStatus(order, status)
       toast.promise(ok, {
@@ -82,8 +82,8 @@ export default function OrderActions({ order }: OrderActionsProps) {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Редактировать категорию</DialogTitle>
-            <DialogDescription>Обновите информацию о категории</DialogDescription>
+            <DialogTitle>Редактировать заказ</DialogTitle>
+            <DialogDescription>Обновите информацию о заказе</DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Field>
@@ -108,7 +108,7 @@ export default function OrderActions({ order }: OrderActionsProps) {
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button disabled={isPending} onClick={handleChangeTheme}>
+            <Button disabled={isPending} onClick={handleChangeStatus}>
               {isPending && <Loader className="animate-spin" />}
               Сохранить
             </Button>

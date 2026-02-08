@@ -13,6 +13,8 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -30,6 +32,8 @@ const AddCategorySchema = z.object({
 type AddCategoryFormSchemaType = z.infer<typeof AddCategorySchema>
 
 export default function AddCategoryButton() {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<AddCategoryFormSchemaType>({
@@ -40,7 +44,7 @@ export default function AddCategoryButton() {
   })
   const onSubmit = (values: AddCategoryFormSchemaType) => {
     startTransition(() => {
-      const ok = createCategory({ data: values })
+      const ok = createCategory({ data: { ...values, organizationId } })
       toast.promise(ok, {
         loading: 'Создание категории...',
         success: 'Категория успешно создана!',
@@ -52,6 +56,11 @@ export default function AddCategoryButton() {
       })
     })
   }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger render={<Button size={'icon'} />}>

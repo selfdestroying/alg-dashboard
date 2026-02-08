@@ -1,4 +1,5 @@
 'use client'
+import { Category } from '@/prisma/generated/client'
 import { createProduct } from '@/src/actions/products'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -21,9 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { Textarea } from '@/src/components/ui/textarea'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Category } from '@prisma/client'
 import { Loader, Plus } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -59,6 +61,8 @@ const AddProductSchema = z.object({
 type AddProductFormSchemaType = z.infer<typeof AddProductSchema>
 
 export default function AddProductButton({ categories }: { categories: Category[] }) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<AddProductFormSchemaType>({
@@ -80,6 +84,7 @@ export default function AddProductButton({ categories }: { categories: Category[
           data: {
             ...payload,
             categoryId: Number(category.value),
+            organizationId,
           },
         },
         image
@@ -104,6 +109,10 @@ export default function AddProductButton({ categories }: { categories: Category[
       })),
     [categories]
   )
+
+  if (isSessionLoading) {
+    return <Skeleton className="animate-spin" />
+  }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger render={<Button size={'icon'} />}>

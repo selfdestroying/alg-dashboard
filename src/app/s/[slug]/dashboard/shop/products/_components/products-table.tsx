@@ -44,9 +44,9 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import { Category } from '@/prisma/generated/client'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Label } from '@/src/components/ui/label'
-import { Category } from '@prisma/client'
 import Image from 'next/image'
 import ProductActions from './product-actions'
 

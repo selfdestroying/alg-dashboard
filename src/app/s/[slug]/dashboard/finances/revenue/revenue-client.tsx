@@ -1,12 +1,20 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { GroupType, LessonStatus, Prisma } from '@/prisma/generated/client'
+import { getLessons } from '@/src/actions/lessons'
+import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
+import { Badge } from '@/src/components/ui/badge'
+import { Button } from '@/src/components/ui/button'
+import { Calendar } from '@/src/components/ui/calendar'
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/src/components/ui/collapsible'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { Separator } from '@/src/components/ui/separator'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -14,18 +22,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { cn, getFullName, getGroupName } from '@/lib/utils'
-import { getLessons } from '@/src/actions/lessons'
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/src/components/ui/collapsible'
+} from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useData } from '@/src/providers/data-provider'
-import { GroupType, LessonStatus, Prisma } from '@prisma/client'
+import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
+import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
+import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
+import { cn, getGroupName } from '@/src/lib/utils'
 import {
   endOfMonth,
   endOfWeek,
@@ -56,7 +59,15 @@ import {
   X,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react'
 import { DateRange } from 'react-day-picker'
 
 // Типы данных
@@ -217,6 +228,8 @@ function transformLessonsToRevenueData(lessons: LessonWithAttendance[]): DayReve
 }
 
 export default function RevenueClient() {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
@@ -224,7 +237,6 @@ export default function RevenueClient() {
   const [selectedTeachers, setSelectedTeachers] = useState<TableFilterItem[]>([])
   const [isPending, startTransition] = useTransition()
 
-  const { locations, courses, users } = useData()
   const [lessons, setLessons] = useState<LessonWithAttendance[]>([])
 
   const fetchData = useCallback(async () => {
@@ -248,6 +260,7 @@ export default function RevenueClient() {
 
       const lessonsData = await getLessons({
         where: {
+          organizationId,
           date: { gte: from, lte: to },
           group: Object.keys(groupFilter).length > 0 ? groupFilter : undefined,
           teachers: teacherFilter,
@@ -265,13 +278,13 @@ export default function RevenueClient() {
     } else {
       setLessons([])
     }
-  }, [dateRange, selectedCourses, selectedLocations, selectedTeachers])
+  }, [dateRange, selectedCourses, selectedLocations, selectedTeachers, organizationId])
 
   useEffect(() => {
     startTransition(() => {
       fetchData()
     })
-  }, [fetchData])
+  }, [fetchData, organizationId])
 
   // Трансформированные данные
   const revenueData = useMemo(() => transformLessonsToRevenueData(lessons), [lessons])
@@ -298,23 +311,6 @@ export default function RevenueClient() {
     }
   }, [revenueData])
 
-  const mappedCourses = useMemo(
-    () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
-    [courses]
-  )
-  const mappedLocations = useMemo(
-    () => locations.map((location) => ({ label: location.name, value: location.id.toString() })),
-    [locations]
-  )
-  const mappedTeachers = useMemo(
-    () =>
-      users.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id.toString(),
-      })),
-    [users]
-  )
-
   const handlePresetSelect = (preset: (typeof datePresets)[0]) => {
     setDateRange(preset.getValue())
     setIsCalendarOpen(false)
@@ -324,6 +320,10 @@ export default function RevenueClient() {
     if (!dateRange?.from) return 'Выберите период'
     if (!dateRange.to) return format(dateRange.from, 'd MMM yyyy', { locale: ru })
     return `${format(dateRange.from, 'd MMM', { locale: ru })} – ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
+  }
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
   }
 
   return (
@@ -384,13 +384,12 @@ export default function RevenueClient() {
                 </Button>
               )}
             </div>
-            <TableFilter
-              items={mappedTeachers}
-              label="Преподаватель"
-              onChange={setSelectedTeachers}
+            <Filters
+              organizationId={organizationId!}
+              onCoursesChange={setSelectedCourses}
+              onLocationsChange={setSelectedLocations}
+              onTeachersChange={setSelectedTeachers}
             />
-            <TableFilter items={mappedCourses} label="Курс" onChange={setSelectedCourses} />
-            <TableFilter items={mappedLocations} label="Локация" onChange={setSelectedLocations} />
           </div>
         </CardContent>
       </Card>
@@ -472,6 +471,55 @@ export default function RevenueClient() {
         </div>
       )}
     </div>
+  )
+}
+
+interface FiltersProps {
+  organizationId: number
+  onCoursesChange: Dispatch<SetStateAction<TableFilterItem[]>>
+  onLocationsChange: Dispatch<SetStateAction<TableFilterItem[]>>
+  onTeachersChange: Dispatch<SetStateAction<TableFilterItem[]>>
+}
+function Filters({
+  organizationId,
+  onCoursesChange,
+  onLocationsChange,
+  onTeachersChange,
+}: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
+  const { data: locations, isLoading: isLocationsLoading } =
+    useMappedLocationListQuery(organizationId)
+  const { data: mappedUsers, isLoading: isMembersLoading } =
+    useMappedMemberListQuery(organizationId)
+
+  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
+    return (
+      <>
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </>
+    )
+  }
+
+  return (
+    <>
+      {courses ? (
+        <TableFilter label="Курс" items={courses} onChange={onCoursesChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {locations ? (
+        <TableFilter label="Локация" items={locations} onChange={onLocationsChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {mappedUsers ? (
+        <TableFilter label="Преподаватель" items={mappedUsers} onChange={onTeachersChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+    </>
   )
 }
 

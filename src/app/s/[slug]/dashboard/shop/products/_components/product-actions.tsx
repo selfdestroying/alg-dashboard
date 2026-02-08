@@ -1,5 +1,6 @@
 'use client'
 
+import { Category, Prisma } from '@/prisma/generated/client'
 import { deleteProduct, updateProduct } from '@/src/actions/products'
 import {
   AlertDialog,
@@ -40,7 +41,6 @@ import {
 } from '@/src/components/ui/select'
 import { Textarea } from '@/src/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Category, Prisma } from '@prisma/client'
 import { Loader, Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import Image from 'next/image'
 import { useMemo, useState, useTransition } from 'react'

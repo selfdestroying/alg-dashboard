@@ -7,13 +7,11 @@ import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { cn } from '@/src/lib/utils'
 
-const PasswordInput = ({
-  ref,
-  className,
-  ...props
-}: any & {
+interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   ref: React.RefObject<HTMLInputElement>
-}) => {
+}
+
+const PasswordInput = ({ ref, className, ...props }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = React.useState(false)
   const disabled = props.value === '' || props.value === undefined || props.disabled
 

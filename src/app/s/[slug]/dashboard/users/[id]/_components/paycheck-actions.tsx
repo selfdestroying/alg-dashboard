@@ -42,9 +42,7 @@ interface AddCheckButtonProps {
 }
 
 const AddCheckSchema = z.object({
-  amount: z
-    .number('Укажите корректную сумму')
-    .min(0, 'Сумма должна быть неотрицательной'),
+  amount: z.number('Укажите корректную сумму').min(0, 'Сумма должна быть неотрицательной'),
   date: z.date('Укажите корректную дату'),
   comment: z.string('Укажите комментарий').max(255),
 })
@@ -164,8 +162,7 @@ export default function PayCheckActions({ paycheck, userName }: AddCheckButtonPr
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
-              Вы уверены что хотите удалить <b>Чек № {paycheck.id}</b> из списка
-              преподавателей?
+              Вы уверены что хотите удалить <b>Чек № {paycheck.id}</b> из списка преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
 

@@ -1,4 +1,5 @@
 'use client'
+import { Category } from '@/prisma/generated/client'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
@@ -19,7 +20,6 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { cn } from '@/src/lib/utils'
-import { Category } from '@prisma/client'
 import {
   ColumnDef,
   flexRender,

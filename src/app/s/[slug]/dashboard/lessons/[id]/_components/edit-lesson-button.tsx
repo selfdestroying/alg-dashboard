@@ -63,7 +63,6 @@ export default function EditLessonButton({ lesson }: EditLessonButtonProps) {
 
   const handleSubmit = (values: EditLessonSchemaType) => {
     startTransition(() => {
-      console.log('Submitting', values)
       const ok = updateLesson({
         where: { id: lesson.id },
         data: values,

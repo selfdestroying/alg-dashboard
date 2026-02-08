@@ -1,4 +1,3 @@
-import ProductsTable from '@/app/dashboard/shop/products/_components/products-table'
 import { getCategories } from '@/src/actions/categories'
 import { getProducts } from '@/src/actions/products'
 import {
@@ -9,14 +8,29 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import AddProductButton from './_components/add-product-button'
+import ProductsTable from './_components/products-table'
 
 export default async function Page() {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const products = await getProducts({
+    where: { organizationId: session.members[0].organizationId },
     include: { category: true },
     orderBy: { id: 'asc' },
   })
-  const categories = await getCategories()
+  const categories = await getCategories({
+    where: { organizationId: session.members[0].organizationId },
+  })
 
   return (
     <>

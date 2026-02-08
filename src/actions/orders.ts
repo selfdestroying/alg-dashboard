@@ -19,7 +19,6 @@ export const changeOrderStatus = async (
   order: OrderWithProductAndStudent,
   newStatus: OrderStatus
 ) => {
-  console.log('Changing order status:', order.id, 'from', order.status, 'to', newStatus)
   await prisma.order.update({ where: { id: order.id }, data: { status: newStatus } })
   if ((order.status == 'PENDING' || order.status == 'COMPLETED') && newStatus == 'CANCELLED') {
     await prisma.student.update({

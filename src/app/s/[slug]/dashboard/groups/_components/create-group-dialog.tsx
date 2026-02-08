@@ -161,7 +161,7 @@ export default function CreateGroupDialog() {
           <SheetDescription>Заполните форму ниже, чтобы создать новую группу.</SheetDescription>
         </SheetHeader>
         <form
-          onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+          onSubmit={form.handleSubmit(onSubmit)}
           id="create-group-form"
           className="no-scrollbar overflow-auto px-6 py-2"
         >

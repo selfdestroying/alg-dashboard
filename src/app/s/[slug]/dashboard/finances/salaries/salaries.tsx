@@ -1,6 +1,10 @@
 'use client'
+import { PayCheck, Prisma } from '@/prisma/generated/browser'
+import { User } from '@/prisma/generated/client'
+import { GroupType } from '@/prisma/generated/enums'
 import { getLessons } from '@/src/actions/lessons'
 import { getPaychecks } from '@/src/actions/paycheck'
+import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -10,11 +14,16 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/src/components/ui/collapsible'
-import { usePermission } from '@/src/hooks/usePermission'
-import { getFullName, getGroupName } from '@/src/lib/utils'
-import { useAuth } from '@/src/providers/auth-provider'
-import { UserDTO } from '@/types/user'
-import { GroupType, PayCheck, Prisma } from '@prisma/client'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
+import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
+import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
+import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 import { cva } from 'class-variance-authority'
 import {
   endOfMonth,
@@ -37,11 +46,19 @@ import {
   MapPin,
   Receipt,
   TrendingUp,
-  User,
+  UserIcon,
   Users,
   X,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react'
 import { type DateRange } from 'react-day-picker'
 import { lessonStatusMap } from '../../lessons/[id]/_components/info-section'
 
@@ -53,7 +70,7 @@ const groupTypeMap: Record<GroupType, string> = {
 
 const groupTypeIcon: Record<GroupType, React.ReactNode> = {
   GROUP: <Users className="h-3 w-3" />,
-  INDIVIDUAL: <User className="h-3 w-3" />,
+  INDIVIDUAL: <UserIcon className="h-3 w-3" />,
   INTENSIVE: <TrendingUp className="h-3 w-3" />,
 }
 
@@ -79,7 +96,7 @@ type LessonWithPrice = Prisma.LessonGetPayload<{
 }> & { price: number }
 
 type TeacherSalaryData = {
-  teacher: UserDTO
+  teacher: User
   lessons: LessonWithPrice[]
 }
 
@@ -116,15 +133,15 @@ const datePresets = [
 ]
 
 export default function Salaries() {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
   const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])
   const [selectedTeachers, setSelectedTeachers] = useState<TableFilterItem[]>([])
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const canViewSalary = usePermission('VIEW_OTHER_SALARY')
-  const user = useAuth()
-  const { locations, courses, users } = useData()
+  const { data: hasPermission } = useOrganizationPermissionQuery({ salary: ['readAll'] })
 
   const [lessons, setLessons] = useState<TeacherSalaryData[]>([])
   const [paychecks, setPaychecks] = useState<PayCheck[]>([])
@@ -146,27 +163,28 @@ export default function Salaries() {
       }
 
       // Фильтр по преподавателям
-      const teacherFilter = canViewSalary
+      const teacherFilter = hasPermission?.success
         ? selectedTeachers.length > 0
           ? { some: { teacherId: { in: selectedTeachers.map((t) => +t.value) } } }
           : undefined
-        : { some: { teacherId: user.id } }
+        : { some: { teacherId: Number(session?.user.id) } }
 
       const [lessonsData, paychecksData] = await Promise.all([
         getLessons({
           where: {
+            organizationId,
             date: { gte: startDate, lte: endDate },
             teachers: teacherFilter,
             group: Object.keys(groupFilter).length > 0 ? groupFilter : undefined,
           },
           include: {
             teachers: {
-              where: !canViewSalary
-                ? { teacherId: user.id }
+              where: !hasPermission?.success
+                ? { teacherId: Number(session?.user.id) }
                 : selectedTeachers.length > 0
                   ? { teacherId: { in: selectedTeachers.map((t) => +t.value) } }
                   : undefined,
-              include: { teacher: { include: { role: true } } },
+              include: { teacher: true },
             },
             group: {
               include: {
@@ -213,31 +231,21 @@ export default function Salaries() {
       setLessons([])
       setPaychecks([])
     }
-  }, [dateRange, canViewSalary, user.id, selectedCourses, selectedLocations, selectedTeachers])
+  }, [
+    dateRange,
+    session,
+    selectedCourses,
+    selectedLocations,
+    selectedTeachers,
+    hasPermission,
+    organizationId,
+  ])
 
   useEffect(() => {
     startTransition(() => {
       fetchData()
     })
   }, [fetchData])
-
-  // Маппинг данных для фильтров
-  const mappedCourses = useMemo(
-    () => courses.map((course) => ({ label: course.name, value: course.id.toString() })),
-    [courses]
-  )
-  const mappedLocations = useMemo(
-    () => locations.map((location) => ({ label: location.name, value: location.id.toString() })),
-    [locations]
-  )
-  const mappedTeachers = useMemo(
-    () =>
-      users.map((user) => ({
-        label: getFullName(user.firstName, user.lastName),
-        value: user.id.toString(),
-      })),
-    [users]
-  )
 
   // Сводная статистика
   const stats = useMemo(() => {
@@ -340,15 +348,14 @@ export default function Salaries() {
             </div>
 
             {/* Фильтры */}
-            {canViewSalary && (
-              <TableFilter
-                items={mappedTeachers}
-                label="Преподаватель"
-                onChange={setSelectedTeachers}
+            {hasPermission?.success && (
+              <Filters
+                organizationId={organizationId!}
+                onCoursesChange={setSelectedCourses}
+                onLocationsChange={setSelectedLocations}
+                onTeachersChange={setSelectedTeachers}
               />
             )}
-            <TableFilter items={mappedCourses} label="Курс" onChange={setSelectedCourses} />
-            <TableFilter items={mappedLocations} label="Локация" onChange={setSelectedLocations} />
           </div>
         </CardContent>
       </Card>
@@ -440,6 +447,55 @@ export default function Salaries() {
   )
 }
 
+interface FiltersProps {
+  organizationId: number
+  onCoursesChange: Dispatch<SetStateAction<TableFilterItem[]>>
+  onLocationsChange: Dispatch<SetStateAction<TableFilterItem[]>>
+  onTeachersChange: Dispatch<SetStateAction<TableFilterItem[]>>
+}
+function Filters({
+  organizationId,
+  onCoursesChange,
+  onLocationsChange,
+  onTeachersChange,
+}: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
+  const { data: locations, isLoading: isLocationsLoading } =
+    useMappedLocationListQuery(organizationId)
+  const { data: mappedUsers, isLoading: isMembersLoading } =
+    useMappedMemberListQuery(organizationId)
+
+  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
+    return (
+      <>
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </>
+    )
+  }
+
+  return (
+    <>
+      {courses ? (
+        <TableFilter label="Курс" items={courses} onChange={onCoursesChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {locations ? (
+        <TableFilter label="Локация" items={locations} onChange={onLocationsChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {mappedUsers ? (
+        <TableFilter label="Преподаватель" items={mappedUsers} onChange={onTeachersChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+    </>
+  )
+}
+
 // Компонент карточки статистики
 interface StatCardProps {
   title: string
@@ -511,14 +567,14 @@ function TeacherCard({ data, paychecks }: TeacherCardProps) {
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full">
-                  <User className="h-5 w-5" />
+                  <UserIcon className="h-5 w-5" />
                 </div>
                 <div>
                   <CardTitle className="text-base">
                     {getFullName(data.teacher.firstName, data.teacher.lastName)}
                   </CardTitle>
                   {data.teacher.role && (
-                    <p className="text-muted-foreground text-xs">{data.teacher.role.name}</p>
+                    <p className="text-muted-foreground text-xs">{data.teacher.role}</p>
                   )}
                 </div>
               </div>

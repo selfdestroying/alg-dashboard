@@ -56,7 +56,6 @@ const columns: ColumnDef<Prisma.MemberGetPayload<{ include: { user: true } }>>[]
     accessorFn: (value) => value.role,
     cell: ({ row }) => memberRoleLabels[row.original.role as OrganizationRole],
     filterFn: (row, id, filterValue) => {
-      console.log(filterValue)
       return filterValue.length === 0 || filterValue.includes(row.original.role)
     },
   },

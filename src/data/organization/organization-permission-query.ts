@@ -9,7 +9,6 @@ export async function getOrganizationPermission(permission: OrganizationPermissi
   })
   if (error) throw new Error(error.message)
 
-  console.log('Permission check result:', data) // Debug log
   return data
 }
 export type OrganizationPermissionData = Awaited<ReturnType<typeof getOrganizationPermission>>

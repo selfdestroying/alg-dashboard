@@ -43,13 +43,7 @@ import {
 import { useState } from 'react'
 import PayCheckActions from './paycheck-actions'
 
-export default function PayChecksTable({
-  data,
-  userName,
-}: {
-  data: PayCheck[]
-  userName: string
-}) {
+export default function PayChecksTable({ data, userName }: { data: PayCheck[]; userName: string }) {
   const columns: ColumnDef<PayCheck>[] = [
     {
       header: 'Дата',

@@ -6,7 +6,6 @@ import { lessonKeys } from './keys'
 
 async function getLessonList(organizationId: number, date: Date) {
   const zoned = fromZonedTime(date, 'Europe/Moscow')
-  console.log(organizationId)
   const data = await getLessons({
     where: {
       date: zoned,

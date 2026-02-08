@@ -7,11 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import AddCategoryButton from './_components/add-category-button'
 import CategoriesTable from './_components/categories-table'
 
 export default async function Page() {
-  const categories = await getCategories()
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
+  const categories = await getCategories({
+    where: { organizationId: session.members[0].organizationId },
+  })
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">

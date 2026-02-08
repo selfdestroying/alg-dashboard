@@ -18,7 +18,6 @@ const createAccounts = async () => {
         password: pass,
       },
     })
-    console.log('Created account for user:', user.name)
   }
 }
 

@@ -28,20 +28,14 @@ interface AddCheckButtonProps {
 }
 
 const AddCheckSchema = z.object({
-  amount: z
-    .number('Укажите корректную сумму')
-    .min(0, 'Сумма должна быть неотрицательной'),
+  amount: z.number('Укажите корректную сумму').min(0, 'Сумма должна быть неотрицательной'),
   date: z.date('Укажите корректную дату'),
   comment: z.string('Укажите комментарий').max(255),
 })
 
 type AddCheckSchemaType = z.infer<typeof AddCheckSchema>
 
-export default function AddCheckButton({
-  organizationId,
-  userId,
-  userName,
-}: AddCheckButtonProps) {
+export default function AddCheckButton({ organizationId, userId, userName }: AddCheckButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 

@@ -13,9 +13,9 @@ import prisma from '@/src/lib/prisma'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import AddCheckButton from '../../../users/[id]/_components/add-check-button'
+import PayChecksTable from '../../../users/[id]/_components/paycheks-table'
 import EditUserButton from '../_components/edit-user-dialog'
-import AddCheckButton from './_components/add-check-button'
-import PayChecksTable from './_components/paycheks-table'
 
 const memberRoleLabels = {
   owner: 'Владелец',
@@ -56,7 +56,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   })
 
   const roleLabel = memberRoleLabels[member.role as OrganizationRole] ?? member.role ?? '-'
-  console.log(memberRoleLabels)
   return (
     <div className="space-y-2">
       <Card>

@@ -1,4 +1,3 @@
-import OrdersTable from '@/app/dashboard/shop/orders/_components/orders-table'
 import { getOrders } from '@/src/actions/orders'
 import {
   Card,
@@ -8,9 +7,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import OrdersTable from './_components/orders-table'
 
 export default async function Page() {
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  })
+  if (!session) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
   const orders = await getOrders({
+    where: { organizationId: session.members[0].organizationId },
     include: { product: true, student: true },
     orderBy: { createdAt: 'desc' },
   })

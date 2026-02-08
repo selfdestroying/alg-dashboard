@@ -115,7 +115,7 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
   }
 
   return (
-    <form id="edit-group-form" onSubmit={form.handleSubmit(onSubmit, (err) => console.log(err))}>
+    <form id="edit-group-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
           name="courseId"

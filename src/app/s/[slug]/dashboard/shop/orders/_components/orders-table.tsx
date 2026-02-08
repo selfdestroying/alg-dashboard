@@ -1,4 +1,5 @@
 'use client'
+import { OrderStatus } from '@/prisma/generated/enums'
 import { OrderWithProductAndStudent } from '@/src/actions/orders'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Button } from '@/src/components/ui/button'
@@ -20,7 +21,6 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { cn, getFullName } from '@/src/lib/utils'
-import { OrderStatus } from '@prisma/client'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -143,7 +143,6 @@ export default function OrdersTable({ data }: { data: OrderWithProductAndStudent
 
   const handleStatusFilterChange = (selectedStatuses: TableFilterItem[]) => {
     setFilterValues(selectedStatuses)
-    console.log('Selected Statuses:', selectedStatuses)
     const selectedValues = selectedStatuses.map((status) => status.value)
     setColumnFilters((prev) => {
       const otherFilters = prev.filter((filter) => filter.id !== 'status')
