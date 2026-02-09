@@ -1,7 +1,9 @@
 'use client'
 import { AttendanceWithStudents } from '@/src/actions/attendance'
+import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
+import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
@@ -13,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -21,10 +24,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
+import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
+import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
+import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 import {
   ColumnDef,
-  ColumnFilter,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -48,7 +55,7 @@ import {
   ChevronsRight,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import { DateRange } from 'react-day-picker'
 
 const columns: ColumnDef<AttendanceWithStudents>[] = [
@@ -65,6 +72,7 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
     ),
   },
   {
+    id: 'course',
     header: 'Группа',
     accessorFn: (value) => value.lesson.group.id,
     cell: ({ row }) => (
@@ -75,6 +83,48 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
         {getGroupName(row.original.lesson.group)}
       </Link>
     ),
+    filterFn: (row, id, filterValue) => {
+      return filterValue.length === 0 || filterValue.includes(row.original.lesson.group.course.id)
+    },
+  },
+  {
+    id: 'teacher',
+    header: 'Преподаватель',
+    cell: ({ row }) => {
+      const teachers = row.original.lesson.group.teachers
+      if (!teachers || teachers.length === 0) return <span>-</span>
+      return (
+        <div className="flex gap-x-1">
+          {teachers.map((t, index) => (
+            <span key={t.teacher.id}>
+              <Link
+                href={`/dashboard/users/${t.teacher.id}`}
+                className="text-primary hover:underline"
+              >
+                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+              </Link>
+              {index < teachers.length - 1 && ', '}
+            </span>
+          ))}
+        </div>
+      )
+    },
+    filterFn: (row, columnId, filterValue) => {
+      const teacherIds = row.original.lesson.group.teachers?.map((t) => t.teacher.id) ?? []
+      return (
+        filterValue.length === 0 || teacherIds.some((teacherId) => filterValue.includes(teacherId))
+      )
+    },
+  },
+  {
+    id: 'location',
+    header: 'Локация',
+    cell: ({ row }) => row.original.lesson.group.location?.name ?? '-',
+    filterFn: (row, id, filterValue) => {
+      return (
+        filterValue.length === 0 || filterValue.includes(row.original.lesson.group.location?.id)
+      )
+    },
   },
   {
     id: 'date',
@@ -92,6 +142,8 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
 ]
 
 export default function StudentsTable({ data }: { data: AttendanceWithStudents[] }) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const organizationId = session?.members[0].organizationId
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []
@@ -104,7 +156,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
   })
   const [sorting, setSorting] = useState<SortingState>([])
   const [range, setRange] = useState<DateRange | undefined>(undefined)
-  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const table = useReactTable({
     data,
     columns,
@@ -156,9 +208,13 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     setRange(range)
   }
 
+  if (isSessionLoading || !session) {
+    return <Skeleton className="h-full w-full" />
+  }
+
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="flex flex-col items-end gap-2 md:flex-row">
+      <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
         <Input
           value={search ?? ''}
           onChange={(e) => {
@@ -167,6 +223,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
           }}
           placeholder="Поиск..."
         />
+        <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
         <Popover>
           <PopoverTrigger
             render={
@@ -194,7 +251,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
             />
           </PopoverContent>
         </Popover>
-      </div>
+      </FieldGroup>
       <Table className="overflow-y-auto">
         <TableHeader className="bg-card sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -321,5 +378,90 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
         </div>
       </div>
     </div>
+  )
+}
+
+interface FiltersProps {
+  organizationId: number
+  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
+}
+
+function Filters({ organizationId, setFilters }: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
+  const { data: locations, isLoading: isLocationsLoading } =
+    useMappedLocationListQuery(organizationId)
+  const { data: mappedUsers, isLoading: isMembersLoading } =
+    useMappedMemberListQuery(organizationId)
+
+  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
+    return (
+      <>
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </>
+    )
+  }
+
+  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
+    const courseIds = selectedCourses.map((course) => Number(course.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'course')
+      return [
+        ...otherFilters,
+        {
+          id: 'course',
+          value: courseIds,
+        },
+      ]
+    })
+  }
+
+  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
+    const locationIds = selectedLocations.map((location) => Number(location.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'location')
+      return [
+        ...otherFilters,
+        {
+          id: 'location',
+          value: locationIds,
+        },
+      ]
+    })
+  }
+
+  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
+    const userIds = selectedUsers.map((user) => Number(user.value))
+    setFilters((old) => {
+      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
+      return [
+        ...otherFilters,
+        {
+          id: 'teacher',
+          value: userIds,
+        },
+      ]
+    })
+  }
+
+  return (
+    <>
+      {courses ? (
+        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {locations ? (
+        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+      {mappedUsers ? (
+        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
+      ) : (
+        <Skeleton className="h-8 w-full" />
+      )}
+    </>
   )
 }

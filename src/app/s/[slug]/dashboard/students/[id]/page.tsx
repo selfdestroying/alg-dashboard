@@ -20,7 +20,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
   const { id } = await params
   const student = await getStudent({
-    where: { id: Number(id) },
+    where: { id: Number(id), organizationId: session.members[0].organizationId },
     include: {
       groups: {
         include: {
@@ -52,6 +52,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const groups = await getGroups({
     where: {
       students: { none: { studentId: student.id } },
+      organizationId: session.members[0].organizationId,
     },
     include: {
       students: true,

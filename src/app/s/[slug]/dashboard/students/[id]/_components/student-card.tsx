@@ -84,7 +84,9 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
           <div className="text-muted-foreground flex items-center gap-2">
             <Label>Средняя стоимость урока</Label>
           </div>
-          <p className="mt-1 font-medium">{student.totalPayments / student.totalLessons}</p>
+          <p className="mt-1 font-medium">
+            {(student.totalPayments / student.totalLessons).toFixed(2)}
+          </p>
         </div>
 
         <div>

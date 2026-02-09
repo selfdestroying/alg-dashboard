@@ -30,6 +30,7 @@ export async function returnToGroup(payload: {
   dismissedId: number
   groupId: number
   studentId: number
+  organizationId: number
 }) {
   const { dismissedId, groupId, studentId } = payload
   await prisma.$transaction(async (tx) => {
@@ -52,11 +53,13 @@ export async function returnToGroup(payload: {
       data: {
         studentId,
         groupId,
+        organizationId: payload.organizationId,
       },
     })
     if (lastAttendance) {
       const lessons = await tx.lesson.findMany({
         where: {
+          organizationId: payload.organizationId,
           groupId,
           date: { gt: lastAttendance.lesson.date },
         },
@@ -64,6 +67,7 @@ export async function returnToGroup(payload: {
       for (const lesson of lessons) {
         await tx.attendance.create({
           data: {
+            organizationId: lesson.organizationId,
             lessonId: lesson.id,
             studentId,
             status: 'UNSPECIFIED',

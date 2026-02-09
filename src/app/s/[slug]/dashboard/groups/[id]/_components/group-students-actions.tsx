@@ -39,6 +39,8 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
@@ -72,6 +74,7 @@ type DismissStudentSchemaType = z.infer<typeof dismissStudentSchema>
 type TransferStudentSchemaType = z.infer<typeof transferStudentSchema>
 
 export default function GroupStudentActions({ sg }: UsersActionsProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
@@ -85,6 +88,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     async function fetchGroups() {
       const data = await getGroups({
         where: {
+          organizationId: session?.members[0].organizationId,
           NOT: {
             id: sg.groupId,
           },
@@ -108,7 +112,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       )
     }
     fetchGroups()
-  }, [sg.groupId])
+  }, [sg.groupId, isSessionLoading, session?.members])
 
   const dismissForm = useForm<DismissStudentSchemaType>({
     resolver: zodResolver(dismissStudentSchema),
@@ -220,6 +224,10 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   useEffect(() => {
     dismissForm.reset()
   }, [dismissForm, dismissDialogOpen])
+
+  if (isSessionLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
 
   return (
     <>

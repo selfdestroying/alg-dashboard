@@ -18,6 +18,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { Loader2, MoreVertical, Trash2, Undo } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -35,6 +36,7 @@ export default function DismissedActions({
   studentId,
   groupId,
 }: DismissedActionsProps) {
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -42,7 +44,12 @@ export default function DismissedActions({
 
   const handleReturnToGroup = () => {
     startTransition(() => {
-      const ok = returnToGroup({ dismissedId, groupId, studentId })
+      const ok = returnToGroup({
+        dismissedId,
+        groupId,
+        studentId,
+        organizationId: session!.members[0].organizationId,
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Ученик успешно возвращен в группу',
