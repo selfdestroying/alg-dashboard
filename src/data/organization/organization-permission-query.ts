@@ -1,5 +1,5 @@
 import { authClient } from '@/src/lib/auth-client'
-import { OrganizationPermissionCheck } from '@/src/shared/organization-permeissions'
+import { OrganizationPermissionCheck } from '@/src/shared/organization-permissions'
 import { useQuery } from '@tanstack/react-query'
 import { organizationKeys } from './keys'
 
