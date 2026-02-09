@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth'
+import { betterAuth, type BetterAuthOptions } from 'better-auth'
 import { localization } from 'better-auth-localization'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
@@ -8,16 +8,13 @@ import {
   ac as orgAc,
   owner as orgOwner,
   teacher,
-} from '../shared/organization-permeissions'
+} from '../shared/organization-permissions'
 import { ac, admin, owner, user } from '../shared/permissions'
 import prisma from './prisma'
 
-export type Session = typeof auth.$Infer.Session
-export type ActiveOrganization = typeof auth.$Infer.ActiveOrganization
-export type OrganizationRole = ActiveOrganization['members'][number]['role']
-export type Members = ActiveOrganization['members']
+const ROOT_DOMAIN = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'alg.test:3000').split(':')[0]
 
-export const auth = betterAuth({
+const options = {
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
@@ -41,7 +38,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    // requireEmailVerification: true,
+    disableSignUp: true,
   },
   rateLimit: {
     enabled: true,
@@ -50,8 +47,9 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session) => {
+          const userId = Number(session.userId)
           const member = await prisma.member.findFirst({
-            where: { userId: Number(session.userId) },
+            where: { userId },
           })
 
           return {
@@ -65,28 +63,27 @@ export const auth = betterAuth({
     },
   },
   advanced: {
-    useSecureCookies: false,
+    useSecureCookies: process.env.NODE_ENV === 'production',
     crossSubDomainCookies: {
       enabled: true,
-      domain: '.alg.test',
+      domain: `.${ROOT_DOMAIN}`,
     },
-    cookiePrefix: 'alg',
+    cookiePrefix: 'dashboard',
     database: {
       generateId: 'serial',
     },
   },
   trustedOrigins: (request) => {
-    // Разрешаем все поддомены alg.test
     if (!request) return []
     const origin = request.headers.get('origin')
     if (!origin) return []
     try {
       const url = new URL(origin)
-      if (url.hostname.endsWith('.alg.test') || url.hostname === 'alg.test') {
+      if (url.hostname.endsWith(`.${ROOT_DOMAIN}`) || url.hostname === ROOT_DOMAIN) {
         return [origin]
       }
     } catch {
-      // Невалидный URL
+      throw new Error('Invalid origin URL')
     }
     return []
   },
@@ -94,29 +91,6 @@ export const auth = betterAuth({
     localization({
       defaultLocale: 'ru-RU',
       fallbackLocale: 'default',
-    }),
-    customSession(async ({ user, session }) => {
-      const members = await prisma.member.findMany({
-        where: { userId: Number(session.userId) },
-        include: {
-          organization: true,
-        },
-      })
-
-      const roles =
-        (
-          await prisma.user.findFirst({
-            where: { id: Number(session.userId) },
-            select: { role: true },
-          })
-        )?.role?.split(',') || []
-
-      return {
-        user,
-        roles,
-        members,
-        session,
-      }
     }),
     nextCookies(),
     adminPlugin({
@@ -142,4 +116,39 @@ export const auth = betterAuth({
       },
     }),
   ],
+} satisfies BetterAuthOptions
+
+export const auth = betterAuth({
+  ...options,
+  plugins: [
+    ...(options.plugins ?? []),
+    customSession(async ({ user, session }) => {
+      const userId = Number(session.userId)
+
+      const [members, userRecord] = await Promise.all([
+        prisma.member.findMany({
+          where: { userId },
+          include: { organization: true },
+        }),
+        prisma.user.findFirst({
+          where: { id: userId },
+          select: { role: true },
+        }),
+      ])
+
+      const roles = userRecord?.role?.split(',') ?? []
+
+      return {
+        user,
+        session,
+        roles,
+        members,
+      }
+    }, options),
+  ],
 })
+
+export type Session = typeof auth.$Infer.Session
+export type ActiveOrganization = typeof auth.$Infer.ActiveOrganization
+export type OrganizationRole = ActiveOrganization['members'][number]['role']
+export type Members = ActiveOrganization['members']

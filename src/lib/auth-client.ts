@@ -5,25 +5,19 @@ import {
   organizationClient,
 } from 'better-auth/client/plugins'
 import { nextCookies } from 'better-auth/next-js'
-import { createAuthClient } from 'better-auth/react' // make sure to import from better-auth/react
+import { createAuthClient } from 'better-auth/react'
 import {
   manager,
   ac as orgAc,
   owner as orgOwner,
   teacher,
-} from '../shared/organization-permeissions'
+} from '../shared/organization-permissions'
 import { ac, admin, owner, user } from '../shared/permissions'
-import { auth } from './auth'
+import type { auth } from './auth'
 
 export const authClient = createAuthClient({
   plugins: [
-    inferAdditionalFields<typeof auth>({
-      user: {
-        role: {
-          type: 'string',
-        },
-      },
-    }),
+    inferAdditionalFields<typeof auth>(),
     nextCookies(),
     customSessionClient<typeof auth>(),
     adminClient({
