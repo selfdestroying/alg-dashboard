@@ -1,11 +1,11 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import prisma from '@/src/lib/prisma'
 import { randomUUID } from 'crypto'
 import fs from 'fs/promises'
 import { revalidatePath } from 'next/cache'
 import path from 'path'
+import { Prisma } from '../../prisma/generated/client'
 
 export type ProductWithCategory = Prisma.ProductGetPayload<{ include: { category: true } }>
 

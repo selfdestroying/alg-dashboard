@@ -1,8 +1,8 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '../../prisma/generated/client'
 
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
@@ -30,6 +30,7 @@ export async function returnToGroup(payload: {
   dismissedId: number
   groupId: number
   studentId: number
+  organizationId: number
 }) {
   const { dismissedId, groupId, studentId } = payload
   await prisma.$transaction(async (tx) => {
@@ -52,11 +53,13 @@ export async function returnToGroup(payload: {
       data: {
         studentId,
         groupId,
+        organizationId: payload.organizationId,
       },
     })
     if (lastAttendance) {
       const lessons = await tx.lesson.findMany({
         where: {
+          organizationId: payload.organizationId,
           groupId,
           date: { gt: lastAttendance.lesson.date },
         },
@@ -64,6 +67,7 @@ export async function returnToGroup(payload: {
       for (const lesson of lessons) {
         await tx.attendance.create({
           data: {
+            organizationId: lesson.organizationId,
             lessonId: lesson.id,
             studentId,
             status: 'UNSPECIFIED',
@@ -77,8 +81,9 @@ export async function returnToGroup(payload: {
   revalidatePath('/dashboard/dismissed')
 }
 
-export async function getDismissedStatistics() {
+export async function getDismissedStatistics(organizationId: number) {
   const dismissed = await prisma.dismissed.findMany({
+    where: { organizationId },
     include: {
       group: {
         include: {
@@ -113,6 +118,7 @@ export async function getDismissedStatistics() {
   // Расчет статистики по преподавателям с процентами
   // Собираем информацию о всех студентах преподавателей
   const allGroups = await prisma.teacherGroup.findMany({
+    where: { organizationId },
     include: {
       group: {
         select: {

@@ -1,7 +1,7 @@
 import 'server-only'
 
-import { verifySession } from '@/lib/session'
-import { Prisma, StudentLessonsBalanceChangeReason } from '@prisma/client'
+import { Prisma } from '@/prisma/generated/client'
+import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 
 export type LessonsBalanceAudit = {
   reason: StudentLessonsBalanceChangeReason
@@ -31,17 +31,10 @@ export function parseLessonsBalanceChange(
   return null
 }
 
-export async function requireActorUserId() {
-  const session = await verifySession()
-  if (!session.isAuth || !session.userId) {
-    throw new Error('Требуется авторизация')
-  }
-  return session.userId
-}
-
 export async function writeLessonsBalanceHistoryTx(
   tx: Prisma.TransactionClient,
   args: {
+    organizationId: number
     studentId: number
     actorUserId: number
     reason: StudentLessonsBalanceChangeReason
@@ -64,6 +57,7 @@ export async function writeLessonsBalanceHistoryTx(
       balanceAfter: args.balanceAfter,
       comment: args.comment,
       meta: args.meta as Prisma.InputJsonValue,
+      organizationId: args.organizationId,
     },
   })
 }

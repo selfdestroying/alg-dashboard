@@ -1,0 +1,95 @@
+'use client'
+import { Prisma } from '@/prisma/generated/client'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/src/components/ui/table'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { getFullName } from '@/src/lib/utils'
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import Link from 'next/link'
+import { useMemo } from 'react'
+import BalanceBadge from '../../../lessons/[id]/_components/balance-badge'
+import GroupTeacherActions from './group-teachers-actions'
+
+export default function GroupTeachersTable({
+  data,
+}: {
+  data: Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>[]
+}) {
+  const canEdit = useOrganizationPermissionQuery({ teacherGroup: ['update'] })
+  const columns: ColumnDef<Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>>[] =
+    useMemo(
+      () => [
+        {
+          header: 'Преподаватель',
+          cell: ({ row }) => (
+            <Link
+              href={`/dashboard/users/${row.original.teacher.id}`}
+              className="text-primary hover:underline"
+            >
+              {getFullName(row.original.teacher.firstName, row.original.teacher.lastName)}
+            </Link>
+          ),
+        },
+        {
+          header: 'Ставка',
+          cell: ({ row }) => <BalanceBadge balance={row.original.bid} />,
+        },
+        {
+          id: 'actions',
+          cell: ({ row }) => (canEdit ? <GroupTeacherActions tg={row.original} /> : null),
+        },
+      ],
+      [canEdit]
+    )
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  return (
+    <div className="flex h-full flex-col gap-2">
+      <Table className="overflow-y-auto">
+        <TableHeader className="bg-card sticky top-0 z-10">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Нет преподавателей.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}

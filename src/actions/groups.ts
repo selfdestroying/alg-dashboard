@@ -1,10 +1,10 @@
 'use server'
 
-import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import prisma from '@/src/lib/prisma'
 import { startOfDay } from 'date-fns'
 import { fromZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '../../prisma/generated/client'
 
 export const getGroups = async <T extends Prisma.GroupFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>
@@ -30,6 +30,7 @@ export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
     for (const lesson of group.lessons) {
       await tx.teacherLesson.create({
         data: {
+          organizationId: group.organizationId,
           lessonId: lesson.id,
           teacherId: group.teachers[0].teacherId,
           bid: group.teachers[0].bid,
@@ -66,7 +67,6 @@ export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
     }
 
     nearestWeekDay.setDate(nearestWeekDay.getDate() + diff)
-    console.log(nearestWeekDay)
     for (const lesson of lessons) {
       await prisma.lesson.update({
         where: { id: lesson.id },
@@ -102,11 +102,12 @@ export const createStudentGroup = async (
         groupId: payload.data.groupId,
         date: { gte: today },
       },
-      select: { id: true },
+      select: { id: true, organizationId: true },
     })
 
     if (futureLessons.length > 0) {
       const attendanceData = futureLessons.map((lesson) => ({
+        organizationId: lesson.organizationId,
         lessonId: lesson.id,
         studentId: payload.data.studentId as number,
         comment: '',
@@ -140,11 +141,12 @@ export const updateStudentGroup = async (
         groupId: sg.groupId,
         date: { gte: today },
       },
-      select: { id: true },
+      select: { id: true, organizationId: true },
     })
 
     if (futureLessons.length > 0) {
       const attendanceData = futureLessons.map((lesson) => ({
+        organizationId: lesson.organizationId,
         lessonId: lesson.id,
         studentId: sg.studentId,
         comment: '',
@@ -172,7 +174,7 @@ export const deleteStudentGroup = async (payload: Prisma.StudentGroupDeleteArgs)
         groupId: studentGroup.groupId,
         date: { gte: today },
       },
-      select: { id: true },
+      select: { id: true, organizationId: true },
     })
 
     if (futureLessons.length > 0) {
@@ -221,18 +223,26 @@ export const createTeacherGroup = async (
   isApplyToLessons: boolean
 ) => {
   await prisma.$transaction(async (tx) => {
-    const teacherGroup = await tx.teacherGroup.create(payload)
-    if (isApplyToLessons) {
-      const lessons = await tx.lesson.findMany({
-        where: {
-          groupId: teacherGroup.groupId,
-          date: { gt: new Date() },
-          teachers: { none: { teacherId: payload.data.teacherId } },
+    const teacherGroup = await tx.teacherGroup.create({
+      ...payload,
+      include: {
+        group: {
+          include: {
+            lessons: {
+              where: {
+                date: { gt: new Date() },
+                teachers: { none: { teacherId: payload.data.teacherId } },
+              },
+            },
+          },
         },
-      })
-      for (const lesson of lessons) {
+      },
+    })
+    if (isApplyToLessons) {
+      for (const lesson of teacherGroup.group.lessons) {
         await tx.teacherLesson.create({
           data: {
+            organizationId: lesson.organizationId,
             lessonId: lesson.id,
             teacherId: payload.data.teacherId as number,
             bid: teacherGroup.bid,
