@@ -249,126 +249,126 @@ export const getAbsentStatistics = async (organizationId: number) => {
       },
     })
 
-  const studentRates = new Map<number, number>()
-  let globalTotalMoney = 0
-  let globalTotalLessons = 0
+    const studentRates = new Map<number, number>()
+    let globalTotalMoney = 0
+    let globalTotalLessons = 0
 
-  payments.forEach((p) => {
-    const price = p._sum.price || 0
-    const count = p._sum.lessonCount || 0
-    globalTotalMoney += price
-    globalTotalLessons += count
+    payments.forEach((p) => {
+      const price = p._sum.price || 0
+      const count = p._sum.lessonCount || 0
+      globalTotalMoney += price
+      globalTotalLessons += count
 
-    if (count > 0) {
-      studentRates.set(p.studentId, price / count)
-    }
-  })
-
-  const averagePrice =
-    globalTotalLessons > 0 ? Math.round(globalTotalMoney / globalTotalLessons) : 0
-
-  // Aggregation
-  const monthlyStatsMap = new Map<
-    string,
-    { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
-  >()
-  const weeklyStatsMap = new Map<
-    string,
-    { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
-  >()
-
-  absences.forEach((att) => {
-    const date = toZonedTime(new Date(att.lesson.date), 'Europe/Moscow')
-    const rate = att.student.totalPayments / att.student.totalLessons || averagePrice
-
-    // Monthly Grouping
-    // Key: YYYY-MM
-    const y = date.getFullYear()
-    const m = date.getMonth()
-    const monthKey = `${y}-${String(m + 1).padStart(2, '0')}`
-
-    // Weekly Grouping
-    // Get Monday of the week
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1) // adjust when day is sunday
-    const monday = new Date(d.setDate(diff))
-    monday.setHours(0, 0, 0, 0)
-    const weekKey = monday.toISOString().split('T')[0] // YYYY-MM-DD
-
-    // Check saved status
-    let isSaved = false
-    if (att.missedMakeup?.makeUpAttendance?.status === 'PRESENT') {
-      isSaved = true
-    }
-
-    // Update Monthly
-    if (!monthlyStatsMap.has(monthKey)) {
-      monthlyStatsMap.set(monthKey, {
-        missed: 0,
-        saved: 0,
-        missedMoney: 0,
-        savedMoney: 0,
-        timestamp: new Date(y, m, 1).getTime(),
-      })
-    }
-    const mStat = monthlyStatsMap.get(monthKey)!
-    mStat.missed++
-    mStat.missedMoney += rate
-    if (isSaved) {
-      mStat.saved++
-      mStat.savedMoney += rate
-    }
-
-    // Update Weekly
-    if (!weeklyStatsMap.has(weekKey)) {
-      weeklyStatsMap.set(weekKey, {
-        missed: 0,
-        saved: 0,
-        missedMoney: 0,
-        savedMoney: 0,
-        timestamp: monday.getTime(),
-      })
-    }
-    const wStat = weeklyStatsMap.get(weekKey)!
-    wStat.missed++
-    wStat.missedMoney += rate
-    if (isSaved) {
-      wStat.saved++
-      wStat.savedMoney += rate
-    }
-  })
-
-  // Format and Sort Monthly
-  const monthly = Array.from(monthlyStatsMap.entries())
-    .sort((a, b) => a[1].timestamp - b[1].timestamp)
-    .map(([key, val]) => {
-      const dateRep = new Date(val.timestamp)
-      return {
-        name: dateRep.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
-        missed: val.missed,
-        saved: val.saved,
-        missedMoney: Math.round(val.missedMoney),
-        savedMoney: Math.round(val.savedMoney),
-        lossMoney: Math.round(val.missedMoney - val.savedMoney),
+      if (count > 0) {
+        studentRates.set(p.studentId, price / count)
       }
     })
 
-  // Format and Sort Weekly
-  const weekly = Array.from(weeklyStatsMap.entries())
-    .sort((a, b) => a[1].timestamp - b[1].timestamp)
-    .map(([key, val]) => {
-      const dateRep = new Date(val.timestamp)
-      return {
-        name: dateRep.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
-        missed: val.missed,
-        saved: val.saved,
-        missedMoney: Math.round(val.missedMoney),
-        savedMoney: Math.round(val.savedMoney),
-        lossMoney: Math.round(val.missedMoney - val.savedMoney),
+    const averagePrice =
+      globalTotalLessons > 0 ? Math.round(globalTotalMoney / globalTotalLessons) : 0
+
+    // Aggregation
+    const monthlyStatsMap = new Map<
+      string,
+      { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
+    >()
+    const weeklyStatsMap = new Map<
+      string,
+      { missed: number; saved: number; missedMoney: number; savedMoney: number; timestamp: number }
+    >()
+
+    absences.forEach((att) => {
+      const date = toZonedTime(new Date(att.lesson.date), 'Europe/Moscow')
+      const rate = att.student.totalPayments / att.student.totalLessons || averagePrice
+
+      // Monthly Grouping
+      // Key: YYYY-MM
+      const y = date.getFullYear()
+      const m = date.getMonth()
+      const monthKey = `${y}-${String(m + 1).padStart(2, '0')}`
+
+      // Weekly Grouping
+      // Get Monday of the week
+      const d = new Date(date)
+      const day = d.getDay()
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1) // adjust when day is sunday
+      const monday = new Date(d.setDate(diff))
+      monday.setHours(0, 0, 0, 0)
+      const weekKey = monday.toISOString().split('T')[0] // YYYY-MM-DD
+
+      // Check saved status
+      let isSaved = false
+      if (att.missedMakeup?.makeUpAttendance?.status === 'PRESENT') {
+        isSaved = true
+      }
+
+      // Update Monthly
+      if (!monthlyStatsMap.has(monthKey)) {
+        monthlyStatsMap.set(monthKey, {
+          missed: 0,
+          saved: 0,
+          missedMoney: 0,
+          savedMoney: 0,
+          timestamp: new Date(y, m, 1).getTime(),
+        })
+      }
+      const mStat = monthlyStatsMap.get(monthKey)!
+      mStat.missed++
+      mStat.missedMoney += rate
+      if (isSaved) {
+        mStat.saved++
+        mStat.savedMoney += rate
+      }
+
+      // Update Weekly
+      if (!weeklyStatsMap.has(weekKey)) {
+        weeklyStatsMap.set(weekKey, {
+          missed: 0,
+          saved: 0,
+          missedMoney: 0,
+          savedMoney: 0,
+          timestamp: monday.getTime(),
+        })
+      }
+      const wStat = weeklyStatsMap.get(weekKey)!
+      wStat.missed++
+      wStat.missedMoney += rate
+      if (isSaved) {
+        wStat.saved++
+        wStat.savedMoney += rate
       }
     })
 
-  return { averagePrice, monthly, weekly }
+    // Format and Sort Monthly
+    const monthly = Array.from(monthlyStatsMap.entries())
+      .sort((a, b) => a[1].timestamp - b[1].timestamp)
+      .map(([key, val]) => {
+        const dateRep = new Date(val.timestamp)
+        return {
+          name: dateRep.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
+          missed: val.missed,
+          saved: val.saved,
+          missedMoney: Math.round(val.missedMoney),
+          savedMoney: Math.round(val.savedMoney),
+          lossMoney: Math.round(val.missedMoney - val.savedMoney),
+        }
+      })
+
+    // Format and Sort Weekly
+    const weekly = Array.from(weeklyStatsMap.entries())
+      .sort((a, b) => a[1].timestamp - b[1].timestamp)
+      .map(([key, val]) => {
+        const dateRep = new Date(val.timestamp)
+        return {
+          name: dateRep.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
+          missed: val.missed,
+          saved: val.saved,
+          missedMoney: Math.round(val.missedMoney),
+          savedMoney: Math.round(val.savedMoney),
+          lossMoney: Math.round(val.missedMoney - val.savedMoney),
+        }
+      })
+
+    return { averagePrice, monthly, weekly }
   })
 }

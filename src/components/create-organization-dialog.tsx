@@ -17,7 +17,7 @@ export default function CreateOrganizationDialog() {
         <PlusIcon />
         <p>New Organization</p>
       </DialogTrigger>
-      <DialogContent className="w-11/12 sm:max-w-[425px]">
+      <DialogContent className="w-11/12 sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>New Organization</DialogTitle>
           <DialogDescription>

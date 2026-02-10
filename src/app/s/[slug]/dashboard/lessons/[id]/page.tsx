@@ -24,50 +24,50 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const lesson = await withRLS(orgId, (tx) =>
     tx.lesson.findFirst({
       where: { id: +id, organizationId: orgId },
-    include: {
-      teachers: {
-        include: {
-          teacher: true,
-        },
-      },
-      group: {
-        include: {
-          _count: { select: { students: true } },
-          students: { include: { student: true } },
-          course: true,
-          location: true,
-        },
-      },
-      attendance: {
-        where: {
-          NOT: {
-            AND: [
-              { status: 'UNSPECIFIED' },
-              { student: { groups: { some: { status: 'DISMISSED' } } } },
-            ],
+      include: {
+        teachers: {
+          include: {
+            teacher: true,
           },
         },
-        include: {
-          student: true,
-          lesson: {
-            include: {
-              group: {
-                include: {
-                  course: true,
-                  location: true,
+        group: {
+          include: {
+            _count: { select: { students: true } },
+            students: { include: { student: true } },
+            course: true,
+            location: true,
+          },
+        },
+        attendance: {
+          where: {
+            NOT: {
+              AND: [
+                { status: 'UNSPECIFIED' },
+                { student: { groups: { some: { status: 'DISMISSED' } } } },
+              ],
+            },
+          },
+          include: {
+            student: true,
+            lesson: {
+              include: {
+                group: {
+                  include: {
+                    course: true,
+                    location: true,
+                  },
                 },
               },
             },
+            asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+            missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
           },
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
-        },
-        orderBy: {
-          id: 'asc',
+          orderBy: {
+            id: 'asc',
+          },
         },
       },
-    },
-  })
+    })
   )
   const students = await getStudents({
     where: {
