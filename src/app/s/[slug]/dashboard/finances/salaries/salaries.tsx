@@ -24,6 +24,7 @@ import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
+import { lessonStatusMap } from '@/src/shared/lesson-status'
 import { cva } from 'class-variance-authority'
 import {
   endOfMonth,
@@ -60,7 +61,6 @@ import {
   useTransition,
 } from 'react'
 import { type DateRange } from 'react-day-picker'
-import { lessonStatusMap } from '../../lessons/[id]/_components/info-section'
 
 const groupTypeMap: Record<GroupType, string> = {
   GROUP: 'Группа',
