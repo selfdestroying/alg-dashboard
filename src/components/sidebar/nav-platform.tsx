@@ -14,99 +14,114 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/src/components/ui/sidebar'
-import { RoleCodes } from '@/src/shared/permissions.old'
+import { useActiveMemberQuery } from '@/src/data/member/active-member-query'
+import { OrganizationRole } from '@/src/lib/auth'
 import { ChevronRight, Folder, LayoutDashboard, Users, Wallet } from 'lucide-react'
 import Link from 'next/link'
 
-const navLists = [
+type NavItem = {
+  title: string
+  url: string
+  roles: OrganizationRole[]
+}
+
+type NavGroup = {
+  title: string
+  icon: typeof Users
+  roles: OrganizationRole[]
+  items: NavItem[]
+}
+
+const navLists: NavGroup[] = [
   {
     title: 'Пользователи',
     icon: Users,
-    roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+    roles: ['owner', 'manager'],
     items: [
       {
         title: 'Все',
         url: '/dashboard/organization/members',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+        roles: ['owner', 'manager'],
       },
     ],
   },
   {
     title: 'Ученики',
-    roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
     icon: Users,
+    roles: ['owner', 'manager', 'teacher'],
     items: [
       {
         title: 'Все',
         url: '/dashboard/students',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Активные',
         url: '/dashboard/students/active',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+        roles: ['owner', 'manager'],
       },
       {
         title: 'Пропустившие',
         url: '/dashboard/students/absent',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+        roles: ['owner', 'manager'],
       },
       {
         title: 'Отчисленные',
         url: '/dashboard/students/dismissed',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+        roles: ['owner', 'manager'],
       },
     ],
   },
   {
     title: 'Группы',
     icon: Folder,
-    roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+    roles: ['owner', 'manager', 'teacher'],
     items: [
       {
         title: 'Все',
         url: '/dashboard/groups',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
     ],
   },
   {
     title: 'Финансы',
     icon: Wallet,
-    roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+    roles: ['owner', 'manager', 'teacher'],
     items: [
       {
         title: 'Оплаты',
         url: '/dashboard/finances/payments',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager],
+        roles: ['owner', 'manager'],
       },
       {
         title: 'Выручка',
         url: '/dashboard/finances/revenue',
-        roles: [RoleCodes.admin, RoleCodes.owner],
+        roles: ['owner'],
       },
       {
         title: 'Зарплаты',
         url: '/dashboard/finances/salaries',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
     ],
   },
 ]
 
+function filterNavByRole(nav: NavGroup[], role: OrganizationRole): NavGroup[] {
+  return nav
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.roles.includes(role)),
+    }))
+    .filter((group) => group.roles.includes(role) && group.items.length > 0)
+}
+
 export default function NavPlatform() {
-  const filteredNavList = navLists
-  // .map((item) => ({
-  //   ...item,
-  //   items: item.items.filter((subItem) =>
-  //     subItem.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes])
-  //   ),
-  // }))
-  // .filter(
-  //   (item) =>
-  //     item.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes]) &&
-  //     item.items.length > 0
-  // )
+  const { data: activeMember } = useActiveMemberQuery()
+  const role = activeMember?.role as OrganizationRole | undefined
+
+  const filteredNavList = role ? filterNavByRole(navLists, role) : []
 
   return (
     <SidebarGroup>

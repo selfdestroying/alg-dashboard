@@ -14,48 +14,63 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/src/components/ui/sidebar'
-import { RoleCodes } from '@/src/shared/permissions.old'
+import { useActiveMemberQuery } from '@/src/data/member/active-member-query'
+import { OrganizationRole } from '@/src/lib/auth'
 import { ChevronRight, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 
-const navLists = [
+type NavItem = {
+  title: string
+  url: string
+  roles: OrganizationRole[]
+}
+
+type NavGroup = {
+  title: string
+  icon: typeof ShoppingCart
+  roles: OrganizationRole[]
+  items: NavItem[]
+}
+
+const navLists: NavGroup[] = [
   {
     title: 'Магазин',
     icon: ShoppingCart,
-    roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+    roles: ['owner', 'manager', 'teacher'],
     items: [
       {
         title: 'Товары',
         url: '/dashboard/shop/products',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Категории',
         url: '/dashboard/shop/categories',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Заказы',
         url: '/dashboard/shop/orders',
-        roles: [RoleCodes.admin, RoleCodes.owner, RoleCodes.manager, RoleCodes.teacher],
+        roles: ['owner', 'manager', 'teacher'],
       },
     ],
   },
 ]
 
+function filterNavByRole(nav: NavGroup[], role: OrganizationRole): NavGroup[] {
+  return nav
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.roles.includes(role)),
+    }))
+    .filter((group) => group.roles.includes(role) && group.items.length > 0)
+}
+
 export default function NavShop() {
-  const filteredNavList = navLists
-  // .map((item) => ({
-  //   ...item,
-  //   items: item.items.filter((subItem) =>
-  //     subItem.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes])
-  //   ),
-  // }))
-  // .filter(
-  //   (item) =>
-  //     item.roles.includes(role.code as (typeof RoleCodes)[keyof typeof RoleCodes]) &&
-  //     item.items.length > 0
-  // )
+  const { data: activeMember } = useActiveMemberQuery()
+  const role = activeMember?.role as OrganizationRole | undefined
+
+  const filteredNavList = role ? filterNavByRole(navLists, role) : []
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Магазин</SidebarGroupLabel>

@@ -3,6 +3,7 @@ import { defaultStatements, ownerAc } from 'better-auth/plugins/organization/acc
 
 export const statement = {
   ...defaultStatements,
+  member: ['read', 'create', 'update', 'delete'],
   group: ['create', 'read', 'update', 'delete'],
   lesson: ['create', 'readSelf', 'readAll', 'update', 'delete'],
   student: ['create', 'read', 'update', 'delete'],
@@ -14,6 +15,8 @@ export const statement = {
   teacherLesson: ['create', 'read', 'update', 'delete'],
   studentGroup: ['create', 'read', 'update', 'delete'],
   studentLesson: ['create', 'read', 'update', 'delete', 'selectWarned'],
+
+  lessonStudentHistory: ['read', 'update'],
 } as const
 
 export const ac = createAccessControl(statement)
@@ -38,12 +41,15 @@ export const manager = ac.newRole({
   student: ['create', 'read', 'update', 'delete'],
   payment: ['create', 'read', 'update', 'delete'],
   paycheck: ['create', 'read', 'update', 'delete'],
+  member: ['read', 'create', 'update', 'delete'],
   salary: ['readSelf', 'readAll'],
 
   teacherGroup: ['create', 'read', 'update', 'delete'],
   studentGroup: ['create', 'read', 'update', 'delete'],
   teacherLesson: ['create', 'read', 'update', 'delete'],
   studentLesson: ['create', 'read', 'update', 'delete', 'selectWarned'],
+
+  lessonStudentHistory: ['read', 'update'],
 })
 
 export const owner = ac.newRole({
