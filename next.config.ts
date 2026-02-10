@@ -1,7 +1,10 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['alg.test', '*.alg.test'],
+  allowedDevOrigins: [
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN?.split(':')[0] || '',
+    `*.${process.env.NEXT_PUBLIC_ROOT_DOMAIN?.split(':')[0] || ''}`,
+  ],
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',

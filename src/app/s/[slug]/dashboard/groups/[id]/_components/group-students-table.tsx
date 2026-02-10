@@ -1,16 +1,9 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
+import DataTable from '@/src/components/data-table'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { getFullName } from '@/src/lib/utils'
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import GroupStudentActions from './group-students-actions'
@@ -102,42 +95,5 @@ export default function GroupStudentsTable({ data }: { data: StudentWithAttendan
     getCoreRowModel: getCoreRowModel(),
   })
 
-  return (
-    <div className="flex h-full flex-col gap-2">
-      <Table className="overflow-y-auto">
-        <TableHeader className="bg-card sticky top-0 z-10">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Нет учеников.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  )
+  return <DataTable table={table} emptyMessage="Нет учеников." />
 }

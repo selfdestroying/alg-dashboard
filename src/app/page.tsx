@@ -15,7 +15,7 @@ export default async function HomePage() {
   return (
     <main className="flex min-h-screen items-center justify-center">
       <Card className="w-85 rounded-2xl shadow-lg">
-        <CardContent className="flex flex-col items-center gap-6 p-6 text-center">
+        <CardContent className="flex flex-col items-center gap-6 text-center">
           <div className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight">ЕДУДА</h1>
             <p className="text-muted-foreground text-sm">Единый учёт данных</p>

@@ -1,26 +1,18 @@
 'use client'
 import { DismissedWithStudentAndGroup } from '@/src/actions/dismissed'
+import DataTable from '@/src/components/data-table'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
 import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { cn, getFullName, getGroupName } from '@/src/lib/utils'
+import { getFullName, getGroupName } from '@/src/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -31,7 +23,6 @@ import {
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
 import { debounce } from 'es-toolkit'
-import { ArrowDown, ArrowUp } from 'lucide-react'
 import Link from 'next/link'
 import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import DismissedActions from './dismissed-actions'
@@ -174,75 +165,23 @@ export default function DismissedStudentsTable({ data }: { data: DismissedWithSt
   }
 
   return (
-    <div className="flex h-full flex-col gap-2">
-      <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
-        <Input
-          value={search ?? ''}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            handleSearch(e.target.value)
-          }}
-          placeholder="Поиск..."
-        />
-        <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
-      </FieldGroup>
-      <Table className="overflow-y-auto">
-        <TableHeader className="bg-card sticky top-0 z-10">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                    <div
-                      className={cn(
-                        header.column.getCanSort() &&
-                          'flex w-fit cursor-pointer items-center gap-2 select-none'
-                      )}
-                      onClick={header.column.getToggleSortingHandler()}
-                      onKeyDown={(e) => {
-                        // Enhanced keyboard handling for sorting
-                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
-                          e.preventDefault()
-                          header.column.getToggleSortingHandler()?.(e)
-                        }
-                      }}
-                      tabIndex={header.column.getCanSort() ? 0 : undefined}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
-                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  ) : (
-                    flexRender(header.column.columnDef.header, header.getContext())
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Нет учеников.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    <DataTable
+      table={table}
+      emptyMessage="Нет отчисленных учеников."
+      toolbar={
+        <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
+          <Input
+            value={search ?? ''}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              handleSearch(e.target.value)
+            }}
+            placeholder="Поиск..."
+          />
+          <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
+        </FieldGroup>
+      }
+    />
   )
 }
 
