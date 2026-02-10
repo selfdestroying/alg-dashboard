@@ -12,7 +12,7 @@ import {
 import { ac, admin, owner, user } from '../shared/permissions'
 import prisma from './prisma'
 
-const ROOT_DOMAIN = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'alg.test:3000').split(':')[0]
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.split(':')[0]
 
 const options = {
   database: prismaAdapter(prisma, {
@@ -92,7 +92,6 @@ const options = {
       defaultLocale: 'ru-RU',
       fallbackLocale: 'default',
     }),
-    nextCookies(),
     adminPlugin({
       ac,
       roles: {
@@ -145,6 +144,7 @@ export const auth = betterAuth({
         members,
       }
     }, options),
+    nextCookies(), // должен быть последним плагином
   ],
 })
 

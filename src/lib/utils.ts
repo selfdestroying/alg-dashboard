@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge'
 import { Prisma } from '../../prisma/generated/client'
 
 export const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-export const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'alg.test:3000'
+export const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
