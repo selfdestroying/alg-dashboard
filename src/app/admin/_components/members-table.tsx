@@ -1,6 +1,7 @@
 'use client'
 
 import { addMember } from '@/src/actions/organizations'
+import DataTable from '@/src/components/data-table'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
@@ -22,15 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
 import { authClient } from '@/src/lib/auth-client'
+import {
+  type ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Loader, Trash2, UserPlus } from 'lucide-react'
@@ -150,6 +149,119 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
     })
   }
 
+  const columns: ColumnDef<FlatMember>[] = [
+    {
+      accessorKey: 'memberId',
+      header: 'ID',
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.memberId}</span>,
+    },
+    {
+      accessorKey: 'userName',
+      header: 'Пользователь',
+      cell: ({ row }) => <span className="font-medium">{row.original.userName}</span>,
+    },
+    {
+      accessorKey: 'userEmail',
+      header: 'Email',
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-sm">{row.original.userEmail}</span>
+      ),
+    },
+    {
+      accessorKey: 'organizationName',
+      header: 'Организация',
+      cell: ({ row }) => (
+        <Badge variant="outline" className="text-xs">
+          {row.original.organizationName}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'role',
+      header: 'Роль',
+      cell: ({ row }) => (
+        <Badge variant={row.original.role === 'owner' ? 'default' : 'secondary'}>
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    {
+      id: 'status',
+      header: 'Статус',
+      cell: ({ row }) =>
+        row.original.banned ? (
+          <Badge variant="destructive">Бан</Badge>
+        ) : (
+          <Badge variant="outline">Активен</Badge>
+        ),
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Дата',
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-xs">
+          {format(row.original.createdAt, 'dd.MM.yyyy', { locale: ru })}
+        </span>
+      ),
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        const member = row.original
+        const isLoading = loadingMemberId === member.memberId && isPending
+        if (member.role === 'owner') return null
+        return (
+          <Dialog>
+            <DialogTrigger
+              render={
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  disabled={isLoading}
+                />
+              }
+            >
+              {isLoading ? (
+                <Loader className="size-4 animate-spin" />
+              ) : (
+                <Trash2 className="size-4" />
+              )}
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Удалить участника?</DialogTitle>
+                <DialogDescription>
+                  Удалить {member.userName} из {member.organizationName}?
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end gap-2">
+                <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
+                <DialogClose
+                  render={
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleRemoveMember(member.memberId, member.organizationId)}
+                    />
+                  }
+                >
+                  Удалить
+                </DialogClose>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+      },
+    },
+  ]
+
+  const table = useReactTable({
+    data: filteredMembers,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
   return (
     <Card>
       <CardHeader>
@@ -268,111 +380,7 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-auto rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">ID</TableHead>
-                <TableHead>Пользователь</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Организация</TableHead>
-                <TableHead>Роль</TableHead>
-                <TableHead>Статус</TableHead>
-                <TableHead>Дата</TableHead>
-                <TableHead className="w-12" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMembers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-muted-foreground text-center">
-                    Участники не найдены
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredMembers.map((member) => {
-                  const isLoading = loadingMemberId === member.memberId && isPending
-                  return (
-                    <TableRow key={`${member.organizationId}-${member.memberId}`}>
-                      <TableCell className="font-mono text-xs">{member.memberId}</TableCell>
-                      <TableCell className="font-medium">{member.userName}</TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
-                        {member.userEmail}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {member.organizationName}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={member.role === 'owner' ? 'default' : 'secondary'}>
-                          {member.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {member.banned ? (
-                          <Badge variant="destructive">Бан</Badge>
-                        ) : (
-                          <Badge variant="outline">Активен</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {format(member.createdAt, 'dd.MM.yyyy', { locale: ru })}
-                      </TableCell>
-                      <TableCell>
-                        {member.role !== 'owner' && (
-                          <Dialog>
-                            <DialogTrigger
-                              render={
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="text-destructive hover:text-destructive"
-                                  disabled={isLoading}
-                                />
-                              }
-                            >
-                              {isLoading ? (
-                                <Loader className="size-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="size-4" />
-                              )}
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Удалить участника?</DialogTitle>
-                                <DialogDescription>
-                                  Удалить {member.userName} из {member.organizationName}?
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="flex justify-end gap-2">
-                                <DialogClose render={<Button variant="outline" />}>
-                                  Отмена
-                                </DialogClose>
-                                <DialogClose
-                                  render={
-                                    <Button
-                                      variant="destructive"
-                                      onClick={() =>
-                                        handleRemoveMember(member.memberId, member.organizationId)
-                                      }
-                                    />
-                                  }
-                                >
-                                  Удалить
-                                </DialogClose>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable table={table} emptyMessage="Участники не найдены" />
       </CardContent>
     </Card>
   )

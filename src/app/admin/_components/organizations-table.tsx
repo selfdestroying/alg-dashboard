@@ -1,22 +1,16 @@
 'use client'
 
+import DataTable from '@/src/components/data-table'
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
+import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import CreateOrganizationDialog from './create-organization-dialog'
-import type { AdminDashboardData } from './types'
+import type { AdminDashboardData, AdminOrganization } from './types'
 
 interface OrganizationsTableProps {
   data: AdminDashboardData
@@ -100,44 +94,7 @@ export default function OrganizationsTable({ data }: OrganizationsTableProps) {
                     </div>
 
                     {/* Участники */}
-                    {org.members.length > 0 && (
-                      <div className="overflow-auto rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-12">ID</TableHead>
-                              <TableHead>Пользователь</TableHead>
-                              <TableHead>Email</TableHead>
-                              <TableHead>Роль в организации</TableHead>
-                              <TableHead>Дата вступления</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {org.members.map((member) => (
-                              <TableRow key={member.id}>
-                                <TableCell className="font-mono text-xs">{member.id}</TableCell>
-                                <TableCell className="font-medium">{member.user.name}</TableCell>
-                                <TableCell className="text-muted-foreground text-sm">
-                                  {member.user.email}
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant={member.role === 'owner' ? 'default' : 'secondary'}
-                                  >
-                                    {member.role}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-muted-foreground text-xs">
-                                  {format(new Date(member.createdAt), 'dd.MM.yyyy HH:mm', {
-                                    locale: ru,
-                                  })}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    )}
+                    {org.members.length > 0 && <OrgMembersDataTable members={org.members} />}
                   </CardContent>
                 </Card>
               )
@@ -147,4 +104,54 @@ export default function OrganizationsTable({ data }: OrganizationsTableProps) {
       </CardContent>
     </Card>
   )
+}
+
+type OrgMember = AdminOrganization['members'][number]
+
+const orgMemberColumns: ColumnDef<OrgMember>[] = [
+  {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: ({ row }) => <span className="font-mono text-xs">{row.original.id}</span>,
+  },
+  {
+    id: 'userName',
+    header: 'Пользователь',
+    cell: ({ row }) => <span className="font-medium">{row.original.user.name}</span>,
+  },
+  {
+    id: 'userEmail',
+    header: 'Email',
+    cell: ({ row }) => (
+      <span className="text-muted-foreground text-sm">{row.original.user.email}</span>
+    ),
+  },
+  {
+    accessorKey: 'role',
+    header: 'Роль в организации',
+    cell: ({ row }) => (
+      <Badge variant={row.original.role === 'owner' ? 'default' : 'secondary'}>
+        {row.original.role}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Дата вступления',
+    cell: ({ row }) => (
+      <span className="text-muted-foreground text-xs">
+        {format(new Date(row.original.createdAt), 'dd.MM.yyyy HH:mm', { locale: ru })}
+      </span>
+    ),
+  },
+]
+
+function OrgMembersDataTable({ members }: { members: OrgMember[] }) {
+  const table = useReactTable({
+    data: members,
+    columns: orgMemberColumns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  return <DataTable table={table} />
 }

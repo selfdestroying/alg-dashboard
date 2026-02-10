@@ -1,37 +1,19 @@
 'use client'
 
+import DataTable from '@/src/components/data-table'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
-import { Button } from '@/src/components/ui/button'
 import { Field, FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
 import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { cn, DaysOfWeek, getFullName, getGroupName } from '@/src/lib/utils'
+import { DaysOfWeek, getFullName, getGroupName } from '@/src/lib/utils'
 import { GroupDTO } from '@/src/types/group'
 import {
   ColumnDef,
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -42,14 +24,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { debounce } from 'es-toolkit'
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
 import Link from 'next/link'
 import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 
@@ -220,174 +194,54 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
   }
 
   return (
-    <div className="flex h-full flex-col gap-2">
-      <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
-        <Input
-          value={search ?? ''}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            handleSearch(e.target.value)
-          }}
-          placeholder="Поиск..."
-        />
-        <Field>
+    <DataTable
+      table={table}
+      emptyMessage="Нет групп."
+      showPagination
+      toolbar={
+        <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            placeholder="От..."
-            type="number"
-            value={studentCountInput[0]}
+            value={search ?? ''}
             onChange={(e) => {
-              const val = e.target.value
-              setStudentCountInput((prev) => [val, prev[1]])
-              handleStudentCountFilterChange([
-                val ? Number(val) : undefined,
-                studentCountInput[1] ? Number(studentCountInput[1]) : undefined,
-              ])
+              setSearch(e.target.value)
+              handleSearch(e.target.value)
             }}
+            placeholder="Поиск..."
           />
-        </Field>
-        <Field>
-          <Input
-            placeholder="До..."
-            type="number"
-            value={studentCountInput[1]}
-            onChange={(e) => {
-              const val = e.target.value
-              setStudentCountInput((prev) => [prev[0], val])
-              handleStudentCountFilterChange([
-                studentCountInput[0] ? Number(studentCountInput[0]) : undefined,
-                val ? Number(val) : undefined,
-              ])
-            }}
-          />
-        </Field>
-        <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
-      </FieldGroup>
-      <Table className="overflow-y-auto">
-        <TableHeader className="bg-card sticky top-0 z-10">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                    <div
-                      className={cn(
-                        header.column.getCanSort() &&
-                          'flex w-fit cursor-pointer items-center gap-2 select-none'
-                      )}
-                      onClick={header.column.getToggleSortingHandler()}
-                      onKeyDown={(e) => {
-                        // Enhanced keyboard handling for sorting
-                        if (header.column.getCanSort() && (e.key === 'Enter' || e.key === ' ')) {
-                          e.preventDefault()
-                          header.column.getToggleSortingHandler()?.(e)
-                        }
-                      }}
-                      tabIndex={header.column.getCanSort() ? 0 : undefined}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: <ArrowUp className="shrink-0 opacity-60" size={16} />,
-                        desc: <ArrowDown className="shrink-0 opacity-60" size={16} />,
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  ) : (
-                    flexRender(header.column.columnDef.header, header.getContext())
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Нет учеников.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <div className="flex items-center justify-end px-4">
-        <div className="flex w-full items-center gap-8 lg:w-fit">
-          <div className="hidden items-center gap-2 lg:flex">
-            <Label htmlFor="rows-per-page">Строк на страницу:</Label>
-            <Select
-              value={`${table.getState().pagination.pageSize}`}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value))
+          <Field>
+            <Input
+              placeholder="От..."
+              type="number"
+              value={studentCountInput[0]}
+              onChange={(e) => {
+                const val = e.target.value
+                setStudentCountInput((prev) => [val, prev[1]])
+                handleStudentCountFilterChange([
+                  val ? Number(val) : undefined,
+                  studentCountInput[1] ? Number(studentCountInput[1]) : undefined,
+                ])
               }}
-            >
-              <SelectTrigger id="rows-per-page">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                <SelectGroup>
-                  {[10, 20, 30, 40, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="ml-auto flex items-center gap-2 lg:ml-0">
-            <Label className="flex w-fit items-center justify-center">
-              Страница {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
-            </Label>
-            <Button
-              variant="outline"
-              className="hidden lg:flex"
-              size="icon"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">На первую страницу</span>
-              <ChevronsLeft />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">На предыдущую страницу</span>
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">На следующую страницу</span>
-              <ChevronRight />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden lg:flex"
-              size="icon"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">На последнюю страницу</span>
-              <ChevronsRight />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+            />
+          </Field>
+          <Field>
+            <Input
+              placeholder="До..."
+              type="number"
+              value={studentCountInput[1]}
+              onChange={(e) => {
+                const val = e.target.value
+                setStudentCountInput((prev) => [prev[0], val])
+                handleStudentCountFilterChange([
+                  studentCountInput[0] ? Number(studentCountInput[0]) : undefined,
+                  val ? Number(val) : undefined,
+                ])
+              }}
+            />
+          </Field>
+          <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
+        </FieldGroup>
+      }
+    />
   )
 }
 
