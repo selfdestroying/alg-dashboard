@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -22,15 +22,18 @@ export default async function Page() {
   if (!session) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
-  const members = await prisma.member.findMany({
-    where: {
-      organizationId: session.members[0].organizationId,
-      NOT: { userId: Number(session.user.id) },
-    },
-    include: {
-      user: true,
-    },
-  })
+  const orgId = session.members[0].organizationId
+  const members = await withRLS(orgId, (tx) =>
+    tx.member.findMany({
+      where: {
+        organizationId: orgId,
+        NOT: { userId: Number(session.user.id) },
+      },
+      include: {
+        user: true,
+      },
+    })
+  )
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">

@@ -8,7 +8,7 @@ import {
 } from '@/src/components/ui/card'
 import { ItemGroup } from '@/src/components/ui/item'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -28,12 +28,15 @@ export default async function Page() {
     headers: requestHeaders,
   })
 
-  const paychecks = await prisma.payCheck.findMany({
-    where: {
-      userId: Number(session.user.id),
-      organizationId: session.members[0].organizationId,
-    },
-  })
+  const orgId = session.members[0].organizationId
+  const paychecks = await withRLS(orgId, (tx) =>
+    tx.payCheck.findMany({
+      where: {
+        userId: Number(session.user.id),
+        organizationId: orgId,
+      },
+    })
+  )
   return (
     <div className="space-y-2">
       <UserCard session={session} activeSessions={activeSessions} />
@@ -50,7 +53,7 @@ export default async function Page() {
           </CardDescription>
           <CardAction>
             <AddCheckButton
-              organizationId={session.members[0].organizationId}
+              organizationId={orgId}
               userId={Number(session.user.id)}
               userName={session.user.name}
             />

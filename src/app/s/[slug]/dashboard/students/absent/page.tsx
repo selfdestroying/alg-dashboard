@@ -1,7 +1,7 @@
 import { getAbsentStatistics } from '@/src/actions/attendance'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -16,44 +16,47 @@ export default async function Page() {
   if (!session) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
-  const stats = await getAbsentStatistics(session.members[0].organizationId)
+  const orgId = session.members[0].organizationId
+  const stats = await getAbsentStatistics(orgId)
 
-  const attendance = await prisma.attendance.findMany({
-    where: {
-      organizationId: session.members[0].organizationId,
-      status: 'ABSENT',
-      OR: [
-        {
-          AND: [{ missedMakeup: { is: null } }, { asMakeupFor: { is: null } }],
+  const attendance = await withRLS(orgId, (tx) =>
+    tx.attendance.findMany({
+      where: {
+        organizationId: orgId,
+        status: 'ABSENT',
+        OR: [
+          {
+            AND: [{ missedMakeup: { is: null } }, { asMakeupFor: { is: null } }],
+          },
+          { asMakeupFor: { isNot: null } },
+        ],
+        student: {
+          dismisseds: { none: {} },
         },
-        { asMakeupFor: { isNot: null } },
-      ],
-      student: {
-        dismisseds: { none: {} },
       },
-    },
-    include: {
-      student: true,
-      lesson: {
-        include: {
-          group: {
-            include: {
-              course: true,
-              location: true,
-              teachers: {
-                include: {
-                  teacher: true,
+      include: {
+        student: true,
+        lesson: {
+          include: {
+            group: {
+              include: {
+                course: true,
+                location: true,
+                teachers: {
+                  include: {
+                    teacher: true,
+                  },
                 },
               },
             },
           },
         },
+        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
+        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
       },
-      asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-      missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
-    },
-    orderBy: [{ lesson: { date: 'desc' } }],
-  })
+      orderBy: [{ lesson: { date: 'desc' } }],
+    })
+  )
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">

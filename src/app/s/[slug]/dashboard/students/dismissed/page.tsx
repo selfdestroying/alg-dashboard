@@ -1,7 +1,7 @@
 import { getDismissedStatistics } from '@/src/actions/dismissed'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -16,20 +16,23 @@ export default async function Page() {
   if (!session) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
-  const dismissed = await prisma.dismissed.findMany({
-    where: {
-      organizationId: session.members[0].organizationId,
-    },
-    include: {
-      group: {
-        include: { course: true, location: true, teachers: { include: { teacher: true } } },
+  const orgId = session.members[0].organizationId
+  const dismissed = await withRLS(orgId, (tx) =>
+    tx.dismissed.findMany({
+      where: {
+        organizationId: orgId,
       },
-      student: true,
-    },
-    orderBy: { date: 'desc' },
-  })
+      include: {
+        group: {
+          include: { course: true, location: true, teachers: { include: { teacher: true } } },
+        },
+        student: true,
+      },
+      orderBy: { date: 'desc' },
+    })
+  )
 
-  const statistics = await getDismissedStatistics(session.members[0].organizationId)
+  const statistics = await getDismissedStatistics(orgId)
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">

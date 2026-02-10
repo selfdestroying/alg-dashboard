@@ -1,7 +1,7 @@
 import { getStudents } from '@/src/actions/students'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -20,8 +20,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const id = (await params).id
-  const lesson = await prisma.lesson.findFirst({
-    where: { id: +id, organizationId: session.members[0].organizationId },
+  const orgId = session.members[0].organizationId
+  const lesson = await withRLS(orgId, (tx) =>
+    tx.lesson.findFirst({
+      where: { id: +id, organizationId: orgId },
     include: {
       teachers: {
         include: {
@@ -66,10 +68,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
     },
   })
+  )
   const students = await getStudents({
     where: {
       id: { notIn: lesson?.attendance.map((a) => a.studentId) },
-      organizationId: session.members[0].organizationId,
+      organizationId: orgId,
     },
   })
 

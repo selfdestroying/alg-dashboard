@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation'
 import { Prisma } from '../../prisma/generated/client'
 import { AttendanceStatus, StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
 import { auth } from '../lib/auth'
+import { enableRLS, withSessionRLS } from '../lib/rls'
 
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
   include: {
@@ -35,7 +36,7 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
 }>
 
 export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInput) => {
-  const attendance = await prisma.attendance.create({ data })
+  const attendance = await withSessionRLS((tx) => tx.attendance.create({ data }))
   revalidatePath(`dashboard/lessons/${data.lessonId}`)
   return attendance
 }
@@ -92,6 +93,8 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
   const lessonId = payload.where.studentId_lessonId?.lessonId
 
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, session.members[0].organizationId)
+
     if (status && studentId && lessonId) {
       const oldAttendance = await tx.attendance.findFirst({
         where: {
@@ -196,7 +199,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
 }
 
 export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateArgs) => {
-  await prisma.attendance.update(payload)
+  await withSessionRLS((tx) => tx.attendance.update(payload))
 }
 
 export const updateDataMock = async (time: number) => {
@@ -204,46 +207,47 @@ export const updateDataMock = async (time: number) => {
 }
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
-  await prisma.attendance.delete(data)
+  await withSessionRLS((tx) => tx.attendance.delete(data))
 
   revalidatePath(`/dashboard/lessons/${data.where.lessonId}`)
 }
 
 export const getAbsentStatistics = async (organizationId: number) => {
-  const absences = await prisma.attendance.findMany({
-    where: {
-      organizationId,
-      status: 'ABSENT',
-    },
-    include: {
-      student: true,
-      lesson: true,
-      missedMakeup: {
-        include: {
-          makeUpAttendance: true,
+  return withSessionRLS(async (tx) => {
+    const absences = await tx.attendance.findMany({
+      where: {
+        organizationId,
+        status: 'ABSENT',
+      },
+      include: {
+        student: true,
+        lesson: true,
+        missedMakeup: {
+          include: {
+            makeUpAttendance: true,
+          },
         },
       },
-    },
-    orderBy: {
-      lesson: {
-        date: 'asc',
+      orderBy: {
+        lesson: {
+          date: 'asc',
+        },
       },
-    },
-  })
+    })
 
-  // Calculate student rates
-  const payments = await prisma.payment.groupBy({
-    by: ['studentId'],
-    _sum: {
-      price: true,
-      lessonCount: true,
-    },
-    where: {
-      organizationId,
-      lessonCount: { gt: 0 },
-      price: { gt: 0 },
-    },
-  })
+    // Calculate student rates
+    const payments = await tx.payment.groupBy({
+      by: ['studentId'],
+      _sum: {
+        price: true,
+        lessonCount: true,
+      },
+      where: {
+        organizationId,
+        lessonCount: { gt: 0 },
+        price: { gt: 0 },
+      },
+    })
 
   const studentRates = new Map<number, number>()
   let globalTotalMoney = 0
@@ -366,4 +370,5 @@ export const getAbsentStatistics = async (organizationId: number) => {
     })
 
   return { averagePrice, monthly, weekly }
+  })
 }

@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation'
 import { Group, Prisma, Student } from '../../prisma/generated/client'
 import { StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
 import { auth } from '../lib/auth'
+import { enableRLS, withSessionRLS } from '../lib/rls'
 import { protocol, rootDomain } from '../lib/utils'
 
 export type StudentWithGroups = Student & { groups: Group[] }
@@ -31,17 +32,17 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
 export const getStudents = async <T extends Prisma.StudentFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.StudentFindManyArgs>
 ) => {
-  return await prisma.student.findMany<T>(payload)
+  return withSessionRLS((tx) => tx.student.findMany<T>(payload))
 }
 
 export const getStudent = async <T extends Prisma.StudentFindFirstArgs>(
   payload: Prisma.SelectSubset<T, Prisma.StudentFindFirstArgs>
 ) => {
-  return await prisma.student.findFirst<T>(payload)
+  return withSessionRLS((tx) => tx.student.findFirst<T>(payload))
 }
 
 export const createStudent = async (payload: Prisma.StudentCreateArgs) => {
-  await prisma.student.create(payload)
+  await withSessionRLS((tx) => tx.student.create(payload))
   revalidatePath('dashboard/students')
 }
 
@@ -57,12 +58,12 @@ export async function updateStudent(
 
   const studentId = payload.where.id
   if (!studentId) {
-    await prisma.student.update(payload)
+    await withSessionRLS((tx) => tx.student.update(payload))
     return
   }
 
   if (!lessonsBalanceChange) {
-    await prisma.student.update(payload)
+    await withSessionRLS((tx) => tx.student.update(payload))
     revalidatePath(`dashboard/students/${studentId}`)
     return
   }
@@ -81,6 +82,8 @@ export async function updateStudent(
   }
 
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, session.members[0].organizationId)
+
     const student = await tx.student.findUnique({
       where: { id: studentId },
       select: { lessonsBalance: true },
@@ -120,51 +123,55 @@ export async function updateStudent(
 }
 
 export async function getStudentLessonsBalanceHistory(studentId: number, take = 50) {
-  return await prisma.studentLessonsBalanceHistory.findMany({
-    where: { studentId },
-    take,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      actorUser: true,
-    },
-  })
+  return withSessionRLS((tx) =>
+    tx.studentLessonsBalanceHistory.findMany({
+      where: { studentId },
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        actorUser: true,
+      },
+    })
+  )
 }
 
 export async function updateStudentBalanceHistory(
   payload: Prisma.StudentLessonsBalanceHistoryUpdateArgs
 ) {
-  const history = await prisma.studentLessonsBalanceHistory.update(payload)
+  const history = await withSessionRLS((tx) => tx.studentLessonsBalanceHistory.update(payload))
   revalidatePath(`/dashboard/students/${history.studentId}`)
 }
 
 export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {
-  await prisma.student.delete(payload)
+  await withSessionRLS((tx) => tx.student.delete(payload))
   revalidatePath('dashboard/students')
 }
 
 export async function getActiveStudentStatistics(organizationId: number) {
-  const activeStudentGroups = await prisma.studentGroup.findMany({
-    where: { organizationId },
-    include: {
-      group: {
-        include: {
-          course: true,
-          location: true,
-          teachers: {
-            include: {
-              teacher: true,
+  const activeStudentGroups = await withSessionRLS((tx) =>
+    tx.studentGroup.findMany({
+      where: { organizationId },
+      include: {
+        group: {
+          include: {
+            course: true,
+            location: true,
+            teachers: {
+              include: {
+                teacher: true,
+              },
             },
           },
         },
+        student: true,
       },
-      student: true,
-    },
-    orderBy: {
-      student: {
-        createdAt: 'asc',
+      orderBy: {
+        student: {
+          createdAt: 'asc',
+        },
       },
-    },
-  })
+    })
+  )
 
   // 1. Monthly Statistics (New Students per Month)
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()

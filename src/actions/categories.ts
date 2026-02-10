@@ -1,26 +1,26 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
+import { withSessionRLS } from '../lib/rls'
 
 export const getCategories = async <T extends Prisma.CategoryFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.CategoryFindManyArgs>
 ) => {
-  return await prisma.category.findMany(payload)
+  return withSessionRLS((tx) => tx.category.findMany(payload))
 }
 
 export const createCategory = async (payload: Prisma.CategoryCreateArgs) => {
-  await prisma.category.create(payload)
+  await withSessionRLS((tx) => tx.category.create(payload))
   revalidatePath('/dashboard/categories')
 }
 
 export const updateCategory = async ({ where, data }: Prisma.CategoryUpdateArgs) => {
-  await prisma.category.update({ where, data })
+  await withSessionRLS((tx) => tx.category.update({ where, data }))
   revalidatePath('/dashboard/categories')
 }
 
 export const deleteCategory = async (payload: Prisma.CategoryDeleteArgs) => {
-  await prisma.category.delete(payload)
+  await withSessionRLS((tx) => tx.category.delete(payload))
   revalidatePath('/dashboard/categories')
 }

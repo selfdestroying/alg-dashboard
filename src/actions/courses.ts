@@ -1,10 +1,10 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
 import { Prisma } from '../../prisma/generated/client'
+import { withSessionRLS } from '../lib/rls'
 
 export const getCourses = async <T extends Prisma.CourseFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.CourseFindManyArgs>
 ) => {
-  return await prisma.course.findMany(payload)
+  return withSessionRLS((tx) => tx.course.findMany(payload))
 }

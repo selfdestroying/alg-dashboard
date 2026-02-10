@@ -6,6 +6,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Prisma, StudentLessonsBalanceChangeReason } from '../../prisma/generated/client'
 import { auth } from '../lib/auth'
+import { enableRLS, withSessionRLS } from '../lib/rls'
 import { protocol, rootDomain } from '../lib/utils'
 
 export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
@@ -17,16 +18,16 @@ export type PaymentsWithStudentAndGroup = Prisma.PaymentGetPayload<{
 export const getPayments = async <T extends Prisma.PaymentFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.PaymentFindManyArgs>
 ) => {
-  return await prisma.payment.findMany<T>(payload)
+  return withSessionRLS((tx) => tx.payment.findMany<T>(payload))
 }
 
 export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
-  await prisma.payment.create(payload)
+  await withSessionRLS((tx) => tx.payment.create(payload))
   revalidatePath('/dashboard/finances/payments')
 }
 
 export const deletePayment = async (payload: Prisma.PaymentDeleteArgs) => {
-  await prisma.payment.delete(payload)
+  await withSessionRLS((tx) => tx.payment.delete(payload))
   revalidatePath('/dashboard/finances/payments')
 }
 
@@ -40,6 +41,8 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
   }
 
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, session.members[0].organizationId)
+
     const payment = await tx.payment.delete(payload)
 
     const student = await tx.student.findUnique({
@@ -78,27 +81,27 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
 }
 
 export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
-  await prisma.paymentProduct.create(payload)
+  await withSessionRLS((tx) => tx.paymentProduct.create(payload))
   revalidatePath('/dashboard/finances/payments')
 }
 
 export const deletePaymentProduct = async (payload: Prisma.PaymentProductDeleteArgs) => {
-  await prisma.paymentProduct.delete(payload)
+  await withSessionRLS((tx) => tx.paymentProduct.delete(payload))
   revalidatePath('/dashboard/finances/payments')
 }
 
 export const getUnprocessedPayments = async <T extends Prisma.UnprocessedPaymentFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.UnprocessedPaymentFindManyArgs>
 ) => {
-  return await prisma.unprocessedPayment.findMany(payload)
+  return withSessionRLS((tx) => tx.unprocessedPayment.findMany(payload))
 }
 
 export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentUpdateArgs) => {
-  await prisma.unprocessedPayment.update(payload)
+  await withSessionRLS((tx) => tx.unprocessedPayment.update(payload))
   revalidatePath('/dashboard/finances/payments')
 }
 
 export const deleteUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentDeleteArgs) => {
-  await prisma.unprocessedPayment.delete(payload)
+  await withSessionRLS((tx) => tx.unprocessedPayment.delete(payload))
   revalidatePath('/dashboard/finances/payments')
 }

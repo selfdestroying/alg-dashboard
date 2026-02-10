@@ -5,21 +5,24 @@ import { startOfDay } from 'date-fns'
 import { fromZonedTime } from 'date-fns-tz'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
+import { enableRLS, getSessionOrganizationId, withSessionRLS } from '../lib/rls'
 
 export const getGroups = async <T extends Prisma.GroupFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>
 ) => {
-  return await prisma.group.findMany<T>(payload)
+  return withSessionRLS((tx) => tx.group.findMany<T>(payload))
 }
 
 export const getGroup = async <T extends Prisma.GroupFindFirstArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.GroupFindFirstArgs>
 ) => {
-  return await prisma.group.findFirst(payload)
+  return withSessionRLS((tx) => tx.group.findFirst(payload))
 }
 
 export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const group = await tx.group.create({
       ...payload,
       include: {
@@ -43,43 +46,47 @@ export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
 }
 
 export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
-  await prisma.group.update(payload)
-  const dayOfWeek = payload.data.dayOfWeek
-  const time = payload.data.time
-  if (time != null) {
-    await prisma.lesson.updateMany({
-      where: { groupId: payload.where.id, date: { gte: startOfDay(new Date()) } },
-      data: { time },
-    })
-  }
-  if (dayOfWeek != null) {
-    const lessons = await prisma.lesson.findMany({
-      where: { groupId: payload.where.id, date: { gte: startOfDay(new Date()) } },
-    })
-
-    const nearestWeekDay = startOfDay(new Date())
-    const currentDay = nearestWeekDay.getDay()
-
-    let diff = ((dayOfWeek as number) - currentDay + 7) % 7
-
-    if (diff === 0) {
-      diff = 7
-    }
-
-    nearestWeekDay.setDate(nearestWeekDay.getDate() + diff)
-    for (const lesson of lessons) {
-      await prisma.lesson.update({
-        where: { id: lesson.id },
-        data: { date: fromZonedTime(nearestWeekDay, 'Europe/Moscow') },
+  const orgId = await getSessionOrganizationId()
+  await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
+    await tx.group.update(payload)
+    const dayOfWeek = payload.data.dayOfWeek
+    const time = payload.data.time
+    if (time != null) {
+      await tx.lesson.updateMany({
+        where: { groupId: payload.where.id, date: { gte: startOfDay(new Date()) } },
+        data: { time },
       })
-      nearestWeekDay.setDate(nearestWeekDay.getDate() + 7)
     }
-  }
+    if (dayOfWeek != null) {
+      const lessons = await tx.lesson.findMany({
+        where: { groupId: payload.where.id, date: { gte: startOfDay(new Date()) } },
+      })
+
+      const nearestWeekDay = startOfDay(new Date())
+      const currentDay = nearestWeekDay.getDay()
+
+      let diff = ((dayOfWeek as number) - currentDay + 7) % 7
+
+      if (diff === 0) {
+        diff = 7
+      }
+
+      nearestWeekDay.setDate(nearestWeekDay.getDate() + diff)
+      for (const lesson of lessons) {
+        await tx.lesson.update({
+          where: { id: lesson.id },
+          data: { date: fromZonedTime(nearestWeekDay, 'Europe/Moscow') },
+        })
+        nearestWeekDay.setDate(nearestWeekDay.getDate() + 7)
+      }
+    }
+  })
   revalidatePath(`/dashboard/groups/${payload.where.id}`)
 }
 
 export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
-  await prisma.group.delete(payload)
+  await withSessionRLS((tx) => tx.group.delete(payload))
   revalidatePath('dashboard/groups')
 }
 
@@ -89,7 +96,9 @@ export const createStudentGroup = async (
   payload: Prisma.StudentGroupCreateArgs,
   isApplyToLessons: boolean
 ) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     await tx.studentGroup.create(payload)
 
     if (!isApplyToLessons) return
@@ -128,7 +137,9 @@ export const updateStudentGroup = async (
   payload: Prisma.StudentGroupUpdateArgs,
   isApplyToLessons: boolean
 ) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const sg = await tx.studentGroup.update(payload)
 
     if (!isApplyToLessons) return
@@ -163,7 +174,9 @@ export const updateStudentGroup = async (
 }
 
 export const deleteStudentGroup = async (payload: Prisma.StudentGroupDeleteArgs) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const studentGroup = await tx.studentGroup.delete(payload)
 
     const today = new Date()
@@ -196,7 +209,9 @@ export const updateTeacherGroup = async (
   payload: Prisma.TeacherGroupUpdateArgs,
   isApplyToLessons: boolean
 ) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const teacherGroup = await tx.teacherGroup.update(payload)
 
     if (isApplyToLessons) {
@@ -222,7 +237,9 @@ export const createTeacherGroup = async (
   payload: Prisma.TeacherGroupCreateArgs,
   isApplyToLessons: boolean
 ) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const teacherGroup = await tx.teacherGroup.create({
       ...payload,
       include: {
@@ -258,7 +275,9 @@ export const deleteTeacherGroup = async (
   payload: Prisma.TeacherGroupDeleteArgs,
   isApplyToLessons: boolean
 ) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const teacherGroup = await tx.teacherGroup.delete({
       ...payload,
       include: {

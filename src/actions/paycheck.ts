@@ -1,30 +1,28 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
+import { withSessionRLS } from '../lib/rls'
 
 export async function getPaychecks(payload: Prisma.PayCheckFindManyArgs) {
-  const paychecks = await prisma.payCheck.findMany(payload)
-  return paychecks
+  return withSessionRLS((tx) => tx.payCheck.findMany(payload))
 }
 
 export async function getPaycheck(payload: Prisma.PayCheckFindFirstArgs) {
-  const paycheck = await prisma.payCheck.findFirst(payload)
-  return paycheck
+  return withSessionRLS((tx) => tx.payCheck.findFirst(payload))
 }
 
 export async function createPaycheck(payload: Prisma.PayCheckCreateArgs) {
-  await prisma.payCheck.create(payload)
+  await withSessionRLS((tx) => tx.payCheck.create(payload))
   revalidatePath(`/dashboard/users/${payload.data.userId}`)
 }
 
 export async function updatePaycheck(payload: Prisma.PayCheckUpdateArgs) {
-  await prisma.payCheck.update(payload)
+  await withSessionRLS((tx) => tx.payCheck.update(payload))
   revalidatePath(`/dashboard/users/${payload.data.userId}`)
 }
 
 export async function deletePaycheck(payload: Prisma.PayCheckDeleteArgs) {
-  await prisma.payCheck.delete(payload)
+  await withSessionRLS((tx) => tx.payCheck.delete(payload))
   revalidatePath(`/dashboard/users/${payload.where.userId}`)
 }

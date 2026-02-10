@@ -3,6 +3,7 @@
 import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
+import { enableRLS, getSessionOrganizationId, withSessionRLS } from '../lib/rls'
 
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
@@ -12,17 +13,16 @@ export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
 }>
 
 export async function getDismissed(payload: Prisma.DismissedFindFirstArgs) {
-  const dismissed = await prisma.dismissed.findMany(payload)
-  return dismissed
+  return withSessionRLS((tx) => tx.dismissed.findMany(payload))
 }
 
 export async function createDismissed(payload: Prisma.DismissedCreateArgs) {
-  await prisma.dismissed.create(payload)
+  await withSessionRLS((tx) => tx.dismissed.create(payload))
   revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
 }
 
 export async function removeDismissed(payload: Prisma.DismissedDeleteArgs) {
-  await prisma.dismissed.delete(payload)
+  await withSessionRLS((tx) => tx.dismissed.delete(payload))
   revalidatePath('/dashboard/dismissed')
 }
 
@@ -33,7 +33,9 @@ export async function returnToGroup(payload: {
   organizationId: number
 }) {
   const { dismissedId, groupId, studentId } = payload
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     await tx.dismissed.delete({ where: { id: dismissedId } })
     const lastAttendance = await tx.attendance.findFirst({
       where: {
@@ -82,26 +84,27 @@ export async function returnToGroup(payload: {
 }
 
 export async function getDismissedStatistics(organizationId: number) {
-  const dismissed = await prisma.dismissed.findMany({
-    where: { organizationId },
-    include: {
-      group: {
-        include: {
-          course: true,
-          location: true,
-          teachers: {
-            include: {
-              teacher: true,
+  return withSessionRLS(async (tx) => {
+    const dismissed = await tx.dismissed.findMany({
+      where: { organizationId },
+      include: {
+        group: {
+          include: {
+            course: true,
+            location: true,
+            teachers: {
+              include: {
+                teacher: true,
+              },
             },
           },
         },
+        student: true,
       },
-      student: true,
-    },
-    orderBy: {
-      date: 'asc',
-    },
-  })
+      orderBy: {
+        date: 'asc',
+      },
+    })
 
   // Группировка по месяцам
   const monthlyStats = dismissed.reduce(
@@ -117,7 +120,7 @@ export async function getDismissedStatistics(organizationId: number) {
 
   // Расчет статистики по преподавателям с процентами
   // Собираем информацию о всех студентах преподавателей
-  const allGroups = await prisma.teacherGroup.findMany({
+  const allGroups = await tx.teacherGroup.findMany({
     where: { organizationId },
     include: {
       group: {
@@ -197,4 +200,5 @@ export async function getDismissedStatistics(organizationId: number) {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),
   }
+  })
 }

@@ -1,7 +1,7 @@
 import { getActiveStudentStatistics } from '@/src/actions/students'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -17,28 +17,31 @@ export default async function Page() {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
 
-  const students = await prisma.studentGroup.findMany({
-    where: { organizationId: session.members[0].organizationId },
-    include: {
-      group: {
-        include: {
-          location: true,
-          course: true,
-          teachers: {
-            include: {
-              teacher: true,
+  const orgId = session.members[0].organizationId
+  const students = await withRLS(orgId, (tx) =>
+    tx.studentGroup.findMany({
+      where: { organizationId: orgId },
+      include: {
+        group: {
+          include: {
+            location: true,
+            course: true,
+            teachers: {
+              include: {
+                teacher: true,
+              },
             },
           },
         },
-      },
-      student: {
-        include: {
-          payments: true,
+        student: {
+          include: {
+            payments: true,
+          },
         },
       },
-    },
-  })
-  const statistics = await getActiveStudentStatistics(session.members[0].organizationId)
+    })
+  )
+  const statistics = await getActiveStudentStatistics(orgId)
 
   return (
     <div className="grid grid-cols-1 gap-2">

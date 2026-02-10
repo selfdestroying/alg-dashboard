@@ -9,7 +9,7 @@ import {
 } from '@/src/components/ui/card'
 import { ItemGroup } from '@/src/components/ui/item'
 import { auth, OrganizationRole } from '@/src/lib/auth'
-import prisma from '@/src/lib/prisma'
+import { withRLS } from '@/src/lib/rls'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -33,27 +33,34 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   }
 
   const { id } = await params
-  const member = await prisma.member.findFirst({
-    where: {
-      id: Number(id),
-      organizationId: session.members[0].organizationId,
-    },
-    include: {
-      user: true,
-    },
+  const orgId = session.members[0].organizationId
+  const { member, paychecks } = await withRLS(orgId, async (tx) => {
+    const member = await tx.member.findFirst({
+      where: {
+        id: Number(id),
+        organizationId: orgId,
+      },
+      include: {
+        user: true,
+      },
+    })
+
+    const paychecks = member
+      ? await tx.payCheck.findMany({
+          where: {
+            userId: member.userId,
+            organizationId: orgId,
+          },
+          orderBy: { date: 'asc' },
+        })
+      : []
+
+    return { member, paychecks }
   })
 
   if (!member) {
     return <div>Сотрудник не найден.</div>
   }
-
-  const paychecks = await prisma.payCheck.findMany({
-    where: {
-      userId: member.userId,
-      organizationId: session.members[0].organizationId,
-    },
-    orderBy: { date: 'asc' },
-  })
 
   const roleLabel = memberRoleLabels[member.role as OrganizationRole] ?? member.role ?? '-'
   return (
@@ -113,7 +120,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </CardDescription>
           <CardAction>
             <AddCheckButton
-              organizationId={session.members[0].organizationId}
+              organizationId={orgId}
               userId={member.userId}
               userName={member.user.name}
             />

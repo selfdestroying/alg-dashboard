@@ -1,12 +1,14 @@
 'use server'
-import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
+import { withSessionRLS } from '../lib/rls'
 
 export const createMakeUp = async (data: Prisma.MakeUpUncheckedCreateInput) => {
-  const makeUp = await prisma.makeUp.create({
-    data,
-    include: { missedAttendance: true },
-  })
+  const makeUp = await withSessionRLS((tx) =>
+    tx.makeUp.create({
+      data,
+      include: { missedAttendance: true },
+    })
+  )
   revalidatePath(`/dashboard/lessons/${makeUp.missedAttendance.lessonId}`)
 }

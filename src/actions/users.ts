@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { Prisma } from '../../prisma/generated/client'
 import { auth } from '../lib/auth'
+import { enableRLS, getSessionOrganizationId } from '../lib/rls'
 
 export interface UserCreateParams {
   email: string
@@ -36,7 +37,9 @@ export const createUser = async (params: UserCreateParams) => {
 }
 
 export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLessons: boolean) => {
+  const orgId = await getSessionOrganizationId()
   await prisma.$transaction(async (tx) => {
+    await enableRLS(tx, orgId)
     const user = await tx.user.update(payload)
     if (isApplyToLessons) {
       await tx.teacherLesson.updateMany({
