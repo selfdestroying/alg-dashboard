@@ -74,6 +74,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     ],
   })
 
+  const { success: canEdit } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { student: ['update'] },
+    },
+  })
+
+  const { success: canEditLessonsHistory } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { lessonStudentHistory: ['update'] },
+    },
+  })
+
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
@@ -89,13 +103,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               {getFullName(student.firstName, student.lastName)}
             </div>
           </CardTitle>
-          <CardAction>
-            <EditStudentDialog student={student} />
-          </CardAction>
+          {canEdit && (
+            <CardAction>
+              <EditStudentDialog student={student} />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           <StudentCard student={student} groups={groups} />
-          <LessonsBalanceHistory history={lessonsBalanceHistory} />
+          {canEditLessonsHistory && <LessonsBalanceHistory history={lessonsBalanceHistory} />}
         </CardContent>
       </Card>
     </div>

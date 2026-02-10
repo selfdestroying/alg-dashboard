@@ -16,7 +16,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/src/components/ui/sheet'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useIsMobile } from '@/src/hooks/use-mobile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Pen, Sparkles } from 'lucide-react'
@@ -46,7 +45,6 @@ export const EditStudentSchema = z.object({
 export type EditStudentSchemaType = z.infer<typeof EditStudentSchema>
 
 export default function EditStudentDialog({ student }: { student: Student }) {
-  const { data: hasPermission } = useOrganizationPermissionQuery({ student: ['update'] })
   const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -96,8 +94,6 @@ export default function EditStudentDialog({ student }: { student: Student }) {
       })
     })
   }
-
-  if (!hasPermission) return null
 
   return (
     <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>

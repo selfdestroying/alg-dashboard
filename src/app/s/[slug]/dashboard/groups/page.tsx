@@ -37,15 +37,24 @@ export default async function Page() {
     },
   })
 
+  const { success: canCreate } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { group: ['create'] },
+    },
+  })
+
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
         <CardHeader>
           <CardTitle>Группы</CardTitle>
           <CardDescription>Список всех групп системы</CardDescription>
-          <CardAction>
-            <CreateGroupDialog />
-          </CardAction>
+          {canCreate && (
+            <CardAction>
+              <CreateGroupDialog />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent className="overflow-hidden">
           <GroupsTable data={groups} />

@@ -1,28 +1,16 @@
-'use client'
-
 import { Prisma } from '@/prisma/generated/client'
-import { updateStudent } from '@/src/actions/students'
-import { Button } from '@/src/components/ui/button'
-import { Field } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Separator } from '@/src/components/ui/separator'
+import { auth } from '@/src/lib/auth'
 import { getGroupName } from '@/src/lib/utils'
 import { StudentWithGroupsAndAttendance } from '@/src/types/student'
-import {
-  Link as LinkIcon,
-  Loader,
-  Lock,
-  LucideProps,
-  Plus,
-  ReceiptRussianRuble,
-  User,
-  Users,
-} from 'lucide-react'
+import { Link as LinkIcon, Lock, LucideProps, ReceiptRussianRuble, User, Users } from 'lucide-react'
+import { headers } from 'next/headers'
 import Link from 'next/link'
-import { ForwardRefExoticComponent, RefAttributes, useState, useTransition } from 'react'
+import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import AddStudentToGroupButton from '../../../groups/[id]/_components/add-student-to-group-button'
 import { GroupAttendanceTable } from '../../../groups/[id]/_components/group-attendance-table'
+import AddCoinsForm from './add-coins-form'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
@@ -36,23 +24,13 @@ interface StudentCardProps {
   }>[]
 }
 
-export default function StudentCard({ student, groups }: StudentCardProps) {
-  const [inc, setInc] = useState<number | undefined>()
-  const [isPending, startTransition] = useTransition()
-  const handleAddCoins = () => {
-    startTransition(() => {
-      if (inc) {
-        updateStudent({
-          where: { id: student.id },
-          data: {
-            coins: { increment: inc },
-          },
-        })
-        setInc(undefined)
-      }
-    })
-  }
-
+export default async function StudentCard({ student, groups }: StudentCardProps) {
+  const { success: canCreateStudentGroup } = await auth.api.hasPermission({
+    headers: await headers(),
+    body: {
+      permission: { studentGroup: ['create'] },
+    },
+  })
   return (
     <>
       <Section title="Общие сведения" icon={User}>
@@ -120,20 +98,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
           </div>
           <div className="flex gap-2">
             <p className="mt-1 font-medium">{student.coins ?? 'Не указан'}</p>
-            <div>
-              <Field orientation={'horizontal'}>
-                <Input
-                  className="w-24"
-                  type="number"
-                  value={inc ?? ''}
-                  onChange={(e) => setInc(Number(e.target.value))}
-                  disabled={isPending}
-                />
-                <Button size={'icon'} onClick={handleAddCoins} disabled={isPending || !inc}>
-                  {isPending ? <Loader className="animate-spin" /> : <Plus />}
-                </Button>
-              </Field>
-            </div>
+            <AddCoinsForm studentId={student.id} />
           </div>
         </div>
       </Section>
@@ -181,7 +146,7 @@ export default function StudentCard({ student, groups }: StudentCardProps) {
             <Users size={20} />
             Группы
           </h3>
-          <AddStudentToGroupButton groups={groups} student={student} />
+          {canCreateStudentGroup && <AddStudentToGroupButton groups={groups} student={student} />}
         </div>
         {student.groups.length > 0 ? (
           <div className="space-y-6">

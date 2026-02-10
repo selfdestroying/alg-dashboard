@@ -23,7 +23,6 @@ import {
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useMemberListQuery } from '@/src/data/member/member-list-query'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
@@ -52,7 +51,6 @@ type GroupTeacherSchemaType = z.infer<typeof GroupTeacherSchema>
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.members[0].organizationId
-  const { data: hasPermission } = useOrganizationPermissionQuery({ teacherGroup: ['create'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -93,10 +91,6 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
 
   if (isSessionLoading) {
     return <Skeleton className="h-full w-full" />
-  }
-
-  if (!hasPermission?.success) {
-    return null
   }
 
   return (

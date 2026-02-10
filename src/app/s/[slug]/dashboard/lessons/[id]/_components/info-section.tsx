@@ -1,29 +1,13 @@
 import { Prisma } from '@/prisma/generated/client'
-import { LessonStatus } from '@/prisma/generated/enums'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { auth } from '@/src/lib/auth'
 import { getGroupName } from '@/src/lib/utils'
-import { cva } from 'class-variance-authority'
+import { lessonStatusMap, lessonStatusVariants } from '@/src/shared/lesson-status'
 import { toZonedTime } from 'date-fns-tz'
 import { Book, Clock, MapPin, Users } from 'lucide-react'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import EditLessonButton from './edit-lesson-button'
-
-export const lessonStatusMap: Record<LessonStatus, string> = {
-  ACTIVE: 'Активен',
-  CANCELLED: 'Отменен',
-}
-
-export const lessonStatusVariants = cva('', {
-  variants: {
-    status: {
-      ACTIVE: 'text-success',
-      CANCELLED: 'text-destructive',
-    },
-  },
-  defaultVariants: {
-    status: 'ACTIVE',
-  },
-})
 
 interface InfoSectionsProps {
   lesson: Prisma.LessonGetPayload<{
@@ -40,14 +24,24 @@ interface InfoSectionsProps {
   }>
 }
 
-export default function InfoSection({ lesson }: InfoSectionsProps) {
+export default async function InfoSection({ lesson }: InfoSectionsProps) {
+  const requestHeaders = await headers()
+  const { success: canEditLesson } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { lesson: ['update'] },
+    },
+  })
+
   return (
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация об уроке</CardTitle>
-        <CardAction>
-          <EditLessonButton lesson={lesson} />
-        </CardAction>
+        {canEditLesson && (
+          <CardAction>
+            <EditLessonButton lesson={lesson} />
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">

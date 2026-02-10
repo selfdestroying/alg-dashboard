@@ -68,6 +68,27 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const studentsInGroup = group.students.map((gs) => gs.student)
 
+  const { success: canCreateLesson } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { lesson: ['create'] },
+    },
+  })
+
+  const { success: canCreateStudentGroup } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { student: ['create'] },
+    },
+  })
+
+  const { success: canCreateTeacherGroup } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { teacherGroup: ['create'] },
+    },
+  })
+
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -75,9 +96,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <Card>
           <CardHeader>
             <CardTitle>Преподаватели</CardTitle>
-            <CardAction>
-              <AddTeacherToGroupButton group={group} />
-            </CardAction>
+            {canCreateTeacherGroup && (
+              <CardAction>
+                <AddTeacherToGroupButton group={group} />
+              </CardAction>
+            )}
           </CardHeader>
           <CardContent>
             <GroupTeachersTable data={group.teachers} />
@@ -88,9 +111,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card>
         <CardHeader>
           <CardTitle>Посещаемость</CardTitle>
-          <CardAction>
-            <AddLessonButton group={group} />
-          </CardAction>
+          {canCreateLesson && (
+            <CardAction>
+              <AddLessonButton group={group} />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent>
           <GroupAttendanceTable lessons={group.lessons} data={studentsInGroup} />
@@ -99,9 +124,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card>
         <CardHeader>
           <CardTitle>Список учеников</CardTitle>
-          <CardAction>
-            <AddStudentToGroupButton group={group} students={students} />
-          </CardAction>
+          {canCreateStudentGroup && (
+            <CardAction>
+              <AddStudentToGroupButton group={group} students={students} />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent>
           <GroupStudentsTable data={group.students} />

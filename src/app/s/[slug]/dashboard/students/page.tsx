@@ -27,15 +27,25 @@ export default async function Page() {
       organizationId: session.members[0].organizationId,
     },
   })
+
+  const { success: canCreate } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { student: ['create'] },
+    },
+  })
+
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
         <CardHeader>
           <CardTitle>Ученики</CardTitle>
           <CardDescription>Список всех учеников системы</CardDescription>
-          <CardAction>
-            <CreateStudentDialog />
-          </CardAction>
+          {canCreate && (
+            <CardAction>
+              <CreateStudentDialog />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent className="overflow-hidden">
           <StudentsTable data={students} />

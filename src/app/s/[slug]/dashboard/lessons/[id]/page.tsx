@@ -77,6 +77,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     return <div>Ошибка при получении урока</div>
   }
 
+  const { success: canCreateTeacherLesson } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { teacherLesson: ['create'] },
+    },
+  })
+
+  const { success: canCreateStudentLesson } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { studentLesson: ['create'] },
+    },
+  })
+
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -84,9 +98,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <Card className="shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">Преподаватели</CardTitle>
-            <CardAction>
-              <AddTeacherToLessonButton lesson={lesson} />
-            </CardAction>
+            {canCreateTeacherLesson && (
+              <CardAction>
+                <AddTeacherToLessonButton lesson={lesson} />
+              </CardAction>
+            )}
           </CardHeader>
           <CardContent className="space-y-2">
             <LessonTeachersTable data={lesson.teachers} />
@@ -96,9 +112,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Список учеников</CardTitle>
-          <CardAction>
-            <AddAttendanceButton lessonId={lesson.id} students={students} />
-          </CardAction>
+          {canCreateStudentLesson && (
+            <CardAction>
+              <AddAttendanceButton lessonId={lesson.id} students={students} />
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent>
           <AttendanceTable data={lesson.attendance} />

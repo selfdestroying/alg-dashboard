@@ -22,7 +22,6 @@ import {
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useMemberListQuery } from '@/src/data/member/member-list-query'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
@@ -49,7 +48,6 @@ type LessonTeacherSchemaType = z.infer<typeof LessonTeacherSchema>
 export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.members[0].organizationId
-  const { data: hasPermission } = useOrganizationPermissionQuery({ teacherLesson: ['create'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -83,10 +81,6 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
   useEffect(() => {
     form.reset()
   }, [dialogOpen, form])
-
-  if (!hasPermission?.success) {
-    return null
-  }
 
   if (isSessionLoading) {
     return <Skeleton className="h-full w-full" />

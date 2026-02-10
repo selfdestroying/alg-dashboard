@@ -32,10 +32,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
 
+  const { success: canRead } = await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: {
+      permission: { member: ['read'] },
+    },
+  })
+
+  if (!canRead) {
+    return <div>У вас нет доступа к этому разделу</div>
+  }
+
   const { id } = await params
   const member = await prisma.member.findFirst({
     where: {
-      id: Number(id),
+      userId: Number(id),
       organizationId: session.members[0].organizationId,
     },
     include: {
