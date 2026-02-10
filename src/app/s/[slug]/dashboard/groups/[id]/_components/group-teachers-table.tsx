@@ -14,7 +14,7 @@ export default function GroupTeachersTable({
 }: {
   data: Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>[]
 }) {
-  const canEdit = useOrganizationPermissionQuery({ teacherGroup: ['update'] })
+  const { data: canEdit } = useOrganizationPermissionQuery({ teacherGroup: ['update'] })
   const columns: ColumnDef<Prisma.TeacherGroupGetPayload<{ include: { teacher: true } }>>[] =
     useMemo(
       () => [
@@ -22,7 +22,7 @@ export default function GroupTeachersTable({
           header: 'Преподаватель',
           cell: ({ row }) => (
             <Link
-              href={`/dashboard/users/${row.original.teacher.id}`}
+              href={`/dashboard/organization/members/${row.original.teacher.id}`}
               className="text-primary hover:underline"
             >
               {getFullName(row.original.teacher.firstName, row.original.teacher.lastName)}
@@ -35,7 +35,7 @@ export default function GroupTeachersTable({
         },
         {
           id: 'actions',
-          cell: ({ row }) => (canEdit ? <GroupTeacherActions tg={row.original} /> : null),
+          cell: ({ row }) => (canEdit?.success ? <GroupTeacherActions tg={row.original} /> : null),
         },
       ],
       [canEdit]

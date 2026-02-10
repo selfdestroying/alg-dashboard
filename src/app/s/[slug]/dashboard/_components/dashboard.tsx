@@ -74,7 +74,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
           row.original.teachers.map((t, index) => (
             <span key={t.teacher.id}>
               <Link
-                href={`/dashboard/users/${t.teacher.id}`}
+                href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
                 {getFullName(t.teacher.firstName, t.teacher.lastName)}
@@ -149,7 +149,8 @@ export default function Dashboard() {
   const organizationId = session?.members?.[0]?.organizationId
   const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
   const canReadAllLessons = !!hasPermission?.success
-  const lockedTeacherId = !canReadAllLessons ? session?.user?.id : undefined
+  const lockedTeacherId =
+    !canReadAllLessons && session?.user?.id != null ? Number(session.user.id) : undefined
   const effectiveFilters = useMemo(() => {
     if (!lockedTeacherId) return filters
     const otherFilters = filters.filter((filter) => filter.id !== 'teacher')
@@ -332,7 +333,6 @@ function Filters({
     const userIds = selectedUsers.map((user) => Number(user.value))
     setFilters((old) => {
       const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-
       return [
         ...otherFilters,
         {

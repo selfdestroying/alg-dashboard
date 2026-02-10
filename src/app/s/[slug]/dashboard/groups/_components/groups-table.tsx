@@ -67,7 +67,7 @@ const columns: ColumnDef<GroupDTO>[] = [
           row.original.teachers.map((t, index) => (
             <span key={t.teacher.id}>
               <Link
-                href={`/dashboard/users/${t.teacher.id}`}
+                href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
                 {getFullName(t.teacher.firstName, t.teacher.lastName)}
