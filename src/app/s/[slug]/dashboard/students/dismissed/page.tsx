@@ -22,7 +22,11 @@ export default async function Page() {
     },
     include: {
       group: {
-        include: { course: true, location: true, teachers: { include: { teacher: true } } },
+        include: {
+          course: true,
+          location: true,
+          teachers: { include: { teacher: { include: { members: true } } } },
+        },
       },
       student: true,
     },

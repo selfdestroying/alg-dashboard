@@ -7,7 +7,13 @@ import { Prisma } from '../../prisma/generated/client'
 export type DismissedWithStudentAndGroup = Prisma.DismissedGetPayload<{
   include: {
     student: true
-    group: { include: { course: true; location: true; teachers: { include: { teacher: true } } } }
+    group: {
+      include: {
+        course: true
+        location: true
+        teachers: { include: { teacher: { include: { members: true } } } }
+      }
+    }
   }
 }>
 
