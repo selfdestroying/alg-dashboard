@@ -21,11 +21,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Ban, Check, Dices, KeyRound, Loader, ShieldCheck, UserX } from 'lucide-react'
+import { Ban, Loader, ShieldCheck, UserX } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import CreateUserDialog from './create-user-dialog'
 import EditUserDialog from './edit-user-dialog'
+import PasswordChangeDialog from './password-change-dialog'
 import type { AdminDashboardData, AdminUser } from './types'
 
 interface UsersTableProps {
@@ -35,7 +36,6 @@ interface UsersTableProps {
 
 export default function UsersTable({ data, onRefresh }: UsersTableProps) {
   const [search, setSearch] = useState('')
-  const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({})
   const [isPending, startTransition] = useTransition()
   const [loadingUserId, setLoadingUserId] = useState<number | null>(null)
 
@@ -66,26 +66,6 @@ export default function UsersTable({ data, onRefresh }: UsersTableProps) {
           toast.success('Пользователь разблокирован')
         }
         onRefresh()
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : 'Ошибка')
-      } finally {
-        setLoadingUserId(null)
-      }
-    })
-  }
-
-  const handleSetPassword = (userId: number) => {
-    const newPassword = passwordInputs[userId]
-    if (!newPassword || newPassword.length < 6) {
-      toast.error('Пароль должен быть не менее 6 символов')
-      return
-    }
-    setLoadingUserId(userId)
-    startTransition(async () => {
-      try {
-        await authClient.admin.setUserPassword({ userId, newPassword })
-        toast.success('Пароль обновлён')
-        setPasswordInputs((prev) => ({ ...prev, [userId]: '' }))
       } catch (e) {
         toast.error(e instanceof Error ? e.message : 'Ошибка')
       } finally {
@@ -208,61 +188,7 @@ export default function UsersTable({ data, onRefresh }: UsersTableProps) {
             <EditUserDialog user={user} onSuccess={onRefresh} disabled={isLoading} />
 
             {/* Смена пароля */}
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button size="icon" variant="ghost" title="Сменить пароль" disabled={isLoading} />
-                }
-              >
-                <KeyRound className="size-4" />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Сменить пароль</DialogTitle>
-                  <DialogDescription>
-                    Новый пароль для {user.name} ({user.email})
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Новый пароль (мин. 8 символов)"
-                    value={passwordInputs[user.id] || ''}
-                    onChange={(e) =>
-                      setPasswordInputs((prev) => ({
-                        ...prev,
-                        [user.id]: e.target.value,
-                      }))
-                    }
-                  />
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    title="Сгенерировать пароль"
-                    onClick={() => {
-                      const chars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%'
-                      let password = ''
-                      for (let i = 0; i < 12; i++) {
-                        password += chars[Math.floor(Math.random() * chars.length)]
-                      }
-                      setPasswordInputs((prev) => ({ ...prev, [user.id]: password }))
-                    }}
-                  >
-                    <Dices className="size-4" />
-                  </Button>
-                  <DialogClose
-                    render={
-                      <Button
-                        onClick={() => handleSetPassword(user.id)}
-                        disabled={isLoading}
-                        size={'icon'}
-                      />
-                    }
-                  >
-                    {isLoading ? <Loader className="animate-spin" /> : <Check />}
-                  </DialogClose>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <PasswordChangeDialog user={user} disabled={isLoading} />
 
             {/* Смена роли */}
             <Dialog>

@@ -40,7 +40,7 @@ export default function AdminDashboard({ initialData }: AdminDashboardProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
+          <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}>
             <RefreshCw className={`${isRefreshing ? 'animate-spin' : ''}`} />
             Обновить
           </Button>
