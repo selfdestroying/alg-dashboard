@@ -3,6 +3,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent } from '@/src/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/src/components/ui/dialog'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { useSessionRevokeMutation } from '@/src/data/user/session-revoke-mutation'
 import type { Session } from '@/src/lib/auth'
@@ -10,6 +18,7 @@ import { Laptop, Loader2, Smartphone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { UAParser } from 'ua-parser-js'
+import { ChangePasswordForm } from './change-password-form'
 
 const UserCard = (props: { session: Session | null; activeSessions: Session['session'][] }) => {
   const router = useRouter()
@@ -92,8 +101,28 @@ const UserCard = (props: { session: Session | null; activeSessions: Session['ses
               )
             })}
         </div>
+        <div>
+          <ChangePassword />
+        </div>
       </CardContent>
     </Card>
   )
 }
 export default UserCard
+
+function ChangePassword() {
+  const [open, setOpen] = useState<boolean>(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant={'outline'} />}>Сменить пароль</DialogTrigger>
+      <DialogContent className="w-11/12 sm:max-w-106.25">
+        <DialogHeader>
+          <DialogTitle>Сменить пароль</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <ChangePasswordForm onSuccess={() => setOpen(false)} />
+      </DialogContent>
+    </Dialog>
+  )
+}
