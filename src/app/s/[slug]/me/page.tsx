@@ -12,8 +12,8 @@ import prisma from '@/src/lib/prisma'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import AddCheckButton from '../dashboard/users/[id]/_components/add-check-button'
-import PayChecksTable from '../dashboard/users/[id]/_components/paycheks-table'
+import AddCheckButton from '../dashboard/organization/members/[id]/_components/add-check-button'
+import PayChecksTable from '../dashboard/organization/members/[id]/_components/paycheks-table'
 import UserCard from './_components/user-card'
 
 export default async function Page() {

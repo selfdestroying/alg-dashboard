@@ -45,3 +45,4 @@ public/*
 
 /prisma/generated
 .vscode/
+.agents/
