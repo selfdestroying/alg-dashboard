@@ -2,7 +2,6 @@ import { addMember } from '@/src/actions/organizations'
 import { UserCreateParams } from '@/src/actions/users'
 import { authClient } from '@/src/lib/auth-client'
 import { useMutation } from '@tanstack/react-query'
-import { hashPassword } from 'better-auth/crypto'
 import { userKeys } from '../user/keys'
 
 const createMember = async ({
@@ -14,10 +13,9 @@ const createMember = async ({
   memberRole: 'owner' | 'manager' | 'teacher' | ('owner' | 'manager' | 'teacher')[]
   organizationId: string
 }) => {
-  const hashedPassword = await hashPassword(userParams.password)
   const { data: newUser, error } = await authClient.admin.createUser({
     email: userParams.email,
-    password: hashedPassword,
+    password: userParams.password,
     name: userParams.name,
     role: userParams.role,
     data: userParams.data,

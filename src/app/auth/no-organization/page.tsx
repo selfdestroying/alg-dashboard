@@ -4,10 +4,11 @@ import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
 import { Building2, Loader, LogOut } from 'lucide-react'
-import router from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export default function NoOrganizationPage() {
   const signOutMutation = useSignOutMutation()
+  const router = useRouter()
 
   return (
     <div className="w-full">

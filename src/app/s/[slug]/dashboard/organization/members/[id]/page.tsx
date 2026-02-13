@@ -13,9 +13,9 @@ import prisma from '@/src/lib/prisma'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import AddCheckButton from '../../../users/[id]/_components/add-check-button'
-import PayChecksTable from '../../../users/[id]/_components/paycheks-table'
 import EditUserButton from '../_components/edit-user-dialog'
+import AddCheckButton from './_components/add-check-button'
+import PayChecksTable from './_components/paycheks-table'
 
 const memberRoleLabels = {
   owner: 'Владелец',
