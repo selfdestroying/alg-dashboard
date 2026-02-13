@@ -712,7 +712,7 @@ try {
 - [ ] **C5** — Unsafe file upload · `products.ts`
 - [ ] **C6** — Нет Error Boundaries · Все маршруты `src/app/`
 - [ ] **C7** — `next/router` в App Router · `no-organization/page.tsx`
-- [ ] **C8** — Двойное хеширование пароля · `member-create-mutation.ts`
+- [x] **C8** — Двойное хеширование пароля · `member-create-mutation.ts`
 - [ ] **C9** — Пароли студентов в открытом виде · `schema.prisma`, `students-table.tsx`
 
 ### 🟠 MAJOR
