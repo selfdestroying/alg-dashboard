@@ -29,15 +29,15 @@ export default function PasswordChangeDialog({ user, disabled }: PasswordChangeD
   const generatePassword = () => {
     const chars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%'
     let result = ''
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       result += chars[Math.floor(Math.random() * chars.length)]
     }
     setPassword(result)
   }
 
   const handleSubmit = () => {
-    if (!password || password.length < 6) {
-      toast.error('Пароль должен быть не менее 6 символов')
+    if (!password || password.length < 8) {
+      toast.error('Пароль должен быть не менее 8 символов')
       return
     }
     startTransition(async () => {
@@ -75,7 +75,7 @@ export default function PasswordChangeDialog({ user, disabled }: PasswordChangeD
         </DialogHeader>
         <div className="flex gap-2">
           <Input
-            placeholder="Новый пароль (мин. 6 символов)"
+            placeholder="Новый пароль (мин. 8 символов)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
