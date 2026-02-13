@@ -1,4 +1,3 @@
-import { getLessons } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
@@ -11,13 +10,12 @@ import {
   SelectValue,
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
+import { useMappedLessonListQuery } from '@/src/data/lesson/lesson-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { getGroupName } from '@/src/lib/utils'
-import { format } from 'date-fns'
-import { fromZonedTime } from 'date-fns-tz'
+import { format, startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
-import { Dispatch, SetStateAction, useEffect, useState, useTransition } from 'react'
+import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 
 interface CreateMakeUpDialogProps {
   selectedLesson: { label: string; value: number } | null
@@ -30,41 +28,12 @@ export default function CreateMakeUpForm({
 }: CreateMakeUpDialogProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.members[0].organizationId
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-  const [lessons, setLessons] = useState<{ label: string; value: number }[]>([])
-  const [isPending, startTransition] = useTransition()
-
-  useEffect(() => {
-    startTransition(() => {
-      const zodedDate = fromZonedTime(selectedDate, 'Europe/Moscow')
-      getLessons({
-        where: { date: zodedDate, organizationId },
-        include: {
-          attendance: { include: { student: true } },
-          group: {
-            include: {
-              teachers: {
-                include: {
-                  teacher: true,
-                },
-              },
-              course: true,
-              location: true,
-            },
-          },
-        },
-      }).then((l) => {
-        setLessons(
-          l.map((lesson) => ({
-            label: `${getGroupName(lesson.group)} - ${lesson.group.teachers
-              .map((teacher) => `${teacher.teacher.firstName} ${teacher.teacher.lastName ?? ''}`)
-              .join(', ')}`,
-            value: lesson.id,
-          }))
-        )
-      })
-    })
-  }, [organizationId, selectedDate])
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>()
+  const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
+  const { data: lessons, isLoading: isLessonsLoading } = useMappedLessonListQuery(
+    organizationId!,
+    dayKey
+  )
 
   if (isSessionLoading) {
     return <Skeleton className="h-full w-full" />
@@ -75,23 +44,18 @@ export default function CreateMakeUpForm({
       <Popover modal>
         <PopoverTrigger
           render={
-            <Button
-              variant="outline"
-              className="w-full justify-start text-left font-normal"
-              size={'sm'}
-            />
+            <Button variant="outline" className="w-full justify-start text-left font-normal" />
           }
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {selectedDate ? format(selectedDate, 'dd.MM.yyyy') : 'Выбрать дату'}
+          <CalendarIcon />
+          {selectedDay ? format(selectedDay, 'dd.MM.yyyy') : 'Выбрать дату'}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar
             mode="single"
-            onSelect={setSelectedDate}
+            onSelect={setSelectedDay}
             locale={ru}
-            selected={selectedDate}
-            required
+            selected={selectedDay}
             components={{
               DayButton: (props) => (
                 <CalendarDayButton
@@ -104,13 +68,18 @@ export default function CreateMakeUpForm({
         </PopoverContent>
       </Popover>
 
-      <Select items={lessons} value={selectedLesson} onValueChange={setSelectedLesson}>
+      <Select
+        items={lessons}
+        value={selectedLesson}
+        onValueChange={setSelectedLesson}
+        disabled={isLessonsLoading}
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Выберите урок" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {lessons.map((lesson) => (
+            {lessons?.map((lesson) => (
               <SelectItem key={lesson.value} value={lesson}>
                 {lesson.label}
               </SelectItem>

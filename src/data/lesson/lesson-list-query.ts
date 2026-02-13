@@ -1,10 +1,14 @@
 import { getLessons } from '@/src/actions/lessons'
+import { getGroupName } from '@/src/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { endOfMonth, startOfDay, startOfMonth } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { lessonKeys } from './keys'
 
-async function getLessonList(organizationId: number, date: Date) {
+async function getLessonList(organizationId: number, date?: Date) {
+  if (!date) {
+    throw new Error('Укажите дату')
+  }
   const zoned = fromZonedTime(date, 'Europe/Moscow')
   const data = await getLessons({
     where: {
@@ -55,6 +59,17 @@ export const useLessonListQuery = (organizationId: number, date: Date) => {
     queryKey: lessonKeys.byDate(organizationId, dateKey),
     queryFn: () => getLessonList(organizationId, date),
     enabled: !!organizationId && !!date,
+  })
+}
+
+export const useMappedLessonListQuery = (organizationId: number, date?: Date) => {
+  const dateKey = date ? startOfDay(date).toISOString().split('T')[0] : ''
+  return useQuery({
+    queryKey: lessonKeys.byDate(organizationId, dateKey),
+    queryFn: () => getLessonList(organizationId, date),
+    enabled: !!organizationId && !!date,
+    select: (lessons) =>
+      lessons.map((lesson) => ({ label: getGroupName(lesson.group), value: lesson.id })),
   })
 }
 

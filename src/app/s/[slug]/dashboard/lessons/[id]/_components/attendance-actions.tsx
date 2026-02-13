@@ -24,6 +24,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,6 +48,7 @@ import {
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { getFullName } from '@/src/lib/utils'
 import { CalendarCog, CalendarPlus, Loader2, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -287,6 +289,9 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Отработка</DialogTitle>
+            <DialogDescription>
+              {getFullName(attendance.student.firstName, attendance.student.lastName)}
+            </DialogDescription>
           </DialogHeader>
           <CreateMakeUpForm selectedLesson={selectedLesson} setSelectedLesson={setSelectedLesson} />
           <DialogFooter>
