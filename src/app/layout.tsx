@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata = {
-  title: 'ALGCORE',
+  title: 'ЕДУДА | Единый учёт данных',
 }
 
 export default async function RootLayout({
