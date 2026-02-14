@@ -1,5 +1,6 @@
 'use client'
 
+import { Logo } from '@/src/components/logo'
 import { SwitchThemeButton } from '@/src/components/switch-theme-button'
 import { authClient } from '@/src/lib/auth-client'
 import { getRedirectUrl } from '@/src/lib/redirect-after-auth'
@@ -15,21 +16,50 @@ export default function SignIn() {
     }
 
     // Получаем URL для редиректа на основе членства в организациях
-    const redirectUrl = getRedirectUrl(session.members ?? [])
+    const redirectUrl = getRedirectUrl(session.organization ?? null)
 
     // Редиректим пользователя
     window.location.href = redirectUrl
   }
 
   return (
-    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <div className="self-end">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
+      {/* Decorative background orbs */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="animate-landing-float bg-primary/10 absolute -top-32 -right-32 h-96 w-96 rounded-full blur-3xl" />
+        <div className="animate-landing-float-delayed bg-primary/8 absolute -bottom-40 -left-40 h-120 w-120 rounded-full blur-3xl" />
+      </div>
+
+      {/* Subtle grid pattern */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-30" />
+
+      <div className="animate-landing-enter relative z-10 flex w-full max-w-sm flex-col items-center">
+        {/* Theme toggle — top right corner */}
+        <div className="absolute -top-12 right-0">
           <SwitchThemeButton />
         </div>
 
-        <SignInForm onSuccess={handleSuccess} />
+        {/* Brand */}
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <div className="ring-border/60 bg-card/80 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ring-1">
+            <Logo className="text-primary size-18" />
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-2xl font-bold tracking-tight">ЕДУДА</h1>
+            <p className="text-muted-foreground text-sm">Единый учёт данных</p>
+          </div>
+        </div>
+
+        {/* Card */}
+        <div className="ring-border/60 bg-card/80 w-full rounded-2xl p-6 shadow-xl ring-1 shadow-black/5 backdrop-blur-xl dark:shadow-black/20">
+          <SignInForm onSuccess={handleSuccess} />
+        </div>
+
+        {/* Footer */}
+        <p className="text-muted-foreground/60 mt-6 text-center text-[0.6875rem]">
+          &copy; {new Date().getFullYear()} ЕДУДА
+        </p>
       </div>
-    </div>
+    </main>
   )
 }

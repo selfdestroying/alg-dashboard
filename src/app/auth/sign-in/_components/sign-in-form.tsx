@@ -3,25 +3,19 @@
 import { PasswordInput } from '@/src/components/password-input'
 import { Button } from '@/src/components/ui/button'
 import { Checkbox } from '@/src/components/ui/checkbox'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/src/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { authClient } from '@/src/lib/auth-client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { GraduationCap, Loader2 } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
 import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
 const signInSchema = z.object({
-  email: z.email('Please enter a valid email address.'),
-  password: z.string().min(1, 'Password is required.'),
+  email: z.email('Введите корректный email'),
+  password: z.string().min(1, 'Введите пароль'),
   rememberMe: z.boolean(),
 })
 
@@ -64,12 +58,11 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
 
   return (
     <>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3">
         <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
-            <GraduationCap className="h-10 w-10" />
-            <h1 className="text-xl font-bold">Добро пожаловать в ...</h1>
-          </div>
+          <p className="text-muted-foreground text-center text-sm">
+            Войдите, чтобы продолжить работу
+          </p>
           <Controller
             name="email"
             control={form.control}
@@ -80,7 +73,6 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
                   {...field}
                   id="sign-in-email"
                   type="email"
-                  placeholder="example@example.com"
                   aria-invalid={fieldState.invalid}
                   autoComplete="email"
                 />
@@ -107,7 +99,6 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
                     {...field}
                     ref={ref}
                     id="sign-in-password"
-                    placeholder="Password"
                     aria-invalid={fieldState.invalid}
                     autoComplete="current-password"
                   />
@@ -116,7 +107,6 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
                     {...field}
                     id="sign-in-password"
                     type="password"
-                    placeholder="password"
                     aria-invalid={fieldState.invalid}
                     autoComplete="current-password"
                   />
@@ -142,13 +132,17 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
             )}
           />
         </FieldGroup>
-        <Button type="submit" className="relative w-full" disabled={loading}>
-          {loading ? <Loader2 size={16} className="animate-spin" /> : 'Войти'}
+        <Button type="submit" className="h-10 w-full gap-2 rounded-xl text-sm" disabled={loading}>
+          {loading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <>
+              Войти
+              <LogIn className="size-4" />
+            </>
+          )}
         </Button>
       </form>
-      <FieldDescription className="px-6 text-center">
-        Войдите в аккаунт чтобы использовать все функции панели управления
-      </FieldDescription>
     </>
   )
 }

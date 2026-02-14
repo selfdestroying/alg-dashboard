@@ -9,8 +9,8 @@ export default async function Page() {
     headers: requestHeaders,
   })
 
-  const redirectURL = session
-    ? `${protocol}://${session.members[0].organization.slug}.${rootDomain}`
+  const redirectURL = session?.organization
+    ? `${protocol}://${session.organization.slug}.${rootDomain}`
     : '/sign-in'
 
   return redirect(redirectURL)
