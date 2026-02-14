@@ -122,26 +122,18 @@ export const auth = betterAuth({
   plugins: [
     ...(options.plugins ?? []),
     customSession(async ({ user, session }) => {
-      const userId = Number(session.userId)
-
-      const [members, userRecord] = await Promise.all([
-        prisma.member.findMany({
-          where: { userId },
-          include: { organization: true },
-        }),
-        prisma.user.findFirst({
-          where: { id: userId },
-          select: { role: true },
-        }),
-      ])
-
-      const roles = userRecord?.role?.split(',') ?? []
+      const member = await prisma.member.findFirst({
+        where: { userId: Number(session.userId) },
+        include: { organization: true },
+      })
 
       return {
         user,
         session,
-        roles,
-        members,
+        organization: member?.organization ?? null,
+        organizationId: member?.organizationId ?? null,
+        memberRole: member?.role ?? null,
+        userRole: user.role,
       }
     }, options),
     nextCookies(), // должен быть последним плагином
@@ -149,6 +141,4 @@ export const auth = betterAuth({
 })
 
 export type Session = typeof auth.$Infer.Session
-export type ActiveOrganization = typeof auth.$Infer.ActiveOrganization
-export type OrganizationRole = ActiveOrganization['members'][number]['role']
-export type Members = ActiveOrganization['members']
+export type OrganizationRole = 'owner' | 'manager' | 'teacher'
