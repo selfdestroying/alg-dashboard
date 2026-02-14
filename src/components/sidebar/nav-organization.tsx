@@ -2,12 +2,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import { DropdownMenu, DropdownMenuTrigger } from '@/src/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
-import { useOrganizationDetailQuery } from '@/src/data/organization/organization-detail-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { ChevronsUpDown } from 'lucide-react'
 import { Skeleton } from '../ui/skeleton'
 
 export default function NavOrganization() {
-  const { data, isLoading: isOrganizationLoading } = useOrganizationDetailQuery()
+  const { data: session, isLoading: isOrganizationLoading } = useSessionQuery()
 
   if (isOrganizationLoading) {
     return (
@@ -37,12 +37,12 @@ export default function NavOrganization() {
             }
           >
             <Avatar>
-              <AvatarImage alt={data?.name} />
-              <AvatarFallback>{data?.name[0]}</AvatarFallback>
+              <AvatarImage alt={session?.organization?.name} />
+              <AvatarFallback>{session?.organization?.name[0]}</AvatarFallback>
             </Avatar>
 
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{data?.name}</span>
+              <span className="truncate font-medium">{session?.organization?.name}</span>
             </div>
             <ChevronsUpDown />
           </DropdownMenuTrigger>
