@@ -711,7 +711,7 @@ try {
 - [ ] **C4** — Нет tenant isolation · Все CRUD + `@default(1)`
 - [ ] **C5** — Unsafe file upload · `products.ts`
 - [ ] **C6** — Нет Error Boundaries · Все маршруты `src/app/`
-- [ ] **C7** — `next/router` в App Router · `no-organization/page.tsx`
+- [x] **C7** — `next/router` в App Router · `no-organization/page.tsx`
 - [x] **C8** — Двойное хеширование пароля · `member-create-mutation.ts`
 - [ ] **C9** — Пароли студентов в открытом виде · `schema.prisma`, `students-table.tsx`
 
@@ -763,7 +763,7 @@ try {
 
 - [ ] **Валидировать файлы:** whitelist расширений (`.jpg`, `.png`, `.webp`), проверка MIME-type, ограничение размера.
 
-- [ ] **Убрать `hashPassword` из клиента.** Перенести создание пользователя в server action.
+- [x] **Убрать `hashPassword` из клиента.** Перенести создание пользователя в server action.
 
 - [ ] **Хешировать пароли студентов.** Убрать колонку `password` из UI.
 
@@ -778,7 +778,7 @@ try {
 ### Приоритет 3 — Архитектура (C6–C7, M4, M7, M10)
 
 - [ ] Добавить `global-error.tsx`, `error.tsx`, `loading.tsx`
-- [ ] Исправить `next/router` → `next/navigation`
+- [x] Исправить `next/router` → `next/navigation`
 - [ ] Вынести auth-проверку в middleware
 - [ ] Параллелизировать запросы через `Promise.all`
 - [ ] Заменить in-memory агрегации на SQL-агрегации
@@ -789,4 +789,4 @@ try {
 - [ ] Вынести типы из `'use server'` файлов
 - [ ] Устранить дублирование компонентов и типов
 - [ ] Убрать mock-функции
-- [x] Исправить тайпо, нейминг, revalidatePath
+- [ ] Исправить тайпо, нейминг, revalidatePath
