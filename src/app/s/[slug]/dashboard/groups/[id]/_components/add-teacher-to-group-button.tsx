@@ -50,7 +50,7 @@ type GroupTeacherSchemaType = z.infer<typeof GroupTeacherSchema>
 
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 

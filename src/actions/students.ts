@@ -100,7 +100,7 @@ export async function updateStudent(
     const delta = balanceAfter - balanceBefore
 
     await writeLessonsBalanceHistoryTx(tx, {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
       studentId,
       actorUserId: Number(session.user.id),
       reason: lessonsBalanceAudit.reason,

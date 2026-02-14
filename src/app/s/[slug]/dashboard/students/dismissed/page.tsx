@@ -13,12 +13,12 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const dismissed = await prisma.dismissed.findMany({
     where: {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     include: {
       group: {
@@ -33,7 +33,7 @@ export default async function Page() {
     orderBy: { date: 'desc' },
   })
 
-  const statistics = await getDismissedStatistics(session.members[0].organizationId)
+  const statistics = await getDismissedStatistics(session.organizationId!)
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 gap-2">

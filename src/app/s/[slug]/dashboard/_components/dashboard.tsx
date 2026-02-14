@@ -146,7 +146,7 @@ export default function Dashboard() {
   const dayKey = useMemo(() => startOfDay(selectedDay), [selectedDay])
   const columns = useMemo(() => LESSON_COLUMNS, [])
 
-  const organizationId = session?.members?.[0]?.organizationId
+  const organizationId = session?.organizationId
   const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
   const canReadAllLessons = !!hasPermission?.success
   const lockedTeacherId =

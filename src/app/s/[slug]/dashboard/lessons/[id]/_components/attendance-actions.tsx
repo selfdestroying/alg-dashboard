@@ -57,7 +57,7 @@ import CreateMakeUpForm from './create-makeup-dialog'
 
 const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents }) => {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [makeupOpen, setMakeupOpen] = useState(false)

@@ -60,7 +60,7 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
 
     const balanceAfter = balanceBefore - payment.lessonCount
     await writeLessonsBalanceHistoryTx(tx, {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
       studentId: payment.studentId,
       actorUserId: Number(session.user.id),
       reason: StudentLessonsBalanceChangeReason.PAYMENT_CANCELLED,

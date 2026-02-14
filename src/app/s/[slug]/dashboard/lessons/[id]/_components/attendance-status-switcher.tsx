@@ -71,7 +71,7 @@ const switcherVariant = cva(['cursor-pointer'], {
 
 export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitcherProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })

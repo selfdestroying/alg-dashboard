@@ -13,14 +13,14 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
-  const stats = await getAbsentStatistics(session.members[0].organizationId)
+  const stats = await getAbsentStatistics(session.organizationId!)
 
   const attendance = await prisma.attendance.findMany({
     where: {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
       status: 'ABSENT',
       OR: [
         {

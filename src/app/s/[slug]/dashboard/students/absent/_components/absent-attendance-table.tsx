@@ -118,7 +118,7 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
 
 export default function StudentsTable({ data }: { data: AttendanceWithStudents[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []

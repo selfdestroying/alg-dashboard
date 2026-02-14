@@ -18,11 +18,11 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const orders = await getOrders({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     include: { product: true, student: true },
     orderBy: { createdAt: 'desc' },
   })

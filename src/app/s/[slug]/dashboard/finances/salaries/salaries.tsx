@@ -133,8 +133,8 @@ const datePresets = [
 ]
 
 export default function Salaries() {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const { data: session } = useSessionQuery()
+  const organizationId = session?.organizationId ?? undefined
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
   const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])

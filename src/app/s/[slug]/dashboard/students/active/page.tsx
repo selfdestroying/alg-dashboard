@@ -13,12 +13,12 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
 
   const students = await prisma.studentGroup.findMany({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     include: {
       group: {
         include: {
@@ -38,7 +38,7 @@ export default async function Page() {
       },
     },
   })
-  const statistics = await getActiveStudentStatistics(session.members[0].organizationId)
+  const statistics = await getActiveStudentStatistics(session.organizationId!)
 
   return (
     <div className="grid grid-cols-1 gap-2">

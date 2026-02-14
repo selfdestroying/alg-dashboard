@@ -21,7 +21,7 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const activeSessions = await auth.api.listSessions({
@@ -31,7 +31,7 @@ export default async function Page() {
   const paychecks = await prisma.payCheck.findMany({
     where: {
       userId: Number(session.user.id),
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
   })
   return (
@@ -50,7 +50,7 @@ export default async function Page() {
           </CardDescription>
           <CardAction>
             <AddCheckButton
-              organizationId={session.members[0].organizationId}
+              organizationId={session.organizationId!}
               userId={Number(session.user.id)}
               userName={session.user.name}
             />

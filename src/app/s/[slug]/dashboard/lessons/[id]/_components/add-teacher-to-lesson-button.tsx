@@ -47,7 +47,7 @@ type LessonTeacherSchemaType = z.infer<typeof LessonTeacherSchema>
 
 export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 

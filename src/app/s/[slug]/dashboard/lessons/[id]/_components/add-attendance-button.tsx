@@ -63,7 +63,7 @@ type SchemaType = z.infer<typeof Schema>
 
 export default function AddAttendanceButton({ lessonId, students }: AddAttendanceButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const form = useForm<SchemaType>({

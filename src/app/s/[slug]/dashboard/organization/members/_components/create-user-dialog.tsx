@@ -66,7 +66,7 @@ export default function CreateUserDialog() {
           },
         },
         memberRole: values.role,
-        organizationId: session!.members[0].organizationId.toString(),
+        organizationId: session!.organizationId!.toString(),
       },
       {
         onSuccess: () => {

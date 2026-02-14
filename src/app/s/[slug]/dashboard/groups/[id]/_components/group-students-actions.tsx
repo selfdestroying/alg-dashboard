@@ -88,7 +88,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     async function fetchGroups() {
       const data = await getGroups({
         where: {
-          organizationId: session?.members[0].organizationId,
+          organizationId: session?.organizationId ?? undefined,
           NOT: {
             id: sg.groupId,
           },
@@ -112,7 +112,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       )
     }
     fetchGroups()
-  }, [sg.groupId, isSessionLoading, session?.members])
+  }, [sg.groupId, isSessionLoading, session?.organizationId])
 
   const dismissForm = useForm<DismissStudentSchemaType>({
     resolver: zodResolver(dismissStudentSchema),

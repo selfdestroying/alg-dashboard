@@ -33,7 +33,7 @@ type AddCategoryFormSchemaType = z.infer<typeof AddCategorySchema>
 
 export default function AddCategoryButton() {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<AddCategoryFormSchemaType>({

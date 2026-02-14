@@ -19,11 +19,11 @@ export default async function Page() {
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const categories = await getCategories({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
   })
 
   return (

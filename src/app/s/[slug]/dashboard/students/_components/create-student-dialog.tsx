@@ -47,7 +47,7 @@ export default function CreateStudentDialog() {
       const ok = createStudent({
         data: {
           ...values,
-          organizationId: session?.members[0].organizationId,
+          organizationId: session?.organizationId ?? undefined,
           Cart: { create: {} },
         },
       })

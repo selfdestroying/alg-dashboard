@@ -42,7 +42,7 @@ interface EditGroupButtonProps {
 
 export default function EditGroupButton({ group }: EditGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const { data: hasPermission } = useOrganizationPermissionQuery({ group: ['update'] })
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)

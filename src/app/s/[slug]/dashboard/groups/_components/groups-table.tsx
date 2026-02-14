@@ -128,7 +128,7 @@ const columns: ColumnDef<GroupDTO>[] = [
 
 export default function GroupsTable({ data }: { data: GroupDTO[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []

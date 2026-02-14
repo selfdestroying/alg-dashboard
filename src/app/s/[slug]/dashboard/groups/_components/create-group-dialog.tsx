@@ -66,8 +66,8 @@ export const timeSlots = [
 ]
 
 export default function CreateGroupDialog() {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const { data: session } = useSessionQuery()
+  const organizationId = session?.organizationId ?? undefined
   const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery(
     organizationId!
   )

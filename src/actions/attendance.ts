@@ -167,7 +167,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
             ` ${toZonedTime(oldAttendance.lesson.date, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
 
           await writeLessonsBalanceHistoryTx(tx, {
-            organizationId: session.members[0].organizationId,
+            organizationId: session.organizationId!,
             studentId: oldAttendance.studentId,
             actorUserId: Number(session.user.id),
             reason,

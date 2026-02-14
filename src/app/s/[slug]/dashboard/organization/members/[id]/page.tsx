@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
 
@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const member = await prisma.member.findFirst({
     where: {
       userId: Number(id),
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     include: {
       user: true,
@@ -61,7 +61,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const paychecks = await prisma.payCheck.findMany({
     where: {
       userId: member.userId,
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     orderBy: { date: 'asc' },
   })
@@ -124,7 +124,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </CardDescription>
           <CardAction>
             <AddCheckButton
-              organizationId={session.members[0].organizationId}
+              organizationId={session.organizationId!}
               userId={member.userId}
               userName={member.user.name}
             />

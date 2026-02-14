@@ -61,7 +61,7 @@ export default function AddStudentToGroupButton({
   student,
 }: AddStudentToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const { data: hasPermission } = useOrganizationPermissionQuery({ studentGroup: ['create'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()

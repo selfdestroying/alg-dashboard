@@ -229,7 +229,7 @@ function transformLessonsToRevenueData(lessons: LessonWithAttendance[]): DayReve
 
 export default function RevenueClient() {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])

@@ -122,7 +122,7 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
 
 export default function DismissedStudentsTable({ data }: { data: DismissedWithStudentAndGroup[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const handleSearch = useMemo(
     () => debounce((value: string) => setGlobalFilter(String(value)), 300),
     []
