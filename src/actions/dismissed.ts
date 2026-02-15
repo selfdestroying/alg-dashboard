@@ -60,6 +60,7 @@ export async function returnToGroup(payload: {
         studentId,
         groupId,
         organizationId: payload.organizationId,
+        status: 'ACTIVE',
       },
     })
     if (lastAttendance) {
@@ -138,7 +139,7 @@ export async function getDismissedStatistics(organizationId: number) {
 
   const teacherStudentCounts: Record<string, number> = {}
   allGroups.forEach((tg) => {
-    const teacherName = `${tg.teacher.firstName} ${tg.teacher.lastName || ''}`
+    const teacherName = tg.teacher.name
     const studentCount = tg.group._count.students
     if (!teacherStudentCounts[teacherName]) {
       teacherStudentCounts[teacherName] = 0
@@ -150,7 +151,7 @@ export async function getDismissedStatistics(organizationId: number) {
   const dismissedByTeacher: Record<string, number> = {}
   dismissed.forEach((item) => {
     item.group.teachers.forEach((tg) => {
-      const teacherName = `${tg.teacher.firstName} ${tg.teacher.lastName || ''}`
+      const teacherName = tg.teacher.name
       if (!dismissedByTeacher[teacherName]) {
         dismissedByTeacher[teacherName] = 0
       }

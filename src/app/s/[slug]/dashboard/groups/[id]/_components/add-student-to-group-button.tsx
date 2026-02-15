@@ -104,9 +104,10 @@ export default function AddStudentToGroupButton({
       const ok = createStudentGroup(
         {
           data: {
-            organizationId,
+            organizationId: organizationId!,
             groupId,
             studentId,
+            status: 'ACTIVE',
           },
         },
         isApplyToLesson

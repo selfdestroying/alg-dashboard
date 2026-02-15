@@ -9,7 +9,7 @@ import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { DaysOfWeek, getFullName, getGroupName } from '@/src/lib/utils'
+import { DaysOfWeek, getGroupName } from '@/src/lib/utils'
 import { GroupDTO } from '@/src/types/group'
 import {
   ColumnDef,
@@ -70,7 +70,7 @@ const columns: ColumnDef<GroupDTO>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.teachers.length - 1 && ', '}
             </span>
@@ -112,10 +112,10 @@ const columns: ColumnDef<GroupDTO>[] = [
   },
   {
     header: 'Ссылка в БО',
-    accessorKey: 'backOfficeUrl',
+    accessorKey: 'url',
     cell: ({ row }) => (
       <a
-        href={row.original.backOfficeUrl || ''}
+        href={row.original.url || ''}
         target="_blank"
         rel="noopener noreferrer"
         className="text-primary truncate hover:underline"
@@ -173,7 +173,7 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
     getFacetedRowModel: getFacetedRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
-      const groupName = row.original.name.toLowerCase()
+      const groupName = getGroupName(row.original).toLowerCase()
       return groupName.includes(searchValue)
     },
     onPaginationChange: setPagination,

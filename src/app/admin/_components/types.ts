@@ -3,8 +3,6 @@ import type { Prisma } from '@/prisma/generated/client'
 export type AdminUser = {
   id: number
   name: string
-  firstName: string
-  lastName: string | null
   email: string
   role: string | null
   banned: boolean | null

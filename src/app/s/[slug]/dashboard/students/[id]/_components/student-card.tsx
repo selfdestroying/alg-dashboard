@@ -122,9 +122,9 @@ export default async function StudentCard({ student, groups }: StudentCardProps)
             <Label>Ссылка в CRM</Label>
           </div>
           <p className="mt-1 font-medium">
-            {student.crmUrl ? (
+            {student.url ? (
               <a
-                href={student.crmUrl}
+                href={student.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"

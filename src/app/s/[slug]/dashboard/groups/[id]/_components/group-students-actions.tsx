@@ -138,7 +138,14 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           },
         },
       }).then(() =>
-        createDismissed({ data: { ...values, studentId: sg.student.id, groupId: sg.groupId } })
+        createDismissed({
+          data: {
+            ...values,
+            studentId: sg.student.id,
+            groupId: sg.groupId,
+            organizationId: sg.organizationId,
+          },
+        })
       )
       toast.promise(ok, {
         loading: 'Загрузка...',

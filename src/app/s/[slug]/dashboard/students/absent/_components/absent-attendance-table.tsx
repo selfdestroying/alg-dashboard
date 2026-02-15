@@ -76,7 +76,7 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < teachers.length - 1 && ', '}
             </span>

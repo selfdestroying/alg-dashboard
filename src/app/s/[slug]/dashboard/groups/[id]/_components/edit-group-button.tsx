@@ -52,7 +52,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       courseId: group.courseId,
       locationId: group.locationId!,
       time: group.time!,
-      backOfficeUrl: group.backOfficeUrl ?? '',
+      url: group.url ?? '',
       type: group.type!,
       dayOfWeek: group.dayOfWeek!,
     },
@@ -299,16 +299,16 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
           )}
         />
         <Controller
-          name="backOfficeUrl"
+          name="url"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
               <FieldContent>
-                <FieldLabel htmlFor="form-rhf-input-backOfficeUrl">Ссылка в БО</FieldLabel>
+                <FieldLabel htmlFor="form-rhf-input-url">Ссылка в БО</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
               <Input
-                id="form-rhf-input-backOfficeUrl"
+                id="form-rhf-input-url"
                 type="text"
                 placeholder="https://backoffice.example.com"
                 {...field}

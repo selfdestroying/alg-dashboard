@@ -44,7 +44,7 @@ export default function AddCategoryButton() {
   })
   const onSubmit = (values: AddCategoryFormSchemaType) => {
     startTransition(() => {
-      const ok = createCategory({ data: { ...values, organizationId } })
+      const ok = createCategory({ data: { ...values, organizationId: organizationId! } })
       toast.promise(ok, {
         loading: 'Создание категории...',
         success: 'Категория успешно создана!',

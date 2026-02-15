@@ -7,8 +7,9 @@ export const CreateStudentSchema = z.object({
     .number('Укажите возраст')
     .gte(6, 'Укажите возраст не менее 6')
     .lte(17, 'Укажите возраст не более 17'),
+  birthDate: z.date({ error: 'Укажите дату рождения' }),
   parentsName: z.string('Укажите имя родителя').min(2, 'Укажите имя родителя'),
-  crmUrl: z.url('Укажите корректный URL'),
+  url: z.url('Укажите корректный URL'),
   // optional
   login: z.string('Укажите логин').min(2, 'Укажите логин'),
   password: z.string('Укажите пароль').min(2, 'Укажите пароль'),

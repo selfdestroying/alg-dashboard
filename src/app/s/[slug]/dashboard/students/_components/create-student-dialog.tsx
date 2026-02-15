@@ -34,8 +34,9 @@ export default function CreateStudentDialog() {
       firstName: '',
       lastName: '',
       age: 0,
+      birthDate: '' as unknown as Date,
       parentsName: '',
-      crmUrl: '',
+      url: '',
       login: '',
       password: '',
       coins: 0,
@@ -47,8 +48,8 @@ export default function CreateStudentDialog() {
       const ok = createStudent({
         data: {
           ...values,
-          organizationId: session?.organizationId ?? undefined,
-          Cart: { create: {} },
+          organizationId: session!.organizationId!,
+          cart: { create: {} },
         },
       })
 
@@ -128,12 +129,37 @@ export default function CreateStudentDialog() {
 
             <Controller
               control={form.control}
-              name="crmUrl"
+              name="birthDate"
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="crmUrl-field">CRM URL</FieldLabel>
-                  <Input id="crmUrl-field" {...field} aria-invalid={fieldState.invalid} />
+                  <FieldLabel htmlFor="birthDate-field">Дата рождения</FieldLabel>
+                  <Input
+                    id="birthDate-field"
+                    type="date"
+                    {...field}
+                    value={
+                      field.value instanceof Date && !isNaN(field.value.getTime())
+                        ? field.value.toISOString().split('T')[0]
+                        : ''
+                    }
+                    onChange={(e) =>
+                      field.onChange(e.target.value ? new Date(e.target.value) : undefined)
+                    }
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="url"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="url-field">CRM URL</FieldLabel>
+                  <Input id="url-field" {...field} aria-invalid={fieldState.invalid} />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

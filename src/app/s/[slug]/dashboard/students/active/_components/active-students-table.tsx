@@ -90,7 +90,7 @@ const columns: ColumnDef<ActiveStudent>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.group.teachers.length - 1 && ', '}
             </span>

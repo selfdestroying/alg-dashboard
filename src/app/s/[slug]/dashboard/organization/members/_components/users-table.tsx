@@ -1,7 +1,6 @@
 'use client'
 import DataTable from '@/src/components/data-table'
 import TableFilter from '@/src/components/table-filter'
-import { getFullName } from '@/src/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -98,10 +97,7 @@ export default function UsersTable({ data }: UsersTableProps) {
     getFacetedRowModel: getFacetedRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
-      const fullName = getFullName(
-        row.original.user.firstName,
-        row.original.user.lastName
-      ).toLowerCase()
+      const fullName = row.original.user.name.toLowerCase()
       const roleName = row.original.role ? row.original.role.toLowerCase() : ''
       return fullName.includes(searchValue) || roleName.includes(searchValue)
     },

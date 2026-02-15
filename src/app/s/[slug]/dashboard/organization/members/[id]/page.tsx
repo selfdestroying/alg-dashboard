@@ -10,7 +10,7 @@ import {
 import { ItemGroup } from '@/src/components/ui/item'
 import { auth, OrganizationRole } from '@/src/lib/auth'
 import prisma from '@/src/lib/prisma'
-import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
+import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import EditUserButton from '../_components/edit-user-dialog'
@@ -75,11 +75,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div className="flex items-center gap-2">
               <Avatar>
                 <AvatarFallback>
-                  {member.user.firstName?.[0]?.toUpperCase()}
-                  {member.user.lastName?.[0]?.toUpperCase()}
+                  {member.user.name?.split(' ')[0]?.[0]?.toUpperCase()}
+                  {member.user.name?.split(' ')[1]?.[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {getFullName(member.user.firstName, member.user.lastName)}
+              {member.user.name}
             </div>
           </CardTitle>
           <CardDescription>

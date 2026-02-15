@@ -74,7 +74,7 @@ export default function AddPaymentButton({
             totalPayments: { increment: payload.price },
             payments: {
               create: {
-                organizationId,
+                organizationId: organizationId!,
                 lessonCount: payload.lessonCount,
                 price: payload.price,
                 bidForLesson: payload.price / payload.lessonCount,

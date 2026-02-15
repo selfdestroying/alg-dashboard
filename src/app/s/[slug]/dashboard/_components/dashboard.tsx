@@ -20,7 +20,7 @@ import { useMappedLocationListQuery } from '@/src/data/location/location-list-qu
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { cn, getFullName } from '@/src/lib/utils'
+import { cn } from '@/src/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -77,7 +77,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.teachers.length - 1 && ', '}
             </span>

@@ -45,15 +45,17 @@ export type StudentDTO1 = Prisma.StudentGetPayload<{
 export interface StudentDTO {
   id: number
   firstName: string
-  lastName: string | null
+  lastName: string
   login: string
   password: string
   age: number
-  birthDate: Date | null
+  birthDate: Date
   parentsName: string | null
   parentsPhone: string | null
-  crmUrl: string | null
+  url: string | null
   createdAt: Date
+  updatedAt: Date
+  organizationId: number
   coins: number
   lessonsBalance: number
   totalLessons: number

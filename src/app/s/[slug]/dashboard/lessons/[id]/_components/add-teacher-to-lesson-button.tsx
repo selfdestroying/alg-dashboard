@@ -64,7 +64,7 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
       const { ...payload } = data
       const ok = createTeacherLesson({
         data: {
-          organizationId,
+          organizationId: organizationId!,
           lessonId: lesson.id,
           ...payload,
         },

@@ -28,8 +28,6 @@ export default async function Page() {
       select: {
         id: true,
         name: true,
-        firstName: true,
-        lastName: true,
         email: true,
         role: true,
         banned: true,

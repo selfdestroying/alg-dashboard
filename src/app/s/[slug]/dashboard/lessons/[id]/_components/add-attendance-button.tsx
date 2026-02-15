@@ -78,7 +78,7 @@ export default function AddAttendanceButton({ lessonId, students }: AddAttendanc
     startTransition(() => {
       const { studentStatus, target } = data
       const ok = createAttendance({
-        organizationId,
+        organizationId: organizationId!,
         lessonId,
         studentId: target.value,
         studentStatus: studentStatus,

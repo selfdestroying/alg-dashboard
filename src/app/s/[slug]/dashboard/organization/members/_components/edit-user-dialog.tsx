@@ -73,8 +73,8 @@ export default function EditUserButton({ member }: EditUserButtonProps) {
   const form = useForm<EditUserSchemaType>({
     resolver: zodResolver(EditUserSchema),
     defaultValues: {
-      firstName: member.user.firstName,
-      lastName: member.user.lastName || undefined,
+      firstName: member.user.name?.split(' ')[0] || '',
+      lastName: member.user.name?.split(' ').slice(1).join(' ') || undefined,
       role: member.user.role
         ? { label: memberRoleLabels[member.role as OrganizationRole], value: member.role }
         : undefined,
@@ -87,13 +87,13 @@ export default function EditUserButton({ member }: EditUserButtonProps) {
 
   const onSubmit = (values: EditUserSchemaType) => {
     startTransition(() => {
-      const { role, isApplyToLessons, ...payload } = values
+      const { role, isApplyToLessons, firstName, lastName, ...payload } = values
       const ok = updateUser(
         {
           where: { id: member.user.id },
           data: {
             ...payload,
-            name: `${values.firstName} ${values.lastName}`,
+            name: `${firstName} ${lastName || ''}`.trim(),
           },
         },
         isApplyToLessons

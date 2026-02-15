@@ -39,7 +39,7 @@ export const CreateGroupSchema = z.object({
     .positive('Количество занятий должно быть положительным'),
   // optional
   lessonsPerWeek: z.number().int().positive().optional(),
-  backOfficeUrl: z.url('Неверный URL').optional(),
+  url: z.url('Неверный URL').optional(),
 })
 
 export const editGroupSchema = z.object({
@@ -47,7 +47,7 @@ export const editGroupSchema = z.object({
   locationId: z.number().int().positive().optional(),
   type: z.enum(GroupType).optional(),
   time: z.string().optional(),
-  backOfficeUrl: z.string().optional(),
+  url: z.string().optional(),
   dayOfWeek: z.number().int().optional(),
 })
 

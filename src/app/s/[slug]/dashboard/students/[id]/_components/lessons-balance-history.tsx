@@ -31,7 +31,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
-import { getFullName } from '@/src/lib/utils'
 import { JsonValue } from '@prisma/client/runtime/client'
 import { toZonedTime } from 'date-fns-tz'
 import { MoreVertical } from 'lucide-react'
@@ -90,7 +89,7 @@ type AttendanceMeta = {
 type MakeupGrantedMeta = {
   makeUpLessonId: number
   makeUpLessonName?: string
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
   missedAttendanceId: number
 }
 
@@ -179,9 +178,7 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
           </TableHeader>
           <TableBody>
             {history.map((row) => {
-              const actor = row.actorUser
-                ? getFullName(row.actorUser.firstName, row.actorUser.lastName)
-                : 'Система'
+              const actor = row.actorUser ? row.actorUser.name : 'Система'
 
               const deltaText = row.delta > 0 ? `+${row.delta}` : String(row.delta)
               const metaDetails = getMetaDetails(row.reason, row.meta)

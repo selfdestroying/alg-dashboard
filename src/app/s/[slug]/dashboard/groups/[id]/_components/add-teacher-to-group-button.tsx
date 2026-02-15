@@ -41,8 +41,7 @@ const GroupTeacherSchema = z.object({
   bid: z
     .number('Не указана ставка')
     .int('Ставка должна быть числом')
-    .gte(0, 'Ставка должна быть >= 0')
-    .optional(),
+    .gte(0, 'Ставка должна быть >= 0'),
   isApplyToLesson: z.boolean(),
 })
 
