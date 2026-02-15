@@ -40,6 +40,7 @@ export type OrganizationMinAggregateOutputType = {
   slug: string | null
   logo: string | null
   createdAt: Date | null
+  updatedAt: Date | null
   metadata: string | null
 }
 
@@ -49,6 +50,7 @@ export type OrganizationMaxAggregateOutputType = {
   slug: string | null
   logo: string | null
   createdAt: Date | null
+  updatedAt: Date | null
   metadata: string | null
 }
 
@@ -58,6 +60,7 @@ export type OrganizationCountAggregateOutputType = {
   slug: number
   logo: number
   createdAt: number
+  updatedAt: number
   metadata: number
   _all: number
 }
@@ -77,6 +80,7 @@ export type OrganizationMinAggregateInputType = {
   slug?: true
   logo?: true
   createdAt?: true
+  updatedAt?: true
   metadata?: true
 }
 
@@ -86,6 +90,7 @@ export type OrganizationMaxAggregateInputType = {
   slug?: true
   logo?: true
   createdAt?: true
+  updatedAt?: true
   metadata?: true
 }
 
@@ -95,6 +100,7 @@ export type OrganizationCountAggregateInputType = {
   slug?: true
   logo?: true
   createdAt?: true
+  updatedAt?: true
   metadata?: true
   _all?: true
 }
@@ -191,6 +197,7 @@ export type OrganizationGroupByOutputType = {
   slug: string
   logo: string | null
   createdAt: Date
+  updatedAt: Date
   metadata: string | null
   _count: OrganizationCountAggregateOutputType | null
   _avg: OrganizationAvgAggregateOutputType | null
@@ -223,6 +230,7 @@ export type OrganizationWhereInput = {
   slug?: Prisma.StringFilter<"Organization"> | string
   logo?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
@@ -255,6 +263,7 @@ export type OrganizationOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   members?: Prisma.MemberOrderByRelationAggregateInput
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
@@ -290,6 +299,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Organization"> | string
   logo?: Prisma.StringNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableFilter<"Organization"> | string | null
   members?: Prisma.MemberListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
@@ -322,6 +332,7 @@ export type OrganizationOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
   _avg?: Prisma.OrganizationAvgOrderByAggregateInput
@@ -339,6 +350,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   logo?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   metadata?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
 }
 
@@ -346,7 +358,8 @@ export type OrganizationCreateInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
@@ -378,7 +391,8 @@ export type OrganizationUncheckedCreateInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -410,6 +424,7 @@ export type OrganizationUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
@@ -442,6 +457,7 @@ export type OrganizationUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -473,7 +489,8 @@ export type OrganizationCreateManyInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
 }
 
@@ -482,6 +499,7 @@ export type OrganizationUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -491,12 +509,8 @@ export type OrganizationUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type OrganizationScalarRelationFilter = {
-  is?: Prisma.OrganizationWhereInput
-  isNot?: Prisma.OrganizationWhereInput
 }
 
 export type OrganizationCountOrderByAggregateInput = {
@@ -505,6 +519,7 @@ export type OrganizationCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
 }
 
@@ -518,6 +533,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
 }
 
@@ -527,11 +543,59 @@ export type OrganizationMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
 }
 
 export type OrganizationSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+}
+
+export type OrganizationScalarRelationFilter = {
+  is?: Prisma.OrganizationWhereInput
+  isNot?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationCreateNestedOneWithoutMembersInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembersInput, Prisma.OrganizationUncheckedCreateWithoutMembersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembersInput, Prisma.OrganizationUncheckedCreateWithoutMembersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembersInput
+  upsert?: Prisma.OrganizationUpsertWithoutMembersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMembersInput, Prisma.OrganizationUpdateWithoutMembersInput>, Prisma.OrganizationUncheckedUpdateWithoutMembersInput>
+}
+
+export type OrganizationCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.OrganizationUpsertWithoutInvitationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutPayChecksInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPayChecksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPayChecksNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPayChecksInput
+  upsert?: Prisma.OrganizationUpsertWithoutPayChecksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPayChecksInput, Prisma.OrganizationUpdateWithoutPayChecksInput>, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
 }
 
 export type OrganizationCreateNestedOneWithoutStudentsInput = {
@@ -548,20 +612,6 @@ export type OrganizationUpdateOneRequiredWithoutStudentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutStudentsInput, Prisma.OrganizationUpdateWithoutStudentsInput>, Prisma.OrganizationUncheckedUpdateWithoutStudentsInput>
 }
 
-export type OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput
-  upsert?: Prisma.OrganizationUpsertWithoutStudentLessonsBalanceHistoriesInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput>, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
-}
-
 export type OrganizationCreateNestedOneWithoutGroupsInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutGroupsInput, Prisma.OrganizationUncheckedCreateWithoutGroupsInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutGroupsInput
@@ -574,20 +624,6 @@ export type OrganizationUpdateOneRequiredWithoutGroupsNestedInput = {
   upsert?: Prisma.OrganizationUpsertWithoutGroupsInput
   connect?: Prisma.OrganizationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutGroupsInput, Prisma.OrganizationUpdateWithoutGroupsInput>, Prisma.OrganizationUncheckedUpdateWithoutGroupsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutPayChecksInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPayChecksInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutPayChecksNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPayChecksInput
-  upsert?: Prisma.OrganizationUpsertWithoutPayChecksInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPayChecksInput, Prisma.OrganizationUpdateWithoutPayChecksInput>, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
 }
 
 export type OrganizationCreateNestedOneWithoutLocationsInput = {
@@ -616,6 +652,34 @@ export type OrganizationUpdateOneRequiredWithoutCoursesNestedInput = {
   upsert?: Prisma.OrganizationUpsertWithoutCoursesInput
   connect?: Prisma.OrganizationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutCoursesInput, Prisma.OrganizationUpdateWithoutCoursesInput>, Prisma.OrganizationUncheckedUpdateWithoutCoursesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutLessonsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLessonsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutLessonsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLessonsInput
+  upsert?: Prisma.OrganizationUpsertWithoutLessonsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutLessonsInput, Prisma.OrganizationUpdateWithoutLessonsInput>, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput
+  upsert?: Prisma.OrganizationUpsertWithoutStudentLessonsBalanceHistoriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput>, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
 }
 
 export type OrganizationCreateNestedOneWithoutStudentGroupsInput = {
@@ -674,20 +738,6 @@ export type OrganizationUpdateOneRequiredWithoutTeacherLessonsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTeacherLessonsInput, Prisma.OrganizationUpdateWithoutTeacherLessonsInput>, Prisma.OrganizationUncheckedUpdateWithoutTeacherLessonsInput>
 }
 
-export type OrganizationCreateNestedOneWithoutLessonsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLessonsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutLessonsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLessonsInput
-  upsert?: Prisma.OrganizationUpsertWithoutLessonsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutLessonsInput, Prisma.OrganizationUpdateWithoutLessonsInput>, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
-}
-
 export type OrganizationCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutAttendancesInput, Prisma.OrganizationUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutAttendancesInput
@@ -742,6 +792,20 @@ export type OrganizationUpdateOneRequiredWithoutUnprocessedPaymentsNestedInput =
   upsert?: Prisma.OrganizationUpsertWithoutUnprocessedPaymentsInput
   connect?: Prisma.OrganizationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutUnprocessedPaymentsInput, Prisma.OrganizationUpdateWithoutUnprocessedPaymentsInput>, Prisma.OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutPaymentProductsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPaymentProductsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPaymentProductsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPaymentProductsInput
+  upsert?: Prisma.OrganizationUpsertWithoutPaymentProductsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPaymentProductsInput, Prisma.OrganizationUpdateWithoutPaymentProductsInput>, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
 }
 
 export type OrganizationCreateNestedOneWithoutCartsInput = {
@@ -814,2951 +878,12 @@ export type OrganizationUpdateOneRequiredWithoutOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutOrdersInput, Prisma.OrganizationUpdateWithoutOrdersInput>, Prisma.OrganizationUncheckedUpdateWithoutOrdersInput>
 }
 
-export type OrganizationCreateNestedOneWithoutPaymentProductsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPaymentProductsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutPaymentProductsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPaymentProductsInput
-  upsert?: Prisma.OrganizationUpsertWithoutPaymentProductsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPaymentProductsInput, Prisma.OrganizationUpdateWithoutPaymentProductsInput>, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
-}
-
-export type OrganizationCreateNestedOneWithoutMembersInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembersInput, Prisma.OrganizationUncheckedCreateWithoutMembersInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembersInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutMembersNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembersInput, Prisma.OrganizationUncheckedCreateWithoutMembersInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembersInput
-  upsert?: Prisma.OrganizationUpsertWithoutMembersInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMembersInput, Prisma.OrganizationUpdateWithoutMembersInput>, Prisma.OrganizationUncheckedUpdateWithoutMembersInput>
-}
-
-export type OrganizationCreateNestedOneWithoutInvitationsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-}
-
-export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvitationsInput, Prisma.OrganizationUncheckedCreateWithoutInvitationsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvitationsInput
-  upsert?: Prisma.OrganizationUpsertWithoutInvitationsInput
-  connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
-}
-
-export type OrganizationCreateWithoutStudentsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutStudentsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutStudentsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentsInput, Prisma.OrganizationUncheckedCreateWithoutStudentsInput>
-}
-
-export type OrganizationUpsertWithoutStudentsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentsInput, Prisma.OrganizationUncheckedCreateWithoutStudentsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutStudentsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentsInput>
-}
-
-export type OrganizationUpdateWithoutStudentsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutStudentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
-}
-
-export type OrganizationUpsertWithoutStudentLessonsBalanceHistoriesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutStudentLessonsBalanceHistoriesInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
-}
-
-export type OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutGroupsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutGroupsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutGroupsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGroupsInput, Prisma.OrganizationUncheckedCreateWithoutGroupsInput>
-}
-
-export type OrganizationUpsertWithoutGroupsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutGroupsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGroupsInput, Prisma.OrganizationUncheckedCreateWithoutGroupsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutGroupsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutGroupsInput>
-}
-
-export type OrganizationUpdateWithoutGroupsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutGroupsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutPayChecksInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutPayChecksInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutPayChecksInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
-}
-
-export type OrganizationUpsertWithoutPayChecksInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPayChecksInput, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutPayChecksInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPayChecksInput, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
-}
-
-export type OrganizationUpdateWithoutPayChecksInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutPayChecksInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutLocationsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutLocationsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutLocationsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLocationsInput, Prisma.OrganizationUncheckedCreateWithoutLocationsInput>
-}
-
-export type OrganizationUpsertWithoutLocationsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLocationsInput, Prisma.OrganizationUncheckedUpdateWithoutLocationsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLocationsInput, Prisma.OrganizationUncheckedCreateWithoutLocationsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutLocationsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLocationsInput, Prisma.OrganizationUncheckedUpdateWithoutLocationsInput>
-}
-
-export type OrganizationUpdateWithoutLocationsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutLocationsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutCoursesInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutCoursesInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutCoursesInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCoursesInput, Prisma.OrganizationUncheckedCreateWithoutCoursesInput>
-}
-
-export type OrganizationUpsertWithoutCoursesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCoursesInput, Prisma.OrganizationUncheckedUpdateWithoutCoursesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCoursesInput, Prisma.OrganizationUncheckedCreateWithoutCoursesInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutCoursesInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCoursesInput, Prisma.OrganizationUncheckedUpdateWithoutCoursesInput>
-}
-
-export type OrganizationUpdateWithoutCoursesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutCoursesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutStudentGroupsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutStudentGroupsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutStudentGroupsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedCreateWithoutStudentGroupsInput>
-}
-
-export type OrganizationUpsertWithoutStudentGroupsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentGroupsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedCreateWithoutStudentGroupsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutStudentGroupsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentGroupsInput>
-}
-
-export type OrganizationUpdateWithoutStudentGroupsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutStudentGroupsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutDismissedsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutDismissedsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutDismissedsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutDismissedsInput, Prisma.OrganizationUncheckedCreateWithoutDismissedsInput>
-}
-
-export type OrganizationUpsertWithoutDismissedsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutDismissedsInput, Prisma.OrganizationUncheckedUpdateWithoutDismissedsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutDismissedsInput, Prisma.OrganizationUncheckedCreateWithoutDismissedsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutDismissedsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutDismissedsInput, Prisma.OrganizationUncheckedUpdateWithoutDismissedsInput>
-}
-
-export type OrganizationUpdateWithoutDismissedsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutDismissedsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutTeacherGroupsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutTeacherGroupsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutTeacherGroupsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherGroupsInput>
-}
-
-export type OrganizationUpsertWithoutTeacherGroupsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherGroupsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherGroupsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutTeacherGroupsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherGroupsInput>
-}
-
-export type OrganizationUpdateWithoutTeacherGroupsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutTeacherGroupsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutTeacherLessonsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutTeacherLessonsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutTeacherLessonsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherLessonsInput>
-}
-
-export type OrganizationUpsertWithoutTeacherLessonsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherLessonsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherLessonsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutTeacherLessonsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherLessonsInput>
-}
-
-export type OrganizationUpdateWithoutTeacherLessonsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutTeacherLessonsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutLessonsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutLessonsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutLessonsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
-}
-
-export type OrganizationUpsertWithoutLessonsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutLessonsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
-}
-
-export type OrganizationUpdateWithoutLessonsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutLessonsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutAttendancesInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutAttendancesInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutAttendancesInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAttendancesInput, Prisma.OrganizationUncheckedCreateWithoutAttendancesInput>
-}
-
-export type OrganizationUpsertWithoutAttendancesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutAttendancesInput, Prisma.OrganizationUncheckedUpdateWithoutAttendancesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAttendancesInput, Prisma.OrganizationUncheckedCreateWithoutAttendancesInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutAttendancesInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutAttendancesInput, Prisma.OrganizationUncheckedUpdateWithoutAttendancesInput>
-}
-
-export type OrganizationUpdateWithoutAttendancesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutAttendancesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutMakeUpsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutMakeUpsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutMakeUpsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMakeUpsInput, Prisma.OrganizationUncheckedCreateWithoutMakeUpsInput>
-}
-
-export type OrganizationUpsertWithoutMakeUpsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutMakeUpsInput, Prisma.OrganizationUncheckedUpdateWithoutMakeUpsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMakeUpsInput, Prisma.OrganizationUncheckedCreateWithoutMakeUpsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutMakeUpsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutMakeUpsInput, Prisma.OrganizationUncheckedUpdateWithoutMakeUpsInput>
-}
-
-export type OrganizationUpdateWithoutMakeUpsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutMakeUpsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutPaymentsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutPaymentsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutPaymentsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentsInput>
-}
-
-export type OrganizationUpsertWithoutPaymentsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutPaymentsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentsInput>
-}
-
-export type OrganizationUpdateWithoutPaymentsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutPaymentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutUnprocessedPaymentsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutUnprocessedPaymentsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput>
-}
-
-export type OrganizationUpsertWithoutUnprocessedPaymentsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutUnprocessedPaymentsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput>
-}
-
-export type OrganizationUpdateWithoutUnprocessedPaymentsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutCartsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutCartsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutCartsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartsInput, Prisma.OrganizationUncheckedCreateWithoutCartsInput>
-}
-
-export type OrganizationUpsertWithoutCartsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartsInput, Prisma.OrganizationUncheckedUpdateWithoutCartsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartsInput, Prisma.OrganizationUncheckedCreateWithoutCartsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutCartsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartsInput, Prisma.OrganizationUncheckedUpdateWithoutCartsInput>
-}
-
-export type OrganizationUpdateWithoutCartsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutCartsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutCartItemsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutCartItemsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutCartItemsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartItemsInput, Prisma.OrganizationUncheckedCreateWithoutCartItemsInput>
-}
-
-export type OrganizationUpsertWithoutCartItemsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartItemsInput, Prisma.OrganizationUncheckedUpdateWithoutCartItemsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartItemsInput, Prisma.OrganizationUncheckedCreateWithoutCartItemsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutCartItemsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartItemsInput, Prisma.OrganizationUncheckedUpdateWithoutCartItemsInput>
-}
-
-export type OrganizationUpdateWithoutCartItemsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutCartItemsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutCategoriesInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutCategoriesInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutCategoriesInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCategoriesInput, Prisma.OrganizationUncheckedCreateWithoutCategoriesInput>
-}
-
-export type OrganizationUpsertWithoutCategoriesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCategoriesInput, Prisma.OrganizationUncheckedUpdateWithoutCategoriesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCategoriesInput, Prisma.OrganizationUncheckedCreateWithoutCategoriesInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutCategoriesInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCategoriesInput, Prisma.OrganizationUncheckedUpdateWithoutCategoriesInput>
-}
-
-export type OrganizationUpdateWithoutCategoriesInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutProductsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutProductsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutProductsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProductsInput, Prisma.OrganizationUncheckedCreateWithoutProductsInput>
-}
-
-export type OrganizationUpsertWithoutProductsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutProductsInput, Prisma.OrganizationUncheckedUpdateWithoutProductsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProductsInput, Prisma.OrganizationUncheckedCreateWithoutProductsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutProductsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutProductsInput, Prisma.OrganizationUncheckedUpdateWithoutProductsInput>
-}
-
-export type OrganizationUpdateWithoutProductsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutProductsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutOrdersInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutOrdersInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutOrdersInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrdersInput, Prisma.OrganizationUncheckedCreateWithoutOrdersInput>
-}
-
-export type OrganizationUpsertWithoutOrdersInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutOrdersInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrdersInput, Prisma.OrganizationUncheckedCreateWithoutOrdersInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutOrdersInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutOrdersInput>
-}
-
-export type OrganizationUpdateWithoutOrdersInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutOrdersInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutPaymentProductsInput = {
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutPaymentProductsInput = {
-  id?: number
-  name: string
-  slug: string
-  logo?: string | null
-  createdAt: Date | string
-  metadata?: string | null
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
-  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
-  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
-  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
-  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
-  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
-  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
-  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutPaymentProductsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
-}
-
-export type OrganizationUpsertWithoutPaymentProductsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutPaymentProductsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
-}
-
-export type OrganizationUpdateWithoutPaymentProductsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutPaymentProductsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
-  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
-  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
-  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
-  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
-  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
-  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
-  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
-  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
-  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
 export type OrganizationCreateWithoutMembersInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
   courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
@@ -3789,7 +914,8 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
   courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3836,6 +962,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
   courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
@@ -3867,6 +994,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -3896,7 +1024,8 @@ export type OrganizationCreateWithoutInvitationsInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
   courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
@@ -3927,7 +1056,8 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   name: string
   slug: string
   logo?: string | null
-  createdAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   metadata?: string | null
   members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
   courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
@@ -3974,6 +1104,7 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
   courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
@@ -4005,6 +1136,7 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
   courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -4026,6 +1158,2988 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPayChecksInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPayChecksInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPayChecksInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
+}
+
+export type OrganizationUpsertWithoutPayChecksInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPayChecksInput, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPayChecksInput, Prisma.OrganizationUncheckedCreateWithoutPayChecksInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPayChecksInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPayChecksInput, Prisma.OrganizationUncheckedUpdateWithoutPayChecksInput>
+}
+
+export type OrganizationUpdateWithoutPayChecksInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPayChecksInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutStudentsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutStudentsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutStudentsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentsInput, Prisma.OrganizationUncheckedCreateWithoutStudentsInput>
+}
+
+export type OrganizationUpsertWithoutStudentsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentsInput, Prisma.OrganizationUncheckedCreateWithoutStudentsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutStudentsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentsInput>
+}
+
+export type OrganizationUpdateWithoutStudentsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutStudentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutGroupsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutGroupsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutGroupsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGroupsInput, Prisma.OrganizationUncheckedCreateWithoutGroupsInput>
+}
+
+export type OrganizationUpsertWithoutGroupsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutGroupsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutGroupsInput, Prisma.OrganizationUncheckedCreateWithoutGroupsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutGroupsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutGroupsInput>
+}
+
+export type OrganizationUpdateWithoutGroupsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutGroupsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutLocationsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutLocationsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutLocationsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLocationsInput, Prisma.OrganizationUncheckedCreateWithoutLocationsInput>
+}
+
+export type OrganizationUpsertWithoutLocationsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLocationsInput, Prisma.OrganizationUncheckedUpdateWithoutLocationsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLocationsInput, Prisma.OrganizationUncheckedCreateWithoutLocationsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutLocationsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLocationsInput, Prisma.OrganizationUncheckedUpdateWithoutLocationsInput>
+}
+
+export type OrganizationUpdateWithoutLocationsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutLocationsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCoursesInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCoursesInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCoursesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCoursesInput, Prisma.OrganizationUncheckedCreateWithoutCoursesInput>
+}
+
+export type OrganizationUpsertWithoutCoursesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCoursesInput, Prisma.OrganizationUncheckedUpdateWithoutCoursesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCoursesInput, Prisma.OrganizationUncheckedCreateWithoutCoursesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCoursesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCoursesInput, Prisma.OrganizationUncheckedUpdateWithoutCoursesInput>
+}
+
+export type OrganizationUpdateWithoutCoursesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCoursesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutLessonsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutLessonsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutLessonsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
+}
+
+export type OrganizationUpsertWithoutLessonsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLessonsInput, Prisma.OrganizationUncheckedCreateWithoutLessonsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutLessonsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutLessonsInput>
+}
+
+export type OrganizationUpdateWithoutLessonsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutLessonsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutStudentLessonsBalanceHistoriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
+}
+
+export type OrganizationUpsertWithoutStudentLessonsBalanceHistoriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedCreateWithoutStudentLessonsBalanceHistoriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutStudentLessonsBalanceHistoriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput, Prisma.OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput>
+}
+
+export type OrganizationUpdateWithoutStudentLessonsBalanceHistoriesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutStudentLessonsBalanceHistoriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutStudentGroupsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutStudentGroupsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutStudentGroupsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedCreateWithoutStudentGroupsInput>
+}
+
+export type OrganizationUpsertWithoutStudentGroupsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentGroupsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedCreateWithoutStudentGroupsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutStudentGroupsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutStudentGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutStudentGroupsInput>
+}
+
+export type OrganizationUpdateWithoutStudentGroupsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutStudentGroupsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutDismissedsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutDismissedsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutDismissedsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutDismissedsInput, Prisma.OrganizationUncheckedCreateWithoutDismissedsInput>
+}
+
+export type OrganizationUpsertWithoutDismissedsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutDismissedsInput, Prisma.OrganizationUncheckedUpdateWithoutDismissedsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutDismissedsInput, Prisma.OrganizationUncheckedCreateWithoutDismissedsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutDismissedsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutDismissedsInput, Prisma.OrganizationUncheckedUpdateWithoutDismissedsInput>
+}
+
+export type OrganizationUpdateWithoutDismissedsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutDismissedsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTeacherGroupsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTeacherGroupsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTeacherGroupsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherGroupsInput>
+}
+
+export type OrganizationUpsertWithoutTeacherGroupsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherGroupsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherGroupsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTeacherGroupsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherGroupsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherGroupsInput>
+}
+
+export type OrganizationUpdateWithoutTeacherGroupsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTeacherGroupsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTeacherLessonsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTeacherLessonsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTeacherLessonsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherLessonsInput>
+}
+
+export type OrganizationUpsertWithoutTeacherLessonsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherLessonsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedCreateWithoutTeacherLessonsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTeacherLessonsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTeacherLessonsInput, Prisma.OrganizationUncheckedUpdateWithoutTeacherLessonsInput>
+}
+
+export type OrganizationUpdateWithoutTeacherLessonsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTeacherLessonsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutAttendancesInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutAttendancesInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutAttendancesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAttendancesInput, Prisma.OrganizationUncheckedCreateWithoutAttendancesInput>
+}
+
+export type OrganizationUpsertWithoutAttendancesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutAttendancesInput, Prisma.OrganizationUncheckedUpdateWithoutAttendancesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutAttendancesInput, Prisma.OrganizationUncheckedCreateWithoutAttendancesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutAttendancesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutAttendancesInput, Prisma.OrganizationUncheckedUpdateWithoutAttendancesInput>
+}
+
+export type OrganizationUpdateWithoutAttendancesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutAttendancesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutMakeUpsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutMakeUpsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutMakeUpsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMakeUpsInput, Prisma.OrganizationUncheckedCreateWithoutMakeUpsInput>
+}
+
+export type OrganizationUpsertWithoutMakeUpsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutMakeUpsInput, Prisma.OrganizationUncheckedUpdateWithoutMakeUpsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMakeUpsInput, Prisma.OrganizationUncheckedCreateWithoutMakeUpsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutMakeUpsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutMakeUpsInput, Prisma.OrganizationUncheckedUpdateWithoutMakeUpsInput>
+}
+
+export type OrganizationUpdateWithoutMakeUpsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutMakeUpsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPaymentsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPaymentsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentsInput>
+}
+
+export type OrganizationUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type OrganizationUpdateWithoutPaymentsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutUnprocessedPaymentsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutUnprocessedPaymentsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput>
+}
+
+export type OrganizationUpsertWithoutUnprocessedPaymentsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedCreateWithoutUnprocessedPaymentsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutUnprocessedPaymentsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutUnprocessedPaymentsInput, Prisma.OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput>
+}
+
+export type OrganizationUpdateWithoutUnprocessedPaymentsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutUnprocessedPaymentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPaymentProductsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPaymentProductsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPaymentProductsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
+}
+
+export type OrganizationUpsertWithoutPaymentProductsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedCreateWithoutPaymentProductsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPaymentProductsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPaymentProductsInput, Prisma.OrganizationUncheckedUpdateWithoutPaymentProductsInput>
+}
+
+export type OrganizationUpdateWithoutPaymentProductsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPaymentProductsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCartsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCartsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCartsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartsInput, Prisma.OrganizationUncheckedCreateWithoutCartsInput>
+}
+
+export type OrganizationUpsertWithoutCartsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartsInput, Prisma.OrganizationUncheckedUpdateWithoutCartsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartsInput, Prisma.OrganizationUncheckedCreateWithoutCartsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCartsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartsInput, Prisma.OrganizationUncheckedUpdateWithoutCartsInput>
+}
+
+export type OrganizationUpdateWithoutCartsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCartsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCartItemsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCartItemsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCartItemsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartItemsInput, Prisma.OrganizationUncheckedCreateWithoutCartItemsInput>
+}
+
+export type OrganizationUpsertWithoutCartItemsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartItemsInput, Prisma.OrganizationUncheckedUpdateWithoutCartItemsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCartItemsInput, Prisma.OrganizationUncheckedCreateWithoutCartItemsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCartItemsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCartItemsInput, Prisma.OrganizationUncheckedUpdateWithoutCartItemsInput>
+}
+
+export type OrganizationUpdateWithoutCartItemsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCartItemsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutCategoriesInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutCategoriesInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutCategoriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCategoriesInput, Prisma.OrganizationUncheckedCreateWithoutCategoriesInput>
+}
+
+export type OrganizationUpsertWithoutCategoriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutCategoriesInput, Prisma.OrganizationUncheckedUpdateWithoutCategoriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutCategoriesInput, Prisma.OrganizationUncheckedCreateWithoutCategoriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutCategoriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutCategoriesInput, Prisma.OrganizationUncheckedUpdateWithoutCategoriesInput>
+}
+
+export type OrganizationUpdateWithoutCategoriesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutProductsInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutProductsInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutProductsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProductsInput, Prisma.OrganizationUncheckedCreateWithoutProductsInput>
+}
+
+export type OrganizationUpsertWithoutProductsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutProductsInput, Prisma.OrganizationUncheckedUpdateWithoutProductsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutProductsInput, Prisma.OrganizationUncheckedCreateWithoutProductsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutProductsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutProductsInput, Prisma.OrganizationUncheckedUpdateWithoutProductsInput>
+}
+
+export type OrganizationUpdateWithoutProductsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutProductsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutOrdersInput = {
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutOrdersInput = {
+  id?: number
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: string | null
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  courses?: Prisma.CourseUncheckedCreateNestedManyWithoutOrganizationInput
+  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutOrganizationInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutOrganizationInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutOrganizationInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutOrganizationInput
+  studentGroups?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutOrganizationInput
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutOrganizationInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+  makeUps?: Prisma.MakeUpUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutOrganizationInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  paymentProducts?: Prisma.PaymentProductUncheckedCreateNestedManyWithoutOrganizationInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrdersInput, Prisma.OrganizationUncheckedCreateWithoutOrdersInput>
+}
+
+export type OrganizationUpsertWithoutOrdersInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutOrdersInput, Prisma.OrganizationUncheckedCreateWithoutOrdersInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutOrdersInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutOrdersInput>
+}
+
+export type OrganizationUpdateWithoutOrdersInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  paymentProducts?: Prisma.PaymentProductUpdateManyWithoutOrganizationNestedInput
+  studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.MemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  courses?: Prisma.CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+  locations?: Prisma.LocationUncheckedUpdateManyWithoutOrganizationNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutOrganizationNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutOrganizationNestedInput
+  studentGroups?: Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherGroups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  teacherLessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutOrganizationNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+  makeUps?: Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  unprocessedPayments?: Prisma.UnprocessedPaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutOrganizationNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
   paymentProducts?: Prisma.PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput
   studentLessonsBalanceHistories?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
 }
@@ -4265,6 +4379,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   slug?: boolean
   logo?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   metadata?: boolean
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
@@ -4298,6 +4413,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   logo?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   metadata?: boolean
 }, ExtArgs["result"]["organization"]>
 
@@ -4307,6 +4423,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   logo?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   metadata?: boolean
 }, ExtArgs["result"]["organization"]>
 
@@ -4316,10 +4433,11 @@ export type OrganizationSelectScalar = {
   slug?: boolean
   logo?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   metadata?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "createdAt" | "metadata", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "createdAt" | "updatedAt" | "metadata", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
@@ -4382,6 +4500,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     slug: string
     logo: string | null
     createdAt: Date
+    updatedAt: Date
     metadata: string | null
   }, ExtArgs["result"]["organization"]>
   composites: {}
@@ -4834,6 +4953,7 @@ export interface OrganizationFieldRefs {
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
   readonly logo: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly metadata: Prisma.FieldRef<"Organization", 'String'>
 }
     

@@ -52,33 +52,33 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Student: 'Student',
-  StudentLessonsBalanceHistory: 'StudentLessonsBalanceHistory',
-  Group: 'Group',
-  PayCheck: 'PayCheck',
-  Location: 'Location',
-  Course: 'Course',
-  StudentGroup: 'StudentGroup',
-  Dismissed: 'Dismissed',
-  TeacherGroup: 'TeacherGroup',
-  TeacherLesson: 'TeacherLesson',
-  Lesson: 'Lesson',
-  Attendance: 'Attendance',
-  MakeUp: 'MakeUp',
-  Payment: 'Payment',
-  UnprocessedPayment: 'UnprocessedPayment',
-  Cart: 'Cart',
-  CartItem: 'CartItem',
-  Category: 'Category',
-  Product: 'Product',
-  Order: 'Order',
-  PaymentProduct: 'PaymentProduct',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
   Organization: 'Organization',
   Member: 'Member',
-  Invitation: 'Invitation'
+  Invitation: 'Invitation',
+  PayCheck: 'PayCheck',
+  Student: 'Student',
+  Group: 'Group',
+  Location: 'Location',
+  Course: 'Course',
+  Lesson: 'Lesson',
+  StudentLessonsBalanceHistory: 'StudentLessonsBalanceHistory',
+  StudentGroup: 'StudentGroup',
+  Dismissed: 'Dismissed',
+  TeacherGroup: 'TeacherGroup',
+  TeacherLesson: 'TeacherLesson',
+  Attendance: 'Attendance',
+  MakeUp: 'MakeUp',
+  Payment: 'Payment',
+  UnprocessedPayment: 'UnprocessedPayment',
+  PaymentProduct: 'PaymentProduct',
+  Cart: 'Cart',
+  CartItem: 'CartItem',
+  Category: 'Category',
+  Product: 'Product',
+  Order: 'Order'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -99,8 +99,6 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  firstName: 'firstName',
-  lastName: 'lastName',
   bidForLesson: 'bidForLesson',
   bidForIndividual: 'bidForIndividual',
   name: 'name',
@@ -118,9 +116,109 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const StudentScalarFieldEnum = {
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  expiresAt: 'expiresAt',
+  token: 'token',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId',
+  impersonatedBy: 'impersonatedBy',
+  activeOrganizationId: 'activeOrganizationId'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const AccountScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  providerId: 'providerId',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
+
+
+export const VerificationScalarFieldEnum = {
+  id: 'id',
+  identifier: 'identifier',
+  value: 'value',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
+
+
+export const OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  logo: 'logo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  metadata: 'metadata'
+} as const
+
+export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const MemberScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
+
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  email: 'email',
+  role: 'role',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  inviterId: 'inviterId'
+} as const
+
+export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
+
+
+export const PayCheckScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  comment: 'comment',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  userId: 'userId'
+} as const
+
+export type PayCheckScalarFieldEnum = (typeof PayCheckScalarFieldEnum)[keyof typeof PayCheckScalarFieldEnum]
+
+
+export const StudentScalarFieldEnum = {
+  id: 'id',
   firstName: 'firstName',
   lastName: 'lastName',
   login: 'login',
@@ -129,15 +227,71 @@ export const StudentScalarFieldEnum = {
   birthDate: 'birthDate',
   parentsName: 'parentsName',
   parentsPhone: 'parentsPhone',
-  crmUrl: 'crmUrl',
-  createdAt: 'createdAt',
+  url: 'url',
   coins: 'coins',
   lessonsBalance: 'lessonsBalance',
   totalLessons: 'totalLessons',
-  totalPayments: 'totalPayments'
+  totalPayments: 'totalPayments',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId'
 } as const
 
 export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
+
+
+export const GroupScalarFieldEnum = {
+  id: 'id',
+  startDate: 'startDate',
+  dayOfWeek: 'dayOfWeek',
+  time: 'time',
+  maxStudents: 'maxStudents',
+  url: 'url',
+  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  courseId: 'courseId',
+  locationId: 'locationId'
+} as const
+
+export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
+
+
+export const LocationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId'
+} as const
+
+export type LocationScalarFieldEnum = (typeof LocationScalarFieldEnum)[keyof typeof LocationScalarFieldEnum]
+
+
+export const CourseScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId'
+} as const
+
+export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
+
+
+export const LessonScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  time: 'time',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  groupId: 'groupId'
+} as const
+
+export type LessonScalarFieldEnum = (typeof LessonScalarFieldEnum)[keyof typeof LessonScalarFieldEnum]
 
 
 export const StudentLessonsBalanceHistoryScalarFieldEnum = {
@@ -151,69 +305,20 @@ export const StudentLessonsBalanceHistoryScalarFieldEnum = {
   balanceAfter: 'balanceAfter',
   comment: 'comment',
   meta: 'meta',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type StudentLessonsBalanceHistoryScalarFieldEnum = (typeof StudentLessonsBalanceHistoryScalarFieldEnum)[keyof typeof StudentLessonsBalanceHistoryScalarFieldEnum]
 
 
-export const GroupScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  name: 'name',
-  courseId: 'courseId',
-  type: 'type',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  dayOfWeek: 'dayOfWeek',
-  time: 'time',
-  maxStudents: 'maxStudents',
-  createdAt: 'createdAt',
-  backOfficeUrl: 'backOfficeUrl',
-  lessonCount: 'lessonCount',
-  lessonPerWeek: 'lessonPerWeek',
-  locationId: 'locationId'
-} as const
-
-export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
-
-
-export const PayCheckScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  amount: 'amount',
-  comment: 'comment',
-  date: 'date',
-  createdAt: 'createdAt',
-  userId: 'userId'
-} as const
-
-export type PayCheckScalarFieldEnum = (typeof PayCheckScalarFieldEnum)[keyof typeof PayCheckScalarFieldEnum]
-
-
-export const LocationScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  name: 'name'
-} as const
-
-export type LocationScalarFieldEnum = (typeof LocationScalarFieldEnum)[keyof typeof LocationScalarFieldEnum]
-
-
-export const CourseScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  name: 'name'
-} as const
-
-export type CourseScalarFieldEnum = (typeof CourseScalarFieldEnum)[keyof typeof CourseScalarFieldEnum]
-
-
 export const StudentGroupScalarFieldEnum = {
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   organizationId: 'organizationId',
   studentId: 'studentId',
-  groupId: 'groupId',
-  status: 'status'
+  groupId: 'groupId'
 } as const
 
 export type StudentGroupScalarFieldEnum = (typeof StudentGroupScalarFieldEnum)[keyof typeof StudentGroupScalarFieldEnum]
@@ -221,58 +326,53 @@ export type StudentGroupScalarFieldEnum = (typeof StudentGroupScalarFieldEnum)[k
 
 export const DismissedScalarFieldEnum = {
   id: 'id',
+  comment: 'comment',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   organizationId: 'organizationId',
   studentId: 'studentId',
-  groupId: 'groupId',
-  comment: 'comment',
-  date: 'date'
+  groupId: 'groupId'
 } as const
 
 export type DismissedScalarFieldEnum = (typeof DismissedScalarFieldEnum)[keyof typeof DismissedScalarFieldEnum]
 
 
 export const TeacherGroupScalarFieldEnum = {
+  bid: 'bid',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   organizationId: 'organizationId',
-  teacherId: 'teacherId',
   groupId: 'groupId',
-  bid: 'bid'
+  teacherId: 'teacherId'
 } as const
 
 export type TeacherGroupScalarFieldEnum = (typeof TeacherGroupScalarFieldEnum)[keyof typeof TeacherGroupScalarFieldEnum]
 
 
 export const TeacherLessonScalarFieldEnum = {
+  bid: 'bid',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   organizationId: 'organizationId',
-  teacherId: 'teacherId',
   lessonId: 'lessonId',
-  bid: 'bid'
+  teacherId: 'teacherId'
 } as const
 
 export type TeacherLessonScalarFieldEnum = (typeof TeacherLessonScalarFieldEnum)[keyof typeof TeacherLessonScalarFieldEnum]
 
 
-export const LessonScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  groupId: 'groupId',
-  date: 'date',
-  time: 'time',
-  createdAt: 'createdAt',
-  status: 'status'
-} as const
-
-export type LessonScalarFieldEnum = (typeof LessonScalarFieldEnum)[keyof typeof LessonScalarFieldEnum]
-
-
 export const AttendanceScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
-  lessonId: 'lessonId',
-  studentId: 'studentId',
   status: 'status',
   comment: 'comment',
   isWarned: 'isWarned',
-  studentStatus: 'studentStatus'
+  studentStatus: 'studentStatus',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  lessonId: 'lessonId',
+  studentId: 'studentId'
 } as const
 
 export type AttendanceScalarFieldEnum = (typeof AttendanceScalarFieldEnum)[keyof typeof AttendanceScalarFieldEnum]
@@ -282,7 +382,7 @@ export const MakeUpScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
   missedAttendanceId: 'missedAttendanceId',
-  makeUpAttendaceId: 'makeUpAttendaceId'
+  makeUpAttendanceId: 'makeUpAttendanceId'
 } as const
 
 export type MakeUpScalarFieldEnum = (typeof MakeUpScalarFieldEnum)[keyof typeof MakeUpScalarFieldEnum]
@@ -290,14 +390,15 @@ export type MakeUpScalarFieldEnum = (typeof MakeUpScalarFieldEnum)[keyof typeof 
 
 export const PaymentScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
-  studentId: 'studentId',
-  createdAt: 'createdAt',
   lessonCount: 'lessonCount',
   price: 'price',
   bidForLesson: 'bidForLesson',
   leadName: 'leadName',
-  productName: 'productName'
+  productName: 'productName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  studentId: 'studentId'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
@@ -305,15 +406,28 @@ export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeo
 
 export const UnprocessedPaymentScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
   rawData: 'rawData',
   reason: 'reason',
   resolved: 'resolved',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
   studentId: 'studentId'
 } as const
 
 export type UnprocessedPaymentScalarFieldEnum = (typeof UnprocessedPaymentScalarFieldEnum)[keyof typeof UnprocessedPaymentScalarFieldEnum]
+
+
+export const PaymentProductScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  productId: 'productId',
+  price: 'price',
+  lessonCount: 'lessonCount',
+  organizationId: 'organizationId'
+} as const
+
+export type PaymentProductScalarFieldEnum = (typeof PaymentProductScalarFieldEnum)[keyof typeof PaymentProductScalarFieldEnum]
 
 
 export const CartScalarFieldEnum = {
@@ -370,107 +484,12 @@ export const OrderScalarFieldEnum = {
   organizationId: 'organizationId',
   productId: 'productId',
   studentId: 'studentId',
+  quantity: 'quantity',
   status: 'status',
   createdAt: 'createdAt'
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
-
-
-export const PaymentProductScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  productId: 'productId',
-  name: 'name',
-  price: 'price',
-  lessonCount: 'lessonCount'
-} as const
-
-export type PaymentProductScalarFieldEnum = (typeof PaymentProductScalarFieldEnum)[keyof typeof PaymentProductScalarFieldEnum]
-
-
-export const SessionScalarFieldEnum = {
-  id: 'id',
-  expiresAt: 'expiresAt',
-  token: 'token',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  ipAddress: 'ipAddress',
-  userAgent: 'userAgent',
-  userId: 'userId',
-  impersonatedBy: 'impersonatedBy',
-  activeOrganizationId: 'activeOrganizationId'
-} as const
-
-export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
-
-
-export const AccountScalarFieldEnum = {
-  id: 'id',
-  accountId: 'accountId',
-  providerId: 'providerId',
-  userId: 'userId',
-  accessToken: 'accessToken',
-  refreshToken: 'refreshToken',
-  idToken: 'idToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  password: 'password',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
-
-
-export const VerificationScalarFieldEnum = {
-  id: 'id',
-  identifier: 'identifier',
-  value: 'value',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
-
-
-export const OrganizationScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  slug: 'slug',
-  logo: 'logo',
-  createdAt: 'createdAt',
-  metadata: 'metadata'
-} as const
-
-export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
-
-
-export const MemberScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  userId: 'userId',
-  role: 'role',
-  createdAt: 'createdAt'
-} as const
-
-export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
-
-
-export const InvitationScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  email: 'email',
-  role: 'role',
-  status: 'status',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  inviterId: 'inviterId'
-} as const
-
-export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
 
 
 export const SortOrder = {

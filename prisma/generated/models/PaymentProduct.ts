@@ -28,90 +28,90 @@ export type AggregatePaymentProduct = {
 
 export type PaymentProductAvgAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   productId: number | null
   price: number | null
   lessonCount: number | null
+  organizationId: number | null
 }
 
 export type PaymentProductSumAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   productId: number | null
   price: number | null
   lessonCount: number | null
+  organizationId: number | null
 }
 
 export type PaymentProductMinAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  productId: number | null
   name: string | null
+  productId: number | null
   price: number | null
   lessonCount: number | null
+  organizationId: number | null
 }
 
 export type PaymentProductMaxAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  productId: number | null
   name: string | null
+  productId: number | null
   price: number | null
   lessonCount: number | null
+  organizationId: number | null
 }
 
 export type PaymentProductCountAggregateOutputType = {
   id: number
-  organizationId: number
-  productId: number
   name: number
+  productId: number
   price: number
   lessonCount: number
+  organizationId: number
   _all: number
 }
 
 
 export type PaymentProductAvgAggregateInputType = {
   id?: true
-  organizationId?: true
   productId?: true
   price?: true
   lessonCount?: true
+  organizationId?: true
 }
 
 export type PaymentProductSumAggregateInputType = {
   id?: true
-  organizationId?: true
   productId?: true
   price?: true
   lessonCount?: true
+  organizationId?: true
 }
 
 export type PaymentProductMinAggregateInputType = {
   id?: true
-  organizationId?: true
-  productId?: true
   name?: true
+  productId?: true
   price?: true
   lessonCount?: true
+  organizationId?: true
 }
 
 export type PaymentProductMaxAggregateInputType = {
   id?: true
-  organizationId?: true
-  productId?: true
   name?: true
+  productId?: true
   price?: true
   lessonCount?: true
+  organizationId?: true
 }
 
 export type PaymentProductCountAggregateInputType = {
   id?: true
-  organizationId?: true
-  productId?: true
   name?: true
+  productId?: true
   price?: true
   lessonCount?: true
+  organizationId?: true
   _all?: true
 }
 
@@ -203,11 +203,11 @@ export type PaymentProductGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type PaymentProductGroupByOutputType = {
   id: number
-  organizationId: number
-  productId: number | null
   name: string
+  productId: number | null
   price: number
   lessonCount: number
+  organizationId: number
   _count: PaymentProductCountAggregateOutputType | null
   _avg: PaymentProductAvgAggregateOutputType | null
   _sum: PaymentProductSumAggregateOutputType | null
@@ -235,21 +235,21 @@ export type PaymentProductWhereInput = {
   OR?: Prisma.PaymentProductWhereInput[]
   NOT?: Prisma.PaymentProductWhereInput | Prisma.PaymentProductWhereInput[]
   id?: Prisma.IntFilter<"PaymentProduct"> | number
-  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
-  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   name?: Prisma.StringFilter<"PaymentProduct"> | string
+  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   price?: Prisma.IntFilter<"PaymentProduct"> | number
   lessonCount?: Prisma.IntFilter<"PaymentProduct"> | number
+  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }
 
 export type PaymentProductOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
 }
 
@@ -258,21 +258,21 @@ export type PaymentProductWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PaymentProductWhereInput | Prisma.PaymentProductWhereInput[]
   OR?: Prisma.PaymentProductWhereInput[]
   NOT?: Prisma.PaymentProductWhereInput | Prisma.PaymentProductWhereInput[]
-  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
-  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   name?: Prisma.StringFilter<"PaymentProduct"> | string
+  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   price?: Prisma.IntFilter<"PaymentProduct"> | number
   lessonCount?: Prisma.IntFilter<"PaymentProduct"> | number
+  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }, "id">
 
 export type PaymentProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   _count?: Prisma.PaymentProductCountOrderByAggregateInput
   _avg?: Prisma.PaymentProductAvgOrderByAggregateInput
   _max?: Prisma.PaymentProductMaxOrderByAggregateInput
@@ -285,33 +285,33 @@ export type PaymentProductScalarWhereWithAggregatesInput = {
   OR?: Prisma.PaymentProductScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PaymentProductScalarWhereWithAggregatesInput | Prisma.PaymentProductScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"PaymentProduct"> | number
-  organizationId?: Prisma.IntWithAggregatesFilter<"PaymentProduct"> | number
-  productId?: Prisma.IntNullableWithAggregatesFilter<"PaymentProduct"> | number | null
   name?: Prisma.StringWithAggregatesFilter<"PaymentProduct"> | string
+  productId?: Prisma.IntNullableWithAggregatesFilter<"PaymentProduct"> | number | null
   price?: Prisma.IntWithAggregatesFilter<"PaymentProduct"> | number
   lessonCount?: Prisma.IntWithAggregatesFilter<"PaymentProduct"> | number
+  organizationId?: Prisma.IntWithAggregatesFilter<"PaymentProduct"> | number
 }
 
 export type PaymentProductCreateInput = {
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutPaymentProductsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutPaymentProductsInput
 }
 
 export type PaymentProductUncheckedCreateInput = {
   id?: number
-  organizationId?: number
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
+  organizationId: number
 }
 
 export type PaymentProductUpdateInput = {
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutPaymentProductsNestedInput
@@ -319,79 +319,36 @@ export type PaymentProductUpdateInput = {
 
 export type PaymentProductUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PaymentProductCreateManyInput = {
   id?: number
-  organizationId?: number
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
+  organizationId: number
 }
 
 export type PaymentProductUpdateManyMutationInput = {
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PaymentProductUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type PaymentProductCountOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-}
-
-export type PaymentProductAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-}
-
-export type PaymentProductMaxOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-}
-
-export type PaymentProductMinOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-}
-
-export type PaymentProductSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  productId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PaymentProductListRelationFilter = {
@@ -402,6 +359,49 @@ export type PaymentProductListRelationFilter = {
 
 export type PaymentProductOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type PaymentProductCountOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type PaymentProductAvgOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type PaymentProductMaxOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type PaymentProductMinOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type PaymentProductSumOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  lessonCount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
 }
 
 export type PaymentProductCreateNestedManyWithoutOrganizationInput = {
@@ -447,16 +447,16 @@ export type PaymentProductUncheckedUpdateManyWithoutOrganizationNestedInput = {
 }
 
 export type PaymentProductCreateWithoutOrganizationInput = {
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
 }
 
 export type PaymentProductUncheckedCreateWithoutOrganizationInput = {
   id?: number
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
 }
@@ -492,40 +492,40 @@ export type PaymentProductScalarWhereInput = {
   OR?: Prisma.PaymentProductScalarWhereInput[]
   NOT?: Prisma.PaymentProductScalarWhereInput | Prisma.PaymentProductScalarWhereInput[]
   id?: Prisma.IntFilter<"PaymentProduct"> | number
-  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
-  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   name?: Prisma.StringFilter<"PaymentProduct"> | string
+  productId?: Prisma.IntNullableFilter<"PaymentProduct"> | number | null
   price?: Prisma.IntFilter<"PaymentProduct"> | number
   lessonCount?: Prisma.IntFilter<"PaymentProduct"> | number
+  organizationId?: Prisma.IntFilter<"PaymentProduct"> | number
 }
 
 export type PaymentProductCreateManyOrganizationInput = {
   id?: number
-  productId?: number | null
   name: string
+  productId?: number | null
   price: number
   lessonCount: number
 }
 
 export type PaymentProductUpdateWithoutOrganizationInput = {
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PaymentProductUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PaymentProductUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.IntFieldUpdateOperationsInput | number
   lessonCount?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -534,44 +534,44 @@ export type PaymentProductUncheckedUpdateManyWithoutOrganizationInput = {
 
 export type PaymentProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  productId?: boolean
   name?: boolean
+  productId?: boolean
   price?: boolean
   lessonCount?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentProduct"]>
 
 export type PaymentProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  productId?: boolean
   name?: boolean
+  productId?: boolean
   price?: boolean
   lessonCount?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentProduct"]>
 
 export type PaymentProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  productId?: boolean
   name?: boolean
+  productId?: boolean
   price?: boolean
   lessonCount?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentProduct"]>
 
 export type PaymentProductSelectScalar = {
   id?: boolean
-  organizationId?: boolean
-  productId?: boolean
   name?: boolean
+  productId?: boolean
   price?: boolean
   lessonCount?: boolean
+  organizationId?: boolean
 }
 
-export type PaymentProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "productId" | "name" | "price" | "lessonCount", ExtArgs["result"]["paymentProduct"]>
+export type PaymentProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "productId" | "price" | "lessonCount" | "organizationId", ExtArgs["result"]["paymentProduct"]>
 export type PaymentProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
@@ -589,11 +589,11 @@ export type $PaymentProductPayload<ExtArgs extends runtime.Types.Extensions.Inte
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    organizationId: number
-    productId: number | null
     name: string
+    productId: number | null
     price: number
     lessonCount: number
+    organizationId: number
   }, ExtArgs["result"]["paymentProduct"]>
   composites: {}
 }
@@ -1019,11 +1019,11 @@ export interface Prisma__PaymentProductClient<T, Null = never, ExtArgs extends r
  */
 export interface PaymentProductFieldRefs {
   readonly id: Prisma.FieldRef<"PaymentProduct", 'Int'>
-  readonly organizationId: Prisma.FieldRef<"PaymentProduct", 'Int'>
-  readonly productId: Prisma.FieldRef<"PaymentProduct", 'Int'>
   readonly name: Prisma.FieldRef<"PaymentProduct", 'String'>
+  readonly productId: Prisma.FieldRef<"PaymentProduct", 'Int'>
   readonly price: Prisma.FieldRef<"PaymentProduct", 'Int'>
   readonly lessonCount: Prisma.FieldRef<"PaymentProduct", 'Int'>
+  readonly organizationId: Prisma.FieldRef<"PaymentProduct", 'Int'>
 }
     
 

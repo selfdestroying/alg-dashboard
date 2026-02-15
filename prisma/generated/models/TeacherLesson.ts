@@ -27,75 +27,87 @@ export type AggregateTeacherLesson = {
 }
 
 export type TeacherLessonAvgAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  lessonId: number | null
   bid: number | null
+  organizationId: number | null
+  lessonId: number | null
+  teacherId: number | null
 }
 
 export type TeacherLessonSumAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  lessonId: number | null
   bid: number | null
+  organizationId: number | null
+  lessonId: number | null
+  teacherId: number | null
 }
 
 export type TeacherLessonMinAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  lessonId: number | null
   bid: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
+  lessonId: number | null
+  teacherId: number | null
 }
 
 export type TeacherLessonMaxAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  lessonId: number | null
   bid: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
+  lessonId: number | null
+  teacherId: number | null
 }
 
 export type TeacherLessonCountAggregateOutputType = {
-  organizationId: number
-  teacherId: number
-  lessonId: number
   bid: number
+  createdAt: number
+  updatedAt: number
+  organizationId: number
+  lessonId: number
+  teacherId: number
   _all: number
 }
 
 
 export type TeacherLessonAvgAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  lessonId?: true
   bid?: true
+  organizationId?: true
+  lessonId?: true
+  teacherId?: true
 }
 
 export type TeacherLessonSumAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  lessonId?: true
   bid?: true
+  organizationId?: true
+  lessonId?: true
+  teacherId?: true
 }
 
 export type TeacherLessonMinAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  lessonId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  lessonId?: true
+  teacherId?: true
 }
 
 export type TeacherLessonMaxAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  lessonId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  lessonId?: true
+  teacherId?: true
 }
 
 export type TeacherLessonCountAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  lessonId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  lessonId?: true
+  teacherId?: true
   _all?: true
 }
 
@@ -186,10 +198,12 @@ export type TeacherLessonGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 export type TeacherLessonGroupByOutputType = {
-  organizationId: number
-  teacherId: number
-  lessonId: number
   bid: number
+  createdAt: Date
+  updatedAt: Date
+  organizationId: number
+  lessonId: number
+  teacherId: number
   _count: TeacherLessonCountAggregateOutputType | null
   _avg: TeacherLessonAvgAggregateOutputType | null
   _sum: TeacherLessonSumAggregateOutputType | null
@@ -216,20 +230,24 @@ export type TeacherLessonWhereInput = {
   AND?: Prisma.TeacherLessonWhereInput | Prisma.TeacherLessonWhereInput[]
   OR?: Prisma.TeacherLessonWhereInput[]
   NOT?: Prisma.TeacherLessonWhereInput | Prisma.TeacherLessonWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
-  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
-  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
   bid?: Prisma.IntFilter<"TeacherLesson"> | number
+  createdAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
+  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
+  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lesson?: Prisma.XOR<Prisma.LessonScalarRelationFilter, Prisma.LessonWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TeacherLessonOrderByWithRelationInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   lesson?: Prisma.LessonOrderByWithRelationInput
   teacher?: Prisma.UserOrderByWithRelationInput
@@ -240,20 +258,24 @@ export type TeacherLessonWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TeacherLessonWhereInput | Prisma.TeacherLessonWhereInput[]
   OR?: Prisma.TeacherLessonWhereInput[]
   NOT?: Prisma.TeacherLessonWhereInput | Prisma.TeacherLessonWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
-  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
-  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
   bid?: Prisma.IntFilter<"TeacherLesson"> | number
+  createdAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
+  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
+  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lesson?: Prisma.XOR<Prisma.LessonScalarRelationFilter, Prisma.LessonWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "teacherId_lessonId">
 
 export type TeacherLessonOrderByWithAggregationInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
   _count?: Prisma.TeacherLessonCountOrderByAggregateInput
   _avg?: Prisma.TeacherLessonAvgOrderByAggregateInput
   _max?: Prisma.TeacherLessonMaxOrderByAggregateInput
@@ -265,56 +287,72 @@ export type TeacherLessonScalarWhereWithAggregatesInput = {
   AND?: Prisma.TeacherLessonScalarWhereWithAggregatesInput | Prisma.TeacherLessonScalarWhereWithAggregatesInput[]
   OR?: Prisma.TeacherLessonScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TeacherLessonScalarWhereWithAggregatesInput | Prisma.TeacherLessonScalarWhereWithAggregatesInput[]
-  organizationId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
-  teacherId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
-  lessonId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
   bid?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"TeacherLesson"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TeacherLesson"> | Date | string
+  organizationId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
+  lessonId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
+  teacherId?: Prisma.IntWithAggregatesFilter<"TeacherLesson"> | number
 }
 
 export type TeacherLessonCreateInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
   lesson: Prisma.LessonCreateNestedOneWithoutTeachersInput
   teacher: Prisma.UserCreateNestedOneWithoutLessonsInput
 }
 
 export type TeacherLessonUncheckedCreateInput = {
-  organizationId?: number
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   lessonId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherLessonUpdateInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherLessonsNestedInput
   lesson?: Prisma.LessonUpdateOneRequiredWithoutTeachersNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutLessonsNestedInput
 }
 
 export type TeacherLessonUncheckedUpdateInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherLessonCreateManyInput = {
-  organizationId?: number
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   lessonId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherLessonUpdateManyMutationInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherLessonUncheckedUpdateManyInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherLessonListRelationFilter = {
@@ -333,38 +371,44 @@ export type TeacherLessonTeacherIdLessonIdCompoundUniqueInput = {
 }
 
 export type TeacherLessonCountOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherLessonAvgOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherLessonMaxOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherLessonMinOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherLessonSumOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  lessonId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  lessonId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherLessonCreateNestedManyWithoutTeacherInput = {
@@ -406,48 +450,6 @@ export type TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput = {
   connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
   update?: Prisma.TeacherLessonUpdateWithWhereUniqueWithoutTeacherInput | Prisma.TeacherLessonUpdateWithWhereUniqueWithoutTeacherInput[]
   updateMany?: Prisma.TeacherLessonUpdateManyWithWhereWithoutTeacherInput | Prisma.TeacherLessonUpdateManyWithWhereWithoutTeacherInput[]
-  deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
-}
-
-export type TeacherLessonCreateNestedManyWithoutLessonInput = {
-  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
-  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
-  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
-  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-}
-
-export type TeacherLessonUncheckedCreateNestedManyWithoutLessonInput = {
-  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
-  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
-  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
-  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-}
-
-export type TeacherLessonUpdateManyWithoutLessonNestedInput = {
-  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
-  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
-  upsert?: Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput[]
-  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
-  set?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  disconnect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  delete?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  update?: Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput[]
-  updateMany?: Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput | Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput[]
-  deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
-}
-
-export type TeacherLessonUncheckedUpdateManyWithoutLessonNestedInput = {
-  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
-  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
-  upsert?: Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput[]
-  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
-  set?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  disconnect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  delete?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
-  update?: Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput[]
-  updateMany?: Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput | Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput[]
   deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
 }
 
@@ -493,16 +495,62 @@ export type TeacherLessonUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
 }
 
+export type TeacherLessonCreateNestedManyWithoutLessonInput = {
+  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
+  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
+  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
+  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+}
+
+export type TeacherLessonUncheckedCreateNestedManyWithoutLessonInput = {
+  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
+  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
+  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
+  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+}
+
+export type TeacherLessonUpdateManyWithoutLessonNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
+  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
+  upsert?: Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput[]
+  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
+  set?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  disconnect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  delete?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  update?: Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput[]
+  updateMany?: Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput | Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput[]
+  deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
+}
+
+export type TeacherLessonUncheckedUpdateManyWithoutLessonNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput> | Prisma.TeacherLessonCreateWithoutLessonInput[] | Prisma.TeacherLessonUncheckedCreateWithoutLessonInput[]
+  connectOrCreate?: Prisma.TeacherLessonCreateOrConnectWithoutLessonInput | Prisma.TeacherLessonCreateOrConnectWithoutLessonInput[]
+  upsert?: Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpsertWithWhereUniqueWithoutLessonInput[]
+  createMany?: Prisma.TeacherLessonCreateManyLessonInputEnvelope
+  set?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  disconnect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  delete?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  connect?: Prisma.TeacherLessonWhereUniqueInput | Prisma.TeacherLessonWhereUniqueInput[]
+  update?: Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput | Prisma.TeacherLessonUpdateWithWhereUniqueWithoutLessonInput[]
+  updateMany?: Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput | Prisma.TeacherLessonUpdateManyWithWhereWithoutLessonInput[]
+  deleteMany?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
+}
+
 export type TeacherLessonCreateWithoutTeacherInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
   lesson: Prisma.LessonCreateNestedOneWithoutTeachersInput
 }
 
 export type TeacherLessonUncheckedCreateWithoutTeacherInput = {
-  organizationId?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   lessonId: number
-  bid?: number
 }
 
 export type TeacherLessonCreateOrConnectWithoutTeacherInput = {
@@ -535,60 +583,28 @@ export type TeacherLessonScalarWhereInput = {
   AND?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
   OR?: Prisma.TeacherLessonScalarWhereInput[]
   NOT?: Prisma.TeacherLessonScalarWhereInput | Prisma.TeacherLessonScalarWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
-  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
-  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
   bid?: Prisma.IntFilter<"TeacherLesson"> | number
-}
-
-export type TeacherLessonCreateWithoutLessonInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
-  teacher: Prisma.UserCreateNestedOneWithoutLessonsInput
-}
-
-export type TeacherLessonUncheckedCreateWithoutLessonInput = {
-  organizationId?: number
-  teacherId: number
-  bid?: number
-}
-
-export type TeacherLessonCreateOrConnectWithoutLessonInput = {
-  where: Prisma.TeacherLessonWhereUniqueInput
-  create: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput>
-}
-
-export type TeacherLessonCreateManyLessonInputEnvelope = {
-  data: Prisma.TeacherLessonCreateManyLessonInput | Prisma.TeacherLessonCreateManyLessonInput[]
-  skipDuplicates?: boolean
-}
-
-export type TeacherLessonUpsertWithWhereUniqueWithoutLessonInput = {
-  where: Prisma.TeacherLessonWhereUniqueInput
-  update: Prisma.XOR<Prisma.TeacherLessonUpdateWithoutLessonInput, Prisma.TeacherLessonUncheckedUpdateWithoutLessonInput>
-  create: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput>
-}
-
-export type TeacherLessonUpdateWithWhereUniqueWithoutLessonInput = {
-  where: Prisma.TeacherLessonWhereUniqueInput
-  data: Prisma.XOR<Prisma.TeacherLessonUpdateWithoutLessonInput, Prisma.TeacherLessonUncheckedUpdateWithoutLessonInput>
-}
-
-export type TeacherLessonUpdateManyWithWhereWithoutLessonInput = {
-  where: Prisma.TeacherLessonScalarWhereInput
-  data: Prisma.XOR<Prisma.TeacherLessonUpdateManyMutationInput, Prisma.TeacherLessonUncheckedUpdateManyWithoutLessonInput>
+  createdAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherLesson"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherLesson"> | number
+  lessonId?: Prisma.IntFilter<"TeacherLesson"> | number
+  teacherId?: Prisma.IntFilter<"TeacherLesson"> | number
 }
 
 export type TeacherLessonCreateWithoutOrganizationInput = {
-  bid?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   lesson: Prisma.LessonCreateNestedOneWithoutTeachersInput
   teacher: Prisma.UserCreateNestedOneWithoutLessonsInput
 }
 
 export type TeacherLessonUncheckedCreateWithoutOrganizationInput = {
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   lessonId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherLessonCreateOrConnectWithoutOrganizationInput = {
@@ -617,118 +633,192 @@ export type TeacherLessonUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.TeacherLessonUpdateManyMutationInput, Prisma.TeacherLessonUncheckedUpdateManyWithoutOrganizationInput>
 }
 
+export type TeacherLessonCreateWithoutLessonInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherLessonsInput
+  teacher: Prisma.UserCreateNestedOneWithoutLessonsInput
+}
+
+export type TeacherLessonUncheckedCreateWithoutLessonInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  teacherId: number
+}
+
+export type TeacherLessonCreateOrConnectWithoutLessonInput = {
+  where: Prisma.TeacherLessonWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput>
+}
+
+export type TeacherLessonCreateManyLessonInputEnvelope = {
+  data: Prisma.TeacherLessonCreateManyLessonInput | Prisma.TeacherLessonCreateManyLessonInput[]
+  skipDuplicates?: boolean
+}
+
+export type TeacherLessonUpsertWithWhereUniqueWithoutLessonInput = {
+  where: Prisma.TeacherLessonWhereUniqueInput
+  update: Prisma.XOR<Prisma.TeacherLessonUpdateWithoutLessonInput, Prisma.TeacherLessonUncheckedUpdateWithoutLessonInput>
+  create: Prisma.XOR<Prisma.TeacherLessonCreateWithoutLessonInput, Prisma.TeacherLessonUncheckedCreateWithoutLessonInput>
+}
+
+export type TeacherLessonUpdateWithWhereUniqueWithoutLessonInput = {
+  where: Prisma.TeacherLessonWhereUniqueInput
+  data: Prisma.XOR<Prisma.TeacherLessonUpdateWithoutLessonInput, Prisma.TeacherLessonUncheckedUpdateWithoutLessonInput>
+}
+
+export type TeacherLessonUpdateManyWithWhereWithoutLessonInput = {
+  where: Prisma.TeacherLessonScalarWhereInput
+  data: Prisma.XOR<Prisma.TeacherLessonUpdateManyMutationInput, Prisma.TeacherLessonUncheckedUpdateManyWithoutLessonInput>
+}
+
 export type TeacherLessonCreateManyTeacherInput = {
-  organizationId?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   lessonId: number
-  bid?: number
 }
 
 export type TeacherLessonUpdateWithoutTeacherInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherLessonsNestedInput
   lesson?: Prisma.LessonUpdateOneRequiredWithoutTeachersNestedInput
 }
 
 export type TeacherLessonUncheckedUpdateWithoutTeacherInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   lessonId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherLessonUncheckedUpdateManyWithoutTeacherInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   lessonId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type TeacherLessonCreateManyLessonInput = {
-  organizationId?: number
-  teacherId: number
-  bid?: number
-}
-
-export type TeacherLessonUpdateWithoutLessonInput = {
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherLessonsNestedInput
-  teacher?: Prisma.UserUpdateOneRequiredWithoutLessonsNestedInput
-}
-
-export type TeacherLessonUncheckedUpdateWithoutLessonInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type TeacherLessonUncheckedUpdateManyWithoutLessonInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherLessonCreateManyOrganizationInput = {
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   lessonId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherLessonUpdateWithoutOrganizationInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lesson?: Prisma.LessonUpdateOneRequiredWithoutTeachersNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutLessonsNestedInput
 }
 
 export type TeacherLessonUncheckedUpdateWithoutOrganizationInput = {
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherLessonUncheckedUpdateManyWithoutOrganizationInput = {
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lessonId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type TeacherLessonCreateManyLessonInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  teacherId: number
+}
+
+export type TeacherLessonUpdateWithoutLessonInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherLessonsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutLessonsNestedInput
+}
+
+export type TeacherLessonUncheckedUpdateWithoutLessonInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type TeacherLessonUncheckedUpdateManyWithoutLessonInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
 
 export type TeacherLessonSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  lessonId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  lessonId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lesson?: boolean | Prisma.LessonDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherLesson"]>
 
 export type TeacherLessonSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  lessonId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  lessonId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lesson?: boolean | Prisma.LessonDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherLesson"]>
 
 export type TeacherLessonSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  lessonId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  lessonId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lesson?: boolean | Prisma.LessonDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherLesson"]>
 
 export type TeacherLessonSelectScalar = {
-  organizationId?: boolean
-  teacherId?: boolean
-  lessonId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  lessonId?: boolean
+  teacherId?: boolean
 }
 
-export type TeacherLessonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"organizationId" | "teacherId" | "lessonId" | "bid", ExtArgs["result"]["teacherLesson"]>
+export type TeacherLessonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bid" | "createdAt" | "updatedAt" | "organizationId" | "lessonId" | "teacherId", ExtArgs["result"]["teacherLesson"]>
 export type TeacherLessonInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lesson?: boolean | Prisma.LessonDefaultArgs<ExtArgs>
@@ -753,10 +843,12 @@ export type $TeacherLessonPayload<ExtArgs extends runtime.Types.Extensions.Inter
     teacher: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    organizationId: number
-    teacherId: number
-    lessonId: number
     bid: number
+    createdAt: Date
+    updatedAt: Date
+    organizationId: number
+    lessonId: number
+    teacherId: number
   }, ExtArgs["result"]["teacherLesson"]>
   composites: {}
 }
@@ -840,8 +932,8 @@ export interface TeacherLessonDelegate<ExtArgs extends runtime.Types.Extensions.
    * // Get first 10 TeacherLessons
    * const teacherLessons = await prisma.teacherLesson.findMany({ take: 10 })
    * 
-   * // Only select the `organizationId`
-   * const teacherLessonWithOrganizationIdOnly = await prisma.teacherLesson.findMany({ select: { organizationId: true } })
+   * // Only select the `bid`
+   * const teacherLessonWithBidOnly = await prisma.teacherLesson.findMany({ select: { bid: true } })
    * 
    */
   findMany<T extends TeacherLessonFindManyArgs>(args?: Prisma.SelectSubset<T, TeacherLessonFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherLessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -885,9 +977,9 @@ export interface TeacherLessonDelegate<ExtArgs extends runtime.Types.Extensions.
    *   ]
    * })
    * 
-   * // Create many TeacherLessons and only return the `organizationId`
-   * const teacherLessonWithOrganizationIdOnly = await prisma.teacherLesson.createManyAndReturn({
-   *   select: { organizationId: true },
+   * // Create many TeacherLessons and only return the `bid`
+   * const teacherLessonWithBidOnly = await prisma.teacherLesson.createManyAndReturn({
+   *   select: { bid: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -976,9 +1068,9 @@ export interface TeacherLessonDelegate<ExtArgs extends runtime.Types.Extensions.
    *   ]
    * })
    * 
-   * // Update zero or more TeacherLessons and only return the `organizationId`
-   * const teacherLessonWithOrganizationIdOnly = await prisma.teacherLesson.updateManyAndReturn({
-   *   select: { organizationId: true },
+   * // Update zero or more TeacherLessons and only return the `bid`
+   * const teacherLessonWithBidOnly = await prisma.teacherLesson.updateManyAndReturn({
+   *   select: { bid: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1183,10 +1275,12 @@ export interface Prisma__TeacherLessonClient<T, Null = never, ExtArgs extends ru
  * Fields of the TeacherLesson model
  */
 export interface TeacherLessonFieldRefs {
-  readonly organizationId: Prisma.FieldRef<"TeacherLesson", 'Int'>
-  readonly teacherId: Prisma.FieldRef<"TeacherLesson", 'Int'>
-  readonly lessonId: Prisma.FieldRef<"TeacherLesson", 'Int'>
   readonly bid: Prisma.FieldRef<"TeacherLesson", 'Int'>
+  readonly createdAt: Prisma.FieldRef<"TeacherLesson", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"TeacherLesson", 'DateTime'>
+  readonly organizationId: Prisma.FieldRef<"TeacherLesson", 'Int'>
+  readonly lessonId: Prisma.FieldRef<"TeacherLesson", 'Int'>
+  readonly teacherId: Prisma.FieldRef<"TeacherLesson", 'Int'>
 }
     
 

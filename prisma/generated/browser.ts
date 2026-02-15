@@ -23,111 +23,6 @@ export * from './enums';
  */
 export type User = Prisma.UserModel
 /**
- * Model Student
- * 
- */
-export type Student = Prisma.StudentModel
-/**
- * Model StudentLessonsBalanceHistory
- * 
- */
-export type StudentLessonsBalanceHistory = Prisma.StudentLessonsBalanceHistoryModel
-/**
- * Model Group
- * 
- */
-export type Group = Prisma.GroupModel
-/**
- * Model PayCheck
- * 
- */
-export type PayCheck = Prisma.PayCheckModel
-/**
- * Model Location
- * 
- */
-export type Location = Prisma.LocationModel
-/**
- * Model Course
- * 
- */
-export type Course = Prisma.CourseModel
-/**
- * Model StudentGroup
- * 
- */
-export type StudentGroup = Prisma.StudentGroupModel
-/**
- * Model Dismissed
- * 
- */
-export type Dismissed = Prisma.DismissedModel
-/**
- * Model TeacherGroup
- * 
- */
-export type TeacherGroup = Prisma.TeacherGroupModel
-/**
- * Model TeacherLesson
- * 
- */
-export type TeacherLesson = Prisma.TeacherLessonModel
-/**
- * Model Lesson
- * 
- */
-export type Lesson = Prisma.LessonModel
-/**
- * Model Attendance
- * 
- */
-export type Attendance = Prisma.AttendanceModel
-/**
- * Model MakeUp
- * 
- */
-export type MakeUp = Prisma.MakeUpModel
-/**
- * Model Payment
- * 
- */
-export type Payment = Prisma.PaymentModel
-/**
- * Model UnprocessedPayment
- * 
- */
-export type UnprocessedPayment = Prisma.UnprocessedPaymentModel
-/**
- * Model Cart
- * 
- */
-export type Cart = Prisma.CartModel
-/**
- * Model CartItem
- * 
- */
-export type CartItem = Prisma.CartItemModel
-/**
- * Model Category
- * 
- */
-export type Category = Prisma.CategoryModel
-/**
- * Model Product
- * 
- */
-export type Product = Prisma.ProductModel
-/**
- * Model Order
- * 
- */
-export type Order = Prisma.OrderModel
-/**
- * Model PaymentProduct
- * 
- */
-export type PaymentProduct = Prisma.PaymentProductModel
-/**
  * Model Session
  * 
  */
@@ -157,3 +52,108 @@ export type Member = Prisma.MemberModel
  * 
  */
 export type Invitation = Prisma.InvitationModel
+/**
+ * Model PayCheck
+ * 
+ */
+export type PayCheck = Prisma.PayCheckModel
+/**
+ * Model Student
+ * 
+ */
+export type Student = Prisma.StudentModel
+/**
+ * Model Group
+ * 
+ */
+export type Group = Prisma.GroupModel
+/**
+ * Model Location
+ * 
+ */
+export type Location = Prisma.LocationModel
+/**
+ * Model Course
+ * 
+ */
+export type Course = Prisma.CourseModel
+/**
+ * Model Lesson
+ * 
+ */
+export type Lesson = Prisma.LessonModel
+/**
+ * Model StudentLessonsBalanceHistory
+ * 
+ */
+export type StudentLessonsBalanceHistory = Prisma.StudentLessonsBalanceHistoryModel
+/**
+ * Model StudentGroup
+ * 
+ */
+export type StudentGroup = Prisma.StudentGroupModel
+/**
+ * Model Dismissed
+ * 
+ */
+export type Dismissed = Prisma.DismissedModel
+/**
+ * Model TeacherGroup
+ * 
+ */
+export type TeacherGroup = Prisma.TeacherGroupModel
+/**
+ * Model TeacherLesson
+ * 
+ */
+export type TeacherLesson = Prisma.TeacherLessonModel
+/**
+ * Model Attendance
+ * 
+ */
+export type Attendance = Prisma.AttendanceModel
+/**
+ * Model MakeUp
+ * 
+ */
+export type MakeUp = Prisma.MakeUpModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model UnprocessedPayment
+ * 
+ */
+export type UnprocessedPayment = Prisma.UnprocessedPaymentModel
+/**
+ * Model PaymentProduct
+ * 
+ */
+export type PaymentProduct = Prisma.PaymentProductModel
+/**
+ * Model Cart
+ * 
+ */
+export type Cart = Prisma.CartModel
+/**
+ * Model CartItem
+ * 
+ */
+export type CartItem = Prisma.CartItemModel
+/**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel

@@ -28,45 +28,48 @@ export type AggregatePayCheck = {
 
 export type PayCheckAvgAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   amount: number | null
+  organizationId: number | null
   userId: number | null
 }
 
 export type PayCheckSumAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   amount: number | null
+  organizationId: number | null
   userId: number | null
 }
 
 export type PayCheckMinAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   amount: number | null
   comment: string | null
   date: Date | null
   createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
   userId: number | null
 }
 
 export type PayCheckMaxAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   amount: number | null
   comment: string | null
   date: Date | null
   createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
   userId: number | null
 }
 
 export type PayCheckCountAggregateOutputType = {
   id: number
-  organizationId: number
   amount: number
   comment: number
   date: number
   createdAt: number
+  updatedAt: number
+  organizationId: number
   userId: number
   _all: number
 }
@@ -74,45 +77,48 @@ export type PayCheckCountAggregateOutputType = {
 
 export type PayCheckAvgAggregateInputType = {
   id?: true
-  organizationId?: true
   amount?: true
+  organizationId?: true
   userId?: true
 }
 
 export type PayCheckSumAggregateInputType = {
   id?: true
-  organizationId?: true
   amount?: true
+  organizationId?: true
   userId?: true
 }
 
 export type PayCheckMinAggregateInputType = {
   id?: true
-  organizationId?: true
   amount?: true
   comment?: true
   date?: true
   createdAt?: true
+  updatedAt?: true
+  organizationId?: true
   userId?: true
 }
 
 export type PayCheckMaxAggregateInputType = {
   id?: true
-  organizationId?: true
   amount?: true
   comment?: true
   date?: true
   createdAt?: true
+  updatedAt?: true
+  organizationId?: true
   userId?: true
 }
 
 export type PayCheckCountAggregateInputType = {
   id?: true
-  organizationId?: true
   amount?: true
   comment?: true
   date?: true
   createdAt?: true
+  updatedAt?: true
+  organizationId?: true
   userId?: true
   _all?: true
 }
@@ -205,11 +211,12 @@ export type PayCheckGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type PayCheckGroupByOutputType = {
   id: number
-  organizationId: number
   amount: number
   comment: string
   date: Date
   createdAt: Date
+  updatedAt: Date
+  organizationId: number
   userId: number
   _count: PayCheckCountAggregateOutputType | null
   _avg: PayCheckAvgAggregateOutputType | null
@@ -238,11 +245,12 @@ export type PayCheckWhereInput = {
   OR?: Prisma.PayCheckWhereInput[]
   NOT?: Prisma.PayCheckWhereInput | Prisma.PayCheckWhereInput[]
   id?: Prisma.IntFilter<"PayCheck"> | number
-  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   amount?: Prisma.IntFilter<"PayCheck"> | number
   comment?: Prisma.StringFilter<"PayCheck"> | string
   date?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   userId?: Prisma.IntFilter<"PayCheck"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -250,11 +258,12 @@ export type PayCheckWhereInput = {
 
 export type PayCheckOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
@@ -265,11 +274,12 @@ export type PayCheckWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PayCheckWhereInput | Prisma.PayCheckWhereInput[]
   OR?: Prisma.PayCheckWhereInput[]
   NOT?: Prisma.PayCheckWhereInput | Prisma.PayCheckWhereInput[]
-  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   amount?: Prisma.IntFilter<"PayCheck"> | number
   comment?: Prisma.StringFilter<"PayCheck"> | string
   date?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   userId?: Prisma.IntFilter<"PayCheck"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -277,11 +287,12 @@ export type PayCheckWhereUniqueInput = Prisma.AtLeast<{
 
 export type PayCheckOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.PayCheckCountOrderByAggregateInput
   _avg?: Prisma.PayCheckAvgOrderByAggregateInput
@@ -295,11 +306,12 @@ export type PayCheckScalarWhereWithAggregatesInput = {
   OR?: Prisma.PayCheckScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PayCheckScalarWhereWithAggregatesInput | Prisma.PayCheckScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"PayCheck"> | number
-  organizationId?: Prisma.IntWithAggregatesFilter<"PayCheck"> | number
   amount?: Prisma.IntWithAggregatesFilter<"PayCheck"> | number
   comment?: Prisma.StringWithAggregatesFilter<"PayCheck"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"PayCheck"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PayCheck"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PayCheck"> | Date | string
+  organizationId?: Prisma.IntWithAggregatesFilter<"PayCheck"> | number
   userId?: Prisma.IntWithAggregatesFilter<"PayCheck"> | number
 }
 
@@ -308,17 +320,19 @@ export type PayCheckCreateInput = {
   comment: string
   date: Date | string
   createdAt?: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutPayChecksInput
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutPayChecksInput
   user: Prisma.UserCreateNestedOneWithoutPayChecksInput
 }
 
 export type PayCheckUncheckedCreateInput = {
   id?: number
-  organizationId?: number
   amount: number
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   userId: number
 }
 
@@ -327,27 +341,30 @@ export type PayCheckUpdateInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutPayChecksNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPayChecksNestedInput
 }
 
 export type PayCheckUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PayCheckCreateManyInput = {
   id?: number
-  organizationId?: number
   amount: number
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   userId: number
 }
 
@@ -356,15 +373,17 @@ export type PayCheckUpdateManyMutationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PayCheckUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -380,45 +399,48 @@ export type PayCheckOrderByRelationAggregateInput = {
 
 export type PayCheckCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type PayCheckAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type PayCheckMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type PayCheckMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type PayCheckSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -511,16 +533,18 @@ export type PayCheckCreateWithoutUserInput = {
   comment: string
   date: Date | string
   createdAt?: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutPayChecksInput
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutPayChecksInput
 }
 
 export type PayCheckUncheckedCreateWithoutUserInput = {
   id?: number
-  organizationId?: number
   amount: number
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
 }
 
 export type PayCheckCreateOrConnectWithoutUserInput = {
@@ -554,11 +578,12 @@ export type PayCheckScalarWhereInput = {
   OR?: Prisma.PayCheckScalarWhereInput[]
   NOT?: Prisma.PayCheckScalarWhereInput | Prisma.PayCheckScalarWhereInput[]
   id?: Prisma.IntFilter<"PayCheck"> | number
-  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   amount?: Prisma.IntFilter<"PayCheck"> | number
   comment?: Prisma.StringFilter<"PayCheck"> | string
   date?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PayCheck"> | Date | string
+  organizationId?: Prisma.IntFilter<"PayCheck"> | number
   userId?: Prisma.IntFilter<"PayCheck"> | number
 }
 
@@ -567,6 +592,7 @@ export type PayCheckCreateWithoutOrganizationInput = {
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPayChecksInput
 }
 
@@ -576,6 +602,7 @@ export type PayCheckUncheckedCreateWithoutOrganizationInput = {
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
   userId: number
 }
 
@@ -607,11 +634,12 @@ export type PayCheckUpdateManyWithWhereWithoutOrganizationInput = {
 
 export type PayCheckCreateManyUserInput = {
   id?: number
-  organizationId?: number
   amount: number
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
 }
 
 export type PayCheckUpdateWithoutUserInput = {
@@ -619,25 +647,28 @@ export type PayCheckUpdateWithoutUserInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutPayChecksNestedInput
 }
 
 export type PayCheckUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PayCheckUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type PayCheckCreateManyOrganizationInput = {
@@ -646,6 +677,7 @@ export type PayCheckCreateManyOrganizationInput = {
   comment: string
   date: Date | string
   createdAt?: Date | string
+  updatedAt?: Date | string
   userId: number
 }
 
@@ -654,6 +686,7 @@ export type PayCheckUpdateWithoutOrganizationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPayChecksNestedInput
 }
 
@@ -663,6 +696,7 @@ export type PayCheckUncheckedUpdateWithoutOrganizationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -672,6 +706,7 @@ export type PayCheckUncheckedUpdateManyWithoutOrganizationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -679,11 +714,12 @@ export type PayCheckUncheckedUpdateManyWithoutOrganizationInput = {
 
 export type PayCheckSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   amount?: boolean
   comment?: boolean
   date?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -691,11 +727,12 @@ export type PayCheckSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type PayCheckSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   amount?: boolean
   comment?: boolean
   date?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -703,11 +740,12 @@ export type PayCheckSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type PayCheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   amount?: boolean
   comment?: boolean
   date?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   userId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -715,15 +753,16 @@ export type PayCheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type PayCheckSelectScalar = {
   id?: boolean
-  organizationId?: boolean
   amount?: boolean
   comment?: boolean
   date?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   userId?: boolean
 }
 
-export type PayCheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "amount" | "comment" | "date" | "createdAt" | "userId", ExtArgs["result"]["payCheck"]>
+export type PayCheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "amount" | "comment" | "date" | "createdAt" | "updatedAt" | "organizationId" | "userId", ExtArgs["result"]["payCheck"]>
 export type PayCheckInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -745,11 +784,12 @@ export type $PayCheckPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    organizationId: number
     amount: number
     comment: string
     date: Date
     createdAt: Date
+    updatedAt: Date
+    organizationId: number
     userId: number
   }, ExtArgs["result"]["payCheck"]>
   composites: {}
@@ -1177,11 +1217,12 @@ export interface Prisma__PayCheckClient<T, Null = never, ExtArgs extends runtime
  */
 export interface PayCheckFieldRefs {
   readonly id: Prisma.FieldRef<"PayCheck", 'Int'>
-  readonly organizationId: Prisma.FieldRef<"PayCheck", 'Int'>
   readonly amount: Prisma.FieldRef<"PayCheck", 'Int'>
   readonly comment: Prisma.FieldRef<"PayCheck", 'String'>
   readonly date: Prisma.FieldRef<"PayCheck", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"PayCheck", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"PayCheck", 'DateTime'>
+  readonly organizationId: Prisma.FieldRef<"PayCheck", 'Int'>
   readonly userId: Prisma.FieldRef<"PayCheck", 'Int'>
 }
     

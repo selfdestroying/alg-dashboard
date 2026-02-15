@@ -40,8 +40,6 @@ export type UserSumAggregateOutputType = {
 
 export type UserMinAggregateOutputType = {
   id: number | null
-  firstName: string | null
-  lastName: string | null
   bidForLesson: number | null
   bidForIndividual: number | null
   name: string | null
@@ -58,8 +56,6 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: number | null
-  firstName: string | null
-  lastName: string | null
   bidForLesson: number | null
   bidForIndividual: number | null
   name: string | null
@@ -76,8 +72,6 @@ export type UserMaxAggregateOutputType = {
 
 export type UserCountAggregateOutputType = {
   id: number
-  firstName: number
-  lastName: number
   bidForLesson: number
   bidForIndividual: number
   name: number
@@ -108,8 +102,6 @@ export type UserSumAggregateInputType = {
 
 export type UserMinAggregateInputType = {
   id?: true
-  firstName?: true
-  lastName?: true
   bidForLesson?: true
   bidForIndividual?: true
   name?: true
@@ -126,8 +118,6 @@ export type UserMinAggregateInputType = {
 
 export type UserMaxAggregateInputType = {
   id?: true
-  firstName?: true
-  lastName?: true
   bidForLesson?: true
   bidForIndividual?: true
   name?: true
@@ -144,8 +134,6 @@ export type UserMaxAggregateInputType = {
 
 export type UserCountAggregateInputType = {
   id?: true
-  firstName?: true
-  lastName?: true
   bidForLesson?: true
   bidForIndividual?: true
   name?: true
@@ -249,8 +237,6 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: number
-  firstName: string
-  lastName: string | null
   bidForLesson: number
   bidForIndividual: number
   name: string
@@ -290,8 +276,6 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
-  firstName?: Prisma.StringFilter<"User"> | string
-  lastName?: Prisma.StringNullableFilter<"User"> | string | null
   bidForLesson?: Prisma.IntFilter<"User"> | number
   bidForIndividual?: Prisma.IntFilter<"User"> | number
   name?: Prisma.StringFilter<"User"> | string
@@ -316,8 +300,6 @@ export type UserWhereInput = {
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  firstName?: Prisma.SortOrder
-  lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   bidForLesson?: Prisma.SortOrder
   bidForIndividual?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -346,8 +328,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  firstName?: Prisma.StringFilter<"User"> | string
-  lastName?: Prisma.StringNullableFilter<"User"> | string | null
   bidForLesson?: Prisma.IntFilter<"User"> | number
   bidForIndividual?: Prisma.IntFilter<"User"> | number
   name?: Prisma.StringFilter<"User"> | string
@@ -371,8 +351,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  firstName?: Prisma.SortOrder
-  lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   bidForLesson?: Prisma.SortOrder
   bidForIndividual?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -397,8 +375,6 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
-  firstName?: Prisma.StringWithAggregatesFilter<"User"> | string
-  lastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   bidForLesson?: Prisma.IntWithAggregatesFilter<"User"> | number
   bidForIndividual?: Prisma.IntWithAggregatesFilter<"User"> | number
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
@@ -414,10 +390,8 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -440,10 +414,8 @@ export type UserCreateInput = {
 
 export type UserUncheckedCreateInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -465,8 +437,6 @@ export type UserUncheckedCreateInput = {
 }
 
 export type UserUpdateInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -491,8 +461,6 @@ export type UserUpdateInput = {
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -517,10 +485,8 @@ export type UserUncheckedUpdateInput = {
 
 export type UserCreateManyInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -534,8 +500,6 @@ export type UserCreateManyInput = {
 }
 
 export type UserUpdateManyMutationInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -552,8 +516,6 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -570,8 +532,6 @@ export type UserUncheckedUpdateManyInput = {
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  firstName?: Prisma.SortOrder
-  lastName?: Prisma.SortOrder
   bidForLesson?: Prisma.SortOrder
   bidForIndividual?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -594,8 +554,6 @@ export type UserAvgOrderByAggregateInput = {
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  firstName?: Prisma.SortOrder
-  lastName?: Prisma.SortOrder
   bidForLesson?: Prisma.SortOrder
   bidForIndividual?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -612,8 +570,6 @@ export type UserMaxOrderByAggregateInput = {
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  firstName?: Prisma.SortOrder
-  lastName?: Prisma.SortOrder
   bidForLesson?: Prisma.SortOrder
   bidForIndividual?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -634,22 +590,14 @@ export type UserSumOrderByAggregateInput = {
   bidForIndividual?: Prisma.SortOrder
 }
 
-export type UserNullableScalarRelationFilter = {
-  is?: Prisma.UserWhereInput | null
-  isNot?: Prisma.UserWhereInput | null
-}
-
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -660,8 +608,16 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type StringFieldUpdateOperationsInput = {
+  set?: string
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -674,64 +630,6 @@ export type NullableBoolFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
-}
-
-export type UserCreateNestedOneWithoutLessonsBalanceChangesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsBalanceChangesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneWithoutLessonsBalanceChangesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsBalanceChangesInput
-  upsert?: Prisma.UserUpsertWithoutLessonsBalanceChangesInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLessonsBalanceChangesInput, Prisma.UserUpdateWithoutLessonsBalanceChangesInput>, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
-}
-
-export type UserCreateNestedOneWithoutPayChecksInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayChecksInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutPayChecksNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayChecksInput
-  upsert?: Prisma.UserUpsertWithoutPayChecksInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPayChecksInput, Prisma.UserUpdateWithoutPayChecksInput>, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
-}
-
-export type UserCreateNestedOneWithoutGroupsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutGroupsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupsInput
-  upsert?: Prisma.UserUpsertWithoutGroupsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupsInput, Prisma.UserUpdateWithoutGroupsInput>, Prisma.UserUncheckedUpdateWithoutGroupsInput>
-}
-
-export type UserCreateNestedOneWithoutLessonsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutLessonsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsInput
-  upsert?: Prisma.UserUpsertWithoutLessonsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLessonsInput, Prisma.UserUpdateWithoutLessonsInput>, Prisma.UserUncheckedUpdateWithoutLessonsInput>
 }
 
 export type UserCreateNestedOneWithoutSessionsInput = {
@@ -790,467 +688,67 @@ export type UserUpdateOneRequiredWithoutInvitationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvitationsInput, Prisma.UserUpdateWithoutInvitationsInput>, Prisma.UserUncheckedUpdateWithoutInvitationsInput>
 }
 
-export type UserCreateWithoutLessonsBalanceChangesInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
-  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+export type UserCreateNestedOneWithoutPayChecksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayChecksInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUncheckedCreateWithoutLessonsBalanceChangesInput = {
-  id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
-  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+export type UserUpdateOneRequiredWithoutPayChecksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayChecksInput
+  upsert?: Prisma.UserUpsertWithoutPayChecksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPayChecksInput, Prisma.UserUpdateWithoutPayChecksInput>, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
 }
 
-export type UserCreateOrConnectWithoutLessonsBalanceChangesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
+export type UserCreateNestedOneWithoutLessonsBalanceChangesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsBalanceChangesInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpsertWithoutLessonsBalanceChangesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
-  where?: Prisma.UserWhereInput
+export type UserUpdateOneWithoutLessonsBalanceChangesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsBalanceChangesInput
+  upsert?: Prisma.UserUpsertWithoutLessonsBalanceChangesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLessonsBalanceChangesInput, Prisma.UserUpdateWithoutLessonsBalanceChangesInput>, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
 }
 
-export type UserUpdateToOneWithWhereWithoutLessonsBalanceChangesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
+export type UserCreateNestedOneWithoutGroupsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupsInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateWithoutLessonsBalanceChangesInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
-  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+export type UserUpdateOneRequiredWithoutGroupsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGroupsInput
+  upsert?: Prisma.UserUpsertWithoutGroupsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGroupsInput, Prisma.UserUpdateWithoutGroupsInput>, Prisma.UserUncheckedUpdateWithoutGroupsInput>
 }
 
-export type UserUncheckedUpdateWithoutLessonsBalanceChangesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
-  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+export type UserCreateNestedOneWithoutLessonsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserCreateWithoutPayChecksInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
-  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutPayChecksInput = {
-  id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
-  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutPayChecksInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
-}
-
-export type UserUpsertWithoutPayChecksInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutPayChecksInput, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutPayChecksInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutPayChecksInput, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
-}
-
-export type UserUpdateWithoutPayChecksInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
-  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutPayChecksInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
-  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutGroupsInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutGroupsInput = {
-  id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutGroupsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
-}
-
-export type UserUpsertWithoutGroupsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupsInput, Prisma.UserUncheckedUpdateWithoutGroupsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutGroupsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupsInput, Prisma.UserUncheckedUpdateWithoutGroupsInput>
-}
-
-export type UserUpdateWithoutGroupsInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutGroupsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutLessonsInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutLessonsInput = {
-  id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
-  name: string
-  email: string
-  emailVerified?: boolean
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string | null
-  banned?: boolean | null
-  banReason?: string | null
-  banExpires?: Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
-  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
-  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutLessonsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
-}
-
-export type UserUpsertWithoutLessonsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutLessonsInput, Prisma.UserUncheckedUpdateWithoutLessonsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutLessonsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutLessonsInput, Prisma.UserUncheckedUpdateWithoutLessonsInput>
-}
-
-export type UserUpdateWithoutLessonsInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutLessonsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
-  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
-  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
-  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
-  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+export type UserUpdateOneRequiredWithoutLessonsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLessonsInput
+  upsert?: Prisma.UserUpsertWithoutLessonsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLessonsInput, Prisma.UserUpdateWithoutLessonsInput>, Prisma.UserUncheckedUpdateWithoutLessonsInput>
 }
 
 export type UserCreateWithoutSessionsInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1272,10 +770,8 @@ export type UserCreateWithoutSessionsInput = {
 
 export type UserUncheckedCreateWithoutSessionsInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1312,8 +808,6 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 }
 
 export type UserUpdateWithoutSessionsInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1337,8 +831,6 @@ export type UserUpdateWithoutSessionsInput = {
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1361,10 +853,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
 }
 
 export type UserCreateWithoutAccountsInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1386,10 +876,8 @@ export type UserCreateWithoutAccountsInput = {
 
 export type UserUncheckedCreateWithoutAccountsInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1426,8 +914,6 @@ export type UserUpdateToOneWithWhereWithoutAccountsInput = {
 }
 
 export type UserUpdateWithoutAccountsInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1451,8 +937,6 @@ export type UserUpdateWithoutAccountsInput = {
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1475,10 +959,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
 }
 
 export type UserCreateWithoutMembersInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1500,10 +982,8 @@ export type UserCreateWithoutMembersInput = {
 
 export type UserUncheckedCreateWithoutMembersInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1540,8 +1020,6 @@ export type UserUpdateToOneWithWhereWithoutMembersInput = {
 }
 
 export type UserUpdateWithoutMembersInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1565,8 +1043,6 @@ export type UserUpdateWithoutMembersInput = {
 
 export type UserUncheckedUpdateWithoutMembersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1589,10 +1065,8 @@ export type UserUncheckedUpdateWithoutMembersInput = {
 }
 
 export type UserCreateWithoutInvitationsInput = {
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1614,10 +1088,8 @@ export type UserCreateWithoutInvitationsInput = {
 
 export type UserUncheckedCreateWithoutInvitationsInput = {
   id?: number
-  firstName: string
-  lastName?: string | null
-  bidForLesson?: number
-  bidForIndividual?: number
+  bidForLesson: number
+  bidForIndividual: number
   name: string
   email: string
   emailVerified?: boolean
@@ -1654,8 +1126,6 @@ export type UserUpdateToOneWithWhereWithoutInvitationsInput = {
 }
 
 export type UserUpdateWithoutInvitationsInput = {
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1679,8 +1149,6 @@ export type UserUpdateWithoutInvitationsInput = {
 
 export type UserUncheckedUpdateWithoutInvitationsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string
-  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
   bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1700,6 +1168,430 @@ export type UserUncheckedUpdateWithoutInvitationsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPayChecksInput = {
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
+  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPayChecksInput = {
+  id?: number
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
+  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPayChecksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
+}
+
+export type UserUpsertWithoutPayChecksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPayChecksInput, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPayChecksInput, Prisma.UserUncheckedCreateWithoutPayChecksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPayChecksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPayChecksInput, Prisma.UserUncheckedUpdateWithoutPayChecksInput>
+}
+
+export type UserUpdateWithoutPayChecksInput = {
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
+  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPayChecksInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
+  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutLessonsBalanceChangesInput = {
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
+  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutLessonsBalanceChangesInput = {
+  id?: number
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
+  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLessonsBalanceChangesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
+}
+
+export type UserUpsertWithoutLessonsBalanceChangesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedCreateWithoutLessonsBalanceChangesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLessonsBalanceChangesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLessonsBalanceChangesInput, Prisma.UserUncheckedUpdateWithoutLessonsBalanceChangesInput>
+}
+
+export type UserUpdateWithoutLessonsBalanceChangesInput = {
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
+  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLessonsBalanceChangesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
+  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutGroupsInput = {
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  lessons?: Prisma.TeacherLessonCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutGroupsInput = {
+  id?: number
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  lessons?: Prisma.TeacherLessonUncheckedCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutGroupsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
+}
+
+export type UserUpsertWithoutGroupsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGroupsInput, Prisma.UserUncheckedUpdateWithoutGroupsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGroupsInput, Prisma.UserUncheckedCreateWithoutGroupsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGroupsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGroupsInput, Prisma.UserUncheckedUpdateWithoutGroupsInput>
+}
+
+export type UserUpdateWithoutGroupsInput = {
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lessons?: Prisma.TeacherLessonUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGroupsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lessons?: Prisma.TeacherLessonUncheckedUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutLessonsInput = {
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckCreateNestedManyWithoutUserInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutLessonsInput = {
+  id?: number
+  bidForLesson: number
+  bidForIndividual: number
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string | null
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutTeacherInput
+  payChecks?: Prisma.PayCheckUncheckedCreateNestedManyWithoutUserInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutActorUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  members?: Prisma.MemberUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutLessonsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
+}
+
+export type UserUpsertWithoutLessonsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLessonsInput, Prisma.UserUncheckedUpdateWithoutLessonsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLessonsInput, Prisma.UserUncheckedCreateWithoutLessonsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLessonsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLessonsInput, Prisma.UserUncheckedUpdateWithoutLessonsInput>
+}
+
+export type UserUpdateWithoutLessonsInput = {
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUpdateManyWithoutUserNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLessonsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForLesson?: Prisma.IntFieldUpdateOperationsInput | number
+  bidForIndividual?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groups?: Prisma.TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput
+  payChecks?: Prisma.PayCheckUncheckedUpdateManyWithoutUserNestedInput
+  lessonsBalanceChanges?: Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  members?: Prisma.MemberUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1798,8 +1690,6 @@ export type UserCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Type
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  firstName?: boolean
-  lastName?: boolean
   bidForLesson?: boolean
   bidForIndividual?: boolean
   name?: boolean
@@ -1825,8 +1715,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  firstName?: boolean
-  lastName?: boolean
   bidForLesson?: boolean
   bidForIndividual?: boolean
   name?: boolean
@@ -1843,8 +1731,6 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  firstName?: boolean
-  lastName?: boolean
   bidForLesson?: boolean
   bidForIndividual?: boolean
   name?: boolean
@@ -1861,8 +1747,6 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type UserSelectScalar = {
   id?: boolean
-  firstName?: boolean
-  lastName?: boolean
   bidForLesson?: boolean
   bidForIndividual?: boolean
   name?: boolean
@@ -1877,7 +1761,7 @@ export type UserSelectScalar = {
   banExpires?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "bidForLesson" | "bidForIndividual" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "banned" | "banReason" | "banExpires", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bidForLesson" | "bidForIndividual" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "banned" | "banReason" | "banExpires", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   groups?: boolean | Prisma.User$groupsArgs<ExtArgs>
   lessons?: boolean | Prisma.User$lessonsArgs<ExtArgs>
@@ -1906,8 +1790,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    firstName: string
-    lastName: string | null
     bidForLesson: number
     bidForIndividual: number
     name: string
@@ -2352,8 +2234,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
-  readonly firstName: Prisma.FieldRef<"User", 'String'>
-  readonly lastName: Prisma.FieldRef<"User", 'String'>
   readonly bidForLesson: Prisma.FieldRef<"User", 'Int'>
   readonly bidForIndividual: Prisma.FieldRef<"User", 'Int'>
   readonly name: Prisma.FieldRef<"User", 'String'>

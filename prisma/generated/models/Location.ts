@@ -38,20 +38,26 @@ export type LocationSumAggregateOutputType = {
 
 export type LocationMinAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   name: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
 }
 
 export type LocationMaxAggregateOutputType = {
   id: number | null
-  organizationId: number | null
   name: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
 }
 
 export type LocationCountAggregateOutputType = {
   id: number
-  organizationId: number
   name: number
+  createdAt: number
+  updatedAt: number
+  organizationId: number
   _all: number
 }
 
@@ -68,20 +74,26 @@ export type LocationSumAggregateInputType = {
 
 export type LocationMinAggregateInputType = {
   id?: true
-  organizationId?: true
   name?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
 }
 
 export type LocationMaxAggregateInputType = {
   id?: true
-  organizationId?: true
   name?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
 }
 
 export type LocationCountAggregateInputType = {
   id?: true
-  organizationId?: true
   name?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
   _all?: true
 }
 
@@ -173,8 +185,10 @@ export type LocationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type LocationGroupByOutputType = {
   id: number
-  organizationId: number
   name: string
+  createdAt: Date
+  updatedAt: Date
+  organizationId: number
   _count: LocationCountAggregateOutputType | null
   _avg: LocationAvgAggregateOutputType | null
   _sum: LocationSumAggregateOutputType | null
@@ -202,16 +216,20 @@ export type LocationWhereInput = {
   OR?: Prisma.LocationWhereInput[]
   NOT?: Prisma.LocationWhereInput | Prisma.LocationWhereInput[]
   id?: Prisma.IntFilter<"Location"> | number
-  organizationId?: Prisma.IntFilter<"Location"> | number
   name?: Prisma.StringFilter<"Location"> | string
+  createdAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  organizationId?: Prisma.IntFilter<"Location"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   groups?: Prisma.GroupListRelationFilter
 }
 
 export type LocationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   groups?: Prisma.GroupOrderByRelationAggregateInput
 }
@@ -221,16 +239,20 @@ export type LocationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.LocationWhereInput | Prisma.LocationWhereInput[]
   OR?: Prisma.LocationWhereInput[]
   NOT?: Prisma.LocationWhereInput | Prisma.LocationWhereInput[]
-  organizationId?: Prisma.IntFilter<"Location"> | number
   name?: Prisma.StringFilter<"Location"> | string
+  createdAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  organizationId?: Prisma.IntFilter<"Location"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   groups?: Prisma.GroupListRelationFilter
 }, "id">
 
 export type LocationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   _count?: Prisma.LocationCountOrderByAggregateInput
   _avg?: Prisma.LocationAvgOrderByAggregateInput
   _max?: Prisma.LocationMaxOrderByAggregateInput
@@ -243,83 +265,66 @@ export type LocationScalarWhereWithAggregatesInput = {
   OR?: Prisma.LocationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LocationScalarWhereWithAggregatesInput | Prisma.LocationScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Location"> | number
-  organizationId?: Prisma.IntWithAggregatesFilter<"Location"> | number
   name?: Prisma.StringWithAggregatesFilter<"Location"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Location"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Location"> | Date | string
+  organizationId?: Prisma.IntWithAggregatesFilter<"Location"> | number
 }
 
 export type LocationCreateInput = {
   name: string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutLocationsInput
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutLocationsInput
   groups?: Prisma.GroupCreateNestedManyWithoutLocationInput
 }
 
 export type LocationUncheckedCreateInput = {
   id?: number
-  organizationId?: number
   name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutLocationInput
 }
 
 export type LocationUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutLocationsNestedInput
   groups?: Prisma.GroupUpdateManyWithoutLocationNestedInput
 }
 
 export type LocationUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   groups?: Prisma.GroupUncheckedUpdateManyWithoutLocationNestedInput
 }
 
 export type LocationCreateManyInput = {
   id?: number
-  organizationId?: number
   name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
 }
 
 export type LocationUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LocationUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
-export type LocationNullableScalarRelationFilter = {
-  is?: Prisma.LocationWhereInput | null
-  isNot?: Prisma.LocationWhereInput | null
-}
-
-export type LocationCountOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-}
-
-export type LocationAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-}
-
-export type LocationMaxOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-}
-
-export type LocationMinOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-}
-
-export type LocationSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type LocationListRelationFilter = {
@@ -332,20 +337,43 @@ export type LocationOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type LocationCreateNestedOneWithoutGroupsInput = {
-  create?: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
-  connectOrCreate?: Prisma.LocationCreateOrConnectWithoutGroupsInput
-  connect?: Prisma.LocationWhereUniqueInput
+export type LocationScalarRelationFilter = {
+  is?: Prisma.LocationWhereInput
+  isNot?: Prisma.LocationWhereInput
 }
 
-export type LocationUpdateOneWithoutGroupsNestedInput = {
-  create?: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
-  connectOrCreate?: Prisma.LocationCreateOrConnectWithoutGroupsInput
-  upsert?: Prisma.LocationUpsertWithoutGroupsInput
-  disconnect?: Prisma.LocationWhereInput | boolean
-  delete?: Prisma.LocationWhereInput | boolean
-  connect?: Prisma.LocationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LocationUpdateToOneWithWhereWithoutGroupsInput, Prisma.LocationUpdateWithoutGroupsInput>, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
+export type LocationCountOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type LocationAvgOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type LocationMaxOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type LocationMinOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+}
+
+export type LocationSumOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
 }
 
 export type LocationCreateNestedManyWithoutOrganizationInput = {
@@ -390,52 +418,32 @@ export type LocationUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.LocationScalarWhereInput | Prisma.LocationScalarWhereInput[]
 }
 
-export type LocationCreateWithoutGroupsInput = {
-  name: string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutLocationsInput
+export type LocationCreateNestedOneWithoutGroupsInput = {
+  create?: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
+  connectOrCreate?: Prisma.LocationCreateOrConnectWithoutGroupsInput
+  connect?: Prisma.LocationWhereUniqueInput
 }
 
-export type LocationUncheckedCreateWithoutGroupsInput = {
-  id?: number
-  organizationId?: number
-  name: string
-}
-
-export type LocationCreateOrConnectWithoutGroupsInput = {
-  where: Prisma.LocationWhereUniqueInput
-  create: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
-}
-
-export type LocationUpsertWithoutGroupsInput = {
-  update: Prisma.XOR<Prisma.LocationUpdateWithoutGroupsInput, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
-  create: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
-  where?: Prisma.LocationWhereInput
-}
-
-export type LocationUpdateToOneWithWhereWithoutGroupsInput = {
-  where?: Prisma.LocationWhereInput
-  data: Prisma.XOR<Prisma.LocationUpdateWithoutGroupsInput, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
-}
-
-export type LocationUpdateWithoutGroupsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutLocationsNestedInput
-}
-
-export type LocationUncheckedUpdateWithoutGroupsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
+export type LocationUpdateOneRequiredWithoutGroupsNestedInput = {
+  create?: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
+  connectOrCreate?: Prisma.LocationCreateOrConnectWithoutGroupsInput
+  upsert?: Prisma.LocationUpsertWithoutGroupsInput
+  connect?: Prisma.LocationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LocationUpdateToOneWithWhereWithoutGroupsInput, Prisma.LocationUpdateWithoutGroupsInput>, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
 }
 
 export type LocationCreateWithoutOrganizationInput = {
   name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   groups?: Prisma.GroupCreateNestedManyWithoutLocationInput
 }
 
 export type LocationUncheckedCreateWithoutOrganizationInput = {
   id?: number
   name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutLocationInput
 }
 
@@ -470,29 +478,85 @@ export type LocationScalarWhereInput = {
   OR?: Prisma.LocationScalarWhereInput[]
   NOT?: Prisma.LocationScalarWhereInput | Prisma.LocationScalarWhereInput[]
   id?: Prisma.IntFilter<"Location"> | number
-  organizationId?: Prisma.IntFilter<"Location"> | number
   name?: Prisma.StringFilter<"Location"> | string
+  createdAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Location"> | Date | string
+  organizationId?: Prisma.IntFilter<"Location"> | number
+}
+
+export type LocationCreateWithoutGroupsInput = {
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutLocationsInput
+}
+
+export type LocationUncheckedCreateWithoutGroupsInput = {
+  id?: number
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+}
+
+export type LocationCreateOrConnectWithoutGroupsInput = {
+  where: Prisma.LocationWhereUniqueInput
+  create: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
+}
+
+export type LocationUpsertWithoutGroupsInput = {
+  update: Prisma.XOR<Prisma.LocationUpdateWithoutGroupsInput, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
+  create: Prisma.XOR<Prisma.LocationCreateWithoutGroupsInput, Prisma.LocationUncheckedCreateWithoutGroupsInput>
+  where?: Prisma.LocationWhereInput
+}
+
+export type LocationUpdateToOneWithWhereWithoutGroupsInput = {
+  where?: Prisma.LocationWhereInput
+  data: Prisma.XOR<Prisma.LocationUpdateWithoutGroupsInput, Prisma.LocationUncheckedUpdateWithoutGroupsInput>
+}
+
+export type LocationUpdateWithoutGroupsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutLocationsNestedInput
+}
+
+export type LocationUncheckedUpdateWithoutGroupsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type LocationCreateManyOrganizationInput = {
   id?: number
   name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LocationUpdateWithoutOrganizationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   groups?: Prisma.GroupUpdateManyWithoutLocationNestedInput
 }
 
 export type LocationUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   groups?: Prisma.GroupUncheckedUpdateManyWithoutLocationNestedInput
 }
 
 export type LocationUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -528,8 +592,10 @@ export type LocationCountOutputTypeCountGroupsArgs<ExtArgs extends runtime.Types
 
 export type LocationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   groups?: boolean | Prisma.Location$groupsArgs<ExtArgs>
   _count?: boolean | Prisma.LocationCountOutputTypeDefaultArgs<ExtArgs>
@@ -537,25 +603,31 @@ export type LocationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type LocationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["location"]>
 
 export type LocationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
   name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["location"]>
 
 export type LocationSelectScalar = {
   id?: boolean
-  organizationId?: boolean
   name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
 }
 
-export type LocationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name", ExtArgs["result"]["location"]>
+export type LocationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "organizationId", ExtArgs["result"]["location"]>
 export type LocationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   groups?: boolean | Prisma.Location$groupsArgs<ExtArgs>
@@ -576,8 +648,10 @@ export type $LocationPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    organizationId: number
     name: string
+    createdAt: Date
+    updatedAt: Date
+    organizationId: number
   }, ExtArgs["result"]["location"]>
   composites: {}
 }
@@ -1004,8 +1078,10 @@ export interface Prisma__LocationClient<T, Null = never, ExtArgs extends runtime
  */
 export interface LocationFieldRefs {
   readonly id: Prisma.FieldRef<"Location", 'Int'>
-  readonly organizationId: Prisma.FieldRef<"Location", 'Int'>
   readonly name: Prisma.FieldRef<"Location", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Location", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Location", 'DateTime'>
+  readonly organizationId: Prisma.FieldRef<"Location", 'Int'>
 }
     
 

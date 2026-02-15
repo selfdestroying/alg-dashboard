@@ -53,14 +53,6 @@ export const StudentStatus = {
 export type StudentStatus = (typeof StudentStatus)[keyof typeof StudentStatus]
 
 
-export const UserStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE'
-} as const
-
-export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
-
-
 export const StudentLessonsBalanceChangeReason = {
   PAYMENT_CREATED: 'PAYMENT_CREATED',
   PAYMENT_CANCELLED: 'PAYMENT_CANCELLED',

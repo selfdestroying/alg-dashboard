@@ -39,24 +39,30 @@ export type StudentGroupSumAggregateOutputType = {
 }
 
 export type StudentGroupMinAggregateOutputType = {
+  status: $Enums.StudentStatus | null
+  createdAt: Date | null
+  updatedAt: Date | null
   organizationId: number | null
   studentId: number | null
   groupId: number | null
-  status: $Enums.StudentStatus | null
 }
 
 export type StudentGroupMaxAggregateOutputType = {
+  status: $Enums.StudentStatus | null
+  createdAt: Date | null
+  updatedAt: Date | null
   organizationId: number | null
   studentId: number | null
   groupId: number | null
-  status: $Enums.StudentStatus | null
 }
 
 export type StudentGroupCountAggregateOutputType = {
+  status: number
+  createdAt: number
+  updatedAt: number
   organizationId: number
   studentId: number
   groupId: number
-  status: number
   _all: number
 }
 
@@ -74,24 +80,30 @@ export type StudentGroupSumAggregateInputType = {
 }
 
 export type StudentGroupMinAggregateInputType = {
+  status?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  status?: true
 }
 
 export type StudentGroupMaxAggregateInputType = {
+  status?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  status?: true
 }
 
 export type StudentGroupCountAggregateInputType = {
+  status?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  status?: true
   _all?: true
 }
 
@@ -182,10 +194,12 @@ export type StudentGroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 export type StudentGroupGroupByOutputType = {
+  status: $Enums.StudentStatus
+  createdAt: Date
+  updatedAt: Date
   organizationId: number
   studentId: number
   groupId: number
-  status: $Enums.StudentStatus
   _count: StudentGroupCountAggregateOutputType | null
   _avg: StudentGroupAvgAggregateOutputType | null
   _sum: StudentGroupSumAggregateOutputType | null
@@ -212,20 +226,24 @@ export type StudentGroupWhereInput = {
   AND?: Prisma.StudentGroupWhereInput | Prisma.StudentGroupWhereInput[]
   OR?: Prisma.StudentGroupWhereInput[]
   NOT?: Prisma.StudentGroupWhereInput | Prisma.StudentGroupWhereInput[]
+  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
   organizationId?: Prisma.IntFilter<"StudentGroup"> | number
   studentId?: Prisma.IntFilter<"StudentGroup"> | number
   groupId?: Prisma.IntFilter<"StudentGroup"> | number
-  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }
 
 export type StudentGroupOrderByWithRelationInput = {
+  status?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -236,20 +254,24 @@ export type StudentGroupWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StudentGroupWhereInput | Prisma.StudentGroupWhereInput[]
   OR?: Prisma.StudentGroupWhereInput[]
   NOT?: Prisma.StudentGroupWhereInput | Prisma.StudentGroupWhereInput[]
+  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
   organizationId?: Prisma.IntFilter<"StudentGroup"> | number
   studentId?: Prisma.IntFilter<"StudentGroup"> | number
   groupId?: Prisma.IntFilter<"StudentGroup"> | number
-  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }, "studentId_groupId">
 
 export type StudentGroupOrderByWithAggregationInput = {
+  status?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   _count?: Prisma.StudentGroupCountOrderByAggregateInput
   _avg?: Prisma.StudentGroupAvgOrderByAggregateInput
   _max?: Prisma.StudentGroupMaxOrderByAggregateInput
@@ -261,56 +283,72 @@ export type StudentGroupScalarWhereWithAggregatesInput = {
   AND?: Prisma.StudentGroupScalarWhereWithAggregatesInput | Prisma.StudentGroupScalarWhereWithAggregatesInput[]
   OR?: Prisma.StudentGroupScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StudentGroupScalarWhereWithAggregatesInput | Prisma.StudentGroupScalarWhereWithAggregatesInput[]
+  status?: Prisma.EnumStudentStatusWithAggregatesFilter<"StudentGroup"> | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentGroup"> | Date | string
   organizationId?: Prisma.IntWithAggregatesFilter<"StudentGroup"> | number
   studentId?: Prisma.IntWithAggregatesFilter<"StudentGroup"> | number
   groupId?: Prisma.IntWithAggregatesFilter<"StudentGroup"> | number
-  status?: Prisma.EnumStudentStatusWithAggregatesFilter<"StudentGroup"> | $Enums.StudentStatus
 }
 
 export type StudentGroupCreateInput = {
-  status?: $Enums.StudentStatus
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutStudentsInput
   student: Prisma.StudentCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
 }
 
 export type StudentGroupUncheckedCreateInput = {
-  organizationId?: number
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   studentId: number
   groupId: number
-  status?: $Enums.StudentStatus
 }
 
 export type StudentGroupUpdateInput = {
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutStudentsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutGroupsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentGroupsNestedInput
 }
 
 export type StudentGroupUncheckedUpdateInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
 }
 
 export type StudentGroupCreateManyInput = {
-  organizationId?: number
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   studentId: number
   groupId: number
-  status?: $Enums.StudentStatus
 }
 
 export type StudentGroupUpdateManyMutationInput = {
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentGroupUncheckedUpdateManyInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
 }
 
 export type StudentGroupListRelationFilter = {
@@ -329,10 +367,12 @@ export type StudentGroupStudentIdGroupIdCompoundUniqueInput = {
 }
 
 export type StudentGroupCountOrderByAggregateInput = {
+  status?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  status?: Prisma.SortOrder
 }
 
 export type StudentGroupAvgOrderByAggregateInput = {
@@ -342,23 +382,69 @@ export type StudentGroupAvgOrderByAggregateInput = {
 }
 
 export type StudentGroupMaxOrderByAggregateInput = {
+  status?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  status?: Prisma.SortOrder
 }
 
 export type StudentGroupMinOrderByAggregateInput = {
+  status?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  status?: Prisma.SortOrder
 }
 
 export type StudentGroupSumOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
+}
+
+export type StudentGroupCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+}
+
+export type StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+}
+
+export type StudentGroupUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
+  set?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  disconnect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  delete?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  update?: Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
+}
+
+export type StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
+  set?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  disconnect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  delete?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
+  update?: Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
 }
 
 export type StudentGroupCreateNestedManyWithoutStudentInput = {
@@ -449,144 +535,20 @@ export type EnumStudentStatusFieldUpdateOperationsInput = {
   set?: $Enums.StudentStatus
 }
 
-export type StudentGroupCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
-  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-}
-
-export type StudentGroupUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
-  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-}
-
-export type StudentGroupUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
-  set?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  disconnect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  delete?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  update?: Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
-}
-
-export type StudentGroupUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentGroupCreateWithoutOrganizationInput, Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput> | Prisma.StudentGroupCreateWithoutOrganizationInput[] | Prisma.StudentGroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput | Prisma.StudentGroupCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.StudentGroupCreateManyOrganizationInputEnvelope
-  set?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  disconnect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  delete?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  connect?: Prisma.StudentGroupWhereUniqueInput | Prisma.StudentGroupWhereUniqueInput[]
-  update?: Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentGroupUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentGroupUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
-}
-
-export type StudentGroupCreateWithoutStudentInput = {
-  status?: $Enums.StudentStatus
-  group: Prisma.GroupCreateNestedOneWithoutStudentsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
-}
-
-export type StudentGroupUncheckedCreateWithoutStudentInput = {
-  organizationId?: number
-  groupId: number
-  status?: $Enums.StudentStatus
-}
-
-export type StudentGroupCreateOrConnectWithoutStudentInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutStudentInput, Prisma.StudentGroupUncheckedCreateWithoutStudentInput>
-}
-
-export type StudentGroupCreateManyStudentInputEnvelope = {
-  data: Prisma.StudentGroupCreateManyStudentInput | Prisma.StudentGroupCreateManyStudentInput[]
-  skipDuplicates?: boolean
-}
-
-export type StudentGroupUpsertWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.StudentGroupUpdateWithoutStudentInput, Prisma.StudentGroupUncheckedUpdateWithoutStudentInput>
-  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutStudentInput, Prisma.StudentGroupUncheckedCreateWithoutStudentInput>
-}
-
-export type StudentGroupUpdateWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.StudentGroupUpdateWithoutStudentInput, Prisma.StudentGroupUncheckedUpdateWithoutStudentInput>
-}
-
-export type StudentGroupUpdateManyWithWhereWithoutStudentInput = {
-  where: Prisma.StudentGroupScalarWhereInput
-  data: Prisma.XOR<Prisma.StudentGroupUpdateManyMutationInput, Prisma.StudentGroupUncheckedUpdateManyWithoutStudentInput>
-}
-
-export type StudentGroupScalarWhereInput = {
-  AND?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
-  OR?: Prisma.StudentGroupScalarWhereInput[]
-  NOT?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
-  organizationId?: Prisma.IntFilter<"StudentGroup"> | number
-  studentId?: Prisma.IntFilter<"StudentGroup"> | number
-  groupId?: Prisma.IntFilter<"StudentGroup"> | number
-  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
-}
-
-export type StudentGroupCreateWithoutGroupInput = {
-  status?: $Enums.StudentStatus
-  student: Prisma.StudentCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
-}
-
-export type StudentGroupUncheckedCreateWithoutGroupInput = {
-  organizationId?: number
-  studentId: number
-  status?: $Enums.StudentStatus
-}
-
-export type StudentGroupCreateOrConnectWithoutGroupInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutGroupInput, Prisma.StudentGroupUncheckedCreateWithoutGroupInput>
-}
-
-export type StudentGroupCreateManyGroupInputEnvelope = {
-  data: Prisma.StudentGroupCreateManyGroupInput | Prisma.StudentGroupCreateManyGroupInput[]
-  skipDuplicates?: boolean
-}
-
-export type StudentGroupUpsertWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.StudentGroupUpdateWithoutGroupInput, Prisma.StudentGroupUncheckedUpdateWithoutGroupInput>
-  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutGroupInput, Prisma.StudentGroupUncheckedCreateWithoutGroupInput>
-}
-
-export type StudentGroupUpdateWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.StudentGroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.StudentGroupUpdateWithoutGroupInput, Prisma.StudentGroupUncheckedUpdateWithoutGroupInput>
-}
-
-export type StudentGroupUpdateManyWithWhereWithoutGroupInput = {
-  where: Prisma.StudentGroupScalarWhereInput
-  data: Prisma.XOR<Prisma.StudentGroupUpdateManyMutationInput, Prisma.StudentGroupUncheckedUpdateManyWithoutGroupInput>
-}
-
 export type StudentGroupCreateWithoutOrganizationInput = {
-  status?: $Enums.StudentStatus
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutStudentsInput
   student: Prisma.StudentCreateNestedOneWithoutGroupsInput
 }
 
 export type StudentGroupUncheckedCreateWithoutOrganizationInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
   studentId: number
   groupId: number
-  status?: $Enums.StudentStatus
 }
 
 export type StudentGroupCreateOrConnectWithoutOrganizationInput = {
@@ -615,118 +577,246 @@ export type StudentGroupUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.StudentGroupUpdateManyMutationInput, Prisma.StudentGroupUncheckedUpdateManyWithoutOrganizationInput>
 }
 
-export type StudentGroupCreateManyStudentInput = {
-  organizationId?: number
+export type StudentGroupScalarWhereInput = {
+  AND?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
+  OR?: Prisma.StudentGroupScalarWhereInput[]
+  NOT?: Prisma.StudentGroupScalarWhereInput | Prisma.StudentGroupScalarWhereInput[]
+  status?: Prisma.EnumStudentStatusFilter<"StudentGroup"> | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentGroup"> | Date | string
+  organizationId?: Prisma.IntFilter<"StudentGroup"> | number
+  studentId?: Prisma.IntFilter<"StudentGroup"> | number
+  groupId?: Prisma.IntFilter<"StudentGroup"> | number
+}
+
+export type StudentGroupCreateWithoutStudentInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutStudentsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
+}
+
+export type StudentGroupUncheckedCreateWithoutStudentInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
-  status?: $Enums.StudentStatus
 }
 
-export type StudentGroupUpdateWithoutStudentInput = {
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
-  group?: Prisma.GroupUpdateOneRequiredWithoutStudentsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentGroupsNestedInput
+export type StudentGroupCreateOrConnectWithoutStudentInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutStudentInput, Prisma.StudentGroupUncheckedCreateWithoutStudentInput>
 }
 
-export type StudentGroupUncheckedUpdateWithoutStudentInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+export type StudentGroupCreateManyStudentInputEnvelope = {
+  data: Prisma.StudentGroupCreateManyStudentInput | Prisma.StudentGroupCreateManyStudentInput[]
+  skipDuplicates?: boolean
 }
 
-export type StudentGroupUncheckedUpdateManyWithoutStudentInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+export type StudentGroupUpsertWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.StudentGroupUpdateWithoutStudentInput, Prisma.StudentGroupUncheckedUpdateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutStudentInput, Prisma.StudentGroupUncheckedCreateWithoutStudentInput>
 }
 
-export type StudentGroupCreateManyGroupInput = {
-  organizationId?: number
+export type StudentGroupUpdateWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.StudentGroupUpdateWithoutStudentInput, Prisma.StudentGroupUncheckedUpdateWithoutStudentInput>
+}
+
+export type StudentGroupUpdateManyWithWhereWithoutStudentInput = {
+  where: Prisma.StudentGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.StudentGroupUpdateManyMutationInput, Prisma.StudentGroupUncheckedUpdateManyWithoutStudentInput>
+}
+
+export type StudentGroupCreateWithoutGroupInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  student: Prisma.StudentCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentGroupsInput
+}
+
+export type StudentGroupUncheckedCreateWithoutGroupInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   studentId: number
-  status?: $Enums.StudentStatus
 }
 
-export type StudentGroupUpdateWithoutGroupInput = {
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
-  student?: Prisma.StudentUpdateOneRequiredWithoutGroupsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentGroupsNestedInput
+export type StudentGroupCreateOrConnectWithoutGroupInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutGroupInput, Prisma.StudentGroupUncheckedCreateWithoutGroupInput>
 }
 
-export type StudentGroupUncheckedUpdateWithoutGroupInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+export type StudentGroupCreateManyGroupInputEnvelope = {
+  data: Prisma.StudentGroupCreateManyGroupInput | Prisma.StudentGroupCreateManyGroupInput[]
+  skipDuplicates?: boolean
 }
 
-export type StudentGroupUncheckedUpdateManyWithoutGroupInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+export type StudentGroupUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.StudentGroupUpdateWithoutGroupInput, Prisma.StudentGroupUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.StudentGroupCreateWithoutGroupInput, Prisma.StudentGroupUncheckedCreateWithoutGroupInput>
+}
+
+export type StudentGroupUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.StudentGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.StudentGroupUpdateWithoutGroupInput, Prisma.StudentGroupUncheckedUpdateWithoutGroupInput>
+}
+
+export type StudentGroupUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.StudentGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.StudentGroupUpdateManyMutationInput, Prisma.StudentGroupUncheckedUpdateManyWithoutGroupInput>
 }
 
 export type StudentGroupCreateManyOrganizationInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
   studentId: number
   groupId: number
-  status?: $Enums.StudentStatus
 }
 
 export type StudentGroupUpdateWithoutOrganizationInput = {
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutStudentsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutGroupsNestedInput
 }
 
 export type StudentGroupUncheckedUpdateWithoutOrganizationInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
 }
 
 export type StudentGroupUncheckedUpdateManyWithoutOrganizationInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type StudentGroupCreateManyStudentInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  groupId: number
+}
+
+export type StudentGroupUpdateWithoutStudentInput = {
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutStudentsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentGroupsNestedInput
+}
+
+export type StudentGroupUncheckedUpdateWithoutStudentInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type StudentGroupUncheckedUpdateManyWithoutStudentInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type StudentGroupCreateManyGroupInput = {
+  status: $Enums.StudentStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  studentId: number
+}
+
+export type StudentGroupUpdateWithoutGroupInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  student?: Prisma.StudentUpdateOneRequiredWithoutGroupsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentGroupsNestedInput
+}
+
+export type StudentGroupUncheckedUpdateWithoutGroupInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type StudentGroupUncheckedUpdateManyWithoutGroupInput = {
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
 
 export type StudentGroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  status?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentGroup"]>
 
 export type StudentGroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  status?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentGroup"]>
 
 export type StudentGroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  status?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentGroup"]>
 
 export type StudentGroupSelectScalar = {
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  status?: boolean
 }
 
-export type StudentGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"organizationId" | "studentId" | "groupId" | "status", ExtArgs["result"]["studentGroup"]>
+export type StudentGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"status" | "createdAt" | "updatedAt" | "organizationId" | "studentId" | "groupId", ExtArgs["result"]["studentGroup"]>
 export type StudentGroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -751,10 +841,12 @@ export type $StudentGroupPayload<ExtArgs extends runtime.Types.Extensions.Intern
     organization: Prisma.$OrganizationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    status: $Enums.StudentStatus
+    createdAt: Date
+    updatedAt: Date
     organizationId: number
     studentId: number
     groupId: number
-    status: $Enums.StudentStatus
   }, ExtArgs["result"]["studentGroup"]>
   composites: {}
 }
@@ -838,8 +930,8 @@ export interface StudentGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    * // Get first 10 StudentGroups
    * const studentGroups = await prisma.studentGroup.findMany({ take: 10 })
    * 
-   * // Only select the `organizationId`
-   * const studentGroupWithOrganizationIdOnly = await prisma.studentGroup.findMany({ select: { organizationId: true } })
+   * // Only select the `createdAt`
+   * const studentGroupWithCreatedAtOnly = await prisma.studentGroup.findMany({ select: { createdAt: true } })
    * 
    */
   findMany<T extends StudentGroupFindManyArgs>(args?: Prisma.SelectSubset<T, StudentGroupFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -883,9 +975,9 @@ export interface StudentGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Create many StudentGroups and only return the `organizationId`
-   * const studentGroupWithOrganizationIdOnly = await prisma.studentGroup.createManyAndReturn({
-   *   select: { organizationId: true },
+   * // Create many StudentGroups and only return the `createdAt`
+   * const studentGroupWithCreatedAtOnly = await prisma.studentGroup.createManyAndReturn({
+   *   select: { createdAt: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -974,9 +1066,9 @@ export interface StudentGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Update zero or more StudentGroups and only return the `organizationId`
-   * const studentGroupWithOrganizationIdOnly = await prisma.studentGroup.updateManyAndReturn({
-   *   select: { organizationId: true },
+   * // Update zero or more StudentGroups and only return the `createdAt`
+   * const studentGroupWithCreatedAtOnly = await prisma.studentGroup.updateManyAndReturn({
+   *   select: { createdAt: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1181,10 +1273,12 @@ export interface Prisma__StudentGroupClient<T, Null = never, ExtArgs extends run
  * Fields of the StudentGroup model
  */
 export interface StudentGroupFieldRefs {
+  readonly status: Prisma.FieldRef<"StudentGroup", 'StudentStatus'>
+  readonly createdAt: Prisma.FieldRef<"StudentGroup", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"StudentGroup", 'DateTime'>
   readonly organizationId: Prisma.FieldRef<"StudentGroup", 'Int'>
   readonly studentId: Prisma.FieldRef<"StudentGroup", 'Int'>
   readonly groupId: Prisma.FieldRef<"StudentGroup", 'Int'>
-  readonly status: Prisma.FieldRef<"StudentGroup", 'StudentStatus'>
 }
     
 

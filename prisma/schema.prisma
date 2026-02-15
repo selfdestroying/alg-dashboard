@@ -7,22 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+// Better-auth models
+
 model User {
-  id               Int     @id @default(autoincrement())
-  firstName        String
-  lastName         String?
-  bidForLesson     Int     @default(1100)
-  bidForIndividual Int     @default(750)
+  id               Int @id @default(autoincrement())
+  bidForLesson     Int
+  bidForIndividual Int
 
-  groups                TeacherGroup[]
-  lessons               TeacherLesson[]
-  payChecks             PayCheck[]
-  lessonsBalanceChanges StudentLessonsBalanceHistory[]
-  sessions              Session[]
-  accounts              Account[]
-  members               Member[]
-  invitations           Invitation[]
-
+  // better-auth fields
   name          String
   email         String
   emailVerified Boolean   @default(false)
@@ -34,354 +26,17 @@ model User {
   banReason     String?
   banExpires    DateTime?
 
+  groups                TeacherGroup[]
+  lessons               TeacherLesson[]
+  payChecks             PayCheck[]
+  lessonsBalanceChanges StudentLessonsBalanceHistory[]
+  sessions              Session[]
+  accounts              Account[]
+  members               Member[]
+  invitations           Invitation[]
+
   @@unique([email])
   @@map("User")
-}
-
-model Student {
-  id                    Int                            @id @default(autoincrement())
-  organizationId        Int                            @default(1)
-  firstName             String
-  lastName              String?
-  login                 String
-  password              String
-  age                   Int
-  birthDate             DateTime?
-  parentsName           String?
-  parentsPhone          String?
-  crmUrl                String?
-  createdAt             DateTime                       @default(now())
-  coins                 Int                            @default(0)
-  lessonsBalance        Int                            @default(0)
-  totalLessons          Int                            @default(0)
-  totalPayments         Int                            @default(0)
-  organization          Organization                   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  attendances           Attendance[]
-  Cart                  Cart?
-  Order                 Order[]
-  payments              Payment[]
-  groups                StudentGroup[]
-  unprocessedPayments   UnprocessedPayment[]
-  dismisseds            Dismissed[]
-  lessonsBalanceHistory StudentLessonsBalanceHistory[]
-}
-
-model StudentLessonsBalanceHistory {
-  id             Int                               @id @default(autoincrement())
-  studentId      Int
-  organizationId Int                               @default(1)
-  actorUserId    Int?
-  reason         StudentLessonsBalanceChangeReason
-  delta          Int
-  balanceBefore  Int
-  balanceAfter   Int
-  comment        String?
-  meta           Json?
-  createdAt      DateTime                          @default(now())
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  actorUser    User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
-
-  @@index([studentId, createdAt])
-  @@index([actorUserId, createdAt])
-}
-
-model Group {
-  id             Int            @id @default(autoincrement())
-  organizationId Int            @default(1)
-  name           String
-  courseId       Int
-  type           GroupType?
-  startDate      DateTime
-  endDate        DateTime?
-  dayOfWeek      Int?
-  time           String?
-  maxStudents    Int            @default(12)
-  createdAt      DateTime       @default(now())
-  backOfficeUrl  String?
-  lessonCount    Int?
-  lessonPerWeek  Int?
-  locationId     Int?
-  location       Location?      @relation(fields: [locationId], references: [id])
-  course         Course         @relation(fields: [courseId], references: [id])
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  lessons        Lesson[]
-  students       StudentGroup[]
-  teachers       TeacherGroup[]
-  dismisseds     Dismissed[]
-}
-
-model PayCheck {
-  id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
-  amount         Int
-  comment        String
-  date           DateTime
-  createdAt      DateTime     @default(now())
-  userId         Int
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id])
-}
-
-model Location {
-  id             Int    @id @default(autoincrement())
-  organizationId Int    @default(1)
-  name           String
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  groups       Group[]
-}
-
-model Course {
-  id             Int    @id @default(autoincrement())
-  organizationId Int    @default(1)
-  name           String
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  groups       Group[]
-}
-
-model StudentGroup {
-  organizationId Int           @default(1)
-  studentId      Int
-  groupId        Int
-  status         StudentStatus @default(ACTIVE)
-  group          Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@id([studentId, groupId])
-}
-
-model Dismissed {
-  id             Int      @id @default(autoincrement())
-  organizationId Int      @default(1)
-  studentId      Int
-  groupId        Int
-  comment        String
-  date           DateTime
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  group        Group        @relation(fields: [groupId], references: [id])
-  student      Student      @relation(fields: [studentId], references: [id])
-}
-
-model TeacherGroup {
-  organizationId Int @default(1)
-  teacherId      Int
-  groupId        Int
-  bid            Int @default(0)
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  group        Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  teacher      User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-
-  @@id([teacherId, groupId])
-}
-
-model TeacherLesson {
-  organizationId Int @default(1)
-  teacherId      Int
-  lessonId       Int
-  bid            Int @default(0)
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  lesson       Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  teacher      User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-
-  @@id([teacherId, lessonId])
-}
-
-model Lesson {
-  id             Int             @id @default(autoincrement())
-  organizationId Int             @default(1)
-  groupId        Int
-  date           DateTime
-  time           String?
-  createdAt      DateTime        @default(now())
-  status         LessonStatus    @default(ACTIVE)
-  attendance     Attendance[]
-  group          Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  teachers       TeacherLesson[]
-}
-
-model Attendance {
-  id             Int              @id @default(autoincrement())
-  organizationId Int              @default(1)
-  lessonId       Int
-  studentId      Int
-  status         AttendanceStatus
-  comment        String
-  isWarned       Boolean?
-  studentStatus  StudentStatus    @default(ACTIVE)
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  lesson         Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  student        Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  asMakeupFor    MakeUp?          @relation("MakeUpAttendace")
-  missedMakeup   MakeUp?          @relation("MissedAttendance")
-
-  @@unique([studentId, lessonId])
-}
-
-model MakeUp {
-  id                 Int @id @default(autoincrement())
-  organizationId     Int @default(1)
-  missedAttendanceId Int @unique
-  makeUpAttendaceId  Int @unique
-
-  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  makeUpAttendance Attendance   @relation("MakeUpAttendace", fields: [makeUpAttendaceId], references: [id], onDelete: Cascade)
-  missedAttendance Attendance   @relation("MissedAttendance", fields: [missedAttendanceId], references: [id], onDelete: Cascade)
-}
-
-model Payment {
-  id             Int      @id @default(autoincrement())
-  organizationId Int      @default(1)
-  studentId      Int
-  createdAt      DateTime @default(now())
-  lessonCount    Int      @default(0)
-  price          Int      @default(0)
-  bidForLesson   Int      @default(0)
-  leadName       String   @default("")
-  productName    String   @default("")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student      Student      @relation(fields: [studentId], references: [id])
-}
-
-model UnprocessedPayment {
-  id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
-  rawData        Json?
-  reason         String
-  resolved       Boolean
-  createdAt      DateTime     @default(now())
-  studentId      Int?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student        Student?     @relation(fields: [studentId], references: [id])
-}
-
-model Cart {
-  id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
-  studentId      Int          @unique
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  Student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  CartItem       CartItem[]
-}
-
-model CartItem {
-  id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
-  cartId         Int
-  productId      Int
-  quantity       Int
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  Cart           Cart         @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([cartId, productId])
-}
-
-model Category {
-  id             Int    @id @default(autoincrement())
-  organizationId Int    @default(1)
-  name           String @unique
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  Product      Product[]
-}
-
-model Product {
-  id             Int        @id @default(autoincrement())
-  organizationId Int        @default(1)
-  name           String
-  description    String?
-  price          Float
-  originalPrice  Float?
-  image          String     @default("placeholder.svg")
-  categoryId     Int
-  rating         Float      @default(0)
-  reviews        Int        @default(0)
-  popular        Boolean    @default(false)
-  quantity       Int
-  cartItem       CartItem[]
-  order          Order[]
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-}
-
-model Order {
-  id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
-  productId      Int
-  studentId      Int
-  status         OrderStatus  @default(PENDING)
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-model PaymentProduct {
-  id             Int    @id @default(autoincrement())
-  organizationId Int    @default(1)
-  productId      Int?
-  name           String
-  price          Int
-  lessonCount    Int
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-}
-
-enum GroupType {
-  GROUP
-  INDIVIDUAL
-  INTENSIVE
-}
-
-enum AttendanceStatus {
-  UNSPECIFIED
-  PRESENT
-  ABSENT
-}
-
-enum OrderStatus {
-  COMPLETED
-  PENDING
-  CANCELLED
-}
-
-enum LessonStatus {
-  ACTIVE
-  CANCELLED
-}
-
-enum StudentStatus {
-  TRIAL
-  ACTIVE
-  DISMISSED
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-}
-
-enum StudentLessonsBalanceChangeReason {
-  PAYMENT_CREATED
-  PAYMENT_CANCELLED
-  ATTENDANCE_PRESENT_CHARGED
-  ATTENDANCE_ABSENT_CHARGED
-  MAKEUP_ATTENDED_CHARGED
-  ATTENDANCE_REVERTED
-  MAKEUP_GRANTED
-  MANUAL_SET
 }
 
 model Session {
@@ -439,7 +94,8 @@ model Organization {
   name                           String
   slug                           String
   logo                           String?
-  createdAt                      DateTime
+  createdAt                      DateTime                       @default(now())
+  updatedAt                      DateTime                       @updatedAt
   metadata                       String?
   members                        Member[]
   invitations                    Invitation[]
@@ -471,12 +127,13 @@ model Organization {
 
 model Member {
   id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
+  organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         Int
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       @default("member")
-  createdAt      DateTime
+  role           String       @default("teacher")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
   @@index([userId])
@@ -485,17 +142,471 @@ model Member {
 
 model Invitation {
   id             Int          @id @default(autoincrement())
-  organizationId Int          @default(1)
+  organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
   status         String       @default("pending")
   expiresAt      DateTime
   createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   inviterId      Int
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
   @@map("Invitation")
+}
+
+// 
+
+// Business models
+
+model PayCheck {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  comment   String
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  userId         Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([organizationId])
+}
+
+model Student {
+  id             Int      @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  login          String
+  password       String
+  age            Int
+  birthDate      DateTime
+  parentsName    String?
+  parentsPhone   String?
+  url            String?
+  coins          Int      @default(0)
+  lessonsBalance Int      @default(0)
+  totalLessons   Int      @default(0)
+  totalPayments  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  cart                  Cart?
+  attendances           Attendance[]
+  orders                Order[]
+  payments              Payment[]
+  groups                StudentGroup[]
+  unprocessedPayments   UnprocessedPayment[]
+  dismisseds            Dismissed[]
+  lessonsBalanceHistory StudentLessonsBalanceHistory[]
+
+  @@index([organizationId])
+}
+
+model Group {
+  id          Int        @id @default(autoincrement())
+  startDate   DateTime
+  dayOfWeek   Int
+  time        String
+  maxStudents Int
+  url         String?
+  type        GroupType?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  organizationId Int
+  courseId       Int
+  locationId     Int
+  location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  course         Course       @relation(fields: [courseId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  lessons    Lesson[]
+  students   StudentGroup[]
+  teachers   TeacherGroup[]
+  dismisseds Dismissed[]
+
+  @@index([organizationId])
+  @@index([courseId])
+  @@index([locationId])
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  groups Group[]
+
+  @@index([organizationId])
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  groups Group[]
+
+  @@index([organizationId])
+}
+
+model Lesson {
+  id        Int          @id @default(autoincrement())
+  date      DateTime
+  time      String
+  status    LessonStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  organizationId Int
+  groupId        Int
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  attendance Attendance[]
+  teachers   TeacherLesson[]
+
+  @@index([groupId])
+  @@index([organizationId])
+  @@index([date])
+}
+
+model StudentLessonsBalanceHistory {
+  id             Int                               @id @default(autoincrement())
+  studentId      Int
+  organizationId Int
+  actorUserId    Int?
+  reason         StudentLessonsBalanceChangeReason
+  delta          Int
+  balanceBefore  Int
+  balanceAfter   Int
+  comment        String?
+  meta           Json?
+  createdAt      DateTime                          @default(now())
+  updatedAt      DateTime                          @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  actorUser    User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([studentId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([organizationId])
+}
+
+// 
+
+// Relation models
+
+model StudentGroup {
+  status    StudentStatus
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  organizationId Int
+  studentId      Int
+  groupId        Int
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, groupId])
+  @@index([groupId])
+  @@index([organizationId])
+}
+
+model Dismissed {
+  id        Int      @id @default(autoincrement())
+  comment   String
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  studentId      Int
+  groupId        Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([groupId])
+  @@index([organizationId])
+}
+
+model TeacherGroup {
+  bid       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  groupId        Int
+  teacherId      Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  teacher        User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, groupId])
+  @@index([groupId])
+  @@index([organizationId])
+}
+
+model TeacherLesson {
+  bid       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  lessonId       Int
+  teacherId      Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lesson         Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  teacher        User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, lessonId])
+  @@index([lessonId])
+  @@index([organizationId])
+}
+
+model Attendance {
+  id            Int              @id @default(autoincrement())
+  status        AttendanceStatus @default(UNSPECIFIED)
+  comment       String           @default("")
+  isWarned      Boolean?
+  studentStatus StudentStatus    @default(ACTIVE)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  organizationId Int
+  lessonId       Int
+  studentId      Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lesson         Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  asMakeupFor  MakeUp? @relation("MakeUpAttendance")
+  missedMakeup MakeUp? @relation("MissedAttendance")
+
+  @@unique([studentId, lessonId])
+  @@index([lessonId])
+  @@index([organizationId])
+}
+
+// 
+
+// TODO: This model is a bit weird, consider refactoring it in the future. It currently serves the purpose of linking a missed attendance with its makeup attendance, but it might be better to have a more explicit relation or even merge it with Attendance model with some nullable fields.
+model MakeUp {
+  id                 Int @id @default(autoincrement())
+  organizationId     Int @default(1)
+  missedAttendanceId Int @unique
+  makeUpAttendanceId Int @unique @map("makeUpAttendaceId")
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  makeUpAttendance Attendance   @relation("MakeUpAttendance", fields: [makeUpAttendanceId], references: [id], onDelete: Cascade)
+  missedAttendance Attendance   @relation("MissedAttendance", fields: [missedAttendanceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  lessonCount  Int      @default(0)
+  price        Int      @default(0)
+  bidForLesson Int      @default(0)
+  leadName     String   @default("")
+  productName  String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  studentId      Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([organizationId])
+  @@index([createdAt])
+}
+
+model UnprocessedPayment {
+  id        Int      @id @default(autoincrement())
+  rawData   Json?
+  reason    String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  studentId      Int?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student        Student?     @relation(fields: [studentId], references: [id])
+
+  @@index([organizationId])
+  @@index([studentId])
+}
+
+model PaymentProduct {
+  id          Int    @id @default(autoincrement())
+  name        String
+  productId   Int?
+  price       Int
+  lessonCount Int
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+// Shop related models. They are currently quite basic, but they can be expanded in the future with more features like discounts, product variants, etc.
+model Cart {
+  id             Int          @id @default(autoincrement())
+  organizationId Int          @default(1)
+  studentId      Int          @unique
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  CartItem       CartItem[]
+
+  @@index([organizationId])
+}
+
+model CartItem {
+  id             Int          @id @default(autoincrement())
+  organizationId Int          @default(1)
+  cartId         Int
+  productId      Int
+  quantity       Int
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Cart           Cart         @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  Product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+}
+
+model Category {
+  id             Int    @id @default(autoincrement())
+  organizationId Int
+  name           String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Product      Product[]
+
+  @@index([organizationId])
+}
+
+model Product {
+  id             Int        @id @default(autoincrement())
+  organizationId Int        @default(1)
+  name           String
+  description    String?
+  price          Int
+  originalPrice  Int?
+  image          String     @default("placeholder.svg")
+  categoryId     Int
+  rating         Float      @default(0)
+  reviews        Int        @default(0)
+  popular        Boolean    @default(false)
+  quantity       Int
+  cartItem       CartItem[]
+  order          Order[]
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([organizationId])
+}
+
+model Order {
+  id             Int          @id @default(autoincrement())
+  organizationId Int          @default(1)
+  productId      Int
+  studentId      Int
+  quantity       Int          @default(1)
+  status         OrderStatus  @default(PENDING)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([studentId])
+  @@index([organizationId])
+}
+
+// 
+
+enum GroupType {
+  GROUP
+  INDIVIDUAL
+  INTENSIVE
+}
+
+enum AttendanceStatus {
+  UNSPECIFIED
+  PRESENT
+  ABSENT
+}
+
+enum OrderStatus {
+  COMPLETED
+  PENDING
+  CANCELLED
+}
+
+enum LessonStatus {
+  ACTIVE
+  CANCELLED
+}
+
+enum StudentStatus {
+  TRIAL
+  ACTIVE
+  DISMISSED
+}
+
+enum StudentLessonsBalanceChangeReason {
+  PAYMENT_CREATED
+  PAYMENT_CANCELLED
+  ATTENDANCE_PRESENT_CHARGED
+  ATTENDANCE_ABSENT_CHARGED
+  MAKEUP_ATTENDED_CHARGED
+  ATTENDANCE_REVERTED
+  MAKEUP_GRANTED
+  MANUAL_SET
 }

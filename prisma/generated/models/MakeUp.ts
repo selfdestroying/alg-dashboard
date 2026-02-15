@@ -30,35 +30,35 @@ export type MakeUpAvgAggregateOutputType = {
   id: number | null
   organizationId: number | null
   missedAttendanceId: number | null
-  makeUpAttendaceId: number | null
+  makeUpAttendanceId: number | null
 }
 
 export type MakeUpSumAggregateOutputType = {
   id: number | null
   organizationId: number | null
   missedAttendanceId: number | null
-  makeUpAttendaceId: number | null
+  makeUpAttendanceId: number | null
 }
 
 export type MakeUpMinAggregateOutputType = {
   id: number | null
   organizationId: number | null
   missedAttendanceId: number | null
-  makeUpAttendaceId: number | null
+  makeUpAttendanceId: number | null
 }
 
 export type MakeUpMaxAggregateOutputType = {
   id: number | null
   organizationId: number | null
   missedAttendanceId: number | null
-  makeUpAttendaceId: number | null
+  makeUpAttendanceId: number | null
 }
 
 export type MakeUpCountAggregateOutputType = {
   id: number
   organizationId: number
   missedAttendanceId: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
   _all: number
 }
 
@@ -67,35 +67,35 @@ export type MakeUpAvgAggregateInputType = {
   id?: true
   organizationId?: true
   missedAttendanceId?: true
-  makeUpAttendaceId?: true
+  makeUpAttendanceId?: true
 }
 
 export type MakeUpSumAggregateInputType = {
   id?: true
   organizationId?: true
   missedAttendanceId?: true
-  makeUpAttendaceId?: true
+  makeUpAttendanceId?: true
 }
 
 export type MakeUpMinAggregateInputType = {
   id?: true
   organizationId?: true
   missedAttendanceId?: true
-  makeUpAttendaceId?: true
+  makeUpAttendanceId?: true
 }
 
 export type MakeUpMaxAggregateInputType = {
   id?: true
   organizationId?: true
   missedAttendanceId?: true
-  makeUpAttendaceId?: true
+  makeUpAttendanceId?: true
 }
 
 export type MakeUpCountAggregateInputType = {
   id?: true
   organizationId?: true
   missedAttendanceId?: true
-  makeUpAttendaceId?: true
+  makeUpAttendanceId?: true
   _all?: true
 }
 
@@ -189,7 +189,7 @@ export type MakeUpGroupByOutputType = {
   id: number
   organizationId: number
   missedAttendanceId: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
   _count: MakeUpCountAggregateOutputType | null
   _avg: MakeUpAvgAggregateOutputType | null
   _sum: MakeUpSumAggregateOutputType | null
@@ -219,7 +219,7 @@ export type MakeUpWhereInput = {
   id?: Prisma.IntFilter<"MakeUp"> | number
   organizationId?: Prisma.IntFilter<"MakeUp"> | number
   missedAttendanceId?: Prisma.IntFilter<"MakeUp"> | number
-  makeUpAttendaceId?: Prisma.IntFilter<"MakeUp"> | number
+  makeUpAttendanceId?: Prisma.IntFilter<"MakeUp"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   makeUpAttendance?: Prisma.XOR<Prisma.AttendanceScalarRelationFilter, Prisma.AttendanceWhereInput>
   missedAttendance?: Prisma.XOR<Prisma.AttendanceScalarRelationFilter, Prisma.AttendanceWhereInput>
@@ -229,7 +229,7 @@ export type MakeUpOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   makeUpAttendance?: Prisma.AttendanceOrderByWithRelationInput
   missedAttendance?: Prisma.AttendanceOrderByWithRelationInput
@@ -238,7 +238,7 @@ export type MakeUpOrderByWithRelationInput = {
 export type MakeUpWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   missedAttendanceId?: number
-  makeUpAttendaceId?: number
+  makeUpAttendanceId?: number
   AND?: Prisma.MakeUpWhereInput | Prisma.MakeUpWhereInput[]
   OR?: Prisma.MakeUpWhereInput[]
   NOT?: Prisma.MakeUpWhereInput | Prisma.MakeUpWhereInput[]
@@ -246,13 +246,13 @@ export type MakeUpWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   makeUpAttendance?: Prisma.XOR<Prisma.AttendanceScalarRelationFilter, Prisma.AttendanceWhereInput>
   missedAttendance?: Prisma.XOR<Prisma.AttendanceScalarRelationFilter, Prisma.AttendanceWhereInput>
-}, "id" | "missedAttendanceId" | "makeUpAttendaceId">
+}, "id" | "missedAttendanceId" | "makeUpAttendanceId">
 
 export type MakeUpOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
   _count?: Prisma.MakeUpCountOrderByAggregateInput
   _avg?: Prisma.MakeUpAvgOrderByAggregateInput
   _max?: Prisma.MakeUpMaxOrderByAggregateInput
@@ -267,7 +267,7 @@ export type MakeUpScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"MakeUp"> | number
   organizationId?: Prisma.IntWithAggregatesFilter<"MakeUp"> | number
   missedAttendanceId?: Prisma.IntWithAggregatesFilter<"MakeUp"> | number
-  makeUpAttendaceId?: Prisma.IntWithAggregatesFilter<"MakeUp"> | number
+  makeUpAttendanceId?: Prisma.IntWithAggregatesFilter<"MakeUp"> | number
 }
 
 export type MakeUpCreateInput = {
@@ -280,7 +280,7 @@ export type MakeUpUncheckedCreateInput = {
   id?: number
   organizationId?: number
   missedAttendanceId: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
 }
 
 export type MakeUpUpdateInput = {
@@ -293,14 +293,14 @@ export type MakeUpUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   missedAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
-  makeUpAttendaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  makeUpAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MakeUpCreateManyInput = {
   id?: number
   organizationId?: number
   missedAttendanceId: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
 }
 
 export type MakeUpUpdateManyMutationInput = {
@@ -311,7 +311,17 @@ export type MakeUpUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   missedAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
-  makeUpAttendaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  makeUpAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type MakeUpListRelationFilter = {
+  every?: Prisma.MakeUpWhereInput
+  some?: Prisma.MakeUpWhereInput
+  none?: Prisma.MakeUpWhereInput
+}
+
+export type MakeUpOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type MakeUpNullableScalarRelationFilter = {
@@ -323,45 +333,77 @@ export type MakeUpCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
 }
 
 export type MakeUpAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
 }
 
 export type MakeUpMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
 }
 
 export type MakeUpMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
 }
 
 export type MakeUpSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   missedAttendanceId?: Prisma.SortOrder
-  makeUpAttendaceId?: Prisma.SortOrder
+  makeUpAttendanceId?: Prisma.SortOrder
 }
 
-export type MakeUpListRelationFilter = {
-  every?: Prisma.MakeUpWhereInput
-  some?: Prisma.MakeUpWhereInput
-  none?: Prisma.MakeUpWhereInput
+export type MakeUpCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
+  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
 }
 
-export type MakeUpOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type MakeUpUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
+  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+}
+
+export type MakeUpUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
+  set?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  disconnect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  delete?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  update?: Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput | Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
+}
+
+export type MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
+  set?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  disconnect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  delete?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+  update?: Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput | Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
 }
 
 export type MakeUpCreateNestedOneWithoutMakeUpAttendanceInput = {
@@ -428,46 +470,51 @@ export type MakeUpUncheckedUpdateOneWithoutMissedAttendanceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MakeUpUpdateToOneWithWhereWithoutMissedAttendanceInput, Prisma.MakeUpUpdateWithoutMissedAttendanceInput>, Prisma.MakeUpUncheckedUpdateWithoutMissedAttendanceInput>
 }
 
-export type MakeUpCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
-  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+export type MakeUpCreateWithoutOrganizationInput = {
+  makeUpAttendance: Prisma.AttendanceCreateNestedOneWithoutAsMakeupForInput
+  missedAttendance: Prisma.AttendanceCreateNestedOneWithoutMissedMakeupInput
 }
 
-export type MakeUpUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
-  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
+export type MakeUpUncheckedCreateWithoutOrganizationInput = {
+  id?: number
+  missedAttendanceId: number
+  makeUpAttendanceId: number
 }
 
-export type MakeUpUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
-  set?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  disconnect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  delete?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  update?: Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput | Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
+export type MakeUpCreateOrConnectWithoutOrganizationInput = {
+  where: Prisma.MakeUpWhereUniqueInput
+  create: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput>
 }
 
-export type MakeUpUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput> | Prisma.MakeUpCreateWithoutOrganizationInput[] | Prisma.MakeUpUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.MakeUpCreateOrConnectWithoutOrganizationInput | Prisma.MakeUpCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.MakeUpCreateManyOrganizationInputEnvelope
-  set?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  disconnect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  delete?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  connect?: Prisma.MakeUpWhereUniqueInput | Prisma.MakeUpWhereUniqueInput[]
-  update?: Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.MakeUpUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput | Prisma.MakeUpUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
+export type MakeUpCreateManyOrganizationInputEnvelope = {
+  data: Prisma.MakeUpCreateManyOrganizationInput | Prisma.MakeUpCreateManyOrganizationInput[]
+  skipDuplicates?: boolean
+}
+
+export type MakeUpUpsertWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.MakeUpWhereUniqueInput
+  update: Prisma.XOR<Prisma.MakeUpUpdateWithoutOrganizationInput, Prisma.MakeUpUncheckedUpdateWithoutOrganizationInput>
+  create: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput>
+}
+
+export type MakeUpUpdateWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.MakeUpWhereUniqueInput
+  data: Prisma.XOR<Prisma.MakeUpUpdateWithoutOrganizationInput, Prisma.MakeUpUncheckedUpdateWithoutOrganizationInput>
+}
+
+export type MakeUpUpdateManyWithWhereWithoutOrganizationInput = {
+  where: Prisma.MakeUpScalarWhereInput
+  data: Prisma.XOR<Prisma.MakeUpUpdateManyMutationInput, Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationInput>
+}
+
+export type MakeUpScalarWhereInput = {
+  AND?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
+  OR?: Prisma.MakeUpScalarWhereInput[]
+  NOT?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
+  id?: Prisma.IntFilter<"MakeUp"> | number
+  organizationId?: Prisma.IntFilter<"MakeUp"> | number
+  missedAttendanceId?: Prisma.IntFilter<"MakeUp"> | number
+  makeUpAttendanceId?: Prisma.IntFilter<"MakeUp"> | number
 }
 
 export type MakeUpCreateWithoutMakeUpAttendanceInput = {
@@ -494,7 +541,7 @@ export type MakeUpCreateWithoutMissedAttendanceInput = {
 export type MakeUpUncheckedCreateWithoutMissedAttendanceInput = {
   id?: number
   organizationId?: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
 }
 
 export type MakeUpCreateOrConnectWithoutMissedAttendanceInput = {
@@ -543,60 +590,13 @@ export type MakeUpUpdateWithoutMissedAttendanceInput = {
 export type MakeUpUncheckedUpdateWithoutMissedAttendanceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  makeUpAttendaceId?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type MakeUpCreateWithoutOrganizationInput = {
-  makeUpAttendance: Prisma.AttendanceCreateNestedOneWithoutAsMakeupForInput
-  missedAttendance: Prisma.AttendanceCreateNestedOneWithoutMissedMakeupInput
-}
-
-export type MakeUpUncheckedCreateWithoutOrganizationInput = {
-  id?: number
-  missedAttendanceId: number
-  makeUpAttendaceId: number
-}
-
-export type MakeUpCreateOrConnectWithoutOrganizationInput = {
-  where: Prisma.MakeUpWhereUniqueInput
-  create: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput>
-}
-
-export type MakeUpCreateManyOrganizationInputEnvelope = {
-  data: Prisma.MakeUpCreateManyOrganizationInput | Prisma.MakeUpCreateManyOrganizationInput[]
-  skipDuplicates?: boolean
-}
-
-export type MakeUpUpsertWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.MakeUpWhereUniqueInput
-  update: Prisma.XOR<Prisma.MakeUpUpdateWithoutOrganizationInput, Prisma.MakeUpUncheckedUpdateWithoutOrganizationInput>
-  create: Prisma.XOR<Prisma.MakeUpCreateWithoutOrganizationInput, Prisma.MakeUpUncheckedCreateWithoutOrganizationInput>
-}
-
-export type MakeUpUpdateWithWhereUniqueWithoutOrganizationInput = {
-  where: Prisma.MakeUpWhereUniqueInput
-  data: Prisma.XOR<Prisma.MakeUpUpdateWithoutOrganizationInput, Prisma.MakeUpUncheckedUpdateWithoutOrganizationInput>
-}
-
-export type MakeUpUpdateManyWithWhereWithoutOrganizationInput = {
-  where: Prisma.MakeUpScalarWhereInput
-  data: Prisma.XOR<Prisma.MakeUpUpdateManyMutationInput, Prisma.MakeUpUncheckedUpdateManyWithoutOrganizationInput>
-}
-
-export type MakeUpScalarWhereInput = {
-  AND?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
-  OR?: Prisma.MakeUpScalarWhereInput[]
-  NOT?: Prisma.MakeUpScalarWhereInput | Prisma.MakeUpScalarWhereInput[]
-  id?: Prisma.IntFilter<"MakeUp"> | number
-  organizationId?: Prisma.IntFilter<"MakeUp"> | number
-  missedAttendanceId?: Prisma.IntFilter<"MakeUp"> | number
-  makeUpAttendaceId?: Prisma.IntFilter<"MakeUp"> | number
+  makeUpAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MakeUpCreateManyOrganizationInput = {
   id?: number
   missedAttendanceId: number
-  makeUpAttendaceId: number
+  makeUpAttendanceId: number
 }
 
 export type MakeUpUpdateWithoutOrganizationInput = {
@@ -607,13 +607,13 @@ export type MakeUpUpdateWithoutOrganizationInput = {
 export type MakeUpUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   missedAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
-  makeUpAttendaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  makeUpAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MakeUpUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   missedAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
-  makeUpAttendaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  makeUpAttendanceId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -622,7 +622,7 @@ export type MakeUpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   organizationId?: boolean
   missedAttendanceId?: boolean
-  makeUpAttendaceId?: boolean
+  makeUpAttendanceId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   makeUpAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
   missedAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
@@ -632,7 +632,7 @@ export type MakeUpSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   organizationId?: boolean
   missedAttendanceId?: boolean
-  makeUpAttendaceId?: boolean
+  makeUpAttendanceId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   makeUpAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
   missedAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
@@ -642,7 +642,7 @@ export type MakeUpSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   organizationId?: boolean
   missedAttendanceId?: boolean
-  makeUpAttendaceId?: boolean
+  makeUpAttendanceId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   makeUpAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
   missedAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
@@ -652,10 +652,10 @@ export type MakeUpSelectScalar = {
   id?: boolean
   organizationId?: boolean
   missedAttendanceId?: boolean
-  makeUpAttendaceId?: boolean
+  makeUpAttendanceId?: boolean
 }
 
-export type MakeUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "missedAttendanceId" | "makeUpAttendaceId", ExtArgs["result"]["makeUp"]>
+export type MakeUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "missedAttendanceId" | "makeUpAttendanceId", ExtArgs["result"]["makeUp"]>
 export type MakeUpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   makeUpAttendance?: boolean | Prisma.AttendanceDefaultArgs<ExtArgs>
@@ -683,7 +683,7 @@ export type $MakeUpPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: number
     organizationId: number
     missedAttendanceId: number
-    makeUpAttendaceId: number
+    makeUpAttendanceId: number
   }, ExtArgs["result"]["makeUp"]>
   composites: {}
 }
@@ -1113,7 +1113,7 @@ export interface MakeUpFieldRefs {
   readonly id: Prisma.FieldRef<"MakeUp", 'Int'>
   readonly organizationId: Prisma.FieldRef<"MakeUp", 'Int'>
   readonly missedAttendanceId: Prisma.FieldRef<"MakeUp", 'Int'>
-  readonly makeUpAttendaceId: Prisma.FieldRef<"MakeUp", 'Int'>
+  readonly makeUpAttendanceId: Prisma.FieldRef<"MakeUp", 'Int'>
 }
     
 

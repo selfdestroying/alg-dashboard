@@ -57,6 +57,7 @@ export type StudentLessonsBalanceHistoryMinAggregateOutputType = {
   balanceAfter: number | null
   comment: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type StudentLessonsBalanceHistoryMaxAggregateOutputType = {
@@ -70,6 +71,7 @@ export type StudentLessonsBalanceHistoryMaxAggregateOutputType = {
   balanceAfter: number | null
   comment: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type StudentLessonsBalanceHistoryCountAggregateOutputType = {
@@ -84,6 +86,7 @@ export type StudentLessonsBalanceHistoryCountAggregateOutputType = {
   comment: number
   meta: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -119,6 +122,7 @@ export type StudentLessonsBalanceHistoryMinAggregateInputType = {
   balanceAfter?: true
   comment?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type StudentLessonsBalanceHistoryMaxAggregateInputType = {
@@ -132,6 +136,7 @@ export type StudentLessonsBalanceHistoryMaxAggregateInputType = {
   balanceAfter?: true
   comment?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type StudentLessonsBalanceHistoryCountAggregateInputType = {
@@ -146,6 +151,7 @@ export type StudentLessonsBalanceHistoryCountAggregateInputType = {
   comment?: true
   meta?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -247,6 +253,7 @@ export type StudentLessonsBalanceHistoryGroupByOutputType = {
   comment: string | null
   meta: runtime.JsonValue | null
   createdAt: Date
+  updatedAt: Date
   _count: StudentLessonsBalanceHistoryCountAggregateOutputType | null
   _avg: StudentLessonsBalanceHistoryAvgAggregateOutputType | null
   _sum: StudentLessonsBalanceHistorySumAggregateOutputType | null
@@ -284,6 +291,7 @@ export type StudentLessonsBalanceHistoryWhereInput = {
   comment?: Prisma.StringNullableFilter<"StudentLessonsBalanceHistory"> | string | null
   meta?: Prisma.JsonNullableFilter<"StudentLessonsBalanceHistory">
   createdAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   actorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -301,6 +309,7 @@ export type StudentLessonsBalanceHistoryOrderByWithRelationInput = {
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
   meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
   actorUser?: Prisma.UserOrderByWithRelationInput
@@ -321,6 +330,7 @@ export type StudentLessonsBalanceHistoryWhereUniqueInput = Prisma.AtLeast<{
   comment?: Prisma.StringNullableFilter<"StudentLessonsBalanceHistory"> | string | null
   meta?: Prisma.JsonNullableFilter<"StudentLessonsBalanceHistory">
   createdAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   actorUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -338,6 +348,7 @@ export type StudentLessonsBalanceHistoryOrderByWithAggregationInput = {
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
   meta?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.StudentLessonsBalanceHistoryCountOrderByAggregateInput
   _avg?: Prisma.StudentLessonsBalanceHistoryAvgOrderByAggregateInput
   _max?: Prisma.StudentLessonsBalanceHistoryMaxOrderByAggregateInput
@@ -360,6 +371,7 @@ export type StudentLessonsBalanceHistoryScalarWhereWithAggregatesInput = {
   comment?: Prisma.StringNullableWithAggregatesFilter<"StudentLessonsBalanceHistory"> | string | null
   meta?: Prisma.JsonNullableWithAggregatesFilter<"StudentLessonsBalanceHistory">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentLessonsBalanceHistory"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentLessonsBalanceHistory"> | Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateInput = {
@@ -370,7 +382,8 @@ export type StudentLessonsBalanceHistoryCreateInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
   student: Prisma.StudentCreateNestedOneWithoutLessonsBalanceHistoryInput
   actorUser?: Prisma.UserCreateNestedOneWithoutLessonsBalanceChangesInput
 }
@@ -378,7 +391,7 @@ export type StudentLessonsBalanceHistoryCreateInput = {
 export type StudentLessonsBalanceHistoryUncheckedCreateInput = {
   id?: number
   studentId: number
-  organizationId?: number
+  organizationId: number
   actorUserId?: number | null
   reason: $Enums.StudentLessonsBalanceChangeReason
   delta: number
@@ -387,6 +400,7 @@ export type StudentLessonsBalanceHistoryUncheckedCreateInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryUpdateInput = {
@@ -397,6 +411,7 @@ export type StudentLessonsBalanceHistoryUpdateInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutLessonsBalanceHistoryNestedInput
   actorUser?: Prisma.UserUpdateOneWithoutLessonsBalanceChangesNestedInput
@@ -414,12 +429,13 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateManyInput = {
   id?: number
   studentId: number
-  organizationId?: number
+  organizationId: number
   actorUserId?: number | null
   reason: $Enums.StudentLessonsBalanceChangeReason
   delta: number
@@ -428,6 +444,7 @@ export type StudentLessonsBalanceHistoryCreateManyInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryUpdateManyMutationInput = {
@@ -438,6 +455,7 @@ export type StudentLessonsBalanceHistoryUpdateManyMutationInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryUncheckedUpdateManyInput = {
@@ -452,6 +470,7 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateManyInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryListRelationFilter = {
@@ -476,6 +495,7 @@ export type StudentLessonsBalanceHistoryCountOrderByAggregateInput = {
   comment?: Prisma.SortOrder
   meta?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type StudentLessonsBalanceHistoryAvgOrderByAggregateInput = {
@@ -499,6 +519,7 @@ export type StudentLessonsBalanceHistoryMaxOrderByAggregateInput = {
   balanceAfter?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type StudentLessonsBalanceHistoryMinOrderByAggregateInput = {
@@ -512,6 +533,7 @@ export type StudentLessonsBalanceHistoryMinOrderByAggregateInput = {
   balanceAfter?: Prisma.SortOrder
   comment?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type StudentLessonsBalanceHistorySumOrderByAggregateInput = {
@@ -563,6 +585,48 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserNeste
   connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
   update?: Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutActorUserInput | Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutActorUserInput[]
   updateMany?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutActorUserInput | Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutActorUserInput[]
+  deleteMany?: Prisma.StudentLessonsBalanceHistoryScalarWhereInput | Prisma.StudentLessonsBalanceHistoryScalarWhereInput[]
+}
+
+export type StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+}
+
+export type StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+}
+
+export type StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
+  set?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  disconnect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  delete?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  update?: Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.StudentLessonsBalanceHistoryScalarWhereInput | Prisma.StudentLessonsBalanceHistoryScalarWhereInput[]
+}
+
+export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
+  set?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  disconnect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  delete?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
+  update?: Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput[]
   deleteMany?: Prisma.StudentLessonsBalanceHistoryScalarWhereInput | Prisma.StudentLessonsBalanceHistoryScalarWhereInput[]
 }
 
@@ -620,48 +684,6 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type StudentLessonsBalanceHistoryCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
-  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-}
-
-export type StudentLessonsBalanceHistoryUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
-  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-}
-
-export type StudentLessonsBalanceHistoryUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
-  set?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  disconnect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  delete?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  update?: Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.StudentLessonsBalanceHistoryScalarWhereInput | Prisma.StudentLessonsBalanceHistoryScalarWhereInput[]
-}
-
-export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput> | Prisma.StudentLessonsBalanceHistoryCreateWithoutOrganizationInput[] | Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.StudentLessonsBalanceHistoryCreateManyOrganizationInputEnvelope
-  set?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  disconnect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  delete?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  connect?: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput | Prisma.StudentLessonsBalanceHistoryWhereUniqueInput[]
-  update?: Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput | Prisma.StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.StudentLessonsBalanceHistoryScalarWhereInput | Prisma.StudentLessonsBalanceHistoryScalarWhereInput[]
-}
-
 export type StudentLessonsBalanceHistoryCreateWithoutActorUserInput = {
   reason: $Enums.StudentLessonsBalanceChangeReason
   delta: number
@@ -670,14 +692,15 @@ export type StudentLessonsBalanceHistoryCreateWithoutActorUserInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
   student: Prisma.StudentCreateNestedOneWithoutLessonsBalanceHistoryInput
 }
 
 export type StudentLessonsBalanceHistoryUncheckedCreateWithoutActorUserInput = {
   id?: number
   studentId: number
-  organizationId?: number
+  organizationId: number
   reason: $Enums.StudentLessonsBalanceChangeReason
   delta: number
   balanceBefore: number
@@ -685,6 +708,7 @@ export type StudentLessonsBalanceHistoryUncheckedCreateWithoutActorUserInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateOrConnectWithoutActorUserInput = {
@@ -728,57 +752,7 @@ export type StudentLessonsBalanceHistoryScalarWhereInput = {
   comment?: Prisma.StringNullableFilter<"StudentLessonsBalanceHistory"> | string | null
   meta?: Prisma.JsonNullableFilter<"StudentLessonsBalanceHistory">
   createdAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
-}
-
-export type StudentLessonsBalanceHistoryCreateWithoutStudentInput = {
-  reason: $Enums.StudentLessonsBalanceChangeReason
-  delta: number
-  balanceBefore: number
-  balanceAfter: number
-  comment?: string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
-  actorUser?: Prisma.UserCreateNestedOneWithoutLessonsBalanceChangesInput
-}
-
-export type StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput = {
-  id?: number
-  organizationId?: number
-  actorUserId?: number | null
-  reason: $Enums.StudentLessonsBalanceChangeReason
-  delta: number
-  balanceBefore: number
-  balanceAfter: number
-  comment?: string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-}
-
-export type StudentLessonsBalanceHistoryCreateOrConnectWithoutStudentInput = {
-  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
-  create: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput>
-}
-
-export type StudentLessonsBalanceHistoryCreateManyStudentInputEnvelope = {
-  data: Prisma.StudentLessonsBalanceHistoryCreateManyStudentInput | Prisma.StudentLessonsBalanceHistoryCreateManyStudentInput[]
-  skipDuplicates?: boolean
-}
-
-export type StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
-  update: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput>
-  create: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput>
-}
-
-export type StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
-  data: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput>
-}
-
-export type StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutStudentInput = {
-  where: Prisma.StudentLessonsBalanceHistoryScalarWhereInput
-  data: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateManyMutationInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutStudentInput>
+  updatedAt?: Prisma.DateTimeFilter<"StudentLessonsBalanceHistory"> | Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateWithoutOrganizationInput = {
@@ -789,6 +763,7 @@ export type StudentLessonsBalanceHistoryCreateWithoutOrganizationInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutLessonsBalanceHistoryInput
   actorUser?: Prisma.UserCreateNestedOneWithoutLessonsBalanceChangesInput
 }
@@ -804,6 +779,7 @@ export type StudentLessonsBalanceHistoryUncheckedCreateWithoutOrganizationInput 
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateOrConnectWithoutOrganizationInput = {
@@ -832,10 +808,7 @@ export type StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutOrganizationIn
   data: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateManyMutationInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationInput>
 }
 
-export type StudentLessonsBalanceHistoryCreateManyActorUserInput = {
-  id?: number
-  studentId: number
-  organizationId?: number
+export type StudentLessonsBalanceHistoryCreateWithoutStudentInput = {
   reason: $Enums.StudentLessonsBalanceChangeReason
   delta: number
   balanceBefore: number
@@ -843,6 +816,63 @@ export type StudentLessonsBalanceHistoryCreateManyActorUserInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutStudentLessonsBalanceHistoriesInput
+  actorUser?: Prisma.UserCreateNestedOneWithoutLessonsBalanceChangesInput
+}
+
+export type StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput = {
+  id?: number
+  organizationId: number
+  actorUserId?: number | null
+  reason: $Enums.StudentLessonsBalanceChangeReason
+  delta: number
+  balanceBefore: number
+  balanceAfter: number
+  comment?: string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type StudentLessonsBalanceHistoryCreateOrConnectWithoutStudentInput = {
+  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput>
+}
+
+export type StudentLessonsBalanceHistoryCreateManyStudentInputEnvelope = {
+  data: Prisma.StudentLessonsBalanceHistoryCreateManyStudentInput | Prisma.StudentLessonsBalanceHistoryCreateManyStudentInput[]
+  skipDuplicates?: boolean
+}
+
+export type StudentLessonsBalanceHistoryUpsertWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryCreateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedCreateWithoutStudentInput>
+}
+
+export type StudentLessonsBalanceHistoryUpdateWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentLessonsBalanceHistoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateWithoutStudentInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput>
+}
+
+export type StudentLessonsBalanceHistoryUpdateManyWithWhereWithoutStudentInput = {
+  where: Prisma.StudentLessonsBalanceHistoryScalarWhereInput
+  data: Prisma.XOR<Prisma.StudentLessonsBalanceHistoryUpdateManyMutationInput, Prisma.StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutStudentInput>
+}
+
+export type StudentLessonsBalanceHistoryCreateManyActorUserInput = {
+  id?: number
+  studentId: number
+  organizationId: number
+  reason: $Enums.StudentLessonsBalanceChangeReason
+  delta: number
+  balanceBefore: number
+  balanceAfter: number
+  comment?: string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryUpdateWithoutActorUserInput = {
@@ -853,6 +883,7 @@ export type StudentLessonsBalanceHistoryUpdateWithoutActorUserInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutLessonsBalanceHistoryNestedInput
 }
@@ -868,6 +899,7 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateWithoutActorUserInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserInput = {
@@ -881,57 +913,7 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutActorUserInput
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type StudentLessonsBalanceHistoryCreateManyStudentInput = {
-  id?: number
-  organizationId?: number
-  actorUserId?: number | null
-  reason: $Enums.StudentLessonsBalanceChangeReason
-  delta: number
-  balanceBefore: number
-  balanceAfter: number
-  comment?: string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-}
-
-export type StudentLessonsBalanceHistoryUpdateWithoutStudentInput = {
-  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
-  delta?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput
-  actorUser?: Prisma.UserUpdateOneWithoutLessonsBalanceChangesNestedInput
-}
-
-export type StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  actorUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
-  delta?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutStudentInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  actorUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
-  delta?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
-  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryCreateManyOrganizationInput = {
@@ -945,6 +927,7 @@ export type StudentLessonsBalanceHistoryCreateManyOrganizationInput = {
   comment?: string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type StudentLessonsBalanceHistoryUpdateWithoutOrganizationInput = {
@@ -955,6 +938,7 @@ export type StudentLessonsBalanceHistoryUpdateWithoutOrganizationInput = {
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutLessonsBalanceHistoryNestedInput
   actorUser?: Prisma.UserUpdateOneWithoutLessonsBalanceChangesNestedInput
 }
@@ -970,6 +954,7 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateWithoutOrganizationInput 
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationInput = {
@@ -983,6 +968,62 @@ export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutOrganizationIn
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StudentLessonsBalanceHistoryCreateManyStudentInput = {
+  id?: number
+  organizationId: number
+  actorUserId?: number | null
+  reason: $Enums.StudentLessonsBalanceChangeReason
+  delta: number
+  balanceBefore: number
+  balanceAfter: number
+  comment?: string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type StudentLessonsBalanceHistoryUpdateWithoutStudentInput = {
+  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
+  delta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStudentLessonsBalanceHistoriesNestedInput
+  actorUser?: Prisma.UserUpdateOneWithoutLessonsBalanceChangesNestedInput
+}
+
+export type StudentLessonsBalanceHistoryUncheckedUpdateWithoutStudentInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  actorUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
+  delta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StudentLessonsBalanceHistoryUncheckedUpdateManyWithoutStudentInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  actorUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  reason?: Prisma.EnumStudentLessonsBalanceChangeReasonFieldUpdateOperationsInput | $Enums.StudentLessonsBalanceChangeReason
+  delta?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceBefore?: Prisma.IntFieldUpdateOperationsInput | number
+  balanceAfter?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -999,6 +1040,7 @@ export type StudentLessonsBalanceHistorySelect<ExtArgs extends runtime.Types.Ext
   comment?: boolean
   meta?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   actorUser?: boolean | Prisma.StudentLessonsBalanceHistory$actorUserArgs<ExtArgs>
@@ -1016,6 +1058,7 @@ export type StudentLessonsBalanceHistorySelectCreateManyAndReturn<ExtArgs extend
   comment?: boolean
   meta?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   actorUser?: boolean | Prisma.StudentLessonsBalanceHistory$actorUserArgs<ExtArgs>
@@ -1033,6 +1076,7 @@ export type StudentLessonsBalanceHistorySelectUpdateManyAndReturn<ExtArgs extend
   comment?: boolean
   meta?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   actorUser?: boolean | Prisma.StudentLessonsBalanceHistory$actorUserArgs<ExtArgs>
@@ -1050,9 +1094,10 @@ export type StudentLessonsBalanceHistorySelectScalar = {
   comment?: boolean
   meta?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type StudentLessonsBalanceHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "organizationId" | "actorUserId" | "reason" | "delta" | "balanceBefore" | "balanceAfter" | "comment" | "meta" | "createdAt", ExtArgs["result"]["studentLessonsBalanceHistory"]>
+export type StudentLessonsBalanceHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "organizationId" | "actorUserId" | "reason" | "delta" | "balanceBefore" | "balanceAfter" | "comment" | "meta" | "createdAt" | "updatedAt", ExtArgs["result"]["studentLessonsBalanceHistory"]>
 export type StudentLessonsBalanceHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -1088,6 +1133,7 @@ export type $StudentLessonsBalanceHistoryPayload<ExtArgs extends runtime.Types.E
     comment: string | null
     meta: runtime.JsonValue | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["studentLessonsBalanceHistory"]>
   composites: {}
 }
@@ -1525,6 +1571,7 @@ export interface StudentLessonsBalanceHistoryFieldRefs {
   readonly comment: Prisma.FieldRef<"StudentLessonsBalanceHistory", 'String'>
   readonly meta: Prisma.FieldRef<"StudentLessonsBalanceHistory", 'Json'>
   readonly createdAt: Prisma.FieldRef<"StudentLessonsBalanceHistory", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"StudentLessonsBalanceHistory", 'DateTime'>
 }
     
 
