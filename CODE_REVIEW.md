@@ -718,13 +718,13 @@ try {
 ### 🟠 MAJOR
 
 - [ ] **M1** — Race condition (no tx) · `orders.ts`, `groups.ts`
-- [ ] **M2** — Unsafe `members[0]` · 15+ файлов
+- [x] **M2** — Unsafe `members[0]` · 15+ файлов
 - [ ] **M3** — Нет валидации входных данных · Все actions
 - [ ] **M4** — Auth-проверка дублирована · 15+ страниц
-- [ ] **M5** — Нет индексов на FK · `schema.prisma` (10+ полей)
-- [ ] **M6** — `Category @unique` глобально · `schema.prisma`
+- [x] **M5** — Нет индексов на FK · `schema.prisma` (10+ полей)
+- [x] **M6** — `Category @unique` глобально · `schema.prisma`
 - [ ] **M7** — Waterfall-запросы · 5+ страниц
-- [ ] **M8** — `Float` для денег · `schema.prisma`
+- [x] **M8** — `Float` для денег · `schema.prisma`
 - [ ] **M9** — Одинаковый queryKey для permissions · `organization-permission-query.ts`
 - [ ] **M10** — Тяжёлые запросы без агрегации · `attendance.ts`, `dismissed.ts`, `students.ts`
 - [ ] **M11** — Type mismatch `FindFirst/findMany` · `dismissed.ts`
@@ -770,9 +770,9 @@ try {
 ### Приоритет 2 — Целостность данных (M1, M5–M6, M8–M9)
 
 - [ ] Обернуть связанные операции в `prisma.$transaction`
-- [ ] Добавить `@@index` на все FK-поля
-- [ ] `Category`: `@@unique([organizationId, name])`
-- [ ] `Product.price`: `Decimal` или `Int`
+- [x] Добавить `@@index` на все FK-поля
+- [x] `Category`: `@@unique([organizationId, name])`
+- [x] `Product.price`: `Decimal` или `Int`
 - [ ] Включить `permission` в queryKey
 
 ### Приоритет 3 — Архитектура (C6–C7, M4, M7, M10)
