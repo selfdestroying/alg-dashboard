@@ -2,6 +2,7 @@
 import { Category } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -10,11 +11,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { debounce } from 'es-toolkit'
-import { useMemo, useState } from 'react'
 import CategoryActions from './category-actions'
 
 const columns: ColumnDef<Category>[] = [
@@ -36,17 +34,13 @@ const columns: ColumnDef<Category>[] = [
 ]
 
 export default function CategoriesTable({ data }: { data: Category[] }) {
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-  const [sorting, setSorting] = useState<SortingState>([])
+  const { globalFilter, setGlobalFilter, pagination, setPagination, sorting, setSorting } =
+    useTableSearchParams({
+      search: true,
+      pagination: true,
+      sorting: true,
+    })
+
   const table = useReactTable({
     data,
     columns,
@@ -79,11 +73,8 @@ export default function CategoriesTable({ data }: { data: Category[] }) {
       toolbar={
         <div className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
         </div>

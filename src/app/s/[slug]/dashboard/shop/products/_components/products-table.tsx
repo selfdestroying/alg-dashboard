@@ -8,15 +8,14 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 
 import { ProductWithCategory } from '@/src/actions/products'
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
-import { debounce } from 'es-toolkit'
-import { useMemo, useState } from 'react'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
+import { useMemo } from 'react'
 
 import { Category } from '@/prisma/generated/client'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
@@ -76,17 +75,22 @@ export default function ProductsTable({
     ],
     [categories]
   )
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
+  const {
+    columnFilters,
+    setColumnFilters,
+    globalFilter,
+    setGlobalFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useTableSearchParams({
+    filters: { category: 'string' },
+    search: true,
+    pagination: true,
+    sorting: true,
   })
-  const [sorting, setSorting] = useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
@@ -101,10 +105,12 @@ export default function ProductsTable({
     },
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
 
     state: {
+      columnFilters,
       globalFilter,
       pagination,
       sorting,
@@ -113,7 +119,7 @@ export default function ProductsTable({
 
   const handleCategoryFilterChange = (selectedCategories: TableFilterItem[]) => {
     const selectedValues = selectedCategories.map((category) => category.label.toLowerCase())
-    table.setColumnFilters((prev) => {
+    setColumnFilters((prev) => {
       const filtered = prev.filter((filter) => filter.id !== 'category')
       if (selectedValues.length > 0) {
         filtered.push({
@@ -130,6 +136,13 @@ export default function ProductsTable({
     [categories]
   )
 
+  const selectedCategories = useMemo(() => {
+    const filter = columnFilters.find((f) => f.id === 'category')
+    if (!filter) return []
+    const values = filter.value as string[]
+    return mappedCategories.filter((c) => values.includes(c.label.toLowerCase()))
+  }, [columnFilters, mappedCategories])
+
   return (
     <DataTable
       table={table}
@@ -138,16 +151,14 @@ export default function ProductsTable({
       toolbar={
         <div className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
           <TableFilter
             label="Категория"
             items={mappedCategories}
+            value={selectedCategories}
             onChange={handleCategoryFilterChange}
           />
         </div>

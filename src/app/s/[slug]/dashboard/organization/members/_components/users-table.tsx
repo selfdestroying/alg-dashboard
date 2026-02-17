@@ -3,23 +3,21 @@ import DataTable from '@/src/components/data-table'
 import TableFilter from '@/src/components/table-filter'
 import {
   ColumnDef,
-  ColumnFiltersState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 
 import { Prisma } from '@/prisma/generated/client'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Input } from '@/src/components/ui/input'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { OrganizationRole } from '@/src/lib/auth'
-import { debounce } from 'es-toolkit'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import UsersActions from './users-actions'
 
 interface UsersTableProps {
@@ -78,14 +76,12 @@ const mappedRoles = [
 ]
 
 export default function UsersTable({ data }: UsersTableProps) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [sorting, setSorting] = useState<SortingState>([])
+  const { columnFilters, setColumnFilters, globalFilter, setGlobalFilter, sorting, setSorting } =
+    useTableSearchParams({
+      filters: { role: 'string' },
+      search: true,
+      sorting: true,
+    })
 
   const table = useReactTable({
     data,
@@ -121,6 +117,13 @@ export default function UsersTable({ data }: UsersTableProps) {
     })
   }
 
+  const selectedRoles = useMemo(() => {
+    const filter = columnFilters.find((f) => f.id === 'role')
+    if (!filter) return []
+    const ids = filter.value as string[]
+    return mappedRoles.filter((r) => ids.includes(r.value))
+  }, [columnFilters])
+
   return (
     <DataTable
       table={table}
@@ -128,14 +131,16 @@ export default function UsersTable({ data }: UsersTableProps) {
       toolbar={
         <div className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
-          <TableFilter items={mappedRoles} label="Роль" onChange={handleRoleFilterChange} />
+          <TableFilter
+            items={mappedRoles}
+            label="Роль"
+            value={selectedRoles}
+            onChange={handleRoleFilterChange}
+          />
         </div>
       }
     />
