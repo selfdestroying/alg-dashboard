@@ -9,6 +9,8 @@ import AddPaymentButton from './_components/add-payment-button'
 import PaymentsTable from './_components/payments-table'
 import UnprocessedPaymentTable from './_components/unprocessed-payment-table'
 
+export const metadata = { title: 'Оплаты' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

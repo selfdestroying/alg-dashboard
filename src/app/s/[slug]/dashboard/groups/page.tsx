@@ -15,6 +15,8 @@ import { redirect } from 'next/navigation'
 import CreateGroupDialog from './_components/create-group-dialog'
 import GroupsTable from './_components/groups-table'
 
+export const metadata = { title: 'Группы' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

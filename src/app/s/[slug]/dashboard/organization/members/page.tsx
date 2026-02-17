@@ -14,6 +14,8 @@ import { redirect } from 'next/navigation'
 import CreateUserDialog from './_components/create-user-dialog'
 import UsersTable from './_components/users-table'
 
+export const metadata = { title: 'Пользователи' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

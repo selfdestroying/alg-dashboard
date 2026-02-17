@@ -14,6 +14,8 @@ import { redirect } from 'next/navigation'
 import CreateStudentDialog from './_components/create-student-dialog'
 import StudentsTable from './_components/students-table'
 
+export const metadata = { title: 'Ученики' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

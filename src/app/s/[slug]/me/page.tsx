@@ -16,6 +16,8 @@ import AddCheckButton from '../dashboard/organization/members/[id]/_components/a
 import PayChecksTable from '../dashboard/organization/members/[id]/_components/paycheks-table'
 import UserCard from './_components/user-card'
 
+export const metadata = { title: 'Профиль' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

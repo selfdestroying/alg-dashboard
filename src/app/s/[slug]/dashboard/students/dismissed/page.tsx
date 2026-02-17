@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation'
 import DismissedStudentsTable from './_components/dismissed-table'
 import DismissedStatistics from './statistics/dismissed-statistics'
 
+export const metadata = { title: 'Отчисленные' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

@@ -14,6 +14,8 @@ import { redirect } from 'next/navigation'
 import AddCategoryButton from './_components/add-category-button'
 import CategoriesTable from './_components/categories-table'
 
+export const metadata = { title: 'Категории' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

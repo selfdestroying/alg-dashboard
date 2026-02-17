@@ -15,6 +15,8 @@ import { redirect } from 'next/navigation'
 import AddProductButton from './_components/add-product-button'
 import ProductsTable from './_components/products-table'
 
+export const metadata = { title: 'Товары' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

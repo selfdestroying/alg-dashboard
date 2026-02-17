@@ -11,6 +11,8 @@ import AttendanceTable from './_components/attendance-table'
 import InfoSection from './_components/info-section'
 import LessonTeachersTable from './_components/lesson-teachers-table'
 
+export const metadata = { title: 'Карточка урока' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

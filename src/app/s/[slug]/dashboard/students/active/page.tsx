@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation'
 import ActiveStudentsTable from './_components/active-students-table'
 import ActiveStatistics from './statistics/active-statistics'
 
+export const metadata = { title: 'Активные ученики' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

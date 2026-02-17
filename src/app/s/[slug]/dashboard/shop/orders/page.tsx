@@ -13,6 +13,8 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import OrdersTable from './_components/orders-table'
 
+export const metadata = { title: 'Заказы' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

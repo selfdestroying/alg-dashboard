@@ -10,6 +10,8 @@ import EditStudentDialog from './_components/edit-student-dialog'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
 import StudentCard from './_components/student-card'
 
+export const metadata = { title: 'Карточка ученика' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

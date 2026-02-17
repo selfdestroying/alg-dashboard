@@ -13,6 +13,8 @@ import GroupStudentsTable from './_components/group-students-table'
 import GroupTeachersTable from './_components/group-teachers-table'
 import InfoSection from './_components/info-section'
 
+export const metadata = { title: 'Карточка группы' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

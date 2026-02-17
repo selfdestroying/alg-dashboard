@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation'
 import AbsentAttendanceTable from './_components/absent-attendance-table'
 import AbsentStatistics from './statistics/absent-statistics'
 
+export const metadata = { title: 'Пропустившие' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

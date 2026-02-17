@@ -17,6 +17,8 @@ import EditUserButton from '../_components/edit-user-dialog'
 import AddCheckButton from './_components/add-check-button'
 import PayChecksTable from './_components/paycheks-table'
 
+export const metadata = { title: 'Карточка пользователя' }
+
 const memberRoleLabels = {
   owner: 'Владелец',
   manager: 'Менеджер',
