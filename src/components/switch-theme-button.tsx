@@ -1,6 +1,6 @@
 'use client'
 
-import { Moon, Sun } from 'lucide-react'
+import { Monitor, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import { Button } from '@/src/components/ui/button'
@@ -10,16 +10,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
+import { useSyncExternalStore } from 'react'
 
+const themeNames: Record<string, React.ReactNode> = {
+  light: <Sun />,
+  dark: <Moon />,
+  system: <Monitor />,
+}
 export function SwitchThemeButton() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" size="icon-sm" />}>
-        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-        <span className="sr-only">Переключить тему</span>
+      <DropdownMenuTrigger render={<Button variant="outline" size={'icon'} />}>
+        {mounted && theme && themeNames[theme]}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>Светлая</DropdownMenuItem>

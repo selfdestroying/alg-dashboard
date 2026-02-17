@@ -10,17 +10,19 @@ import EditStudentDialog from './_components/edit-student-dialog'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
 import StudentCard from './_components/student-card'
 
+export const metadata = { title: 'Карточка ученика' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const { id } = await params
   const student = await getStudent({
-    where: { id: Number(id), organizationId: session.members[0].organizationId },
+    where: { id: Number(id), organizationId: session.organizationId! },
     include: {
       groups: {
         include: {
@@ -52,7 +54,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const groups = await getGroups({
     where: {
       students: { none: { studentId: student.id } },
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     include: {
       students: true,

@@ -23,7 +23,7 @@ import { useMappedLocationListQuery } from '@/src/data/location/location-list-qu
 import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { cn, getFullName, getGroupName } from '@/src/lib/utils'
+import { cn, getGroupName } from '@/src/lib/utils'
 import { lessonStatusMap } from '@/src/shared/lesson-status'
 import { cva } from 'class-variance-authority'
 import {
@@ -133,8 +133,8 @@ const datePresets = [
 ]
 
 export default function Salaries() {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const { data: session } = useSessionQuery()
+  const organizationId = session?.organizationId ?? undefined
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
   const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])
@@ -570,9 +570,7 @@ function TeacherCard({ data, paychecks }: TeacherCardProps) {
                   <UserIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">
-                    {getFullName(data.teacher.firstName, data.teacher.lastName)}
-                  </CardTitle>
+                  <CardTitle className="text-base">{data.teacher.name}</CardTitle>
                   {data.teacher.role && (
                     <p className="text-muted-foreground text-xs">{data.teacher.role}</p>
                   )}

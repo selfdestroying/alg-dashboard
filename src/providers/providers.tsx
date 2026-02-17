@@ -3,7 +3,8 @@
 import { getQueryClient } from '@/src/data/query-client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Toaster } from '../components/ui/sonner'
+
+import { Toaster } from '../components/toaster'
 import { ThemeProvider } from './theme-provider'
 
 type Props = {
@@ -23,7 +24,7 @@ const Providers = ({ children }: Props) => {
           position="bottom"
         />
         {children}
-        <Toaster richColors />
+        <Toaster />
       </QueryClientProvider>
     </ThemeProvider>
   )

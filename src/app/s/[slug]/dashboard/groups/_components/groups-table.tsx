@@ -1,15 +1,13 @@
 'use client'
 
+import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Field, FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { DaysOfWeek, getFullName, getGroupName } from '@/src/lib/utils'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
+import { DaysOfWeek, getGroupName } from '@/src/lib/utils'
 import { GroupDTO } from '@/src/types/group'
 import {
   ColumnDef,
@@ -20,12 +18,11 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { debounce } from 'es-toolkit'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useMemo } from 'react'
 
 const columns: ColumnDef<GroupDTO>[] = [
   {
@@ -70,7 +67,7 @@ const columns: ColumnDef<GroupDTO>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.teachers.length - 1 && ', '}
             </span>
@@ -112,10 +109,10 @@ const columns: ColumnDef<GroupDTO>[] = [
   },
   {
     header: 'Ссылка в БО',
-    accessorKey: 'backOfficeUrl',
+    accessorKey: 'url',
     cell: ({ row }) => (
       <a
-        href={row.original.backOfficeUrl || ''}
+        href={row.original.url || ''}
         target="_blank"
         rel="noopener noreferrer"
         className="text-primary truncate hover:underline"
@@ -128,42 +125,46 @@ const columns: ColumnDef<GroupDTO>[] = [
 
 export default function GroupsTable({ data }: { data: GroupDTO[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const handleStudentCountFilterChange = useMemo(
-    () =>
-      debounce((value: [number | undefined, number | undefined]) => {
-        setColumnFilters((old) => {
-          const otherFilters = old.filter((filter) => filter.id !== 'studentCount')
-          const filterValue = value[0] === undefined && value[1] === undefined ? undefined : value
+  const organizationId = session?.organizationId
 
-          if (filterValue === undefined) {
-            return otherFilters
-          }
-
-          return [
-            ...otherFilters,
-            {
-              id: 'studentCount',
-              value: filterValue,
-            },
-          ]
-        })
-      }, 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [studentCountInput, setStudentCountInput] = useState<[string, string]>(['', ''])
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
+  const {
+    columnFilters: baseColumnFilters,
+    setColumnFilters,
+    globalFilter,
+    setGlobalFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useTableSearchParams({
+    filters: { course: 'integer', location: 'integer', teacher: 'integer' },
+    search: true,
+    pagination: true,
+    sorting: true,
   })
-  const [sorting, setSorting] = useState<SortingState>([])
+
+  // Student count range filter — managed separately via URL params
+  const [scMin, setScMin] = useQueryState(
+    'scMin',
+    parseAsInteger.withOptions({ shallow: true, throttleMs: 300 })
+  )
+  const [scMax, setScMax] = useQueryState(
+    'scMax',
+    parseAsInteger.withOptions({ shallow: true, throttleMs: 300 })
+  )
+
+  // Combine base column filters with studentCount range filter
+  const columnFilters: ColumnFiltersState = useMemo(() => {
+    const filters = [...baseColumnFilters]
+    if (scMin !== null || scMax !== null) {
+      filters.push({
+        id: 'studentCount',
+        value: [scMin ?? undefined, scMax ?? undefined],
+      })
+    }
+    return filters
+  }, [baseColumnFilters, scMin, scMax])
+
   const table = useReactTable({
     data,
     columns,
@@ -173,7 +174,7 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
     getFacetedRowModel: getFacetedRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
-      const groupName = row.original.name.toLowerCase()
+      const groupName = getGroupName(row.original).toLowerCase()
       return groupName.includes(searchValue)
     },
     onPaginationChange: setPagination,
@@ -201,25 +202,18 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
       toolbar={
         <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
           <Field>
             <Input
               placeholder="От..."
               type="number"
-              value={studentCountInput[0]}
+              value={scMin ?? ''}
               onChange={(e) => {
                 const val = e.target.value
-                setStudentCountInput((prev) => [val, prev[1]])
-                handleStudentCountFilterChange([
-                  val ? Number(val) : undefined,
-                  studentCountInput[1] ? Number(studentCountInput[1]) : undefined,
-                ])
+                setScMin(val ? Number(val) : null)
               }}
             />
           </Field>
@@ -227,108 +221,20 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
             <Input
               placeholder="До..."
               type="number"
-              value={studentCountInput[1]}
+              value={scMax ?? ''}
               onChange={(e) => {
                 const val = e.target.value
-                setStudentCountInput((prev) => [prev[0], val])
-                handleStudentCountFilterChange([
-                  studentCountInput[0] ? Number(studentCountInput[0]) : undefined,
-                  val ? Number(val) : undefined,
-                ])
+                setScMax(val ? Number(val) : null)
               }}
             />
           </Field>
-          <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
+          <CourseLocationTeacherFilters
+            organizationId={organizationId!}
+            columnFilters={baseColumnFilters}
+            setFilters={setColumnFilters}
+          />
         </FieldGroup>
       }
     />
-  )
-}
-
-interface FiltersProps {
-  organizationId: number
-  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
-}
-
-function Filters({ organizationId, setFilters }: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
-
-  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
-    return (
-      <>
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-      </>
-    )
-  }
-
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
-    })
-  }
-
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
-
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
-
-  return (
-    <>
-      {courses ? (
-        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {locations ? (
-        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {mappedUsers ? (
-        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-    </>
   )
 }

@@ -57,7 +57,7 @@ import CreateMakeUpForm from './create-makeup-dialog'
 
 const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents }) => {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [makeupOpen, setMakeupOpen] = useState(false)
@@ -120,23 +120,23 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
       }
       toast.promise(
         (async () => {
-          if (attendance.missedMakeup && attendance.missedMakeup.makeUpAttendaceId)
-            await deleteAttendance({ where: { id: attendance.missedMakeup.makeUpAttendaceId } })
+          if (attendance.missedMakeup && attendance.missedMakeup.makeUpAttendanceId)
+            await deleteAttendance({ where: { id: attendance.missedMakeup.makeUpAttendanceId } })
           const a = await createAttendance({
-            organizationId,
+            organizationId: organizationId!,
             studentId: attendance.studentId,
             lessonId: selectedLesson?.value,
             comment: '',
             status: 'UNSPECIFIED',
           })
           await createMakeUp({
-            organizationId,
+            organizationId: organizationId!,
             missedAttendanceId: attendance.id,
-            makeUpAttendaceId: a.id,
+            makeUpAttendanceId: a.id,
           })
           await updateStudent(
             {
-              where: { id: attendance.studentId, organizationId },
+              where: { id: attendance.studentId, organizationId: organizationId! },
               data: { lessonsBalance: { increment: 1 } },
             },
             {
@@ -144,7 +144,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
                 reason: StudentLessonsBalanceChangeReason.MAKEUP_GRANTED,
                 meta: {
                   missedAttendanceId: attendance.id,
-                  makeUpAttendaceId: a.id,
+                  makeUpAttendanceId: a.id,
                   makeUpLessonId: selectedLesson?.value,
                   makeUpLessonName: selectedLesson.label,
                 },

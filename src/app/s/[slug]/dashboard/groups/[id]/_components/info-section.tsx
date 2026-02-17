@@ -98,9 +98,6 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
             </div>
             <div className="truncate">
               {toZonedTime(group.startDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}
-              {group?.endDate
-                ? ` - ${toZonedTime(group.endDate, 'Europe/Moscow').toLocaleDateString('ru-RU')}`
-                : ''}{' '}
             </div>
           </div>
           <div className="flex flex-col">
@@ -111,14 +108,9 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
               </span>
             </div>
             <div className="text-primary truncate hover:underline">
-              {group.backOfficeUrl ? (
-                <a
-                  href={group.backOfficeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={group.backOfficeUrl}
-                >
-                  {group.backOfficeUrl}
+              {group.url ? (
+                <a href={group.url} target="_blank" rel="noopener noreferrer" title={group.url}>
+                  {group.url}
                 </a>
               ) : (
                 '-'

@@ -1,17 +1,15 @@
 'use client'
 import { AttendanceWithStudents } from '@/src/actions/attendance'
+import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import {
   ColumnDef,
@@ -22,15 +20,14 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { startOfDay } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
-import { debounce } from 'es-toolkit'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { parseAsIsoDate, useQueryState } from 'nuqs'
+import { useMemo } from 'react'
 import { DateRange } from 'react-day-picker'
 
 const columns: ColumnDef<AttendanceWithStudents>[] = [
@@ -44,6 +41,19 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
       >
         {getFullName(row.original.student.firstName, row.original.student.lastName)}
       </Link>
+    ),
+  },
+  {
+    header: 'Ссылка',
+    cell: ({ row }) => (
+      <a
+        href={row.original.student.url ?? '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline"
+      >
+        Ссылка
+      </a>
     ),
   },
   {
@@ -76,7 +86,7 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < teachers.length - 1 && ', '}
             </span>
@@ -118,20 +128,57 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
 
 export default function StudentsTable({ data }: { data: AttendanceWithStudents[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
+  const organizationId = session?.organizationId
+
+  const {
+    columnFilters: baseColumnFilters,
+    setColumnFilters,
+    globalFilter,
+    setGlobalFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useTableSearchParams({
+    filters: { course: 'integer', location: 'integer', teacher: 'integer' },
+    search: true,
+    pagination: true,
+    sorting: true,
   })
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [range, setRange] = useState<DateRange | undefined>(undefined)
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
+  // Date range filter — managed separately via URL params
+  const [dateFrom, setDateFrom] = useQueryState(
+    'dateFrom',
+    parseAsIsoDate.withOptions({ shallow: true })
+  )
+  const [dateTo, setDateTo] = useQueryState('dateTo', parseAsIsoDate.withOptions({ shallow: true }))
+
+  const range: DateRange | undefined = useMemo(() => {
+    if (dateFrom && dateTo) return { from: dateFrom, to: dateTo }
+    if (dateFrom) return { from: dateFrom }
+    return undefined
+  }, [dateFrom, dateTo])
+
+  // Combine base column filters with date range filter
+  const columnFilters: ColumnFiltersState = useMemo(() => {
+    const filters = [...baseColumnFilters]
+    if (dateFrom && dateTo) {
+      filters.push({
+        id: 'date',
+        value: {
+          from: fromZonedTime(dateFrom, 'Europe/Moscow'),
+          to: fromZonedTime(dateTo, 'Europe/Moscow'),
+        },
+      })
+    }
+    return filters
+  }, [baseColumnFilters, dateFrom, dateTo])
+
+  const handleDateRangeChangeFilter = (newRange: DateRange | undefined) => {
+    setDateFrom(newRange?.from ?? null)
+    setDateTo(newRange?.to ?? null)
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -162,27 +209,6 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     },
   })
 
-  const handleDateRangeChangeFilter = (range: DateRange | undefined) => {
-    if (range?.from && range?.to) {
-      const fromDate = fromZonedTime(range.from, 'Europe/Moscow')
-      const toDate = fromZonedTime(range.to, 'Europe/Moscow')
-
-      setColumnFilters((prev) => {
-        const filtered = prev.filter((filter) => filter.id !== 'date')
-        return [
-          ...filtered,
-          {
-            id: 'date',
-            value: { from: fromDate, to: toDate },
-          },
-        ]
-      })
-    } else {
-      setColumnFilters((prev) => prev.filter((filter) => filter.id !== 'date'))
-    }
-    setRange(range)
-  }
-
   if (isSessionLoading || !session) {
     return <Skeleton className="h-full w-full" />
   }
@@ -195,14 +221,15 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
       toolbar={
         <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
-          <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
+          <CourseLocationTeacherFilters
+            organizationId={organizationId!}
+            columnFilters={baseColumnFilters}
+            setFilters={setColumnFilters}
+          />
           <Popover>
             <PopoverTrigger
               render={
@@ -233,90 +260,5 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
         </FieldGroup>
       }
     />
-  )
-}
-
-interface FiltersProps {
-  organizationId: number
-  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
-}
-
-function Filters({ organizationId, setFilters }: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
-
-  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
-    return (
-      <>
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-      </>
-    )
-  }
-
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
-    })
-  }
-
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
-
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
-
-  return (
-    <>
-      {courses ? (
-        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {locations ? (
-        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {mappedUsers ? (
-        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-    </>
   )
 }

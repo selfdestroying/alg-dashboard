@@ -9,27 +9,29 @@ import AddPaymentButton from './_components/add-payment-button'
 import PaymentsTable from './_components/payments-table'
 import UnprocessedPaymentTable from './_components/unprocessed-payment-table'
 
+export const metadata = { title: 'Оплаты' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const payments = await getPayments({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     include: {
       student: true,
     },
     orderBy: { createdAt: 'desc' },
   })
   const unprocessedPayments = await getUnprocessedPayments({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     orderBy: { createdAt: 'desc' },
   })
   const students = await getStudents({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     orderBy: { id: 'asc' },
   })
 

@@ -10,12 +10,14 @@ import {
 import { ItemGroup } from '@/src/components/ui/item'
 import { auth, OrganizationRole } from '@/src/lib/auth'
 import prisma from '@/src/lib/prisma'
-import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
+import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import EditUserButton from '../_components/edit-user-dialog'
 import AddCheckButton from './_components/add-check-button'
 import PayChecksTable from './_components/paycheks-table'
+
+export const metadata = { title: 'Карточка пользователя' }
 
 const memberRoleLabels = {
   owner: 'Владелец',
@@ -28,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
 
@@ -47,7 +49,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const member = await prisma.member.findFirst({
     where: {
       userId: Number(id),
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     include: {
       user: true,
@@ -61,7 +63,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const paychecks = await prisma.payCheck.findMany({
     where: {
       userId: member.userId,
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
     orderBy: { date: 'asc' },
   })
@@ -75,11 +77,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div className="flex items-center gap-2">
               <Avatar>
                 <AvatarFallback>
-                  {member.user.firstName?.[0]?.toUpperCase()}
-                  {member.user.lastName?.[0]?.toUpperCase()}
+                  {member.user.name?.split(' ')[0]?.[0]?.toUpperCase()}
+                  {member.user.name?.split(' ')[1]?.[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {getFullName(member.user.firstName, member.user.lastName)}
+              {member.user.name}
             </div>
           </CardTitle>
           <CardDescription>
@@ -124,7 +126,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </CardDescription>
           <CardAction>
             <AddCheckButton
-              organizationId={session.members[0].organizationId}
+              organizationId={session.organizationId!}
               userId={member.userId}
               userName={member.user.name}
             />

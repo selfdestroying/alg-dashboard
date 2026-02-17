@@ -13,16 +13,18 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import OrdersTable from './_components/orders-table'
 
+export const metadata = { title: 'Заказы' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const orders = await getOrders({
-    where: { organizationId: session.members[0].organizationId },
+    where: { organizationId: session.organizationId! },
     include: { product: true, student: true },
     orderBy: { createdAt: 'desc' },
   })

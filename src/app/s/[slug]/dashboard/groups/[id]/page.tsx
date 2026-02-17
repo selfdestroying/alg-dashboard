@@ -13,17 +13,19 @@ import GroupStudentsTable from './_components/group-students-table'
 import GroupTeachersTable from './_components/group-teachers-table'
 import InfoSection from './_components/info-section'
 
+export const metadata = { title: 'Карточка группы' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const id = (await params).id
   const group = await getGroup({
-    where: { id: Number(id), organizationId: session.members[0].organizationId },
+    where: { id: Number(id), organizationId: session.organizationId! },
     include: {
       lessons: {
         orderBy: { date: 'asc' },
@@ -59,7 +61,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const students = await getStudents({
     where: {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
       groups: {
         none: { studentId: { in: group.students.map((gs) => gs.studentId) } },
       },

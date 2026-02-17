@@ -28,77 +28,64 @@ export type AggregateGroup = {
 
 export type GroupAvgAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  courseId: number | null
   dayOfWeek: number | null
   maxStudents: number | null
-  lessonCount: number | null
-  lessonPerWeek: number | null
+  organizationId: number | null
+  courseId: number | null
   locationId: number | null
 }
 
 export type GroupSumAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  courseId: number | null
   dayOfWeek: number | null
   maxStudents: number | null
-  lessonCount: number | null
-  lessonPerWeek: number | null
+  organizationId: number | null
+  courseId: number | null
   locationId: number | null
 }
 
 export type GroupMinAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  name: string | null
-  courseId: number | null
-  type: $Enums.GroupType | null
   startDate: Date | null
-  endDate: Date | null
   dayOfWeek: number | null
   time: string | null
   maxStudents: number | null
+  url: string | null
+  type: $Enums.GroupType | null
   createdAt: Date | null
-  backOfficeUrl: string | null
-  lessonCount: number | null
-  lessonPerWeek: number | null
+  updatedAt: Date | null
+  organizationId: number | null
+  courseId: number | null
   locationId: number | null
 }
 
 export type GroupMaxAggregateOutputType = {
   id: number | null
-  organizationId: number | null
-  name: string | null
-  courseId: number | null
-  type: $Enums.GroupType | null
   startDate: Date | null
-  endDate: Date | null
   dayOfWeek: number | null
   time: string | null
   maxStudents: number | null
+  url: string | null
+  type: $Enums.GroupType | null
   createdAt: Date | null
-  backOfficeUrl: string | null
-  lessonCount: number | null
-  lessonPerWeek: number | null
+  updatedAt: Date | null
+  organizationId: number | null
+  courseId: number | null
   locationId: number | null
 }
 
 export type GroupCountAggregateOutputType = {
   id: number
-  organizationId: number
-  name: number
-  courseId: number
-  type: number
   startDate: number
-  endDate: number
   dayOfWeek: number
   time: number
   maxStudents: number
+  url: number
+  type: number
   createdAt: number
-  backOfficeUrl: number
-  lessonCount: number
-  lessonPerWeek: number
+  updatedAt: number
+  organizationId: number
+  courseId: number
   locationId: number
   _all: number
 }
@@ -106,77 +93,64 @@ export type GroupCountAggregateOutputType = {
 
 export type GroupAvgAggregateInputType = {
   id?: true
-  organizationId?: true
-  courseId?: true
   dayOfWeek?: true
   maxStudents?: true
-  lessonCount?: true
-  lessonPerWeek?: true
+  organizationId?: true
+  courseId?: true
   locationId?: true
 }
 
 export type GroupSumAggregateInputType = {
   id?: true
-  organizationId?: true
-  courseId?: true
   dayOfWeek?: true
   maxStudents?: true
-  lessonCount?: true
-  lessonPerWeek?: true
+  organizationId?: true
+  courseId?: true
   locationId?: true
 }
 
 export type GroupMinAggregateInputType = {
   id?: true
-  organizationId?: true
-  name?: true
-  courseId?: true
-  type?: true
   startDate?: true
-  endDate?: true
   dayOfWeek?: true
   time?: true
   maxStudents?: true
+  url?: true
+  type?: true
   createdAt?: true
-  backOfficeUrl?: true
-  lessonCount?: true
-  lessonPerWeek?: true
+  updatedAt?: true
+  organizationId?: true
+  courseId?: true
   locationId?: true
 }
 
 export type GroupMaxAggregateInputType = {
   id?: true
-  organizationId?: true
-  name?: true
-  courseId?: true
-  type?: true
   startDate?: true
-  endDate?: true
   dayOfWeek?: true
   time?: true
   maxStudents?: true
+  url?: true
+  type?: true
   createdAt?: true
-  backOfficeUrl?: true
-  lessonCount?: true
-  lessonPerWeek?: true
+  updatedAt?: true
+  organizationId?: true
+  courseId?: true
   locationId?: true
 }
 
 export type GroupCountAggregateInputType = {
   id?: true
-  organizationId?: true
-  name?: true
-  courseId?: true
-  type?: true
   startDate?: true
-  endDate?: true
   dayOfWeek?: true
   time?: true
   maxStudents?: true
+  url?: true
+  type?: true
   createdAt?: true
-  backOfficeUrl?: true
-  lessonCount?: true
-  lessonPerWeek?: true
+  updatedAt?: true
+  organizationId?: true
+  courseId?: true
   locationId?: true
   _all?: true
 }
@@ -269,20 +243,17 @@ export type GroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type GroupGroupByOutputType = {
   id: number
-  organizationId: number
-  name: string
-  courseId: number
-  type: $Enums.GroupType | null
   startDate: Date
-  endDate: Date | null
-  dayOfWeek: number | null
-  time: string | null
+  dayOfWeek: number
+  time: string
   maxStudents: number
+  url: string | null
+  type: $Enums.GroupType | null
   createdAt: Date
-  backOfficeUrl: string | null
-  lessonCount: number | null
-  lessonPerWeek: number | null
-  locationId: number | null
+  updatedAt: Date
+  organizationId: number
+  courseId: number
+  locationId: number
   _count: GroupCountAggregateOutputType | null
   _avg: GroupAvgAggregateOutputType | null
   _sum: GroupSumAggregateOutputType | null
@@ -310,21 +281,18 @@ export type GroupWhereInput = {
   OR?: Prisma.GroupWhereInput[]
   NOT?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
   id?: Prisma.IntFilter<"Group"> | number
-  organizationId?: Prisma.IntFilter<"Group"> | number
-  name?: Prisma.StringFilter<"Group"> | string
-  courseId?: Prisma.IntFilter<"Group"> | number
-  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFilter<"Group"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"Group"> | Date | string | null
-  dayOfWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  time?: Prisma.StringNullableFilter<"Group"> | string | null
+  dayOfWeek?: Prisma.IntFilter<"Group"> | number
+  time?: Prisma.StringFilter<"Group"> | string
   maxStudents?: Prisma.IntFilter<"Group"> | number
+  url?: Prisma.StringNullableFilter<"Group"> | string | null
+  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-  backOfficeUrl?: Prisma.StringNullableFilter<"Group"> | string | null
-  lessonCount?: Prisma.IntNullableFilter<"Group"> | number | null
-  lessonPerWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  locationId?: Prisma.IntNullableFilter<"Group"> | number | null
-  location?: Prisma.XOR<Prisma.LocationNullableScalarRelationFilter, Prisma.LocationWhereInput> | null
+  updatedAt?: Prisma.DateTimeFilter<"Group"> | Date | string
+  organizationId?: Prisma.IntFilter<"Group"> | number
+  courseId?: Prisma.IntFilter<"Group"> | number
+  locationId?: Prisma.IntFilter<"Group"> | number
+  location?: Prisma.XOR<Prisma.LocationScalarRelationFilter, Prisma.LocationWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lessons?: Prisma.LessonListRelationFilter
@@ -335,20 +303,17 @@ export type GroupWhereInput = {
 
 export type GroupOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  type?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
-  time?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  time?: Prisma.SortOrder
   maxStudents?: Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  backOfficeUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  lessonCount?: Prisma.SortOrderInput | Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrderInput | Prisma.SortOrder
-  locationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
   location?: Prisma.LocationOrderByWithRelationInput
   course?: Prisma.CourseOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -363,21 +328,18 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
   OR?: Prisma.GroupWhereInput[]
   NOT?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
-  organizationId?: Prisma.IntFilter<"Group"> | number
-  name?: Prisma.StringFilter<"Group"> | string
-  courseId?: Prisma.IntFilter<"Group"> | number
-  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFilter<"Group"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"Group"> | Date | string | null
-  dayOfWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  time?: Prisma.StringNullableFilter<"Group"> | string | null
+  dayOfWeek?: Prisma.IntFilter<"Group"> | number
+  time?: Prisma.StringFilter<"Group"> | string
   maxStudents?: Prisma.IntFilter<"Group"> | number
+  url?: Prisma.StringNullableFilter<"Group"> | string | null
+  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-  backOfficeUrl?: Prisma.StringNullableFilter<"Group"> | string | null
-  lessonCount?: Prisma.IntNullableFilter<"Group"> | number | null
-  lessonPerWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  locationId?: Prisma.IntNullableFilter<"Group"> | number | null
-  location?: Prisma.XOR<Prisma.LocationNullableScalarRelationFilter, Prisma.LocationWhereInput> | null
+  updatedAt?: Prisma.DateTimeFilter<"Group"> | Date | string
+  organizationId?: Prisma.IntFilter<"Group"> | number
+  courseId?: Prisma.IntFilter<"Group"> | number
+  locationId?: Prisma.IntFilter<"Group"> | number
+  location?: Prisma.XOR<Prisma.LocationScalarRelationFilter, Prisma.LocationWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lessons?: Prisma.LessonListRelationFilter
@@ -388,20 +350,17 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
 
 export type GroupOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  type?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
-  time?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  time?: Prisma.SortOrder
   maxStudents?: Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  backOfficeUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  lessonCount?: Prisma.SortOrderInput | Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrderInput | Prisma.SortOrder
-  locationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
   _count?: Prisma.GroupCountOrderByAggregateInput
   _avg?: Prisma.GroupAvgOrderByAggregateInput
   _max?: Prisma.GroupMaxOrderByAggregateInput
@@ -414,37 +373,31 @@ export type GroupScalarWhereWithAggregatesInput = {
   OR?: Prisma.GroupScalarWhereWithAggregatesInput[]
   NOT?: Prisma.GroupScalarWhereWithAggregatesInput | Prisma.GroupScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Group"> | number
-  organizationId?: Prisma.IntWithAggregatesFilter<"Group"> | number
-  name?: Prisma.StringWithAggregatesFilter<"Group"> | string
-  courseId?: Prisma.IntWithAggregatesFilter<"Group"> | number
-  type?: Prisma.EnumGroupTypeNullableWithAggregatesFilter<"Group"> | $Enums.GroupType | null
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Group"> | Date | string
-  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Group"> | Date | string | null
-  dayOfWeek?: Prisma.IntNullableWithAggregatesFilter<"Group"> | number | null
-  time?: Prisma.StringNullableWithAggregatesFilter<"Group"> | string | null
+  dayOfWeek?: Prisma.IntWithAggregatesFilter<"Group"> | number
+  time?: Prisma.StringWithAggregatesFilter<"Group"> | string
   maxStudents?: Prisma.IntWithAggregatesFilter<"Group"> | number
+  url?: Prisma.StringNullableWithAggregatesFilter<"Group"> | string | null
+  type?: Prisma.EnumGroupTypeNullableWithAggregatesFilter<"Group"> | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Group"> | Date | string
-  backOfficeUrl?: Prisma.StringNullableWithAggregatesFilter<"Group"> | string | null
-  lessonCount?: Prisma.IntNullableWithAggregatesFilter<"Group"> | number | null
-  lessonPerWeek?: Prisma.IntNullableWithAggregatesFilter<"Group"> | number | null
-  locationId?: Prisma.IntNullableWithAggregatesFilter<"Group"> | number | null
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Group"> | Date | string
+  organizationId?: Prisma.IntWithAggregatesFilter<"Group"> | number
+  courseId?: Prisma.IntWithAggregatesFilter<"Group"> | number
+  locationId?: Prisma.IntWithAggregatesFilter<"Group"> | number
 }
 
 export type GroupCreateInput = {
-  name: string
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
   course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
   lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
   students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
   teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
@@ -453,20 +406,17 @@ export type GroupCreateInput = {
 
 export type GroupUncheckedCreateInput = {
   id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
   students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
   teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
@@ -474,18 +424,15 @@ export type GroupUncheckedCreateInput = {
 }
 
 export type GroupUpdateInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
   lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
@@ -496,20 +443,17 @@ export type GroupUpdateInput = {
 
 export type GroupUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
   students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
   teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
@@ -518,128 +462,43 @@ export type GroupUncheckedUpdateInput = {
 
 export type GroupCreateManyInput = {
   id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
 }
 
 export type GroupUpdateManyMutationInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GroupUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-}
-
-export type GroupCountOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrder
-  time?: Prisma.SortOrder
-  maxStudents?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  backOfficeUrl?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrder
-  locationId?: Prisma.SortOrder
-}
-
-export type GroupAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrder
-  maxStudents?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrder
-  locationId?: Prisma.SortOrder
-}
-
-export type GroupMaxOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrder
-  time?: Prisma.SortOrder
-  maxStudents?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  backOfficeUrl?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrder
-  locationId?: Prisma.SortOrder
-}
-
-export type GroupMinOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrder
-  time?: Prisma.SortOrder
-  maxStudents?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  backOfficeUrl?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrder
-  locationId?: Prisma.SortOrder
-}
-
-export type GroupSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
-  courseId?: Prisma.SortOrder
-  dayOfWeek?: Prisma.SortOrder
-  maxStudents?: Prisma.SortOrder
-  lessonCount?: Prisma.SortOrder
-  lessonPerWeek?: Prisma.SortOrder
-  locationId?: Prisma.SortOrder
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type GroupListRelationFilter = {
@@ -652,9 +511,114 @@ export type GroupOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type GroupCountOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  time?: Prisma.SortOrder
+  maxStudents?: Prisma.SortOrder
+  url?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
+}
+
+export type GroupAvgOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  maxStudents?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
+}
+
+export type GroupMaxOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  time?: Prisma.SortOrder
+  maxStudents?: Prisma.SortOrder
+  url?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
+}
+
+export type GroupMinOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  time?: Prisma.SortOrder
+  maxStudents?: Prisma.SortOrder
+  url?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
+}
+
+export type GroupSumOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  maxStudents?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  courseId?: Prisma.SortOrder
+  locationId?: Prisma.SortOrder
+}
+
 export type GroupScalarRelationFilter = {
   is?: Prisma.GroupWhereInput
   isNot?: Prisma.GroupWhereInput
+}
+
+export type GroupCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
+  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+}
+
+export type GroupUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
+  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+}
+
+export type GroupUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
+  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  update?: Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
+}
+
+export type GroupUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
+  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+  update?: Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
 }
 
 export type NullableEnumGroupTypeFieldUpdateOperationsInput = {
@@ -745,6 +709,20 @@ export type GroupUncheckedUpdateManyWithoutCourseNestedInput = {
   deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
 }
 
+export type GroupCreateNestedOneWithoutLessonsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutLessonsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutLessonsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutLessonsInput
+  upsert?: Prisma.GroupUpsertWithoutLessonsInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutLessonsInput, Prisma.GroupUpdateWithoutLessonsInput>, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
+}
+
 export type GroupCreateNestedOneWithoutStudentsInput = {
   create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
   connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentsInput
@@ -787,622 +765,16 @@ export type GroupUpdateOneRequiredWithoutTeachersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutTeachersInput, Prisma.GroupUpdateWithoutTeachersInput>, Prisma.GroupUncheckedUpdateWithoutTeachersInput>
 }
 
-export type GroupCreateNestedOneWithoutLessonsInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutLessonsInput
-  connect?: Prisma.GroupWhereUniqueInput
-}
-
-export type GroupUpdateOneRequiredWithoutLessonsNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutLessonsInput
-  upsert?: Prisma.GroupUpsertWithoutLessonsInput
-  connect?: Prisma.GroupWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutLessonsInput, Prisma.GroupUpdateWithoutLessonsInput>, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
-}
-
-export type GroupCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-}
-
-export type GroupUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-}
-
-export type GroupUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutOrganizationInput, Prisma.GroupUncheckedCreateWithoutOrganizationInput> | Prisma.GroupCreateWithoutOrganizationInput[] | Prisma.GroupUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutOrganizationInput | Prisma.GroupCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.GroupCreateManyOrganizationInputEnvelope
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.GroupUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput | Prisma.GroupUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupCreateWithoutLocationInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutLocationInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutLocationInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutLocationInput, Prisma.GroupUncheckedCreateWithoutLocationInput>
-}
-
-export type GroupCreateManyLocationInputEnvelope = {
-  data: Prisma.GroupCreateManyLocationInput | Prisma.GroupCreateManyLocationInput[]
-  skipDuplicates?: boolean
-}
-
-export type GroupUpsertWithWhereUniqueWithoutLocationInput = {
-  where: Prisma.GroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutLocationInput, Prisma.GroupUncheckedUpdateWithoutLocationInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutLocationInput, Prisma.GroupUncheckedCreateWithoutLocationInput>
-}
-
-export type GroupUpdateWithWhereUniqueWithoutLocationInput = {
-  where: Prisma.GroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutLocationInput, Prisma.GroupUncheckedUpdateWithoutLocationInput>
-}
-
-export type GroupUpdateManyWithWhereWithoutLocationInput = {
-  where: Prisma.GroupScalarWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutLocationInput>
-}
-
-export type GroupScalarWhereInput = {
-  AND?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-  OR?: Prisma.GroupScalarWhereInput[]
-  NOT?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-  id?: Prisma.IntFilter<"Group"> | number
-  organizationId?: Prisma.IntFilter<"Group"> | number
-  name?: Prisma.StringFilter<"Group"> | string
-  courseId?: Prisma.IntFilter<"Group"> | number
-  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFilter<"Group"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"Group"> | Date | string | null
-  dayOfWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  time?: Prisma.StringNullableFilter<"Group"> | string | null
-  maxStudents?: Prisma.IntFilter<"Group"> | number
-  createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-  backOfficeUrl?: Prisma.StringNullableFilter<"Group"> | string | null
-  lessonCount?: Prisma.IntNullableFilter<"Group"> | number | null
-  lessonPerWeek?: Prisma.IntNullableFilter<"Group"> | number | null
-  locationId?: Prisma.IntNullableFilter<"Group"> | number | null
-}
-
-export type GroupCreateWithoutCourseInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutCourseInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutCourseInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutCourseInput, Prisma.GroupUncheckedCreateWithoutCourseInput>
-}
-
-export type GroupCreateManyCourseInputEnvelope = {
-  data: Prisma.GroupCreateManyCourseInput | Prisma.GroupCreateManyCourseInput[]
-  skipDuplicates?: boolean
-}
-
-export type GroupUpsertWithWhereUniqueWithoutCourseInput = {
-  where: Prisma.GroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutCourseInput, Prisma.GroupUncheckedUpdateWithoutCourseInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutCourseInput, Prisma.GroupUncheckedCreateWithoutCourseInput>
-}
-
-export type GroupUpdateWithWhereUniqueWithoutCourseInput = {
-  where: Prisma.GroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutCourseInput, Prisma.GroupUncheckedUpdateWithoutCourseInput>
-}
-
-export type GroupUpdateManyWithWhereWithoutCourseInput = {
-  where: Prisma.GroupScalarWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutCourseInput>
-}
-
-export type GroupCreateWithoutStudentsInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
-  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutStudentsInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutStudentsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
-}
-
-export type GroupUpsertWithoutStudentsInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutStudentsInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
-}
-
-export type GroupUpdateWithoutStudentsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
-  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutStudentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateWithoutDismissedsInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
-  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutDismissedsInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutDismissedsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutDismissedsInput, Prisma.GroupUncheckedCreateWithoutDismissedsInput>
-}
-
-export type GroupUpsertWithoutDismissedsInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutDismissedsInput, Prisma.GroupUncheckedUpdateWithoutDismissedsInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutDismissedsInput, Prisma.GroupUncheckedCreateWithoutDismissedsInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutDismissedsInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutDismissedsInput, Prisma.GroupUncheckedUpdateWithoutDismissedsInput>
-}
-
-export type GroupUpdateWithoutDismissedsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
-  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutDismissedsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateWithoutTeachersInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
-  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutTeachersInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
-  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutTeachersInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutTeachersInput, Prisma.GroupUncheckedCreateWithoutTeachersInput>
-}
-
-export type GroupUpsertWithoutTeachersInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutTeachersInput, Prisma.GroupUncheckedUpdateWithoutTeachersInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutTeachersInput, Prisma.GroupUncheckedCreateWithoutTeachersInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutTeachersInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutTeachersInput, Prisma.GroupUncheckedUpdateWithoutTeachersInput>
-}
-
-export type GroupUpdateWithoutTeachersInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
-  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutTeachersInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateWithoutLessonsInput = {
-  name: string
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
-  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
-  organization?: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
-  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutLessonsInput = {
-  id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
-  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
-  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutLessonsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
-}
-
-export type GroupUpsertWithoutLessonsInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutLessonsInput, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutLessonsInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutLessonsInput, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
-}
-
-export type GroupUpdateWithoutLessonsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
-  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
-  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutLessonsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
-}
-
 export type GroupCreateWithoutOrganizationInput = {
-  name: string
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  location?: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
   course: Prisma.CourseCreateNestedOneWithoutGroupsInput
   lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
   students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
@@ -1412,19 +784,16 @@ export type GroupCreateWithoutOrganizationInput = {
 
 export type GroupUncheckedCreateWithoutOrganizationInput = {
   id?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
+  updatedAt?: Date | string
+  courseId: number
+  locationId: number
   lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
   students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
   teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
@@ -1457,35 +826,576 @@ export type GroupUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutOrganizationInput>
 }
 
+export type GroupScalarWhereInput = {
+  AND?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
+  OR?: Prisma.GroupScalarWhereInput[]
+  NOT?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
+  id?: Prisma.IntFilter<"Group"> | number
+  startDate?: Prisma.DateTimeFilter<"Group"> | Date | string
+  dayOfWeek?: Prisma.IntFilter<"Group"> | number
+  time?: Prisma.StringFilter<"Group"> | string
+  maxStudents?: Prisma.IntFilter<"Group"> | number
+  url?: Prisma.StringNullableFilter<"Group"> | string | null
+  type?: Prisma.EnumGroupTypeNullableFilter<"Group"> | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Group"> | Date | string
+  organizationId?: Prisma.IntFilter<"Group"> | number
+  courseId?: Prisma.IntFilter<"Group"> | number
+  locationId?: Prisma.IntFilter<"Group"> | number
+}
+
+export type GroupCreateWithoutLocationInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutLocationInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutLocationInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutLocationInput, Prisma.GroupUncheckedCreateWithoutLocationInput>
+}
+
+export type GroupCreateManyLocationInputEnvelope = {
+  data: Prisma.GroupCreateManyLocationInput | Prisma.GroupCreateManyLocationInput[]
+  skipDuplicates?: boolean
+}
+
+export type GroupUpsertWithWhereUniqueWithoutLocationInput = {
+  where: Prisma.GroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutLocationInput, Prisma.GroupUncheckedUpdateWithoutLocationInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutLocationInput, Prisma.GroupUncheckedCreateWithoutLocationInput>
+}
+
+export type GroupUpdateWithWhereUniqueWithoutLocationInput = {
+  where: Prisma.GroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutLocationInput, Prisma.GroupUncheckedUpdateWithoutLocationInput>
+}
+
+export type GroupUpdateManyWithWhereWithoutLocationInput = {
+  where: Prisma.GroupScalarWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutLocationInput>
+}
+
+export type GroupCreateWithoutCourseInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutCourseInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  locationId: number
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutCourseInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutCourseInput, Prisma.GroupUncheckedCreateWithoutCourseInput>
+}
+
+export type GroupCreateManyCourseInputEnvelope = {
+  data: Prisma.GroupCreateManyCourseInput | Prisma.GroupCreateManyCourseInput[]
+  skipDuplicates?: boolean
+}
+
+export type GroupUpsertWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.GroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutCourseInput, Prisma.GroupUncheckedUpdateWithoutCourseInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutCourseInput, Prisma.GroupUncheckedCreateWithoutCourseInput>
+}
+
+export type GroupUpdateWithWhereUniqueWithoutCourseInput = {
+  where: Prisma.GroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutCourseInput, Prisma.GroupUncheckedUpdateWithoutCourseInput>
+}
+
+export type GroupUpdateManyWithWhereWithoutCourseInput = {
+  where: Prisma.GroupScalarWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutCourseInput>
+}
+
+export type GroupCreateWithoutLessonsInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutLessonsInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
+  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutLessonsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
+}
+
+export type GroupUpsertWithoutLessonsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutLessonsInput, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutLessonsInput, Prisma.GroupUncheckedCreateWithoutLessonsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutLessonsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutLessonsInput, Prisma.GroupUncheckedUpdateWithoutLessonsInput>
+}
+
+export type GroupUpdateWithoutLessonsInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
+  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutLessonsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutStudentsInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutStudentsInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutStudentsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
+}
+
+export type GroupUpsertWithoutStudentsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutStudentsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
+}
+
+export type GroupUpdateWithoutStudentsInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutStudentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutDismissedsInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutDismissedsInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
+  teachers?: Prisma.TeacherGroupUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutDismissedsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutDismissedsInput, Prisma.GroupUncheckedCreateWithoutDismissedsInput>
+}
+
+export type GroupUpsertWithoutDismissedsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutDismissedsInput, Prisma.GroupUncheckedUpdateWithoutDismissedsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutDismissedsInput, Prisma.GroupUncheckedCreateWithoutDismissedsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutDismissedsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutDismissedsInput, Prisma.GroupUncheckedUpdateWithoutDismissedsInput>
+}
+
+export type GroupUpdateWithoutDismissedsInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutDismissedsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutTeachersInput = {
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  location: Prisma.LocationCreateNestedOneWithoutGroupsInput
+  course: Prisma.CourseCreateNestedOneWithoutGroupsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutGroupsInput
+  lessons?: Prisma.LessonCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutTeachersInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
+  locationId: number
+  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutGroupInput
+  students?: Prisma.StudentGroupUncheckedCreateNestedManyWithoutGroupInput
+  dismisseds?: Prisma.DismissedUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutTeachersInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutTeachersInput, Prisma.GroupUncheckedCreateWithoutTeachersInput>
+}
+
+export type GroupUpsertWithoutTeachersInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutTeachersInput, Prisma.GroupUncheckedUpdateWithoutTeachersInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutTeachersInput, Prisma.GroupUncheckedCreateWithoutTeachersInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutTeachersInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutTeachersInput, Prisma.GroupUncheckedUpdateWithoutTeachersInput>
+}
+
+export type GroupUpdateWithoutTeachersInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutTeachersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateManyOrganizationInput = {
+  id?: number
+  startDate: Date | string
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  courseId: number
+  locationId: number
+}
+
+export type GroupUpdateWithoutOrganizationInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
+  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutOrganizationInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
+  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
+  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
+  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateManyWithoutOrganizationInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
 export type GroupCreateManyLocationInput = {
   id?: number
-  organizationId?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
+  updatedAt?: Date | string
+  organizationId: number
+  courseId: number
 }
 
 export type GroupUpdateWithoutLocationInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
   lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
@@ -1496,19 +1406,16 @@ export type GroupUpdateWithoutLocationInput = {
 
 export type GroupUncheckedUpdateWithoutLocationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
   students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
   teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
@@ -1517,51 +1424,42 @@ export type GroupUncheckedUpdateWithoutLocationInput = {
 
 export type GroupUncheckedUpdateManyWithoutLocationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  courseId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type GroupCreateManyCourseInput = {
   id?: number
-  organizationId?: number
-  name: string
-  type?: $Enums.GroupType | null
   startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
+  dayOfWeek: number
+  time: string
+  maxStudents: number
+  url?: string | null
+  type?: $Enums.GroupType | null
   createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
+  updatedAt?: Date | string
+  organizationId: number
+  locationId: number
 }
 
 export type GroupUpdateWithoutCourseInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.LocationUpdateOneRequiredWithoutGroupsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutGroupsNestedInput
   lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
   students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
@@ -1571,19 +1469,16 @@ export type GroupUpdateWithoutCourseInput = {
 
 export type GroupUncheckedUpdateWithoutCourseInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
   maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
   lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
   students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
   teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
@@ -1592,94 +1487,16 @@ export type GroupUncheckedUpdateWithoutCourseInput = {
 
 export type GroupUncheckedUpdateManyWithoutCourseInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  time?: Prisma.StringFieldUpdateOperationsInput | string
+  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-}
-
-export type GroupCreateManyOrganizationInput = {
-  id?: number
-  name: string
-  courseId: number
-  type?: $Enums.GroupType | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  dayOfWeek?: number | null
-  time?: string | null
-  maxStudents?: number
-  createdAt?: Date | string
-  backOfficeUrl?: string | null
-  lessonCount?: number | null
-  lessonPerWeek?: number | null
-  locationId?: number | null
-}
-
-export type GroupUpdateWithoutOrganizationInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  location?: Prisma.LocationUpdateOneWithoutGroupsNestedInput
-  course?: Prisma.CourseUpdateOneRequiredWithoutGroupsNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutOrganizationInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutGroupNestedInput
-  students?: Prisma.StudentGroupUncheckedUpdateManyWithoutGroupNestedInput
-  teachers?: Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput
-  dismisseds?: Prisma.DismissedUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateManyWithoutOrganizationInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  courseId?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.NullableEnumGroupTypeFieldUpdateOperationsInput | $Enums.GroupType | null
-  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  dayOfWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  maxStudents?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  backOfficeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lessonCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  lessonPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  locationId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  locationId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -1742,21 +1559,18 @@ export type GroupCountOutputTypeCountDismissedsArgs<ExtArgs extends runtime.Type
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  name?: boolean
-  courseId?: boolean
-  type?: boolean
   startDate?: boolean
-  endDate?: boolean
   dayOfWeek?: boolean
   time?: boolean
   maxStudents?: boolean
+  url?: boolean
+  type?: boolean
   createdAt?: boolean
-  backOfficeUrl?: boolean
-  lessonCount?: boolean
-  lessonPerWeek?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  courseId?: boolean
   locationId?: boolean
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.Group$lessonsArgs<ExtArgs>
@@ -1768,67 +1582,58 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 
 export type GroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  name?: boolean
-  courseId?: boolean
-  type?: boolean
   startDate?: boolean
-  endDate?: boolean
   dayOfWeek?: boolean
   time?: boolean
   maxStudents?: boolean
+  url?: boolean
+  type?: boolean
   createdAt?: boolean
-  backOfficeUrl?: boolean
-  lessonCount?: boolean
-  lessonPerWeek?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  courseId?: boolean
   locationId?: boolean
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
 export type GroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
-  name?: boolean
-  courseId?: boolean
-  type?: boolean
   startDate?: boolean
-  endDate?: boolean
   dayOfWeek?: boolean
   time?: boolean
   maxStudents?: boolean
+  url?: boolean
+  type?: boolean
   createdAt?: boolean
-  backOfficeUrl?: boolean
-  lessonCount?: boolean
-  lessonPerWeek?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  courseId?: boolean
   locationId?: boolean
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
 export type GroupSelectScalar = {
   id?: boolean
-  organizationId?: boolean
-  name?: boolean
-  courseId?: boolean
-  type?: boolean
   startDate?: boolean
-  endDate?: boolean
   dayOfWeek?: boolean
   time?: boolean
   maxStudents?: boolean
+  url?: boolean
+  type?: boolean
   createdAt?: boolean
-  backOfficeUrl?: boolean
-  lessonCount?: boolean
-  lessonPerWeek?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  courseId?: boolean
   locationId?: boolean
 }
 
-export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "courseId" | "type" | "startDate" | "endDate" | "dayOfWeek" | "time" | "maxStudents" | "createdAt" | "backOfficeUrl" | "lessonCount" | "lessonPerWeek" | "locationId", ExtArgs["result"]["group"]>
+export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "startDate" | "dayOfWeek" | "time" | "maxStudents" | "url" | "type" | "createdAt" | "updatedAt" | "organizationId" | "courseId" | "locationId", ExtArgs["result"]["group"]>
 export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lessons?: boolean | Prisma.Group$lessonsArgs<ExtArgs>
@@ -1838,12 +1643,12 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
 export type GroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  location?: boolean | Prisma.Group$locationArgs<ExtArgs>
+  location?: boolean | Prisma.LocationDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
@@ -1851,7 +1656,7 @@ export type GroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Group"
   objects: {
-    location: Prisma.$LocationPayload<ExtArgs> | null
+    location: Prisma.$LocationPayload<ExtArgs>
     course: Prisma.$CoursePayload<ExtArgs>
     organization: Prisma.$OrganizationPayload<ExtArgs>
     lessons: Prisma.$LessonPayload<ExtArgs>[]
@@ -1861,20 +1666,17 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    organizationId: number
-    name: string
-    courseId: number
-    type: $Enums.GroupType | null
     startDate: Date
-    endDate: Date | null
-    dayOfWeek: number | null
-    time: string | null
+    dayOfWeek: number
+    time: string
     maxStudents: number
+    url: string | null
+    type: $Enums.GroupType | null
     createdAt: Date
-    backOfficeUrl: string | null
-    lessonCount: number | null
-    lessonPerWeek: number | null
-    locationId: number | null
+    updatedAt: Date
+    organizationId: number
+    courseId: number
+    locationId: number
   }, ExtArgs["result"]["group"]>
   composites: {}
 }
@@ -2269,7 +2071,7 @@ readonly fields: GroupFieldRefs;
  */
 export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  location<T extends Prisma.Group$locationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$locationArgs<ExtArgs>>): Prisma.Prisma__LocationClient<runtime.Types.Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  location<T extends Prisma.LocationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LocationDefaultArgs<ExtArgs>>): Prisma.Prisma__LocationClient<runtime.Types.Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   course<T extends Prisma.CourseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseDefaultArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   lessons<T extends Prisma.Group$lessonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2306,19 +2108,16 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface GroupFieldRefs {
   readonly id: Prisma.FieldRef<"Group", 'Int'>
-  readonly organizationId: Prisma.FieldRef<"Group", 'Int'>
-  readonly name: Prisma.FieldRef<"Group", 'String'>
-  readonly courseId: Prisma.FieldRef<"Group", 'Int'>
-  readonly type: Prisma.FieldRef<"Group", 'GroupType'>
   readonly startDate: Prisma.FieldRef<"Group", 'DateTime'>
-  readonly endDate: Prisma.FieldRef<"Group", 'DateTime'>
   readonly dayOfWeek: Prisma.FieldRef<"Group", 'Int'>
   readonly time: Prisma.FieldRef<"Group", 'String'>
   readonly maxStudents: Prisma.FieldRef<"Group", 'Int'>
+  readonly url: Prisma.FieldRef<"Group", 'String'>
+  readonly type: Prisma.FieldRef<"Group", 'GroupType'>
   readonly createdAt: Prisma.FieldRef<"Group", 'DateTime'>
-  readonly backOfficeUrl: Prisma.FieldRef<"Group", 'String'>
-  readonly lessonCount: Prisma.FieldRef<"Group", 'Int'>
-  readonly lessonPerWeek: Prisma.FieldRef<"Group", 'Int'>
+  readonly updatedAt: Prisma.FieldRef<"Group", 'DateTime'>
+  readonly organizationId: Prisma.FieldRef<"Group", 'Int'>
+  readonly courseId: Prisma.FieldRef<"Group", 'Int'>
   readonly locationId: Prisma.FieldRef<"Group", 'Int'>
 }
     
@@ -2713,25 +2512,6 @@ export type GroupDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Groups to delete.
    */
   limit?: number
-}
-
-/**
- * Group.location
- */
-export type Group$locationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Location
-   */
-  select?: Prisma.LocationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Location
-   */
-  omit?: Prisma.LocationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LocationInclude<ExtArgs> | null
-  where?: Prisma.LocationWhereInput
 }
 
 /**

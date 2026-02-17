@@ -46,7 +46,7 @@ type AddLessonSchemaType = z.infer<typeof AddLessonSchema>
 
 export default function AddLessonButton({ group }: AddLessonButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm({
@@ -61,20 +61,20 @@ export default function AddLessonButton({ group }: AddLessonButtonProps) {
     startTransition(() => {
       const { ...payload } = values
       const attendances = group.students.map((student) => ({
-        organizationId,
+        organizationId: organizationId!,
         studentId: student.studentId,
         status: 'UNSPECIFIED' as const,
         comment: '',
       }))
       const teacherLessons = group.teachers.map((teacher) => ({
-        organizationId,
+        organizationId: organizationId!,
         teacherId: teacher.teacherId,
         bid: teacher.bid,
       }))
       const ok = createLesson({
         data: {
           ...payload,
-          organizationId,
+          organizationId: organizationId!,
           groupId: group.id,
           attendance: {
             createMany: {

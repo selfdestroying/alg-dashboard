@@ -48,7 +48,7 @@ export default function DismissedActions({
         dismissedId,
         groupId,
         studentId,
-        organizationId: session!.members[0].organizationId,
+        organizationId: session!.organizationId!,
       })
       toast.promise(ok, {
         loading: 'Загрузка...',

@@ -89,6 +89,7 @@ export default function UnprocessedPaymentsActions({
             totalPayments: { increment: payload.price },
             payments: {
               create: {
+                organizationId: unprocessedPayment.organizationId,
                 lessonCount: payload.lessonCount,
                 price: payload.price,
                 bidForLesson: payload.price / payload.lessonCount,

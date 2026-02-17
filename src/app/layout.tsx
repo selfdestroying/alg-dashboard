@@ -1,11 +1,16 @@
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import Providers from '../providers/providers'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
-export const metadata = {
-  title: 'ЕДУДА | Единый учёт данных',
+export const metadata: Metadata = {
+  title: {
+    template: '%s | ЕДУДА',
+    default: 'ЕДУДА | Единый учёт данных',
+  },
 }
 
 export default async function RootLayout({
@@ -16,7 +21,9 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <Providers>{children}</Providers>
+        <NuqsAdapter>
+          <Providers>{children}</Providers>
+        </NuqsAdapter>
       </body>
     </html>
   )

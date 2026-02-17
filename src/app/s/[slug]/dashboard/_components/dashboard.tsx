@@ -1,10 +1,9 @@
 'use client'
 
 import { Prisma } from '@/prisma/generated/client'
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
+import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import { Card, CardContent, CardFooter } from '@/src/components/ui/card'
-import { FieldGroup } from '@/src/components/ui/field'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import {
   Table,
@@ -14,13 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useDayStatusesQuery, useLessonListQuery } from '@/src/data/lesson/lesson-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { cn, getFullName } from '@/src/lib/utils'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
+import { cn } from '@/src/lib/utils'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -34,8 +31,24 @@ import { startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ArrowDown, ArrowUp, Check, X } from 'lucide-react'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { createParser, useQueryState } from 'nuqs'
+import { useMemo, useState } from 'react'
 import { CalendarDay } from 'react-day-picker'
+
+const parseAsLocalDate = createParser({
+  parse: (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+    if (isNaN(date.getTime())) return null
+    return date
+  },
+  serialize: (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  },
+})
 
 const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
   {
@@ -48,6 +61,11 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
         Ссылка
       </Link>
     ),
+  },
+  {
+    header: 'Ученики',
+    accessorFn: (lesson) => lesson.attendance.length,
+    cell: (info) => info.getValue(),
   },
   {
     id: 'course',
@@ -77,7 +95,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.teachers.length - 1 && ', '}
             </span>
@@ -101,6 +119,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
       return filterValue.length === 0 || filterValue.includes(row.original.group.location?.id)
     },
   },
+
   {
     header: 'Отметки',
     accessorFn: (lesson) =>
@@ -141,19 +160,28 @@ export default function Dashboard() {
     lesson: ['readAll'],
   })
 
-  const [selectedDay, setSelectedDay] = useState<Date>(startOfDay(new Date()))
-  const [filters, setFilters] = useState<ColumnFiltersState>([])
+  const [selectedDay, setSelectedDay] = useQueryState(
+    'date',
+    parseAsLocalDate
+      .withDefault(startOfDay(new Date()))
+      .withOptions({ shallow: true, history: 'replace' })
+  )
+
+  const { columnFilters, setColumnFilters } = useTableSearchParams({
+    filters: { course: 'integer', location: 'integer', teacher: 'integer' },
+  })
+
   const dayKey = useMemo(() => startOfDay(selectedDay), [selectedDay])
   const columns = useMemo(() => LESSON_COLUMNS, [])
 
-  const organizationId = session?.members?.[0]?.organizationId
+  const organizationId = session?.organizationId
   const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
   const canReadAllLessons = !!hasPermission?.success
   const lockedTeacherId =
     !canReadAllLessons && session?.user?.id != null ? Number(session.user.id) : undefined
   const effectiveFilters = useMemo(() => {
-    if (!lockedTeacherId) return filters
-    const otherFilters = filters.filter((filter) => filter.id !== 'teacher')
+    if (!lockedTeacherId) return columnFilters
+    const otherFilters = columnFilters.filter((filter) => filter.id !== 'teacher')
     return [
       ...otherFilters,
       {
@@ -161,7 +189,7 @@ export default function Dashboard() {
         value: [lockedTeacherId],
       },
     ]
-  }, [filters, lockedTeacherId])
+  }, [columnFilters, lockedTeacherId])
 
   if (isSessionLoading || isPermissionLoading || !session) {
     return <Skeleton className="h-full w-full" />
@@ -178,11 +206,13 @@ export default function Dashboard() {
           />
         </CardContent>
         <CardFooter>
-          <Filters
+          <CourseLocationTeacherFilters
             organizationId={organizationId!}
-            setFilters={setFilters}
+            columnFilters={columnFilters}
+            setFilters={setColumnFilters}
             lockedTeacherId={lockedTeacherId}
             disableTeacherFilter={!!lockedTeacherId}
+            wrapInFieldGroup
           />
         </CardFooter>
       </Card>
@@ -266,112 +296,6 @@ function LessonDayButton({ day, children, daysStatuses, ...props }: CalendarDayB
     >
       {children}
     </CalendarDayButton>
-  )
-}
-
-interface FiltersProps {
-  organizationId: number
-  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
-  lockedTeacherId?: string | number
-  disableTeacherFilter?: boolean
-}
-
-function Filters({
-  organizationId,
-  setFilters,
-  lockedTeacherId,
-  disableTeacherFilter,
-}: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
-
-  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
-    return (
-      <FieldGroup>
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-      </FieldGroup>
-    )
-  }
-
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
-    })
-  }
-
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
-
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    if (disableTeacherFilter) return
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
-
-  const lockedTeacherValue =
-    lockedTeacherId && mappedUsers
-      ? mappedUsers.find((user) => user.value === lockedTeacherId.toString())
-      : undefined
-
-  return (
-    <FieldGroup>
-      {courses ? (
-        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {locations ? (
-        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {mappedUsers ? (
-        <TableFilter
-          label="Преподаватель"
-          items={mappedUsers}
-          onChange={handleUserFilterChange}
-          disabled={disableTeacherFilter}
-          value={lockedTeacherValue ? [lockedTeacherValue] : undefined}
-        />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-    </FieldGroup>
   )
 }
 

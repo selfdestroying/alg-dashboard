@@ -22,6 +22,7 @@ import {
 import { cn, getFullName } from '@/src/lib/utils'
 
 import { Input } from '@/src/components/ui/input'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import {
   ColumnDef,
   flexRender,
@@ -31,11 +32,9 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
-import { debounce } from 'es-toolkit'
 import {
   ArrowDown,
   ArrowUp,
@@ -45,7 +44,6 @@ import {
   ChevronsRight,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
 import PaymentsActions from './payments-actions'
 
 const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
@@ -93,17 +91,13 @@ const columns: ColumnDef<PaymentsWithStudentAndGroup>[] = [
 ]
 
 export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGroup[] }) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-  const [globalFilter, setGlobalFilter] = useState('')
+  const { globalFilter, setGlobalFilter, pagination, setPagination, sorting, setSorting } =
+    useTableSearchParams({
+      search: true,
+      pagination: true,
+      sorting: true,
+    })
+
   const table = useReactTable({
     data,
     columns,
@@ -130,11 +124,8 @@ export default function PaymentsTable({ data }: { data: PaymentsWithStudentAndGr
     <div className="flex h-full flex-col gap-2">
       <div className="flex flex-col items-end gap-2 md:flex-row">
         <Input
-          value={search ?? ''}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            handleSearch(e.target.value)
-          }}
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder="Поиск..."
         />
       </div>

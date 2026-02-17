@@ -88,7 +88,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     async function fetchGroups() {
       const data = await getGroups({
         where: {
-          organizationId: session?.members[0].organizationId,
+          organizationId: session?.organizationId ?? undefined,
           NOT: {
             id: sg.groupId,
           },
@@ -105,14 +105,17 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
         },
       })
       setGroups(
-        data.map((group) => ({
-          label: getGroupName(group),
-          value: group.id,
-        }))
+        data.map((group) => {
+          const name = getGroupName(group)
+          const location = group.location?.name
+          const teachers = group.teachers.map((t) => t.teacher.name).join(', ')
+          const parts = [name, location, teachers].filter(Boolean)
+          return { label: parts.join(' · '), value: group.id }
+        })
       )
     }
     fetchGroups()
-  }, [sg.groupId, isSessionLoading, session?.members])
+  }, [sg.groupId, isSessionLoading, session?.organizationId])
 
   const dismissForm = useForm<DismissStudentSchemaType>({
     resolver: zodResolver(dismissStudentSchema),
@@ -138,7 +141,14 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           },
         },
       }).then(() =>
-        createDismissed({ data: { ...values, studentId: sg.student.id, groupId: sg.groupId } })
+        createDismissed({
+          data: {
+            ...values,
+            studentId: sg.student.id,
+            groupId: sg.groupId,
+            organizationId: sg.organizationId,
+          },
+        })
       )
       toast.promise(ok, {
         loading: 'Загрузка...',
@@ -371,8 +381,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Редактировать</DialogTitle>
-            <DialogDescription>Измените ставку преподавателя в группе</DialogDescription>
+            <DialogTitle>Перевести</DialogTitle>
+            <DialogDescription>Выберите группу для перевода студента</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={transferForm.handleSubmit(handleTransfer)} id="transfer-form">

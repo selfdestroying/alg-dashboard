@@ -32,7 +32,7 @@ export const EditStudentSchema = z.object({
     .gte(6, 'Укажите возраст не менее 6')
     .lte(17, 'Укажите возраст не более 17'),
   parentsName: z.string('Укажите имя родителя').min(2, 'Укажите имя родителя'),
-  crmUrl: z.url('Укажите корректный URL'),
+  url: z.url('Укажите корректный URL'),
   // optional
   login: z.string('Укажите логин').min(2, 'Укажите логин'),
   password: z.string('Укажите пароль').min(2, 'Укажите пароль'),
@@ -55,7 +55,7 @@ export default function EditStudentDialog({ student }: { student: Student }) {
       lastName: student.lastName || '',
       age: student.age || undefined,
       parentsName: student.parentsName || '',
-      crmUrl: student.crmUrl || '',
+      url: student.url || '',
       login: student.login,
       password: student.password,
       coins: student.coins,
@@ -162,7 +162,7 @@ export default function EditStudentDialog({ student }: { student: Student }) {
 
             <Controller
               control={form.control}
-              name="crmUrl"
+              name="url"
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>

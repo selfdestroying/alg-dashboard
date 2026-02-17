@@ -66,8 +66,8 @@ export const timeSlots = [
 ]
 
 export default function CreateGroupDialog() {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const { data: session } = useSessionQuery()
+  const organizationId = session?.organizationId ?? undefined
   const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery(
     organizationId!
   )
@@ -85,7 +85,7 @@ export default function CreateGroupDialog() {
     resolver: zodResolver(CreateGroupSchema),
     defaultValues: {
       name: '',
-      backOfficeUrl: undefined,
+      url: undefined,
       time: undefined,
       type: undefined,
       dateRange: undefined,
@@ -98,36 +98,47 @@ export default function CreateGroupDialog() {
 
   const onSubmit = (values: CreateGroupSchemaType) => {
     startTransition(() => {
-      const { course, location, teacher, dateRange, ...payload } = values
+      const {
+        course,
+        location,
+        teacher,
+        dateRange,
+        name,
+        lessonCount,
+        lessonsPerWeek,
+        url,
+        ...payload
+      } = values
       const member = members?.find((member) => member.userId === Number(teacher.value))
 
-      const lessons = Array.from({ length: values.lessonCount ?? 0 }).map((_, index) => {
+      const lessons = Array.from({ length: lessonCount ?? 0 }).map((_, index) => {
         const date = new Date(dateRange!.from)
         date.setDate(date.getDate() + index * 7)
-        return { date, time: values.time!, organizationId }
+        return { date, time: values.time!, organizationId: organizationId! }
       })
 
       const ok = createGroup({
         data: {
           ...payload,
-          organizationId,
+          url,
+          organizationId: organizationId!,
           courseId: Number(course.value),
           locationId: Number(location.value),
+          maxStudents: values.type === 'INDIVIDUAL' ? 1 : 10,
           teachers: {
             create: [
               {
-                organizationId,
+                organizationId: organizationId!,
                 teacherId: Number(member?.userId) as number,
                 bid:
                   values.type === 'GROUP'
-                    ? member?.user?.bidForLesson
-                    : member?.user.bidForIndividual,
+                    ? (member?.user?.bidForLesson ?? 0)
+                    : (member?.user.bidForIndividual ?? 0),
               },
             ],
           },
           lessons: { createMany: { data: lessons } },
           startDate: dateRange.from,
-          endDate: dateRange.to,
           dayOfWeek: dateRange.from.getDay(),
         },
       })
@@ -376,13 +387,13 @@ export default function CreateGroupDialog() {
             />
             <Controller
               control={form.control}
-              name="backOfficeUrl"
+              name="url"
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="backOfficeUrl-field">Ссылка на BackOffice</FieldLabel>
+                  <FieldLabel htmlFor="url-field">Ссылка на BackOffice</FieldLabel>
                   <Input
-                    id="backOfficeUrl-field"
+                    id="url-field"
                     {...field}
                     value={field.value ?? ''}
                     aria-invalid={fieldState.invalid}

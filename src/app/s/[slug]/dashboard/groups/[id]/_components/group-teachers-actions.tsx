@@ -187,11 +187,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
-              Вы уверены что хотите удалить{' '}
-              <b>
-                {tg.teacher.firstName} {tg.teacher.lastName || ''}
-              </b>{' '}
-              из списка преподавателей?
+              Вы уверены что хотите удалить <b>{tg.teacher.name}</b> из списка преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -233,9 +229,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Редактировать</DialogTitle>
-            <DialogDescription>
-              {tg.teacher.firstName} {tg.teacher.lastName || ''}
-            </DialogDescription>
+            <DialogDescription>{tg.teacher.name}</DialogDescription>
           </DialogHeader>
 
           <form id="teacher-group-edit-form" onSubmit={form.handleSubmit(handleEdit)}>

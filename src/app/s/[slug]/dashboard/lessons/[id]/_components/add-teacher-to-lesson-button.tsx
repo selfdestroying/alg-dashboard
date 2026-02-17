@@ -1,5 +1,5 @@
 'use client'
-import { Lesson } from '@/prisma/generated/client'
+import { Prisma } from '@/prisma/generated/client'
 import { createTeacherLesson } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -32,7 +32,11 @@ import { toast } from 'sonner'
 import z from 'zod/v4'
 
 interface AddTeacherToLessonButtonProps {
-  lesson: Lesson
+  lesson: Prisma.LessonGetPayload<{
+    include: {
+      group: true
+    }
+  }>
 }
 
 const LessonTeacherSchema = z.object({
@@ -47,7 +51,7 @@ type LessonTeacherSchemaType = z.infer<typeof LessonTeacherSchema>
 
 export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -55,7 +59,8 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
     resolver: zodResolver(LessonTeacherSchema),
     defaultValues: {
       teacherId: undefined,
-      bid: undefined,
+      bid:
+        lesson.group.type === 'INDIVIDUAL' ? 750 : lesson.group.type === 'GROUP' ? 1100 : undefined,
     },
   })
 
@@ -64,7 +69,7 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
       const { ...payload } = data
       const ok = createTeacherLesson({
         data: {
-          organizationId,
+          organizationId: organizationId!,
           lessonId: lesson.id,
           ...payload,
         },

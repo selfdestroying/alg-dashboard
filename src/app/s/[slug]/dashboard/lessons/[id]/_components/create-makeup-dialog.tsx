@@ -27,7 +27,7 @@ export default function CreateMakeUpForm({
   setSelectedLesson,
 }: CreateMakeUpDialogProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const [selectedDay, setSelectedDay] = useState<Date | undefined>()
   const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
   const { data: lessons, isLoading: isLessonsLoading } = useMappedLessonListQuery(
@@ -72,7 +72,7 @@ export default function CreateMakeUpForm({
         items={lessons}
         value={selectedLesson}
         onValueChange={setSelectedLesson}
-        disabled={isLessonsLoading}
+        disabled={isLessonsLoading || !selectedDay || lessons?.length === 0}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Выберите урок" />

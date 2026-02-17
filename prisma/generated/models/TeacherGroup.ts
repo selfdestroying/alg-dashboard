@@ -27,75 +27,87 @@ export type AggregateTeacherGroup = {
 }
 
 export type TeacherGroupAvgAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  groupId: number | null
   bid: number | null
+  organizationId: number | null
+  groupId: number | null
+  teacherId: number | null
 }
 
 export type TeacherGroupSumAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  groupId: number | null
   bid: number | null
+  organizationId: number | null
+  groupId: number | null
+  teacherId: number | null
 }
 
 export type TeacherGroupMinAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  groupId: number | null
   bid: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
+  groupId: number | null
+  teacherId: number | null
 }
 
 export type TeacherGroupMaxAggregateOutputType = {
-  organizationId: number | null
-  teacherId: number | null
-  groupId: number | null
   bid: number | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  organizationId: number | null
+  groupId: number | null
+  teacherId: number | null
 }
 
 export type TeacherGroupCountAggregateOutputType = {
-  organizationId: number
-  teacherId: number
-  groupId: number
   bid: number
+  createdAt: number
+  updatedAt: number
+  organizationId: number
+  groupId: number
+  teacherId: number
   _all: number
 }
 
 
 export type TeacherGroupAvgAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  groupId?: true
   bid?: true
+  organizationId?: true
+  groupId?: true
+  teacherId?: true
 }
 
 export type TeacherGroupSumAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  groupId?: true
   bid?: true
+  organizationId?: true
+  groupId?: true
+  teacherId?: true
 }
 
 export type TeacherGroupMinAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  groupId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  groupId?: true
+  teacherId?: true
 }
 
 export type TeacherGroupMaxAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  groupId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  groupId?: true
+  teacherId?: true
 }
 
 export type TeacherGroupCountAggregateInputType = {
-  organizationId?: true
-  teacherId?: true
-  groupId?: true
   bid?: true
+  createdAt?: true
+  updatedAt?: true
+  organizationId?: true
+  groupId?: true
+  teacherId?: true
   _all?: true
 }
 
@@ -186,10 +198,12 @@ export type TeacherGroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 export type TeacherGroupGroupByOutputType = {
-  organizationId: number
-  teacherId: number
-  groupId: number
   bid: number
+  createdAt: Date
+  updatedAt: Date
+  organizationId: number
+  groupId: number
+  teacherId: number
   _count: TeacherGroupCountAggregateOutputType | null
   _avg: TeacherGroupAvgAggregateOutputType | null
   _sum: TeacherGroupSumAggregateOutputType | null
@@ -216,20 +230,24 @@ export type TeacherGroupWhereInput = {
   AND?: Prisma.TeacherGroupWhereInput | Prisma.TeacherGroupWhereInput[]
   OR?: Prisma.TeacherGroupWhereInput[]
   NOT?: Prisma.TeacherGroupWhereInput | Prisma.TeacherGroupWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
-  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
-  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
   bid?: Prisma.IntFilter<"TeacherGroup"> | number
+  createdAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
+  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
+  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TeacherGroupOrderByWithRelationInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   group?: Prisma.GroupOrderByWithRelationInput
   teacher?: Prisma.UserOrderByWithRelationInput
@@ -240,20 +258,24 @@ export type TeacherGroupWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TeacherGroupWhereInput | Prisma.TeacherGroupWhereInput[]
   OR?: Prisma.TeacherGroupWhereInput[]
   NOT?: Prisma.TeacherGroupWhereInput | Prisma.TeacherGroupWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
-  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
-  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
   bid?: Prisma.IntFilter<"TeacherGroup"> | number
+  createdAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
+  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
+  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "teacherId_groupId">
 
 export type TeacherGroupOrderByWithAggregationInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
   _count?: Prisma.TeacherGroupCountOrderByAggregateInput
   _avg?: Prisma.TeacherGroupAvgOrderByAggregateInput
   _max?: Prisma.TeacherGroupMaxOrderByAggregateInput
@@ -265,56 +287,72 @@ export type TeacherGroupScalarWhereWithAggregatesInput = {
   AND?: Prisma.TeacherGroupScalarWhereWithAggregatesInput | Prisma.TeacherGroupScalarWhereWithAggregatesInput[]
   OR?: Prisma.TeacherGroupScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TeacherGroupScalarWhereWithAggregatesInput | Prisma.TeacherGroupScalarWhereWithAggregatesInput[]
-  organizationId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
-  teacherId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
-  groupId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
   bid?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"TeacherGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TeacherGroup"> | Date | string
+  organizationId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
+  groupId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
+  teacherId?: Prisma.IntWithAggregatesFilter<"TeacherGroup"> | number
 }
 
 export type TeacherGroupCreateInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
   group: Prisma.GroupCreateNestedOneWithoutTeachersInput
   teacher: Prisma.UserCreateNestedOneWithoutGroupsInput
 }
 
 export type TeacherGroupUncheckedCreateInput = {
-  organizationId?: number
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherGroupUpdateInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherGroupsNestedInput
   group?: Prisma.GroupUpdateOneRequiredWithoutTeachersNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutGroupsNestedInput
 }
 
 export type TeacherGroupUncheckedUpdateInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherGroupCreateManyInput = {
-  organizationId?: number
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherGroupUpdateManyMutationInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherGroupUncheckedUpdateManyInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherGroupListRelationFilter = {
@@ -333,38 +371,44 @@ export type TeacherGroupTeacherIdGroupIdCompoundUniqueInput = {
 }
 
 export type TeacherGroupCountOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherGroupAvgOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherGroupMaxOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherGroupMinOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherGroupSumOrderByAggregateInput = {
-  organizationId?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
   bid?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
 }
 
 export type TeacherGroupCreateNestedManyWithoutTeacherInput = {
@@ -406,48 +450,6 @@ export type TeacherGroupUncheckedUpdateManyWithoutTeacherNestedInput = {
   connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
   update?: Prisma.TeacherGroupUpdateWithWhereUniqueWithoutTeacherInput | Prisma.TeacherGroupUpdateWithWhereUniqueWithoutTeacherInput[]
   updateMany?: Prisma.TeacherGroupUpdateManyWithWhereWithoutTeacherInput | Prisma.TeacherGroupUpdateManyWithWhereWithoutTeacherInput[]
-  deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
-}
-
-export type TeacherGroupCreateNestedManyWithoutGroupInput = {
-  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
-  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
-  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
-  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-}
-
-export type TeacherGroupUncheckedCreateNestedManyWithoutGroupInput = {
-  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
-  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
-  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
-  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-}
-
-export type TeacherGroupUpdateManyWithoutGroupNestedInput = {
-  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
-  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
-  upsert?: Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput[]
-  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
-  set?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  disconnect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  delete?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  update?: Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput[]
-  updateMany?: Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput | Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput[]
-  deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
-}
-
-export type TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput = {
-  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
-  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
-  upsert?: Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput[]
-  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
-  set?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  disconnect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  delete?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
-  update?: Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput[]
-  updateMany?: Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput | Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput[]
   deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
 }
 
@@ -493,16 +495,62 @@ export type TeacherGroupUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
 }
 
+export type TeacherGroupCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
+  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+}
+
+export type TeacherGroupUncheckedCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
+  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+}
+
+export type TeacherGroupUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
+  set?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  disconnect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  delete?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  update?: Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput | Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
+}
+
+export type TeacherGroupUncheckedUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput> | Prisma.TeacherGroupCreateWithoutGroupInput[] | Prisma.TeacherGroupUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.TeacherGroupCreateOrConnectWithoutGroupInput | Prisma.TeacherGroupCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.TeacherGroupCreateManyGroupInputEnvelope
+  set?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  disconnect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  delete?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  connect?: Prisma.TeacherGroupWhereUniqueInput | Prisma.TeacherGroupWhereUniqueInput[]
+  update?: Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput | Prisma.TeacherGroupUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput | Prisma.TeacherGroupUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
+}
+
 export type TeacherGroupCreateWithoutTeacherInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
   group: Prisma.GroupCreateNestedOneWithoutTeachersInput
 }
 
 export type TeacherGroupUncheckedCreateWithoutTeacherInput = {
-  organizationId?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
-  bid?: number
 }
 
 export type TeacherGroupCreateOrConnectWithoutTeacherInput = {
@@ -535,60 +583,28 @@ export type TeacherGroupScalarWhereInput = {
   AND?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
   OR?: Prisma.TeacherGroupScalarWhereInput[]
   NOT?: Prisma.TeacherGroupScalarWhereInput | Prisma.TeacherGroupScalarWhereInput[]
-  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
-  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
-  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
   bid?: Prisma.IntFilter<"TeacherGroup"> | number
-}
-
-export type TeacherGroupCreateWithoutGroupInput = {
-  bid?: number
-  organization?: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
-  teacher: Prisma.UserCreateNestedOneWithoutGroupsInput
-}
-
-export type TeacherGroupUncheckedCreateWithoutGroupInput = {
-  organizationId?: number
-  teacherId: number
-  bid?: number
-}
-
-export type TeacherGroupCreateOrConnectWithoutGroupInput = {
-  where: Prisma.TeacherGroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput>
-}
-
-export type TeacherGroupCreateManyGroupInputEnvelope = {
-  data: Prisma.TeacherGroupCreateManyGroupInput | Prisma.TeacherGroupCreateManyGroupInput[]
-  skipDuplicates?: boolean
-}
-
-export type TeacherGroupUpsertWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.TeacherGroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.TeacherGroupUpdateWithoutGroupInput, Prisma.TeacherGroupUncheckedUpdateWithoutGroupInput>
-  create: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput>
-}
-
-export type TeacherGroupUpdateWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.TeacherGroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.TeacherGroupUpdateWithoutGroupInput, Prisma.TeacherGroupUncheckedUpdateWithoutGroupInput>
-}
-
-export type TeacherGroupUpdateManyWithWhereWithoutGroupInput = {
-  where: Prisma.TeacherGroupScalarWhereInput
-  data: Prisma.XOR<Prisma.TeacherGroupUpdateManyMutationInput, Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupInput>
+  createdAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TeacherGroup"> | Date | string
+  organizationId?: Prisma.IntFilter<"TeacherGroup"> | number
+  groupId?: Prisma.IntFilter<"TeacherGroup"> | number
+  teacherId?: Prisma.IntFilter<"TeacherGroup"> | number
 }
 
 export type TeacherGroupCreateWithoutOrganizationInput = {
-  bid?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutTeachersInput
   teacher: Prisma.UserCreateNestedOneWithoutGroupsInput
 }
 
 export type TeacherGroupUncheckedCreateWithoutOrganizationInput = {
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   groupId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherGroupCreateOrConnectWithoutOrganizationInput = {
@@ -617,118 +633,192 @@ export type TeacherGroupUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.TeacherGroupUpdateManyMutationInput, Prisma.TeacherGroupUncheckedUpdateManyWithoutOrganizationInput>
 }
 
+export type TeacherGroupCreateWithoutGroupInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutTeacherGroupsInput
+  teacher: Prisma.UserCreateNestedOneWithoutGroupsInput
+}
+
+export type TeacherGroupUncheckedCreateWithoutGroupInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  teacherId: number
+}
+
+export type TeacherGroupCreateOrConnectWithoutGroupInput = {
+  where: Prisma.TeacherGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput>
+}
+
+export type TeacherGroupCreateManyGroupInputEnvelope = {
+  data: Prisma.TeacherGroupCreateManyGroupInput | Prisma.TeacherGroupCreateManyGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type TeacherGroupUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.TeacherGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.TeacherGroupUpdateWithoutGroupInput, Prisma.TeacherGroupUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.TeacherGroupCreateWithoutGroupInput, Prisma.TeacherGroupUncheckedCreateWithoutGroupInput>
+}
+
+export type TeacherGroupUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.TeacherGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.TeacherGroupUpdateWithoutGroupInput, Prisma.TeacherGroupUncheckedUpdateWithoutGroupInput>
+}
+
+export type TeacherGroupUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.TeacherGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.TeacherGroupUpdateManyMutationInput, Prisma.TeacherGroupUncheckedUpdateManyWithoutGroupInput>
+}
+
 export type TeacherGroupCreateManyTeacherInput = {
-  organizationId?: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
-  bid?: number
 }
 
 export type TeacherGroupUpdateWithoutTeacherInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherGroupsNestedInput
   group?: Prisma.GroupUpdateOneRequiredWithoutTeachersNestedInput
 }
 
 export type TeacherGroupUncheckedUpdateWithoutTeacherInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherGroupUncheckedUpdateManyWithoutTeacherInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type TeacherGroupCreateManyGroupInput = {
-  organizationId?: number
-  teacherId: number
-  bid?: number
-}
-
-export type TeacherGroupUpdateWithoutGroupInput = {
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  teacher?: Prisma.UserUpdateOneRequiredWithoutGroupsNestedInput
-}
-
-export type TeacherGroupUncheckedUpdateWithoutGroupInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
-}
-
-export type TeacherGroupUncheckedUpdateManyWithoutGroupInput = {
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  bid?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherGroupCreateManyOrganizationInput = {
-  teacherId: number
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
   groupId: number
-  bid?: number
+  teacherId: number
 }
 
 export type TeacherGroupUpdateWithoutOrganizationInput = {
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutTeachersNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutGroupsNestedInput
 }
 
 export type TeacherGroupUncheckedUpdateWithoutOrganizationInput = {
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TeacherGroupUncheckedUpdateManyWithoutOrganizationInput = {
-  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type TeacherGroupCreateManyGroupInput = {
+  bid: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  teacherId: number
+}
+
+export type TeacherGroupUpdateWithoutGroupInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutTeacherGroupsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutGroupsNestedInput
+}
+
+export type TeacherGroupUncheckedUpdateWithoutGroupInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type TeacherGroupUncheckedUpdateManyWithoutGroupInput = {
+  bid?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  teacherId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
 
 export type TeacherGroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  groupId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  groupId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherGroup"]>
 
 export type TeacherGroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  groupId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  groupId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherGroup"]>
 
 export type TeacherGroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  organizationId?: boolean
-  teacherId?: boolean
-  groupId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  groupId?: boolean
+  teacherId?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherGroup"]>
 
 export type TeacherGroupSelectScalar = {
-  organizationId?: boolean
-  teacherId?: boolean
-  groupId?: boolean
   bid?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  organizationId?: boolean
+  groupId?: boolean
+  teacherId?: boolean
 }
 
-export type TeacherGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"organizationId" | "teacherId" | "groupId" | "bid", ExtArgs["result"]["teacherGroup"]>
+export type TeacherGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"bid" | "createdAt" | "updatedAt" | "organizationId" | "groupId" | "teacherId", ExtArgs["result"]["teacherGroup"]>
 export type TeacherGroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
@@ -753,10 +843,12 @@ export type $TeacherGroupPayload<ExtArgs extends runtime.Types.Extensions.Intern
     teacher: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    organizationId: number
-    teacherId: number
-    groupId: number
     bid: number
+    createdAt: Date
+    updatedAt: Date
+    organizationId: number
+    groupId: number
+    teacherId: number
   }, ExtArgs["result"]["teacherGroup"]>
   composites: {}
 }
@@ -840,8 +932,8 @@ export interface TeacherGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    * // Get first 10 TeacherGroups
    * const teacherGroups = await prisma.teacherGroup.findMany({ take: 10 })
    * 
-   * // Only select the `organizationId`
-   * const teacherGroupWithOrganizationIdOnly = await prisma.teacherGroup.findMany({ select: { organizationId: true } })
+   * // Only select the `bid`
+   * const teacherGroupWithBidOnly = await prisma.teacherGroup.findMany({ select: { bid: true } })
    * 
    */
   findMany<T extends TeacherGroupFindManyArgs>(args?: Prisma.SelectSubset<T, TeacherGroupFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -885,9 +977,9 @@ export interface TeacherGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Create many TeacherGroups and only return the `organizationId`
-   * const teacherGroupWithOrganizationIdOnly = await prisma.teacherGroup.createManyAndReturn({
-   *   select: { organizationId: true },
+   * // Create many TeacherGroups and only return the `bid`
+   * const teacherGroupWithBidOnly = await prisma.teacherGroup.createManyAndReturn({
+   *   select: { bid: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -976,9 +1068,9 @@ export interface TeacherGroupDelegate<ExtArgs extends runtime.Types.Extensions.I
    *   ]
    * })
    * 
-   * // Update zero or more TeacherGroups and only return the `organizationId`
-   * const teacherGroupWithOrganizationIdOnly = await prisma.teacherGroup.updateManyAndReturn({
-   *   select: { organizationId: true },
+   * // Update zero or more TeacherGroups and only return the `bid`
+   * const teacherGroupWithBidOnly = await prisma.teacherGroup.updateManyAndReturn({
+   *   select: { bid: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1183,10 +1275,12 @@ export interface Prisma__TeacherGroupClient<T, Null = never, ExtArgs extends run
  * Fields of the TeacherGroup model
  */
 export interface TeacherGroupFieldRefs {
-  readonly organizationId: Prisma.FieldRef<"TeacherGroup", 'Int'>
-  readonly teacherId: Prisma.FieldRef<"TeacherGroup", 'Int'>
-  readonly groupId: Prisma.FieldRef<"TeacherGroup", 'Int'>
   readonly bid: Prisma.FieldRef<"TeacherGroup", 'Int'>
+  readonly createdAt: Prisma.FieldRef<"TeacherGroup", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"TeacherGroup", 'DateTime'>
+  readonly organizationId: Prisma.FieldRef<"TeacherGroup", 'Int'>
+  readonly groupId: Prisma.FieldRef<"TeacherGroup", 'Int'>
+  readonly teacherId: Prisma.FieldRef<"TeacherGroup", 'Int'>
 }
     
 

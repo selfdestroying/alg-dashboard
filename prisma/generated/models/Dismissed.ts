@@ -42,29 +42,35 @@ export type DismissedSumAggregateOutputType = {
 
 export type DismissedMinAggregateOutputType = {
   id: number | null
+  comment: string | null
+  date: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
   organizationId: number | null
   studentId: number | null
   groupId: number | null
-  comment: string | null
-  date: Date | null
 }
 
 export type DismissedMaxAggregateOutputType = {
   id: number | null
+  comment: string | null
+  date: Date | null
+  createdAt: Date | null
+  updatedAt: Date | null
   organizationId: number | null
   studentId: number | null
   groupId: number | null
-  comment: string | null
-  date: Date | null
 }
 
 export type DismissedCountAggregateOutputType = {
   id: number
+  comment: number
+  date: number
+  createdAt: number
+  updatedAt: number
   organizationId: number
   studentId: number
   groupId: number
-  comment: number
-  date: number
   _all: number
 }
 
@@ -85,29 +91,35 @@ export type DismissedSumAggregateInputType = {
 
 export type DismissedMinAggregateInputType = {
   id?: true
+  comment?: true
+  date?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  comment?: true
-  date?: true
 }
 
 export type DismissedMaxAggregateInputType = {
   id?: true
+  comment?: true
+  date?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  comment?: true
-  date?: true
 }
 
 export type DismissedCountAggregateInputType = {
   id?: true
+  comment?: true
+  date?: true
+  createdAt?: true
+  updatedAt?: true
   organizationId?: true
   studentId?: true
   groupId?: true
-  comment?: true
-  date?: true
   _all?: true
 }
 
@@ -199,11 +211,13 @@ export type DismissedGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type DismissedGroupByOutputType = {
   id: number
+  comment: string
+  date: Date
+  createdAt: Date
+  updatedAt: Date
   organizationId: number
   studentId: number
   groupId: number
-  comment: string
-  date: Date
   _count: DismissedCountAggregateOutputType | null
   _avg: DismissedAvgAggregateOutputType | null
   _sum: DismissedSumAggregateOutputType | null
@@ -231,11 +245,13 @@ export type DismissedWhereInput = {
   OR?: Prisma.DismissedWhereInput[]
   NOT?: Prisma.DismissedWhereInput | Prisma.DismissedWhereInput[]
   id?: Prisma.IntFilter<"Dismissed"> | number
+  comment?: Prisma.StringFilter<"Dismissed"> | string
+  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
   organizationId?: Prisma.IntFilter<"Dismissed"> | number
   studentId?: Prisma.IntFilter<"Dismissed"> | number
   groupId?: Prisma.IntFilter<"Dismissed"> | number
-  comment?: Prisma.StringFilter<"Dismissed"> | string
-  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
@@ -243,11 +259,13 @@ export type DismissedWhereInput = {
 
 export type DismissedOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  comment?: Prisma.SortOrder
+  date?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  comment?: Prisma.SortOrder
-  date?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
   group?: Prisma.GroupOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
@@ -258,11 +276,13 @@ export type DismissedWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.DismissedWhereInput | Prisma.DismissedWhereInput[]
   OR?: Prisma.DismissedWhereInput[]
   NOT?: Prisma.DismissedWhereInput | Prisma.DismissedWhereInput[]
+  comment?: Prisma.StringFilter<"Dismissed"> | string
+  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
   organizationId?: Prisma.IntFilter<"Dismissed"> | number
   studentId?: Prisma.IntFilter<"Dismissed"> | number
   groupId?: Prisma.IntFilter<"Dismissed"> | number
-  comment?: Prisma.StringFilter<"Dismissed"> | string
-  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
@@ -270,11 +290,13 @@ export type DismissedWhereUniqueInput = Prisma.AtLeast<{
 
 export type DismissedOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  comment?: Prisma.SortOrder
+  date?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  comment?: Prisma.SortOrder
-  date?: Prisma.SortOrder
   _count?: Prisma.DismissedCountOrderByAggregateInput
   _avg?: Prisma.DismissedAvgOrderByAggregateInput
   _max?: Prisma.DismissedMaxOrderByAggregateInput
@@ -287,33 +309,41 @@ export type DismissedScalarWhereWithAggregatesInput = {
   OR?: Prisma.DismissedScalarWhereWithAggregatesInput[]
   NOT?: Prisma.DismissedScalarWhereWithAggregatesInput | Prisma.DismissedScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Dismissed"> | number
+  comment?: Prisma.StringWithAggregatesFilter<"Dismissed"> | string
+  date?: Prisma.DateTimeWithAggregatesFilter<"Dismissed"> | Date | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Dismissed"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Dismissed"> | Date | string
   organizationId?: Prisma.IntWithAggregatesFilter<"Dismissed"> | number
   studentId?: Prisma.IntWithAggregatesFilter<"Dismissed"> | number
   groupId?: Prisma.IntWithAggregatesFilter<"Dismissed"> | number
-  comment?: Prisma.StringWithAggregatesFilter<"Dismissed"> | string
-  date?: Prisma.DateTimeWithAggregatesFilter<"Dismissed"> | Date | string
 }
 
 export type DismissedCreateInput = {
   comment: string
   date: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
   group: Prisma.GroupCreateNestedOneWithoutDismissedsInput
   student: Prisma.StudentCreateNestedOneWithoutDismissedsInput
 }
 
 export type DismissedUncheckedCreateInput = {
   id?: number
-  organizationId?: number
-  studentId: number
-  groupId: number
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  studentId: number
+  groupId: number
 }
 
 export type DismissedUpdateInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutDismissedsNestedInput
   group?: Prisma.GroupUpdateOneRequiredWithoutDismissedsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutDismissedsNestedInput
@@ -321,34 +351,42 @@ export type DismissedUpdateInput = {
 
 export type DismissedUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DismissedCreateManyInput = {
   id?: number
-  organizationId?: number
-  studentId: number
-  groupId: number
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  studentId: number
+  groupId: number
 }
 
 export type DismissedUpdateManyMutationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DismissedUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizationId?: Prisma.IntFieldUpdateOperationsInput | number
   studentId?: Prisma.IntFieldUpdateOperationsInput | number
   groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type DismissedListRelationFilter = {
@@ -363,11 +401,13 @@ export type DismissedOrderByRelationAggregateInput = {
 
 export type DismissedCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  comment?: Prisma.SortOrder
+  date?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  comment?: Prisma.SortOrder
-  date?: Prisma.SortOrder
 }
 
 export type DismissedAvgOrderByAggregateInput = {
@@ -379,20 +419,24 @@ export type DismissedAvgOrderByAggregateInput = {
 
 export type DismissedMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  comment?: Prisma.SortOrder
+  date?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  comment?: Prisma.SortOrder
-  date?: Prisma.SortOrder
 }
 
 export type DismissedMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  comment?: Prisma.SortOrder
+  date?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
-  comment?: Prisma.SortOrder
-  date?: Prisma.SortOrder
 }
 
 export type DismissedSumOrderByAggregateInput = {
@@ -400,6 +444,48 @@ export type DismissedSumOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
+}
+
+export type DismissedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
+  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+}
+
+export type DismissedUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
+  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+}
+
+export type DismissedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
+  set?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  disconnect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  delete?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  update?: Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput | Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
+}
+
+export type DismissedUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
+  set?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  disconnect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  delete?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
+  update?: Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput | Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
 }
 
 export type DismissedCreateNestedManyWithoutStudentInput = {
@@ -486,155 +572,23 @@ export type DismissedUncheckedUpdateManyWithoutGroupNestedInput = {
   deleteMany?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
 }
 
-export type DismissedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
-  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-}
-
-export type DismissedUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
-  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-}
-
-export type DismissedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
-  set?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  disconnect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  delete?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  update?: Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput | Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
-}
-
-export type DismissedUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.DismissedCreateWithoutOrganizationInput, Prisma.DismissedUncheckedCreateWithoutOrganizationInput> | Prisma.DismissedCreateWithoutOrganizationInput[] | Prisma.DismissedUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.DismissedCreateOrConnectWithoutOrganizationInput | Prisma.DismissedCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.DismissedCreateManyOrganizationInputEnvelope
-  set?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  disconnect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  delete?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  connect?: Prisma.DismissedWhereUniqueInput | Prisma.DismissedWhereUniqueInput[]
-  update?: Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.DismissedUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput | Prisma.DismissedUpdateManyWithWhereWithoutOrganizationInput[]
-  deleteMany?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
-}
-
-export type DismissedCreateWithoutStudentInput = {
-  comment: string
-  date: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
-  group: Prisma.GroupCreateNestedOneWithoutDismissedsInput
-}
-
-export type DismissedUncheckedCreateWithoutStudentInput = {
-  id?: number
-  organizationId?: number
-  groupId: number
-  comment: string
-  date: Date | string
-}
-
-export type DismissedCreateOrConnectWithoutStudentInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  create: Prisma.XOR<Prisma.DismissedCreateWithoutStudentInput, Prisma.DismissedUncheckedCreateWithoutStudentInput>
-}
-
-export type DismissedCreateManyStudentInputEnvelope = {
-  data: Prisma.DismissedCreateManyStudentInput | Prisma.DismissedCreateManyStudentInput[]
-  skipDuplicates?: boolean
-}
-
-export type DismissedUpsertWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  update: Prisma.XOR<Prisma.DismissedUpdateWithoutStudentInput, Prisma.DismissedUncheckedUpdateWithoutStudentInput>
-  create: Prisma.XOR<Prisma.DismissedCreateWithoutStudentInput, Prisma.DismissedUncheckedCreateWithoutStudentInput>
-}
-
-export type DismissedUpdateWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  data: Prisma.XOR<Prisma.DismissedUpdateWithoutStudentInput, Prisma.DismissedUncheckedUpdateWithoutStudentInput>
-}
-
-export type DismissedUpdateManyWithWhereWithoutStudentInput = {
-  where: Prisma.DismissedScalarWhereInput
-  data: Prisma.XOR<Prisma.DismissedUpdateManyMutationInput, Prisma.DismissedUncheckedUpdateManyWithoutStudentInput>
-}
-
-export type DismissedScalarWhereInput = {
-  AND?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
-  OR?: Prisma.DismissedScalarWhereInput[]
-  NOT?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
-  id?: Prisma.IntFilter<"Dismissed"> | number
-  organizationId?: Prisma.IntFilter<"Dismissed"> | number
-  studentId?: Prisma.IntFilter<"Dismissed"> | number
-  groupId?: Prisma.IntFilter<"Dismissed"> | number
-  comment?: Prisma.StringFilter<"Dismissed"> | string
-  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
-}
-
-export type DismissedCreateWithoutGroupInput = {
-  comment: string
-  date: Date | string
-  organization?: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
-  student: Prisma.StudentCreateNestedOneWithoutDismissedsInput
-}
-
-export type DismissedUncheckedCreateWithoutGroupInput = {
-  id?: number
-  organizationId?: number
-  studentId: number
-  comment: string
-  date: Date | string
-}
-
-export type DismissedCreateOrConnectWithoutGroupInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  create: Prisma.XOR<Prisma.DismissedCreateWithoutGroupInput, Prisma.DismissedUncheckedCreateWithoutGroupInput>
-}
-
-export type DismissedCreateManyGroupInputEnvelope = {
-  data: Prisma.DismissedCreateManyGroupInput | Prisma.DismissedCreateManyGroupInput[]
-  skipDuplicates?: boolean
-}
-
-export type DismissedUpsertWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  update: Prisma.XOR<Prisma.DismissedUpdateWithoutGroupInput, Prisma.DismissedUncheckedUpdateWithoutGroupInput>
-  create: Prisma.XOR<Prisma.DismissedCreateWithoutGroupInput, Prisma.DismissedUncheckedCreateWithoutGroupInput>
-}
-
-export type DismissedUpdateWithWhereUniqueWithoutGroupInput = {
-  where: Prisma.DismissedWhereUniqueInput
-  data: Prisma.XOR<Prisma.DismissedUpdateWithoutGroupInput, Prisma.DismissedUncheckedUpdateWithoutGroupInput>
-}
-
-export type DismissedUpdateManyWithWhereWithoutGroupInput = {
-  where: Prisma.DismissedScalarWhereInput
-  data: Prisma.XOR<Prisma.DismissedUpdateManyMutationInput, Prisma.DismissedUncheckedUpdateManyWithoutGroupInput>
-}
-
 export type DismissedCreateWithoutOrganizationInput = {
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutDismissedsInput
   student: Prisma.StudentCreateNestedOneWithoutDismissedsInput
 }
 
 export type DismissedUncheckedCreateWithoutOrganizationInput = {
   id?: number
-  studentId: number
-  groupId: number
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  studentId: number
+  groupId: number
 }
 
 export type DismissedCreateOrConnectWithoutOrganizationInput = {
@@ -663,108 +617,238 @@ export type DismissedUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.DismissedUpdateManyMutationInput, Prisma.DismissedUncheckedUpdateManyWithoutOrganizationInput>
 }
 
-export type DismissedCreateManyStudentInput = {
+export type DismissedScalarWhereInput = {
+  AND?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
+  OR?: Prisma.DismissedScalarWhereInput[]
+  NOT?: Prisma.DismissedScalarWhereInput | Prisma.DismissedScalarWhereInput[]
+  id?: Prisma.IntFilter<"Dismissed"> | number
+  comment?: Prisma.StringFilter<"Dismissed"> | string
+  date?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Dismissed"> | Date | string
+  organizationId?: Prisma.IntFilter<"Dismissed"> | number
+  studentId?: Prisma.IntFilter<"Dismissed"> | number
+  groupId?: Prisma.IntFilter<"Dismissed"> | number
+}
+
+export type DismissedCreateWithoutStudentInput = {
+  comment: string
+  date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
+  group: Prisma.GroupCreateNestedOneWithoutDismissedsInput
+}
+
+export type DismissedUncheckedCreateWithoutStudentInput = {
   id?: number
-  organizationId?: number
+  comment: string
+  date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
   groupId: number
+}
+
+export type DismissedCreateOrConnectWithoutStudentInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  create: Prisma.XOR<Prisma.DismissedCreateWithoutStudentInput, Prisma.DismissedUncheckedCreateWithoutStudentInput>
+}
+
+export type DismissedCreateManyStudentInputEnvelope = {
+  data: Prisma.DismissedCreateManyStudentInput | Prisma.DismissedCreateManyStudentInput[]
+  skipDuplicates?: boolean
+}
+
+export type DismissedUpsertWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  update: Prisma.XOR<Prisma.DismissedUpdateWithoutStudentInput, Prisma.DismissedUncheckedUpdateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.DismissedCreateWithoutStudentInput, Prisma.DismissedUncheckedCreateWithoutStudentInput>
+}
+
+export type DismissedUpdateWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  data: Prisma.XOR<Prisma.DismissedUpdateWithoutStudentInput, Prisma.DismissedUncheckedUpdateWithoutStudentInput>
+}
+
+export type DismissedUpdateManyWithWhereWithoutStudentInput = {
+  where: Prisma.DismissedScalarWhereInput
+  data: Prisma.XOR<Prisma.DismissedUpdateManyMutationInput, Prisma.DismissedUncheckedUpdateManyWithoutStudentInput>
+}
+
+export type DismissedCreateWithoutGroupInput = {
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutDismissedsInput
+  student: Prisma.StudentCreateNestedOneWithoutDismissedsInput
 }
 
-export type DismissedUpdateWithoutStudentInput = {
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutDismissedsNestedInput
-  group?: Prisma.GroupUpdateOneRequiredWithoutDismissedsNestedInput
-}
-
-export type DismissedUncheckedUpdateWithoutStudentInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type DismissedUncheckedUpdateManyWithoutStudentInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type DismissedCreateManyGroupInput = {
+export type DismissedUncheckedCreateWithoutGroupInput = {
   id?: number
-  organizationId?: number
-  studentId: number
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  studentId: number
 }
 
-export type DismissedUpdateWithoutGroupInput = {
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutDismissedsNestedInput
-  student?: Prisma.StudentUpdateOneRequiredWithoutDismissedsNestedInput
+export type DismissedCreateOrConnectWithoutGroupInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  create: Prisma.XOR<Prisma.DismissedCreateWithoutGroupInput, Prisma.DismissedUncheckedCreateWithoutGroupInput>
 }
 
-export type DismissedUncheckedUpdateWithoutGroupInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type DismissedCreateManyGroupInputEnvelope = {
+  data: Prisma.DismissedCreateManyGroupInput | Prisma.DismissedCreateManyGroupInput[]
+  skipDuplicates?: boolean
 }
 
-export type DismissedUncheckedUpdateManyWithoutGroupInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  comment?: Prisma.StringFieldUpdateOperationsInput | string
-  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type DismissedUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  update: Prisma.XOR<Prisma.DismissedUpdateWithoutGroupInput, Prisma.DismissedUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.DismissedCreateWithoutGroupInput, Prisma.DismissedUncheckedCreateWithoutGroupInput>
+}
+
+export type DismissedUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.DismissedWhereUniqueInput
+  data: Prisma.XOR<Prisma.DismissedUpdateWithoutGroupInput, Prisma.DismissedUncheckedUpdateWithoutGroupInput>
+}
+
+export type DismissedUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.DismissedScalarWhereInput
+  data: Prisma.XOR<Prisma.DismissedUpdateManyMutationInput, Prisma.DismissedUncheckedUpdateManyWithoutGroupInput>
 }
 
 export type DismissedCreateManyOrganizationInput = {
   id?: number
-  studentId: number
-  groupId: number
   comment: string
   date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  studentId: number
+  groupId: number
 }
 
 export type DismissedUpdateWithoutOrganizationInput = {
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutDismissedsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutDismissedsNestedInput
 }
 
 export type DismissedUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type DismissedUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  studentId?: Prisma.IntFieldUpdateOperationsInput | number
-  groupId?: Prisma.IntFieldUpdateOperationsInput | number
   comment?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type DismissedCreateManyStudentInput = {
+  id?: number
+  comment: string
+  date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  groupId: number
+}
+
+export type DismissedUpdateWithoutStudentInput = {
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutDismissedsNestedInput
+  group?: Prisma.GroupUpdateOneRequiredWithoutDismissedsNestedInput
+}
+
+export type DismissedUncheckedUpdateWithoutStudentInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type DismissedUncheckedUpdateManyWithoutStudentInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  groupId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type DismissedCreateManyGroupInput = {
+  id?: number
+  comment: string
+  date: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId: number
+  studentId: number
+}
+
+export type DismissedUpdateWithoutGroupInput = {
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutDismissedsNestedInput
+  student?: Prisma.StudentUpdateOneRequiredWithoutDismissedsNestedInput
+}
+
+export type DismissedUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type DismissedUncheckedUpdateManyWithoutGroupInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  comment?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
 
 export type DismissedSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  comment?: boolean
+  date?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  comment?: boolean
-  date?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -772,11 +856,13 @@ export type DismissedSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type DismissedSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  comment?: boolean
+  date?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  comment?: boolean
-  date?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -784,11 +870,13 @@ export type DismissedSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
 
 export type DismissedSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  comment?: boolean
+  date?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  comment?: boolean
-  date?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -796,14 +884,16 @@ export type DismissedSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 
 export type DismissedSelectScalar = {
   id?: boolean
+  comment?: boolean
+  date?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   organizationId?: boolean
   studentId?: boolean
   groupId?: boolean
-  comment?: boolean
-  date?: boolean
 }
 
-export type DismissedOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "studentId" | "groupId" | "comment" | "date", ExtArgs["result"]["dismissed"]>
+export type DismissedOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "comment" | "date" | "createdAt" | "updatedAt" | "organizationId" | "studentId" | "groupId", ExtArgs["result"]["dismissed"]>
 export type DismissedInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
@@ -829,11 +919,13 @@ export type $DismissedPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    comment: string
+    date: Date
+    createdAt: Date
+    updatedAt: Date
     organizationId: number
     studentId: number
     groupId: number
-    comment: string
-    date: Date
   }, ExtArgs["result"]["dismissed"]>
   composites: {}
 }
@@ -1261,11 +1353,13 @@ export interface Prisma__DismissedClient<T, Null = never, ExtArgs extends runtim
  */
 export interface DismissedFieldRefs {
   readonly id: Prisma.FieldRef<"Dismissed", 'Int'>
+  readonly comment: Prisma.FieldRef<"Dismissed", 'String'>
+  readonly date: Prisma.FieldRef<"Dismissed", 'DateTime'>
+  readonly createdAt: Prisma.FieldRef<"Dismissed", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Dismissed", 'DateTime'>
   readonly organizationId: Prisma.FieldRef<"Dismissed", 'Int'>
   readonly studentId: Prisma.FieldRef<"Dismissed", 'Int'>
   readonly groupId: Prisma.FieldRef<"Dismissed", 'Int'>
-  readonly comment: Prisma.FieldRef<"Dismissed", 'String'>
-  readonly date: Prisma.FieldRef<"Dismissed", 'DateTime'>
 }
     
 

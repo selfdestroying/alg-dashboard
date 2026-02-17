@@ -11,17 +11,19 @@ import AttendanceTable from './_components/attendance-table'
 import InfoSection from './_components/info-section'
 import LessonTeachersTable from './_components/lesson-teachers-table'
 
+export const metadata = { title: 'Карточка урока' }
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({
     headers: requestHeaders,
   })
-  if (!session) {
+  if (!session || !session.organizationId) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
   const id = (await params).id
   const lesson = await prisma.lesson.findFirst({
-    where: { id: +id, organizationId: session.members[0].organizationId },
+    where: { id: +id, organizationId: session.organizationId! },
     include: {
       teachers: {
         include: {
@@ -69,7 +71,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const students = await getStudents({
     where: {
       id: { notIn: lesson?.attendance.map((a) => a.studentId) },
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
     },
   })
 

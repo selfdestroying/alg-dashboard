@@ -1,30 +1,24 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
+import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import {
   ColumnDef,
-  ColumnFiltersState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { debounce } from 'es-toolkit'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
 
 type ActiveStudent = Prisma.StudentGroupGetPayload<{
   include: {
@@ -61,6 +55,19 @@ const columns: ColumnDef<ActiveStudent>[] = [
     ),
   },
   {
+    header: 'Ссылка',
+    cell: ({ row }) => (
+      <a
+        href={row.original.student.url ?? '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline"
+      >
+        Ссылка
+      </a>
+    ),
+  },
+  {
     id: 'course',
     header: 'Группа',
     accessorFn: (value) => value.groupId,
@@ -90,7 +97,7 @@ const columns: ColumnDef<ActiveStudent>[] = [
                 href={`/dashboard/organization/members/${t.teacher.id}`}
                 className="text-primary hover:underline"
               >
-                {getFullName(t.teacher.firstName, t.teacher.lastName)}
+                {t.teacher.name}
               </Link>
               {index < row.original.group.teachers.length - 1 && ', '}
             </span>
@@ -135,19 +142,24 @@ const columns: ColumnDef<ActiveStudent>[] = [
 
 export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
+  const organizationId = session?.organizationId
+
+  const {
+    columnFilters,
+    setColumnFilters,
+    globalFilter,
+    setGlobalFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+  } = useTableSearchParams({
+    filters: { course: 'integer', location: 'integer', teacher: 'integer' },
+    search: true,
+    pagination: true,
+    sorting: true,
   })
-  const [sorting, setSorting] = useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
@@ -189,104 +201,17 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
       toolbar={
         <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
-          <Filters organizationId={organizationId!} setFilters={setColumnFilters} />
+          <CourseLocationTeacherFilters
+            organizationId={organizationId!}
+            columnFilters={columnFilters}
+            setFilters={setColumnFilters}
+          />
         </FieldGroup>
       }
     />
-  )
-}
-
-interface FiltersProps {
-  organizationId: number
-  setFilters: Dispatch<SetStateAction<ColumnFiltersState>>
-}
-
-function Filters({ organizationId, setFilters }: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
-
-  if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
-    return (
-      <>
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-      </>
-    )
-  }
-
-  const handleCourseFilterChange = (selectedCourses: TableFilterItem[]) => {
-    const courseIds = selectedCourses.map((course) => Number(course.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'course')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'course',
-          value: courseIds,
-        },
-      ]
-    })
-  }
-
-  const handleLocationFilterChange = (selectedLocations: TableFilterItem[]) => {
-    const locationIds = selectedLocations.map((location) => Number(location.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'location')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'location',
-          value: locationIds,
-        },
-      ]
-    })
-  }
-
-  const handleUserFilterChange = (selectedUsers: TableFilterItem[]) => {
-    const userIds = selectedUsers.map((user) => Number(user.value))
-    setFilters((old) => {
-      const otherFilters = old.filter((filter) => filter.id !== 'teacher')
-
-      return [
-        ...otherFilters,
-        {
-          id: 'teacher',
-          value: userIds,
-        },
-      ]
-    })
-  }
-
-  return (
-    <>
-      {courses ? (
-        <TableFilter label="Курс" items={courses} onChange={handleCourseFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {locations ? (
-        <TableFilter label="Локация" items={locations} onChange={handleLocationFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-      {mappedUsers ? (
-        <TableFilter label="Преподаватель" items={mappedUsers} onChange={handleUserFilterChange} />
-      ) : (
-        <Skeleton className="h-8 w-full" />
-      )}
-    </>
   )
 }

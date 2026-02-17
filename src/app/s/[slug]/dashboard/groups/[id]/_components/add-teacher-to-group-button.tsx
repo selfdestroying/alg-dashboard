@@ -41,8 +41,7 @@ const GroupTeacherSchema = z.object({
   bid: z
     .number('Не указана ставка')
     .int('Ставка должна быть числом')
-    .gte(0, 'Ставка должна быть >= 0')
-    .optional(),
+    .gte(0, 'Ставка должна быть >= 0'),
   isApplyToLesson: z.boolean(),
 })
 
@@ -50,7 +49,7 @@ type GroupTeacherSchemaType = z.infer<typeof GroupTeacherSchema>
 
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 

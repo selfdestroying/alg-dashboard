@@ -52,14 +52,14 @@ export default function GroupStudentsTable({ data }: { data: StudentWithAttendan
       {
         header: 'Ссылка в amo',
         cell: ({ row }) =>
-          row.original.student.crmUrl ? (
+          row.original.student.url ? (
             <a
-              href={row.original.student.crmUrl || '#'}
+              href={row.original.student.url || '#'}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              {row.original.student.crmUrl ? 'Ссылка' : 'Нет ссылки'}
+              {row.original.student.url ? 'Ссылка' : 'Нет ссылки'}
             </a>
           ) : (
             'Нет ссылки'

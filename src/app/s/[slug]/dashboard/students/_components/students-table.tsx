@@ -2,6 +2,7 @@
 import { Student } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { getFullName } from '@/src/lib/utils'
 import {
   ColumnDef,
@@ -11,12 +12,9 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { debounce } from 'es-toolkit'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
 
 const columns: ColumnDef<Student>[] = [
   {
@@ -71,17 +69,13 @@ const columns: ColumnDef<Student>[] = [
 ]
 
 export default function StudentsTable({ data }: { data: Student[] }) {
-  const handleSearch = useMemo(
-    () => debounce((value: string) => setGlobalFilter(String(value)), 300),
-    []
-  )
-  const [search, setSearch] = useState<string>('')
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-  const [sorting, setSorting] = useState<SortingState>([])
+  const { globalFilter, setGlobalFilter, pagination, setPagination, sorting, setSorting } =
+    useTableSearchParams({
+      search: true,
+      pagination: true,
+      sorting: true,
+    })
+
   const table = useReactTable({
     data,
     columns,
@@ -114,11 +108,8 @@ export default function StudentsTable({ data }: { data: Student[] }) {
       toolbar={
         <div className="flex flex-col items-end gap-2 md:flex-row">
           <Input
-            value={search ?? ''}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              handleSearch(e.target.value)
-            }}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Поиск..."
           />
         </div>

@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
-import { useActiveMemberQuery } from '@/src/data/member/active-member-query'
 import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
 import { ChevronsUpDown, Loader, LogOut, User } from 'lucide-react'
 import Link from 'next/link'
 
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { OrganizationRole } from '@/src/lib/auth'
 import { useRouter } from 'next/navigation'
 import { Skeleton } from '../ui/skeleton'
@@ -26,7 +26,7 @@ export const memberRoleLabels = {
 
 export default function NavUser() {
   const router = useRouter()
-  const { data, isLoading } = useActiveMemberQuery()
+  const { data: session, isLoading } = useSessionQuery()
   const { mutate, isPending: isSignOutPending } = useSignOutMutation()
 
   if (isLoading) {
@@ -61,15 +61,17 @@ export default function NavUser() {
             ) : (
               <>
                 <Avatar>
-                  <AvatarImage alt={data?.user.name} />
-                  <AvatarFallback>{data?.user.name[0]}</AvatarFallback>
+                  <AvatarImage alt={session?.user.name} />
+                  <AvatarFallback>{session?.user.name[0]}</AvatarFallback>
                 </Avatar>
               </>
             )}
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{data?.user.name}</span>
+              <span className="truncate font-medium">{session?.user.name}</span>
               <span className="text-muted-foreground truncate text-xs">
-                {data?.role ? memberRoleLabels[data?.role] : '-'}
+                {session?.memberRole
+                  ? memberRoleLabels[session?.memberRole as OrganizationRole]
+                  : '-'}
               </span>
             </div>
             <ChevronsUpDown />

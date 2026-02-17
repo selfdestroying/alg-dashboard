@@ -1,31 +1,20 @@
 import { protocol, rootDomain } from './utils'
 
-export interface MemberWithOrganization {
-  organization: {
-    slug: string | null
-  }
+export interface OrganizationInfo {
+  slug: string | null
 }
 
 /**
  * Возвращает URL для редиректа после успешной аутентификации
- * @param members - список членств пользователя в организациях
+ * @param organization - организация пользователя (или null)
  * @returns URL для редиректа
  */
-export function getRedirectUrl(members: MemberWithOrganization[]): string {
-  // Если пользователь не состоит ни в одной организации
-  if (!members || members.length === 0) {
-    return `${protocol}://auth.${rootDomain}/no-organization`
+export function getRedirectUrl(organization: OrganizationInfo | null): string {
+  if (!organization || !organization.slug) {
+    return `${protocol}://${rootDomain}`
   }
 
-  // Берём первую организацию пользователя
-  const firstOrg = members[0]
-
-  if (!firstOrg.organization.slug) {
-    return `${protocol}://auth.${rootDomain}/no-organization`
-  }
-
-  // Редиректим на поддомен организации
-  return `${protocol}://${firstOrg.organization.slug}.${rootDomain}/dashboard`
+  return `${protocol}://${organization.slug}.${rootDomain}/dashboard`
 }
 
 /**

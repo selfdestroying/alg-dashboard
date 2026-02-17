@@ -28,7 +28,6 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { getFullName } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -175,9 +174,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
             <AlertDialogDescription>
-              Вы уверены что хотите удалить{' '}
-              <b>{getFullName(tl.teacher.firstName, tl.teacher.lastName)}</b> из списка
-              преподавателей?
+              Вы уверены что хотите удалить <b>{tl.teacher.name}</b> из списка преподавателей?
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -207,9 +204,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Редактировать</DialogTitle>
-            <DialogDescription>
-              {getFullName(tl.teacher.firstName, tl.teacher.lastName)}
-            </DialogDescription>
+            <DialogDescription>{tl.teacher.name}</DialogDescription>
           </DialogHeader>
 
           <form id="teacher-group-edit-form" onSubmit={form.handleSubmit(handleEdit)}>

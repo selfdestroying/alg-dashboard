@@ -23,8 +23,6 @@ import type { AdminUser } from './types'
 
 const editUserSchema = z.object({
   name: z.string().min(1, 'Имя обязательно'),
-  firstName: z.string().min(1, 'Имя обязательно'),
-  lastName: z.string(),
   email: z.string().email('Некорректный email'),
   bidForLesson: z.number().min(0, 'Минимум 0'),
   bidForIndividual: z.number().min(0, 'Минимум 0'),
@@ -51,8 +49,6 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
     resolver: zodResolver(editUserSchema),
     defaultValues: {
       name: user.name,
-      firstName: user.firstName,
-      lastName: user.lastName ?? '',
       email: user.email,
       bidForLesson: user.bidForLesson,
       bidForIndividual: user.bidForIndividual,
@@ -66,9 +62,7 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
           {
             where: { id: user.id },
             data: {
-              name: `${values.firstName} ${values.lastName}`.trim(),
-              firstName: values.firstName,
-              lastName: values.lastName || null,
+              name: values.name,
               email: values.email,
               bidForLesson: values.bidForLesson,
               bidForIndividual: values.bidForIndividual,
@@ -90,8 +84,6 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
     if (isOpen) {
       reset({
         name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName ?? '',
         email: user.email,
         bidForLesson: user.bidForLesson,
         bidForIndividual: user.bidForIndividual,
@@ -115,25 +107,15 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FieldGroup>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <Controller
                 control={control}
-                name="firstName"
+                name="name"
                 render={({ field }) => (
                   <Field>
                     <FieldLabel>Имя</FieldLabel>
                     <Input {...field} placeholder="Имя" />
-                    <FieldError>{errors.firstName?.message}</FieldError>
-                  </Field>
-                )}
-              />
-              <Controller
-                control={control}
-                name="lastName"
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Фамилия</FieldLabel>
-                    <Input {...field} placeholder="Фамилия" />
+                    <FieldError>{errors.name?.message}</FieldError>
                   </Field>
                 )}
               />

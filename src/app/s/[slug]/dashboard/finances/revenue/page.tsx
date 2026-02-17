@@ -4,6 +4,8 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import RevenueClient from './revenue-client'
 
+export const metadata = { title: 'Выручка' }
+
 export default async function Page() {
   const requestHeaders = await headers()
   const session = await auth.api.getSession({

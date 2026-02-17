@@ -2,7 +2,6 @@
 import { Prisma } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
-import { getFullName } from '@/src/lib/utils'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
@@ -25,7 +24,7 @@ export default function GroupTeachersTable({
               href={`/dashboard/organization/members/${row.original.teacher.id}`}
               className="text-primary hover:underline"
             >
-              {getFullName(row.original.teacher.firstName, row.original.teacher.lastName)}
+              {row.original.teacher.name}
             </Link>
           ),
         },

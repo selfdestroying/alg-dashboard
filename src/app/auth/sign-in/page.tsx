@@ -10,8 +10,8 @@ export default async function Page() {
     headers: requestHeaders,
   })
 
-  if (session)
-    return redirect(`${protocol}://${session.members[0].organization.slug}.${rootDomain}`)
+  if (session?.organization)
+    return redirect(`${protocol}://${session.organization.slug}.${rootDomain}`)
 
   return <SignIn />
 }

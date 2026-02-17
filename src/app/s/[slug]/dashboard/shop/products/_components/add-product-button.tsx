@@ -44,7 +44,7 @@ const AddProductSchema = z.object({
     },
     'Выберите категорию'
   ),
-  price: z.number('Введите цену продукта').min(0, 'Цена не может быть отрицательной'),
+  price: z.number('Введите цену продукта').int().min(0, 'Цена не может быть отрицательной'),
   description: z
     .string('Введите описание продукта')
     .max(500, 'Описание не должно превышать 500 символов'),
@@ -62,7 +62,7 @@ type AddProductFormSchemaType = z.infer<typeof AddProductSchema>
 
 export default function AddProductButton({ categories }: { categories: Category[] }) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.members[0].organizationId
+  const organizationId = session?.organizationId ?? undefined
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<AddProductFormSchemaType>({

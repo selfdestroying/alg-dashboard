@@ -14,7 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/src/components/ui/sidebar'
-import { useActiveMemberQuery } from '@/src/data/member/active-member-query'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { OrganizationRole } from '@/src/lib/auth'
 import { ChevronRight, Folder, LayoutDashboard, Users, Wallet } from 'lucide-react'
 import Link from 'next/link'
@@ -118,8 +118,8 @@ function filterNavByRole(nav: NavGroup[], role: OrganizationRole): NavGroup[] {
 }
 
 export default function NavPlatform() {
-  const { data: activeMember } = useActiveMemberQuery()
-  const role = activeMember?.role as OrganizationRole | undefined
+  const { data: session } = useSessionQuery()
+  const role = session?.memberRole as OrganizationRole | undefined
 
   const filteredNavList = role ? filterNavByRole(navLists, role) : []
 

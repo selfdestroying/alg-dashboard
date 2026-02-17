@@ -100,7 +100,7 @@ export async function updateStudent(
     const delta = balanceAfter - balanceBefore
 
     await writeLessonsBalanceHistoryTx(tx, {
-      organizationId: session.members[0].organizationId,
+      organizationId: session.organizationId!,
       studentId,
       actorUserId: Number(session.user.id),
       reason: lessonsBalanceAudit.reason,
@@ -207,7 +207,7 @@ export async function getActiveStudentStatistics(organizationId: number) {
   const teacherStats: Record<string, Set<number>> = {}
   activeStudentGroups.forEach((sg) => {
     sg.group.teachers.forEach((tg) => {
-      const teacherName = `${tg.teacher.firstName} ${tg.teacher.lastName || ''}`.trim()
+      const teacherName = tg.teacher.name
       if (!teacherStats[teacherName]) {
         teacherStats[teacherName] = new Set()
       }

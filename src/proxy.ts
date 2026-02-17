@@ -48,7 +48,14 @@ function buildAuthRedirectUrl(request: NextRequest): string {
 
 export async function proxy(request: NextRequest) {
   const subdomain = extractSubdomain(request)
-  if (!subdomain) return NextResponse.next()
+
+  if (!subdomain) {
+    const { pathname } = request.nextUrl
+    if (pathname !== '/') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    return NextResponse.next()
+  }
 
   const { pathname, search } = request.nextUrl
 
@@ -71,14 +78,21 @@ function handleReservedSubdomain(
   session: SessionData
 ) {
   switch (subdomain) {
-    case 'auth':
+    case 'auth': {
+      if (pathname === '/') {
+        return NextResponse.redirect(new URL('/sign-in', request.url))
+      }
       return NextResponse.rewrite(new URL(`/auth${pathname}${search}`, request.url))
+    }
 
     case 'admin': {
+      if (pathname !== '/') {
+        return NextResponse.redirect(new URL('/', request.url))
+      }
       if (!session) {
         return NextResponse.redirect(buildAuthRedirectUrl(request))
       }
-      if (session.roles.includes('admin')) {
+      if (session.userRole === 'admin') {
         return NextResponse.rewrite(new URL(`/admin${pathname}${search}`, request.url))
       }
       return NextResponse.redirect(ROOT_URL)
@@ -103,7 +117,7 @@ function handleOrgSubdomain(
     return NextResponse.redirect(buildAuthRedirectUrl(request))
   }
 
-  const isMember = session.members.some((m) => m.organization.slug === subdomain)
+  const isMember = session.organization?.slug === subdomain
 
   if (!isMember) {
     return NextResponse.redirect(ROOT_URL)
@@ -119,5 +133,5 @@ function handleOrgSubdomain(
  * из обработки proxy для оптимизации производительности.
  */
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon\\.ico|api/auth).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|api/auth).*)'],
 }
