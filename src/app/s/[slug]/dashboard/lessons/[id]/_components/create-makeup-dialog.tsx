@@ -72,7 +72,7 @@ export default function CreateMakeUpForm({
         items={lessons}
         value={selectedLesson}
         onValueChange={setSelectedLesson}
-        disabled={isLessonsLoading}
+        disabled={isLessonsLoading || !selectedDay || lessons?.length === 0}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Выберите урок" />

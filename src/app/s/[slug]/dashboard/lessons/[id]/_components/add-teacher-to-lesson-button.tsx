@@ -1,5 +1,5 @@
 'use client'
-import { Lesson } from '@/prisma/generated/client'
+import { Prisma } from '@/prisma/generated/client'
 import { createTeacherLesson } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -32,7 +32,11 @@ import { toast } from 'sonner'
 import z from 'zod/v4'
 
 interface AddTeacherToLessonButtonProps {
-  lesson: Lesson
+  lesson: Prisma.LessonGetPayload<{
+    include: {
+      group: true
+    }
+  }>
 }
 
 const LessonTeacherSchema = z.object({
@@ -55,7 +59,8 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
     resolver: zodResolver(LessonTeacherSchema),
     defaultValues: {
       teacherId: undefined,
-      bid: undefined,
+      bid:
+        lesson.group.type === 'INDIVIDUAL' ? 750 : lesson.group.type === 'GROUP' ? 1100 : undefined,
     },
   })
 

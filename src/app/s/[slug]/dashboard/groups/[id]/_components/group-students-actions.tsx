@@ -105,10 +105,13 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
         },
       })
       setGroups(
-        data.map((group) => ({
-          label: getGroupName(group),
-          value: group.id,
-        }))
+        data.map((group) => {
+          const name = getGroupName(group)
+          const location = group.location?.name
+          const teachers = group.teachers.map((t) => t.teacher.name).join(', ')
+          const parts = [name, location, teachers].filter(Boolean)
+          return { label: parts.join(' · '), value: group.id }
+        })
       )
     }
     fetchGroups()
@@ -378,8 +381,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Редактировать</DialogTitle>
-            <DialogDescription>Измените ставку преподавателя в группе</DialogDescription>
+            <DialogTitle>Перевести</DialogTitle>
+            <DialogDescription>Выберите группу для перевода студента</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={transferForm.handleSubmit(handleTransfer)} id="transfer-form">

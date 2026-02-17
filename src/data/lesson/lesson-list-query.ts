@@ -69,7 +69,13 @@ export const useMappedLessonListQuery = (organizationId: number, date?: Date) =>
     queryFn: () => getLessonList(organizationId, date),
     enabled: !!organizationId && !!date,
     select: (lessons) =>
-      lessons.map((lesson) => ({ label: getGroupName(lesson.group), value: lesson.id })),
+      lessons.map((lesson) => {
+        const groupName = getGroupName(lesson.group)
+        const location = lesson.group.location?.name
+        const teachers = lesson.teachers.map((t) => t.teacher.name).join(', ')
+        const parts = [groupName, location, teachers]
+        return { label: parts.join(' · '), value: lesson.id }
+      }),
   })
 }
 

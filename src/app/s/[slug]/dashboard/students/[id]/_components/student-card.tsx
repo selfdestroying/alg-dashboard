@@ -11,6 +11,7 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react'
 import AddStudentToGroupButton from '../../../groups/[id]/_components/add-student-to-group-button'
 import { GroupAttendanceTable } from '../../../groups/[id]/_components/group-attendance-table'
 import AddCoinsForm from './add-coins-form'
+import CourseAttendanceStats from './course-attendance-stats'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
@@ -137,6 +138,10 @@ export default async function StudentCard({ student, groups }: StudentCardProps)
           </p>
         </div>
       </Section>
+
+      <Separator />
+
+      <CourseAttendanceStats student={student} />
 
       <Separator />
 
