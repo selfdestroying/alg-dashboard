@@ -24,9 +24,18 @@ export default async function Layout({
 }>) {
   return (
     <>
+      {/* Decorative background orbs */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="animate-landing-float bg-primary/10 absolute -top-32 -right-32 h-96 w-96 rounded-full blur-3xl" />
+        <div className="animate-landing-float-delayed bg-primary/8 absolute -bottom-40 -left-40 h-120 w-120 rounded-full blur-3xl" />
+      </div>
+
+      {/* Subtle grid pattern */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-30" />
+
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset className="space-y-2 overflow-hidden p-2">
+        <SidebarInset className="space-y-2 overflow-hidden bg-transparent p-2">
           <div className="flex items-center justify-between">
             <SidebarTrigger variant={'outline'} />
           </div>
