@@ -45,13 +45,15 @@ function computeCourseStats(student: StudentWithGroupsAndAttendance): CourseStat
     if (!stats) continue
 
     if (attendance.status === 'PRESENT') {
-      if (attendance.asMakeupFor) {
-        stats.madeUp++
-      } else {
+
         stats.attended++
-      }
     } else if (attendance.status === 'ABSENT') {
       stats.missed++
+      if (attendance.missedMakeup) {
+        if (attendance.missedMakeup.makeUpAttendance.status === 'PRESENT') {
+          stats.madeUp++
+        }
+      }
     }
   }
 

@@ -129,6 +129,11 @@ export const updateStudentGroup = async (
   isApplyToLessons: boolean
 ) => {
   await prisma.$transaction(async (tx) => {
+    const oldStudentGroup = await tx.studentGroup.findUniqueOrThrow({
+      where: payload.where,
+      select: { groupId: true, studentId: true },
+    })
+
     const sg = await tx.studentGroup.update(payload)
 
     if (!isApplyToLessons) return
@@ -136,7 +141,31 @@ export const updateStudentGroup = async (
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const futureLessons = await tx.lesson.findMany({
+    const isGroupChanged = oldStudentGroup.groupId !== sg.groupId
+
+    // Удаляем посещаемость из старой группы при переводе
+    if (isGroupChanged) {
+      const oldFutureLessons = await tx.lesson.findMany({
+        where: {
+          groupId: oldStudentGroup.groupId,
+          date: { gte: today },
+        },
+        select: { id: true },
+      })
+
+      if (oldFutureLessons.length > 0) {
+        await tx.attendance.deleteMany({
+          where: {
+            studentId: sg.studentId,
+            lessonId: { in: oldFutureLessons.map((l) => l.id) },
+            status: 'UNSPECIFIED',
+          },
+        })
+      }
+    }
+
+    // Создаём посещаемость в новой группе
+    const newFutureLessons = await tx.lesson.findMany({
       where: {
         groupId: sg.groupId,
         date: { gte: today },
@@ -144,8 +173,8 @@ export const updateStudentGroup = async (
       select: { id: true, organizationId: true },
     })
 
-    if (futureLessons.length > 0) {
-      const attendanceData = futureLessons.map((lesson) => ({
+    if (newFutureLessons.length > 0) {
+      const attendanceData = newFutureLessons.map((lesson) => ({
         organizationId: lesson.organizationId,
         lessonId: lesson.id,
         studentId: sg.studentId,
@@ -158,7 +187,11 @@ export const updateStudentGroup = async (
         skipDuplicates: true,
       })
     }
-    revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+
+    if (isGroupChanged) {
+      revalidatePath(`/dashboard/groups/${oldStudentGroup.groupId}`)
+    }
+    revalidatePath(`/dashboard/groups/${sg.groupId}`)
   })
 }
 
