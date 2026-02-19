@@ -3,7 +3,7 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/comp
 import { DaysOfWeek } from '@/src/lib/utils'
 import { GroupDTO } from '@/src/types/group'
 import { toZonedTime } from 'date-fns-tz'
-import { Book, Calendar, Clock, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
+import { Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
 import EditGroupButton from './edit-group-button'
 
 const groupTypeMap: Record<GroupType, string> = {
@@ -38,23 +38,23 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
           <div className="flex flex-col">
             <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
               <Calendar className="h-3 w-3" />
-              <span className="truncate" title="День занятия">
-                День занятия
+              <span className="truncate" title="Расписание">
+                Расписание
               </span>
             </div>
-            <div className="truncate">
-              {group.dayOfWeek != null ? DaysOfWeek.full[group.dayOfWeek] : '-'}
+            <div className="flex flex-col gap-0.5">
+              {group.schedules && group.schedules.length > 0
+                ? [...group.schedules]
+                    .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
+                    .map((s) => (
+                      <span key={s.id} className="truncate">
+                        {DaysOfWeek.full[s.dayOfWeek]} — {s.time}
+                      </span>
+                    ))
+                : group.dayOfWeek != null
+                  ? `${DaysOfWeek.full[group.dayOfWeek]} — ${group.time}`
+                  : '-'}
             </div>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
-              <Clock className="h-3 w-3" />
-              <span className="truncate" title="Время">
-                Время
-              </span>
-            </div>
-            <div className="truncate">{group.time}</div>
           </div>
 
           <div className="flex flex-col">

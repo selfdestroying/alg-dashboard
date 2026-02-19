@@ -5,6 +5,7 @@ export type GroupDTO = Prisma.GroupGetPayload<{
     location: true
     course: true
     students: true
+    schedules: true
     teachers: {
       include: {
         teacher: true

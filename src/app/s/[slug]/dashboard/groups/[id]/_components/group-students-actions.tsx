@@ -96,6 +96,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
         include: {
           location: true,
           course: true,
+          schedules: true,
           students: true,
           teachers: {
             include: {

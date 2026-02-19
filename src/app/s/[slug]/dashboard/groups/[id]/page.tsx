@@ -32,6 +32,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
       location: true,
       course: true,
+      schedules: true,
       teachers: {
         include: {
           teacher: true,
