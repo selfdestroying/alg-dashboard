@@ -5,7 +5,7 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
     groups: { include: { group: { include: { lessons: true; course: true; location: true } } } }
     attendances: {
       include: {
-        lesson: true
+        lesson: { include: { group: { include: { course: true } } } }
         asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
         missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
       }
