@@ -143,7 +143,7 @@ export default function UsersTable({ data, onRefresh }: UsersTableProps) {
         row.original.role ? (
           <Badge variant={getRoleBadgeVariant(row.original.role)}>{row.original.role}</Badge>
         ) : (
-          <span className="text-muted-foreground text-xs">—</span>
+          <span className="text-muted-foreground text-xs">-</span>
         ),
     },
     {
@@ -170,7 +170,7 @@ export default function UsersTable({ data, onRefresh }: UsersTableProps) {
                 </Badge>
               ))
             ) : (
-              <span className="text-muted-foreground text-xs">—</span>
+              <span className="text-muted-foreground text-xs">-</span>
             )}
           </div>
         )

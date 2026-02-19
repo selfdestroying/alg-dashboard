@@ -47,6 +47,7 @@ export default function CreateUserDialog() {
       role: undefined,
       bidForLesson: 1100,
       bidForIndividual: 750,
+      bonusPerStudent: 0,
     },
   })
 
@@ -63,6 +64,7 @@ export default function CreateUserDialog() {
             lastName: values.lastName,
             bidForLesson: values.bidForLesson,
             bidForIndividual: values.bidForIndividual,
+            bonusPerStudent: values.bonusPerStudent,
           },
         },
         memberRole: values.role,
@@ -224,6 +226,24 @@ export default function CreateUserDialog() {
                   </FieldLabel>
                   <Input
                     id="bidForIndividual-field"
+                    {...field}
+                    type="number"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="bonusPerStudent"
+              disabled={isPending}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor="bonusPerStudent-field">Бонус за ученика</FieldLabel>
+                  <Input
+                    id="bonusPerStudent-field"
                     {...field}
                     type="number"
                     onChange={(e) => field.onChange(Number(e.target.value))}

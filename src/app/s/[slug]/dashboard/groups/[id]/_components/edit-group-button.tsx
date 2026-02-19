@@ -34,7 +34,7 @@ import { AlertTriangle, Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { timeSlots } from '../../_components/create-group-dialog'
+import { timeSlots } from '@/src/shared/time-slots'
 
 interface EditGroupButtonProps {
   group: GroupDTO

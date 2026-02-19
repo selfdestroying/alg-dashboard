@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 /**
  * Конфигурация для определения каких URL параметров хуку отслеживать.
- * Каждый ключ — id колонки в таблице, значение — тип парсера.
+ * Каждый ключ - id колонки в таблице, значение - тип парсера.
  */
 type FilterConfig = Record<string, 'integer' | 'string'>
 

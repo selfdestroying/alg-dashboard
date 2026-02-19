@@ -55,6 +55,10 @@ const EditUserSchema = z.object({
   bidForIndividual: z
     .number('Укажите корректную ставку за индивидуальное занятие')
     .positive('Ставка должна быть положительной'),
+  bonusPerStudent: z
+    .number('Укажите корректный бонус за ученика')
+    .int()
+    .gte(0, 'Бонус не может быть отрицательным'),
   banned: z.boolean(),
   isApplyToLessons: z.boolean(),
 })
@@ -80,6 +84,7 @@ export default function EditUserButton({ member }: EditUserButtonProps) {
         : undefined,
       bidForLesson: member.user.bidForLesson,
       bidForIndividual: member.user.bidForIndividual,
+      bonusPerStudent: member.user.bonusPerStudent,
       isApplyToLessons: false,
       banned: member.user.banned !== null ? member.user.banned : undefined,
     },
@@ -252,6 +257,22 @@ export default function EditUserButton({ member }: EditUserButtonProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Ставка за индивидуальный урок</FieldLabel>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="bonusPerStudent"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Бонус за ученика на уроке</FieldLabel>
                   <Input
                     type="number"
                     {...field}

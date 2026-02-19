@@ -35,14 +35,28 @@ const columns: ColumnDef<GroupDTO>[] = [
     ),
   },
   {
-    header: 'День',
+    header: 'Расписание',
     accessorKey: 'dayOfWeek',
-    cell: ({ row }) =>
-      row.original.dayOfWeek !== null ? DaysOfWeek.full[row.original.dayOfWeek] : '-',
-  },
-  {
-    header: 'Время',
-    accessorKey: 'time',
+    cell: ({ row }) => {
+      const schedules = row.original.schedules
+      if (schedules && schedules.length > 0) {
+        const sorted = [...schedules].sort(
+          (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7)
+        )
+        return (
+          <div className="flex flex-col gap-0.5">
+            {sorted.map((s) => (
+              <span key={s.dayOfWeek} className="text-sm">
+                {DaysOfWeek.short[s.dayOfWeek]} {s.time}
+              </span>
+            ))}
+          </div>
+        )
+      }
+      return row.original.dayOfWeek !== null
+        ? `${DaysOfWeek.short[row.original.dayOfWeek]} ${row.original.time}`
+        : '-'
+    },
   },
   {
     id: 'course',
@@ -143,7 +157,7 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
     sorting: true,
   })
 
-  // Student count range filter — managed separately via URL params
+  // Student count range filter - managed separately via URL params
   const [scMin, setScMin] = useQueryState(
     'scMin',
     parseAsInteger.withOptions({ shallow: true, throttleMs: 300 })

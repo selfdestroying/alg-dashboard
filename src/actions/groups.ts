@@ -18,12 +18,15 @@ export const getGroup = async <T extends Prisma.GroupFindFirstArgs>(
   return await prisma.group.findFirst(payload)
 }
 
-export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
+export const createGroup = async (
+  payload: Prisma.GroupCreateArgs,
+  schedule?: Array<{ dayOfWeek: number; time: string }>
+) => {
   await prisma.$transaction(async (tx) => {
     const group = await tx.group.create({
       ...payload,
       include: {
-        teachers: { select: { bid: true, teacherId: true } },
+        teachers: { select: { bid: true, bonusPerStudent: true, teacherId: true } },
         lessons: { select: { id: true } },
       },
     })
@@ -34,7 +37,19 @@ export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
           lessonId: lesson.id,
           teacherId: group.teachers[0].teacherId,
           bid: group.teachers[0].bid,
+          bonusPerStudent: group.teachers[0].bonusPerStudent,
         },
+      })
+    }
+    // Создаём записи расписания
+    if (schedule && schedule.length > 0) {
+      await tx.groupSchedule.createMany({
+        data: schedule.map((s) => ({
+          dayOfWeek: s.dayOfWeek,
+          time: s.time,
+          groupId: group.id,
+          organizationId: group.organizationId,
+        })),
       })
     }
   })
@@ -243,6 +258,7 @@ export const updateTeacherGroup = async (
         },
         data: {
           bid: teacherGroup.bid,
+          bonusPerStudent: teacherGroup.bonusPerStudent,
         },
       })
     }
@@ -279,6 +295,7 @@ export const createTeacherGroup = async (
             lessonId: lesson.id,
             teacherId: payload.data.teacherId as number,
             bid: teacherGroup.bid,
+            bonusPerStudent: teacherGroup.bonusPerStudent,
           },
         })
       }

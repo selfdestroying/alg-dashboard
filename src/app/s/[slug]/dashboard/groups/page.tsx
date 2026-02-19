@@ -1,5 +1,6 @@
 import { getGroups } from '@/src/actions/groups'
 
+import { Button } from '@/src/components/ui/button'
 import {
   Card,
   CardAction,
@@ -10,9 +11,10 @@ import {
 } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
 import { protocol, rootDomain } from '@/src/lib/utils'
+import { Plus } from 'lucide-react'
 import { headers } from 'next/headers'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import CreateGroupDialog from './_components/create-group-dialog'
 import GroupsTable from './_components/groups-table'
 
 export const metadata = { title: 'Группы' }
@@ -29,6 +31,7 @@ export default async function Page() {
     where: { organizationId: session.organizationId! },
     include: {
       students: true,
+      schedules: true,
       teachers: {
         include: {
           teacher: true,
@@ -54,7 +57,13 @@ export default async function Page() {
           <CardDescription>Список всех групп системы</CardDescription>
           {canCreate && (
             <CardAction>
-              <CreateGroupDialog />
+              <Button
+                size={'icon'}
+                nativeButton={false}
+                render={<Link href="/dashboard/groups/create" />}
+              >
+                <Plus />
+              </Button>
             </CardAction>
           )}
         </CardHeader>

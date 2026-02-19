@@ -12,6 +12,10 @@ export const CreateUserSchema = z.object({
   bidForIndividual: z
     .number('Укажите корректную ставку за индивидуальное занятие')
     .positive('Ставка должна быть положительной'),
+  bonusPerStudent: z
+    .number('Укажите корректный бонус за ученика')
+    .int()
+    .gte(0, 'Бонус не может быть отрицательным'),
 })
 
 export const EditUserSchema = z.object({
@@ -20,6 +24,7 @@ export const EditUserSchema = z.object({
   roleId: z.number(),
   bidForLesson: z.number().positive('Укажите корректную ставку за урок'),
   bidForIndividual: z.number().positive('Укажите корректную ставку за индивидуал'),
+  bonusPerStudent: z.number().int().gte(0, 'Бонус не может быть отрицательным'),
 })
 
 export type CreateUserSchemaType = z.infer<typeof CreateUserSchema>
