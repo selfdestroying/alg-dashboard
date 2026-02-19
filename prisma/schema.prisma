@@ -120,6 +120,7 @@ model Organization {
   orders                         Order[]
   paymentProducts                PaymentProduct[]
   studentLessonsBalanceHistories StudentLessonsBalanceHistory[]
+  groupSchedules                 GroupSchedule[]
 
   @@unique([slug])
   @@map("Organization")
@@ -237,10 +238,29 @@ model Group {
   students   StudentGroup[]
   teachers   TeacherGroup[]
   dismisseds Dismissed[]
+  schedules  GroupSchedule[]
 
   @@index([organizationId])
   @@index([courseId])
   @@index([locationId])
+}
+
+model GroupSchedule {
+  id        Int      @id @default(autoincrement())
+  dayOfWeek Int
+  time      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  groupId        Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, dayOfWeek])
+  @@index([groupId])
+  @@index([organizationId])
 }
 
 model Location {

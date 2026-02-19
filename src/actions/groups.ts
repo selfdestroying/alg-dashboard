@@ -18,7 +18,10 @@ export const getGroup = async <T extends Prisma.GroupFindFirstArgs>(
   return await prisma.group.findFirst(payload)
 }
 
-export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
+export const createGroup = async (
+  payload: Prisma.GroupCreateArgs,
+  schedule?: Array<{ dayOfWeek: number; time: string }>
+) => {
   await prisma.$transaction(async (tx) => {
     const group = await tx.group.create({
       ...payload,
@@ -35,6 +38,17 @@ export const createGroup = async (payload: Prisma.GroupCreateArgs) => {
           teacherId: group.teachers[0].teacherId,
           bid: group.teachers[0].bid,
         },
+      })
+    }
+    // Создаём записи расписания
+    if (schedule && schedule.length > 0) {
+      await tx.groupSchedule.createMany({
+        data: schedule.map((s) => ({
+          dayOfWeek: s.dayOfWeek,
+          time: s.time,
+          groupId: group.id,
+          organizationId: group.organizationId,
+        })),
       })
     }
   })
