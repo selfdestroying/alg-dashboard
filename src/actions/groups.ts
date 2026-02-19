@@ -26,7 +26,7 @@ export const createGroup = async (
     const group = await tx.group.create({
       ...payload,
       include: {
-        teachers: { select: { bid: true, teacherId: true } },
+        teachers: { select: { bid: true, bonusPerStudent: true, teacherId: true } },
         lessons: { select: { id: true } },
       },
     })
@@ -37,6 +37,7 @@ export const createGroup = async (
           lessonId: lesson.id,
           teacherId: group.teachers[0].teacherId,
           bid: group.teachers[0].bid,
+          bonusPerStudent: group.teachers[0].bonusPerStudent,
         },
       })
     }
@@ -257,6 +258,7 @@ export const updateTeacherGroup = async (
         },
         data: {
           bid: teacherGroup.bid,
+          bonusPerStudent: teacherGroup.bonusPerStudent,
         },
       })
     }
@@ -293,6 +295,7 @@ export const createTeacherGroup = async (
             lessonId: lesson.id,
             teacherId: payload.data.teacherId as number,
             bid: teacherGroup.bid,
+            bonusPerStudent: teacherGroup.bonusPerStudent,
           },
         })
       }

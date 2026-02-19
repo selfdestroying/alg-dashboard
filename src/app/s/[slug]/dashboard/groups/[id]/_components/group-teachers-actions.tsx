@@ -50,6 +50,10 @@ const editGroupTeacherSchema = z.object({
     .number('Не указана ставка')
     .int('Ставка должна быть числом')
     .gte(0, 'Ставка должна быть >= 0'),
+  bonusPerStudent: z
+    .number('Не указан бонус')
+    .int('Бонус должен быть целым числом')
+    .gte(0, 'Бонус должен быть >= 0'),
   isApplyToLessons: z.boolean(),
 })
 
@@ -68,6 +72,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
     resolver: zodResolver(editGroupTeacherSchema),
     defaultValues: {
       bid: tg.bid,
+      bonusPerStudent: tg.bonusPerStudent,
       isApplyToLessons: false,
     },
   })
@@ -245,6 +250,25 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
                     </FieldContent>
                     <Input
                       id="form-rhf-input-bid"
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="bonusPerStudent"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel htmlFor="form-rhf-input-bonus">Бонус за ученика</FieldLabel>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </FieldContent>
+                    <Input
+                      id="form-rhf-input-bonus"
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}

@@ -13,6 +13,7 @@ model User {
   id               Int @id @default(autoincrement())
   bidForLesson     Int
   bidForIndividual Int
+  bonusPerStudent  Int @default(0)
 
   // better-auth fields
   name          String
@@ -381,9 +382,10 @@ model Dismissed {
 }
 
 model TeacherGroup {
-  bid       Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  bid             Int
+  bonusPerStudent Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
   organizationId Int
@@ -399,9 +401,10 @@ model TeacherGroup {
 }
 
 model TeacherLesson {
-  bid       Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  bid             Int
+  bonusPerStudent Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
   organizationId Int

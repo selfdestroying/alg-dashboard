@@ -130,6 +130,7 @@ export default function CreateGroupForm() {
       : watchedType === 'INDIVIDUAL'
         ? (selectedMember?.user?.bidForIndividual ?? 0)
         : null
+  const teacherBonus = selectedMember?.user?.bonusPerStudent ?? 0
 
   const scheduleDays = fields.map((f) => f.dayOfWeek)
   const lastLessonDate = computeLastLessonDate(watchedStartDate, scheduleDays, watchedLessonCount)
@@ -196,6 +197,7 @@ export default function CreateGroupForm() {
                     values.type === 'GROUP'
                       ? (member?.user?.bidForLesson ?? 0)
                       : (member?.user.bidForIndividual ?? 0),
+                  bonusPerStudent: member?.user?.bonusPerStudent ?? 0,
                 },
               ],
             },
@@ -324,7 +326,10 @@ export default function CreateGroupForm() {
               </Select>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               {selectedMember && teacherBid !== null && (
-                <FieldDescription>Ставка: {teacherBid} ₽ за занятие</FieldDescription>
+                <FieldDescription>
+                  Ставка: {teacherBid} ₽ за занятие
+                  {teacherBonus > 0 && ` + ${teacherBonus} ₽ за ученика`}
+                </FieldDescription>
               )}
             </Field>
           )}

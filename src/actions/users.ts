@@ -16,6 +16,7 @@ export interface UserCreateParams {
     lastName: string
     bidForLesson: number
     bidForIndividual: number
+    bonusPerStudent: number
   }
 }
 
@@ -49,6 +50,7 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLesson
         },
         data: {
           bid: user.bidForLesson,
+          bonusPerStudent: user.bonusPerStudent,
         },
       })
       await tx.teacherLesson.updateMany({
@@ -61,6 +63,7 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLesson
         },
         data: {
           bid: user.bidForIndividual,
+          bonusPerStudent: user.bonusPerStudent,
         },
       })
       await tx.teacherGroup.updateMany({
@@ -70,6 +73,7 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLesson
         },
         data: {
           bid: user.bidForLesson,
+          bonusPerStudent: user.bonusPerStudent,
         },
       })
       await tx.teacherGroup.updateMany({
@@ -79,6 +83,7 @@ export const updateUser = async (payload: Prisma.UserUpdateArgs, isApplyToLesson
         },
         data: {
           bid: user.bidForIndividual,
+          bonusPerStudent: user.bonusPerStudent,
         },
       })
     }

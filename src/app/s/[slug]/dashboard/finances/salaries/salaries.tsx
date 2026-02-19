@@ -92,8 +92,9 @@ type LessonWithPrice = Prisma.LessonGetPayload<{
         location: true
       }
     }
+    _count: { select: { attendance: { where: { status: 'PRESENT' } } } }
   }
-}> & { price: number }
+}> & { price: number; bonusPerStudent: number; presentCount: number }
 
 type TeacherSalaryData = {
   teacher: User
@@ -192,6 +193,7 @@ export default function Salaries() {
                 location: true,
               },
             },
+            _count: { select: { attendance: { where: { status: 'PRESENT' } } } },
           },
           orderBy: [{ date: 'asc' }, { time: 'asc' }],
         }),
@@ -216,12 +218,19 @@ export default function Salaries() {
       // Группировка по преподавателям
       const lessonsByTeacher: Record<number, TeacherSalaryData> = {}
       for (const lesson of lessonsData) {
+        const presentCount = lesson._count?.attendance
         for (const tl of lesson.teachers) {
           const teacher = tl.teacher
           if (!lessonsByTeacher[teacher.id]) {
             lessonsByTeacher[teacher.id] = { teacher, lessons: [] }
           }
-          lessonsByTeacher[teacher.id].lessons.push({ ...lesson, price: tl.bid })
+          const bonusTotal = tl.bonusPerStudent * presentCount
+          lessonsByTeacher[teacher.id].lessons.push({
+            ...lesson,
+            price: tl.bid + bonusTotal,
+            bonusPerStudent: tl.bonusPerStudent,
+            presentCount,
+          })
         }
       }
 
@@ -684,6 +693,7 @@ const lessonStatusVariants = cva('', {
 
 function LessonItem({ lesson }: LessonItemProps) {
   const isCancelled = lesson.status === 'CANCELLED'
+  const hasBonus = lesson.bonusPerStudent > 0 && lesson.presentCount > 0
 
   return (
     <div
@@ -723,6 +733,18 @@ function LessonItem({ lesson }: LessonItemProps) {
               </TooltipTrigger>
               <TooltipContent>Тип занятия</TooltipContent>
             </Tooltip>
+            {hasBonus && (
+              <Tooltip>
+                <TooltipTrigger className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {lesson.presentCount} уч.
+                </TooltipTrigger>
+                <TooltipContent>
+                  {lesson.price - lesson.bonusPerStudent * lesson.presentCount} ₽ ставка +{' '}
+                  {lesson.bonusPerStudent} ₽ × {lesson.presentCount} уч. = {lesson.price} ₽
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
 

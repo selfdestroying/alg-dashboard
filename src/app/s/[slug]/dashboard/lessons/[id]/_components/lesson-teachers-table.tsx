@@ -33,6 +33,15 @@ export default function LessonTeachersTable({
           cell: ({ row }) => <BalanceBadge balance={row.original.bid} />,
         },
         {
+          header: 'Бонус за уч.',
+          cell: ({ row }) =>
+            row.original.bonusPerStudent > 0 ? (
+              <BalanceBadge balance={row.original.bonusPerStudent} />
+            ) : (
+              <span className="text-muted-foreground">-</span>
+            ),
+        },
+        {
           id: 'actions',
           cell: ({ row }) => (canEdit?.success ? <LessonTeacherActions tl={row.original} /> : null),
         },
