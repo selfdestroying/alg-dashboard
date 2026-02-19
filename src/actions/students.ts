@@ -1,8 +1,9 @@
 'use server'
 import {
-  type LessonsBalanceAudit,
-  parseLessonsBalanceChange,
-  writeLessonsBalanceHistoryTx,
+  type StudentFinancialAudit,
+  FINANCIAL_FIELD_KEY,
+  parseIntFieldChange,
+  writeFinancialHistoryTx,
 } from '@/src/lib/lessons-balance'
 import prisma from '@/src/lib/prisma'
 
@@ -10,7 +11,10 @@ import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Group, Prisma, Student } from '../../prisma/generated/client'
-import { StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
+import {
+  StudentFinancialField,
+  StudentLessonsBalanceChangeReason,
+} from '../../prisma/generated/enums'
 import { auth } from '../lib/auth'
 import { protocol, rootDomain } from '../lib/utils'
 
@@ -47,13 +51,28 @@ export const createStudent = async (payload: Prisma.StudentCreateArgs) => {
 
 export async function updateStudent(
   payload: Prisma.StudentUpdateArgs,
-  audit?: {
-    lessonsBalance?: LessonsBalanceAudit
-  }
+  audit?: StudentFinancialAudit
 ) {
-  const lessonsBalanceChange = parseLessonsBalanceChange(
-    (payload.data as Prisma.StudentUpdateInput | undefined)?.lessonsBalance
-  )
+  const data = payload.data as Prisma.StudentUpdateInput | undefined
+
+  // Detect which financial fields are being changed
+  const financialFields = [
+    StudentFinancialField.LESSONS_BALANCE,
+    StudentFinancialField.TOTAL_PAYMENTS,
+    StudentFinancialField.TOTAL_LESSONS,
+  ] as const
+
+  const changes = financialFields
+    .map((field) => {
+      const key = FINANCIAL_FIELD_KEY[field]
+      const change = parseIntFieldChange(data?.[key])
+      return change ? { field, key, change } : null
+    })
+    .filter(Boolean) as {
+    field: StudentFinancialField
+    key: 'lessonsBalance' | 'totalPayments' | 'totalLessons'
+    change: NonNullable<ReturnType<typeof parseIntFieldChange>>
+  }[]
 
   const studentId = payload.where.id
   if (!studentId) {
@@ -61,17 +80,19 @@ export async function updateStudent(
     return
   }
 
-  if (!lessonsBalanceChange) {
+  if (changes.length === 0) {
     await prisma.student.update(payload)
     revalidatePath(`dashboard/students/${studentId}`)
     return
   }
 
-  if (!audit?.lessonsBalance) {
-    throw new Error('Для изменения баланса уроков требуется указать причину')
+  // Verify each changed field has an audit reason
+  for (const c of changes) {
+    if (!audit?.[c.field]) {
+      throw new Error(`Для изменения поля ${c.key} требуется указать причину (audit.${c.field})`)
+    }
   }
 
-  const lessonsBalanceAudit = audit.lessonsBalance
   const session = await auth.api.getSession({
     headers: await headers(),
   })
@@ -83,38 +104,42 @@ export async function updateStudent(
   await prisma.$transaction(async (tx) => {
     const student = await tx.student.findUnique({
       where: { id: studentId },
-      select: { lessonsBalance: true },
+      select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
     })
 
     if (!student) throw new Error('Ученик не найден')
 
-    const balanceBefore = student.lessonsBalance
-
     const updated = await tx.student.update({
       where: { id: studentId },
       data: payload.data as Prisma.StudentUpdateInput,
-      select: { lessonsBalance: true },
+      select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
     })
 
-    const balanceAfter = updated.lessonsBalance
-    const delta = balanceAfter - balanceBefore
+    for (const c of changes) {
+      const fieldAudit = audit![c.field]!
+      const balanceBefore = student[c.key]
+      const balanceAfter = updated[c.key]
+      const delta = balanceAfter - balanceBefore
 
-    await writeLessonsBalanceHistoryTx(tx, {
-      organizationId: session.organizationId!,
-      studentId,
-      actorUserId: Number(session.user.id),
-      reason: lessonsBalanceAudit.reason,
-      delta,
-      balanceBefore,
-      balanceAfter,
-      comment: lessonsBalanceAudit.comment,
-      meta: lessonsBalanceAudit.meta,
-    })
+      await writeFinancialHistoryTx(tx, {
+        organizationId: session.organizationId!,
+        studentId,
+        actorUserId: Number(session.user.id),
+        field: c.field,
+        reason: fieldAudit.reason,
+        delta,
+        balanceBefore,
+        balanceAfter,
+        comment: fieldAudit.comment,
+        meta: fieldAudit.meta,
+      })
+    }
   })
 
   revalidatePath(`dashboard/students/${studentId}`)
 
-  if (lessonsBalanceAudit.reason === StudentLessonsBalanceChangeReason.PAYMENT_CREATED) {
+  const lessonsBalanceAudit = audit?.[StudentFinancialField.LESSONS_BALANCE]
+  if (lessonsBalanceAudit?.reason === StudentLessonsBalanceChangeReason.PAYMENT_CREATED) {
     revalidatePath('/dashboard/finances/payments')
   }
 }

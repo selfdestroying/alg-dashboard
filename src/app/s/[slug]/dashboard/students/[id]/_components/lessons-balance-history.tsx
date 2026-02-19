@@ -1,6 +1,7 @@
 'use client'
 import {
   AttendanceStatus,
+  StudentFinancialField,
   StudentLessonsBalanceChangeReason,
   User,
 } from '@/prisma/generated/client'
@@ -41,6 +42,7 @@ import { toast } from 'sonner'
 type HistoryRow = {
   id: number
   createdAt: Date
+  field: StudentFinancialField
   reason: StudentLessonsBalanceChangeReason
   delta: number
   balanceBefore: number
@@ -59,6 +61,14 @@ const reasonLabel: Record<StudentLessonsBalanceChangeReason, string> = {
   ATTENDANCE_REVERTED: 'Возврат списания (изменение посещения)',
   MAKEUP_GRANTED: 'Отработка (начисление урока)',
   MANUAL_SET: 'Ручная правка',
+  TOTAL_PAYMENTS_MANUAL_SET: 'Ручная правка (сумма оплат)',
+  TOTAL_LESSONS_MANUAL_SET: 'Ручная правка (всего уроков)',
+}
+
+const fieldLabel: Record<StudentFinancialField, string> = {
+  LESSONS_BALANCE: 'Баланс уроков',
+  TOTAL_PAYMENTS: 'Сумма оплат',
+  TOTAL_LESSONS: 'Всего уроков',
 }
 
 const statusLabel: Record<AttendanceStatus, string> = {
@@ -152,7 +162,7 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
   if (!history.length) {
     return (
       <div>
-        <h3 className="text-muted-foreground text-lg font-semibold">История баланса уроков</h3>
+        <h3 className="text-muted-foreground text-lg font-semibold">Финансовая история</h3>
         <p className="text-muted-foreground mt-2">Пока нет изменений.</p>
       </div>
     )
@@ -160,12 +170,13 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
 
   return (
     <div className="space-y-3">
-      <h3 className="text-muted-foreground text-lg font-semibold">История баланса уроков</h3>
+      <h3 className="text-muted-foreground text-lg font-semibold">Финансовая история</h3>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Дата</TableHead>
+              <TableHead>Поле</TableHead>
               <TableHead>Причина</TableHead>
               <TableHead>Детали</TableHead>
               <TableHead>Кем</TableHead>
@@ -188,6 +199,7 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
                   <TableCell>
                     {toZonedTime(new Date(row.createdAt), 'Europe/Moscow').toLocaleString('ru-RU')}
                   </TableCell>
+                  <TableCell>{fieldLabel[row.field] ?? row.field}</TableCell>
                   <TableCell>{reasonLabel[row.reason] ?? row.reason}</TableCell>
                   <TableCell>{metaDetails}</TableCell>
                   <TableCell>

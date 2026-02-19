@@ -1,10 +1,11 @@
 'use server'
-import { writeLessonsBalanceHistoryTx } from '@/src/lib/lessons-balance'
+import { writeFinancialHistoryTx } from '@/src/lib/lessons-balance'
 import prisma from '@/src/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Prisma, StudentLessonsBalanceChangeReason } from '../../prisma/generated/client'
+import { StudentFinancialField } from '../../prisma/generated/enums'
 import { auth } from '../lib/auth'
 import { protocol, rootDomain } from '../lib/utils'
 
@@ -44,35 +45,56 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
 
     const student = await tx.student.findUnique({
       where: { id: payment.studentId },
-      select: { lessonsBalance: true },
+      select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
     })
     if (!student) throw new Error('Ученик не найден')
-    const balanceBefore = student.lessonsBalance
 
-    await tx.student.update({
+    const updated = await tx.student.update({
       where: { id: payment.studentId },
       data: {
         totalLessons: { decrement: payment.lessonCount },
         totalPayments: { decrement: payment.price },
         lessonsBalance: { decrement: payment.lessonCount },
       },
+      select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
     })
 
-    const balanceAfter = balanceBefore - payment.lessonCount
-    await writeLessonsBalanceHistoryTx(tx, {
-      organizationId: session.organizationId!,
-      studentId: payment.studentId,
-      actorUserId: Number(session.user.id),
-      reason: StudentLessonsBalanceChangeReason.PAYMENT_CANCELLED,
-      delta: balanceAfter - balanceBefore,
-      balanceBefore,
-      balanceAfter,
-      meta: {
-        paymentId: payment.id,
-        lessonCount: payment.lessonCount,
-        price: payment.price,
+    const commonMeta = {
+      paymentId: payment.id,
+      lessonCount: payment.lessonCount,
+      price: payment.price,
+    }
+
+    const fields = [
+      {
+        field: StudentFinancialField.LESSONS_BALANCE,
+        key: 'lessonsBalance' as const,
       },
-    })
+      {
+        field: StudentFinancialField.TOTAL_PAYMENTS,
+        key: 'totalPayments' as const,
+      },
+      {
+        field: StudentFinancialField.TOTAL_LESSONS,
+        key: 'totalLessons' as const,
+      },
+    ]
+
+    for (const f of fields) {
+      const before = student[f.key]
+      const after = updated[f.key]
+      await writeFinancialHistoryTx(tx, {
+        organizationId: session.organizationId!,
+        studentId: payment.studentId,
+        actorUserId: Number(session.user.id),
+        field: f.field,
+        reason: StudentLessonsBalanceChangeReason.PAYMENT_CANCELLED,
+        delta: after - before,
+        balanceBefore: before,
+        balanceAfter: after,
+        meta: commonMeta,
+      })
+    }
   })
   revalidatePath('/dashboard/finances/payments')
 }

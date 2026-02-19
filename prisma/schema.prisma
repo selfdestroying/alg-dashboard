@@ -299,6 +299,7 @@ model StudentLessonsBalanceHistory {
   studentId      Int
   organizationId Int
   actorUserId    Int?
+  field          StudentFinancialField             @default(LESSONS_BALANCE)
   reason         StudentLessonsBalanceChangeReason
   delta          Int
   balanceBefore  Int
@@ -609,4 +610,12 @@ enum StudentLessonsBalanceChangeReason {
   ATTENDANCE_REVERTED
   MAKEUP_GRANTED
   MANUAL_SET
+  TOTAL_PAYMENTS_MANUAL_SET
+  TOTAL_LESSONS_MANUAL_SET
+}
+
+enum StudentFinancialField {
+  LESSONS_BALANCE
+  TOTAL_PAYMENTS
+  TOTAL_LESSONS
 }

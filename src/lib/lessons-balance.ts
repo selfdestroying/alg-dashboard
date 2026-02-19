@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { Prisma } from '@/prisma/generated/client'
-import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 
 export type LessonsBalanceAudit = {
   reason: StudentLessonsBalanceChangeReason
@@ -9,19 +9,24 @@ export type LessonsBalanceAudit = {
   meta?: Prisma.JsonValue
 }
 
-type LessonsBalanceChange = { kind: 'delta'; delta: number } | { kind: 'set'; value: number }
+/** Audit payload keyed by financial field */
+export type StudentFinancialAudit = {
+  [K in StudentFinancialField]?: LessonsBalanceAudit
+}
 
-export function parseLessonsBalanceChange(
-  lessonsBalance: Prisma.StudentUpdateInput['lessonsBalance']
-): LessonsBalanceChange | null {
-  if (lessonsBalance === undefined) return null
+type IntFieldChange = { kind: 'delta'; delta: number } | { kind: 'set'; value: number }
 
-  if (typeof lessonsBalance === 'number') {
-    return { kind: 'set', value: lessonsBalance }
+export function parseIntFieldChange(
+  value: Prisma.StudentUpdateInput['lessonsBalance']
+): IntFieldChange | null {
+  if (value === undefined) return null
+
+  if (typeof value === 'number') {
+    return { kind: 'set', value }
   }
 
-  if (lessonsBalance && typeof lessonsBalance === 'object') {
-    const ops = lessonsBalance as Prisma.IntFieldUpdateOperationsInput
+  if (value && typeof value === 'object') {
+    const ops = value as Prisma.IntFieldUpdateOperationsInput
 
     if (typeof ops.increment === 'number') return { kind: 'delta', delta: ops.increment }
     if (typeof ops.decrement === 'number') return { kind: 'delta', delta: -ops.decrement }
@@ -31,12 +36,18 @@ export function parseLessonsBalanceChange(
   return null
 }
 
-export async function writeLessonsBalanceHistoryTx(
+/**
+ * @deprecated Use parseIntFieldChange instead
+ */
+export const parseLessonsBalanceChange = parseIntFieldChange
+
+export async function writeFinancialHistoryTx(
   tx: Prisma.TransactionClient,
   args: {
     organizationId: number
     studentId: number
     actorUserId: number
+    field: StudentFinancialField
     reason: StudentLessonsBalanceChangeReason
     delta: number
     balanceBefore: number
@@ -51,6 +62,7 @@ export async function writeLessonsBalanceHistoryTx(
     data: {
       studentId: args.studentId,
       actorUserId: args.actorUserId,
+      field: args.field,
       reason: args.reason,
       delta: args.delta,
       balanceBefore: args.balanceBefore,
@@ -60,4 +72,37 @@ export async function writeLessonsBalanceHistoryTx(
       organizationId: args.organizationId,
     },
   })
+}
+
+/**
+ * @deprecated Use writeFinancialHistoryTx instead
+ */
+export async function writeLessonsBalanceHistoryTx(
+  tx: Prisma.TransactionClient,
+  args: {
+    organizationId: number
+    studentId: number
+    actorUserId: number
+    reason: StudentLessonsBalanceChangeReason
+    delta: number
+    balanceBefore: number
+    balanceAfter: number
+    comment?: string
+    meta?: Prisma.JsonValue
+  }
+) {
+  return writeFinancialHistoryTx(tx, {
+    ...args,
+    field: StudentFinancialField.LESSONS_BALANCE,
+  })
+}
+
+/** Mapping from StudentFinancialField to the corresponding Student model key */
+export const FINANCIAL_FIELD_KEY: Record<
+  StudentFinancialField,
+  'lessonsBalance' | 'totalPayments' | 'totalLessons'
+> = {
+  [StudentFinancialField.LESSONS_BALANCE]: 'lessonsBalance',
+  [StudentFinancialField.TOTAL_PAYMENTS]: 'totalPayments',
+  [StudentFinancialField.TOTAL_LESSONS]: 'totalLessons',
 }

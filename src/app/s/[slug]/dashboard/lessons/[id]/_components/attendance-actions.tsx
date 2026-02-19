@@ -1,7 +1,11 @@
 // components/DeleteDropdown.tsx
 'use client'
 
-import { StudentLessonsBalanceChangeReason, StudentStatus } from '@/prisma/generated/enums'
+import {
+  StudentFinancialField,
+  StudentLessonsBalanceChangeReason,
+  StudentStatus,
+} from '@/prisma/generated/enums'
 import {
   AttendanceWithStudents,
   createAttendance,
@@ -140,7 +144,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
               data: { lessonsBalance: { increment: 1 } },
             },
             {
-              lessonsBalance: {
+              [StudentFinancialField.LESSONS_BALANCE]: {
                 reason: StudentLessonsBalanceChangeReason.MAKEUP_GRANTED,
                 meta: {
                   missedAttendanceId: attendance.id,

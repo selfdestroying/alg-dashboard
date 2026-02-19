@@ -1,6 +1,6 @@
 'use client'
 import { Student } from '@/prisma/generated/client'
-import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 
 import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
@@ -75,7 +75,19 @@ export default function EditStudentDialog({ student }: { student: Student }) {
           },
         },
         {
-          lessonsBalance: {
+          [StudentFinancialField.LESSONS_BALANCE]: {
+            reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
+            meta: {
+              source: 'edit-student-dialog',
+            },
+          },
+          [StudentFinancialField.TOTAL_PAYMENTS]: {
+            reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
+            meta: {
+              source: 'edit-student-dialog',
+            },
+          },
+          [StudentFinancialField.TOTAL_LESSONS]: {
             reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
             meta: {
               source: 'edit-student-dialog',

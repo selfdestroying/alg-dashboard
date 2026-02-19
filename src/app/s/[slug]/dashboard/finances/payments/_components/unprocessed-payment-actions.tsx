@@ -1,7 +1,7 @@
 'use client'
 
 import { Student, UnprocessedPayment } from '@/prisma/generated/client'
-import { StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 import { deleteUnprocessedPayment, updateUnprocessedPayment } from '@/src/actions/payments'
 import { updateStudent } from '@/src/actions/students'
 import {
@@ -100,7 +100,27 @@ export default function UnprocessedPaymentsActions({
           },
         },
         {
-          lessonsBalance: {
+          [StudentFinancialField.LESSONS_BALANCE]: {
+            reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
+            meta: {
+              lessonCount: payload.lessonCount,
+              price: payload.price,
+              leadName: payload.leadName,
+              productName: payload.productName,
+              unprocessedPaymentId: unprocessedPayment.id,
+            },
+          },
+          [StudentFinancialField.TOTAL_PAYMENTS]: {
+            reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
+            meta: {
+              lessonCount: payload.lessonCount,
+              price: payload.price,
+              leadName: payload.leadName,
+              productName: payload.productName,
+              unprocessedPaymentId: unprocessedPayment.id,
+            },
+          },
+          [StudentFinancialField.TOTAL_LESSONS]: {
             reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
             meta: {
               lessonCount: payload.lessonCount,
