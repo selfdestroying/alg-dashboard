@@ -1,14 +1,21 @@
 import { getGroups } from '@/src/actions/groups'
-import { getStudent, getStudentLessonsBalanceHistory } from '@/src/actions/students'
+import {
+  getStudent,
+  getStudentGroupHistory,
+  getStudentLessonsBalanceHistory,
+} from '@/src/actions/students'
 import { Avatar, AvatarFallback } from '@/src/components/ui/avatar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import CourseAttendanceStats from './_components/course-attendance-stats'
 import EditStudentDialog from './_components/edit-student-dialog'
+import GroupHistory from './_components/group-history'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
 import StudentCard from './_components/student-card'
+import StudentGroupsSection from './_components/student-groups-section'
 
 export const metadata = { title: 'Карточка ученика' }
 
@@ -39,7 +46,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
       attendances: {
         include: {
-          lesson: true,
+          lesson: {
+            include: {
+              group: {
+                include: {
+                  course: true,
+                },
+              },
+            },
+          },
           asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
           missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
         },
@@ -49,7 +64,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   if (!student) return <div>Ошибка при получении ученика</div>
 
-  const lessonsBalanceHistory = await getStudentLessonsBalanceHistory(student.id, 50)
+  const [lessonsBalanceHistory, groupHistory] = await Promise.all([
+    getStudentLessonsBalanceHistory(student.id, 50),
+    getStudentGroupHistory(student.id, session.organizationId!),
+  ])
 
   const groups = await getGroups({
     where: {
@@ -113,7 +131,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          <StudentCard student={student} groups={groups} />
+          <StudentCard student={student} />
+          <StudentGroupsSection student={student} groups={groups} />
+          <CourseAttendanceStats student={student} />
+
+          <GroupHistory history={groupHistory} />
           {canEditLessonsHistory && <LessonsBalanceHistory history={lessonsBalanceHistory} />}
         </CardContent>
       </Card>

@@ -1,38 +1,15 @@
-import { Prisma } from '@/prisma/generated/client'
 import { Label } from '@/src/components/ui/label'
 import { Separator } from '@/src/components/ui/separator'
-import { auth } from '@/src/lib/auth'
-import { getGroupName } from '@/src/lib/utils'
 import { StudentWithGroupsAndAttendance } from '@/src/types/student'
-import { Link as LinkIcon, Lock, LucideProps, ReceiptRussianRuble, User, Users } from 'lucide-react'
-import { headers } from 'next/headers'
-import Link from 'next/link'
+import { Link as LinkIcon, Lock, LucideProps, ReceiptRussianRuble, User } from 'lucide-react'
 import { ForwardRefExoticComponent, RefAttributes } from 'react'
-import AddStudentToGroupButton from '../../../groups/[id]/_components/add-student-to-group-button'
-import { GroupAttendanceTable } from '../../../groups/[id]/_components/group-attendance-table'
 import AddCoinsForm from './add-coins-form'
-import CourseAttendanceStats from './course-attendance-stats'
 
 interface StudentCardProps {
   student: StudentWithGroupsAndAttendance
-  groups: Prisma.GroupGetPayload<{
-    include: {
-      location: true
-      course: true
-      students: true
-      schedules: true
-      teachers: { include: { teacher: true } }
-    }
-  }>[]
 }
 
-export default async function StudentCard({ student, groups }: StudentCardProps) {
-  const { success: canCreateStudentGroup } = await auth.api.hasPermission({
-    headers: await headers(),
-    body: {
-      permission: { studentGroup: ['create'] },
-    },
-  })
+export default async function StudentCard({ student }: StudentCardProps) {
   return (
     <>
       <Section title="Общие сведения" icon={User}>
@@ -141,37 +118,6 @@ export default async function StudentCard({ student, groups }: StudentCardProps)
       </Section>
 
       <Separator />
-
-      <CourseAttendanceStats student={student} />
-
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
-            <Users size={20} />
-            Группы
-          </h3>
-          {canCreateStudentGroup && <AddStudentToGroupButton groups={groups} student={student} />}
-        </div>
-        {student.groups.length > 0 ? (
-          <div className="space-y-6">
-            {student.groups.map((groupData) => (
-              <div key={groupData.group.id} className="space-y-2">
-                <Link
-                  href={`/dashboard/groups/${groupData.group.id}`}
-                  className="text-primary hover:underline"
-                >
-                  {getGroupName(groupData.group)}
-                </Link>
-                <GroupAttendanceTable lessons={groupData.group.lessons} data={[student]} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted-foreground">Ученик не состоит в группах.</p>
-        )}
-      </div>
     </>
   )
 }

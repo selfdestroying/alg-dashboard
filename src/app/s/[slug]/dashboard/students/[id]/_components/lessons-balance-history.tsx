@@ -6,6 +6,7 @@ import {
   User,
 } from '@/prisma/generated/client'
 import { updateStudentBalanceHistory } from '@/src/actions/students'
+import DataTable from '@/src/components/data-table'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -24,17 +25,16 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
 import { JsonValue } from '@prisma/client/runtime/client'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { toZonedTime } from 'date-fns-tz'
-import { MoreVertical } from 'lucide-react'
+import { MoreVertical, RussianRuble } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -159,77 +159,105 @@ function getMetaDetails(
 }
 
 export default function LessonsBalanceHistory({ history }: { history: HistoryRow[] }) {
-  if (!history.length) {
-    return (
-      <div>
-        <h3 className="text-muted-foreground text-lg font-semibold">Финансовая история</h3>
-        <p className="text-muted-foreground mt-2">Пока нет изменений.</p>
-      </div>
-    )
-  }
+  const table = useReactTable({
+    data: history,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
+  })
 
   return (
     <div className="space-y-3">
-      <h3 className="text-muted-foreground text-lg font-semibold">Финансовая история</h3>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Дата</TableHead>
-              <TableHead>Поле</TableHead>
-              <TableHead>Причина</TableHead>
-              <TableHead>Детали</TableHead>
-              <TableHead>Кем</TableHead>
-              <TableHead className="text-right">Комментарий</TableHead>
-              <TableHead className="text-right">Δ</TableHead>
-              <TableHead className="text-right">Было</TableHead>
-              <TableHead className="text-right">Стало</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {history.map((row) => {
-              const actor = row.actorUser ? row.actorUser.name : 'Система'
-
-              const deltaText = row.delta > 0 ? `+${row.delta}` : String(row.delta)
-              const metaDetails = getMetaDetails(row.reason, row.meta)
-
-              return (
-                <TableRow key={row.id}>
-                  <TableCell>
-                    {toZonedTime(new Date(row.createdAt), 'Europe/Moscow').toLocaleString('ru-RU')}
-                  </TableCell>
-                  <TableCell>{fieldLabel[row.field] ?? row.field}</TableCell>
-                  <TableCell>{reasonLabel[row.reason] ?? row.reason}</TableCell>
-                  <TableCell>{metaDetails}</TableCell>
-                  <TableCell>
-                    {row.actorUser ? (
-                      <Link
-                        href={`/dashboard/users/${row.actorUser?.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {actor}
-                      </Link>
-                    ) : (
-                      actor
-                    )}
-                  </TableCell>
-                  <TableCell className="truncate text-right">{row.comment ?? '-'}</TableCell>
-                  <TableCell className="text-right">{deltaText}</TableCell>
-                  <TableCell className="text-right">{row.balanceBefore}</TableCell>
-                  <TableCell className="text-right">{row.balanceAfter}</TableCell>
-                  <TableCell>
-                    <LessonsBalanceHistoryActions historyId={row.id} comment={row.comment} />
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
+        <RussianRuble size={20} />
+        Финансовая история
+      </h3>
+      <DataTable table={table} emptyMessage="Пока нет изменений." showPagination />
     </div>
   )
 }
+
+const columns: ColumnDef<HistoryRow>[] = [
+  {
+    header: 'Дата',
+    accessorFn: (row) => row.createdAt,
+    cell: ({ row }) => (
+      <span>
+        {toZonedTime(new Date(row.original.createdAt), 'Europe/Moscow').toLocaleString('ru-RU')}
+      </span>
+    ),
+  },
+  {
+    header: 'Поле',
+    accessorFn: (row) => row.field,
+    cell: ({ row }) => fieldLabel[row.original.field] ?? row.original.field,
+  },
+  {
+    header: 'Причина',
+    accessorFn: (row) => row.reason,
+    cell: ({ row }) => reasonLabel[row.original.reason] ?? row.original.reason,
+  },
+  {
+    header: 'Детали',
+    cell: ({ row }) => getMetaDetails(row.original.reason, row.original.meta),
+  },
+  {
+    header: 'Кем',
+    cell: ({ row }) => {
+      const actor = row.original.actorUser ? row.original.actorUser.name : 'Система'
+      return row.original.actorUser ? (
+        <Link
+          href={`/dashboard/users/${row.original.actorUser.id}`}
+          className="text-primary hover:underline"
+        >
+          {actor}
+        </Link>
+      ) : (
+        actor
+      )
+    },
+  },
+  {
+    header: 'Комментарий',
+    accessorFn: (row) => row.comment,
+    cell: ({ row }) => <span className="truncate text-right">{row.original.comment ?? '-'}</span>,
+    meta: { className: 'text-right' },
+  },
+  {
+    header: 'Δ',
+    accessorFn: (row) => row.delta,
+    cell: ({ row }) => {
+      const deltaText =
+        row.original.delta > 0 ? `+${row.original.delta}` : String(row.original.delta)
+      return <span className="text-right">{deltaText}</span>
+    },
+    meta: { className: 'text-right' },
+  },
+  {
+    header: 'Было',
+    accessorFn: (row) => row.balanceBefore,
+    cell: ({ row }) => <span className="text-right">{row.original.balanceBefore}</span>,
+    meta: { className: 'text-right' },
+  },
+  {
+    header: 'Стало',
+    accessorFn: (row) => row.balanceAfter,
+    cell: ({ row }) => <span className="text-right">{row.original.balanceAfter}</span>,
+    meta: { className: 'text-right' },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+      <LessonsBalanceHistoryActions historyId={row.original.id} comment={row.original.comment} />
+    ),
+  },
+]
 
 function LessonsBalanceHistoryActions({
   historyId,

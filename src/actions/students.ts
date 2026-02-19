@@ -24,7 +24,7 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
     groups: { include: { group: { include: { lessons: true } } } }
     attendances: {
       include: {
-        lesson: true
+        lesson: { include: { group: { include: { course: true } } } }
         asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
         missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
       }
@@ -153,6 +153,122 @@ export async function getStudentLessonsBalanceHistory(studentId: number, take = 
       actorUser: true,
     },
   })
+}
+
+export type StudentGroupHistoryEntry = {
+  type: 'joined' | 'dismissed'
+  date: Date
+  groupId: number
+  groupName: string
+  status?: string
+}
+
+export async function getStudentGroupHistory(
+  studentId: number,
+  organizationId: number
+): Promise<StudentGroupHistoryEntry[]> {
+  const DaysShort: Record<number, string> = {
+    1: 'Пн',
+    2: 'Вт',
+    3: 'Ср',
+    4: 'Чт',
+    5: 'Пт',
+    6: 'Сб',
+    0: 'Вс',
+  }
+
+  const [attendances, currentGroups] = await Promise.all([
+    prisma.attendance.findMany({
+      where: {
+        studentId,
+        organizationId,
+        asMakeupFor: null, // исключаем отработки в чужих группах
+      },
+      include: {
+        lesson: {
+          include: {
+            group: {
+              include: {
+                course: true,
+                location: true,
+                schedules: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { lesson: { date: 'asc' } },
+    }),
+    prisma.studentGroup.findMany({
+      where: { studentId, organizationId },
+      select: { groupId: true, status: true },
+    }),
+  ])
+
+  const currentGroupMap = new Map(currentGroups.map((sg) => [sg.groupId, sg.status]))
+
+  // Группируем посещения по groupId, вычисляем первый / последний урок
+  const groupStats = new Map<
+    number,
+    {
+      firstDate: Date
+      lastDate: Date
+      group: (typeof attendances)[number]['lesson']['group']
+    }
+  >()
+
+  for (const att of attendances) {
+    const gId = att.lesson.groupId
+    const date = att.lesson.date
+    const existing = groupStats.get(gId)
+    if (!existing) {
+      groupStats.set(gId, { firstDate: date, lastDate: date, group: att.lesson.group })
+    } else {
+      if (date < existing.firstDate) existing.firstDate = date
+      if (date > existing.lastDate) existing.lastDate = date
+    }
+  }
+
+  function buildGroupName(g: (typeof attendances)[number]['lesson']['group']) {
+    const schedules = g.schedules
+    if (schedules && schedules.length > 0) {
+      const sorted = [...schedules].sort(
+        (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7)
+      )
+      const parts = sorted.map((s) => `${DaysShort[s.dayOfWeek]} ${s.time}`)
+      return `${g.course.name} ${parts.join(', ')}`
+    }
+    return `${g.course.name} ${DaysShort[g.dayOfWeek]} ${g.time}`
+  }
+
+  const entries: StudentGroupHistoryEntry[] = []
+
+  for (const [groupId, stats] of groupStats) {
+    const name = buildGroupName(stats.group)
+
+    // Зачисление — первый урок в группе
+    entries.push({
+      type: 'joined',
+      date: stats.firstDate,
+      groupId,
+      groupName: name,
+      status: currentGroupMap.get(groupId) ?? undefined,
+    })
+
+    // Отчисление — если ученик больше не в группе, последний урок
+    if (!currentGroupMap.has(groupId)) {
+      entries.push({
+        type: 'dismissed',
+        date: stats.lastDate,
+        groupId,
+        groupName: name,
+      })
+    }
+  }
+
+  entries.sort((a, b) => b.date.getTime() - a.date.getTime())
+
+  return entries
 }
 
 export async function updateStudentBalanceHistory(
