@@ -25,20 +25,24 @@ export const CreateGroupSchema = z.object({
     },
     'Выберите локацию'
   ),
-  dateRange: z.object(
-    {
-      from: z.date('Выберите дату начала'),
-      to: z.date('Выберите дату окончания'),
-    },
-    'Выберите период'
-  ),
+  startDate: z.date('Выберите дату старта'),
   type: z.enum(GroupType, 'Выберите тип группы'),
-  time: z.string('Выберите время'),
+  schedule: z
+    .array(
+      z.object({
+        dayOfWeek: z.number().int().min(0).max(6),
+        time: z.string().min(1, 'Выберите время'),
+      })
+    )
+    .min(1, 'Выберите хотя бы один день занятий'),
   lessonCount: z
     .number('Введите количество занятий')
     .positive('Количество занятий должно быть положительным'),
+  maxStudents: z
+    .number('Введите максимальное количество учеников')
+    .int()
+    .positive('Количество должно быть положительным'),
   // optional
-  lessonsPerWeek: z.number().int().positive().optional(),
   url: z.url('Неверный URL').optional(),
 })
 
