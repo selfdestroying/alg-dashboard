@@ -157,7 +157,7 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
     sorting: true,
   })
 
-  // Student count range filter — managed separately via URL params
+  // Student count range filter - managed separately via URL params
   const [scMin, setScMin] = useQueryState(
     'scMin',
     parseAsInteger.withOptions({ shallow: true, throttleMs: 300 })

@@ -42,14 +42,14 @@
 
 Пользователь с ролью `teacher` (которому разрешено только `lesson: ['readSelf']`, `student: ['read']`) может вызвать:
 
-- `deleteStudent()` — удалить ученика
-- `deleteGroup()` — удалить группу
-- `deletePaycheck()` — удалить начисление зарплаты
-- `createUser()` — создать нового пользователя
+- `deleteStudent()` - удалить ученика
+- `deleteGroup()` - удалить группу
+- `deletePaycheck()` - удалить начисление зарплаты
+- `createUser()` - создать нового пользователя
 
 ---
 
-### C3. Prisma Query Injection — клиент контролирует запросы к БД
+### C3. Prisma Query Injection - клиент контролирует запросы к БД
 
 Множество функций принимают **полные Prisma-аргументы** от клиента:
 
@@ -104,7 +104,7 @@ export async function createProduct(payload: Prisma.ProductCreateArgs, image: Fi
 
 Проблемы:
 
-1. Расширение файла не валидируется — можно загрузить `.html`, `.svg` (XSS), `.php`
+1. Расширение файла не валидируется - можно загрузить `.html`, `.svg` (XSS), `.php`
 2. Содержимое файла не проверяется (MIME-type, magic bytes)
 3. Размер файла не ограничён
 4. Используется HTTP вместо HTTPS для URL изображений
@@ -125,7 +125,7 @@ export async function createProduct(payload: Prisma.ProductCreateArgs, image: Fi
 **Файл:** `src/app/auth/no-organization/page.tsx`
 
 ```tsx
-import router from 'next/router' // Pages Router API — НЕ работает в App Router
+import router from 'next/router' // Pages Router API - НЕ работает в App Router
 ```
 
 Вызов `router.push('/')` приведёт к runtime-ошибке.
@@ -147,13 +147,13 @@ const createMember = async ({ userParams, memberRole, organizationId }) => {
 }
 ```
 
-Результат: двойное хеширование → аутентификация сломана. Кроме того, `better-auth/crypto` — серверный модуль, импортируемый в клиентский код.
+Результат: двойное хеширование → аутентификация сломана. Кроме того, `better-auth/crypto` - серверный модуль, импортируемый в клиентский код.
 
 ---
 
 ### C9. Пароли студентов хранятся и отображаются в открытом виде
 
-**Схема:** `prisma/schema.prisma` — `Student.password String` без хеширования.
+**Схема:** `prisma/schema.prisma` - `Student.password String` без хеширования.
 
 **UI:** `src/app/s/[slug]/dashboard/students/_components/students-table.tsx`:
 
@@ -168,23 +168,23 @@ const createMember = async ({ userParams, memberRole, organizationId }) => {
 
 ## 🟠 СЕРЬЁЗНЫЕ ПРОБЛЕМЫ (Major)
 
-### M1. Race conditions — операции без транзакций
+### M1. Race conditions - операции без транзакций
 
-**Файл:** `src/actions/orders.ts` — `changeOrderStatus`:
+**Файл:** `src/actions/orders.ts` - `changeOrderStatus`:
 
 ```typescript
 await prisma.order.update({ where: { id: order.id }, data: { status: newStatus } })
 // ↑ Статус уже обновлён
 if (...) {
-  await prisma.student.update({  // ← Если упадёт — данные рассогласованы
+  await prisma.student.update({  // ← Если упадёт - данные рассогласованы
     data: { coins: { increment: order.product.price } },
   })
 }
 ```
 
-Также `order` принимается от клиента как полный объект — клиент может подменить `order.status` и `order.product.price`.
+Также `order` принимается от клиента как полный объект - клиент может подменить `order.status` и `order.product.price`.
 
-**Файл:** `src/actions/groups.ts` — `updateGroup`: обновление группы + обновление дат уроков (цикл из N запросов) без транзакции.
+**Файл:** `src/actions/groups.ts` - `updateGroup`: обновление группы + обновление дат уроков (цикл из N запросов) без транзакции.
 
 ---
 
@@ -201,7 +201,7 @@ if (...) {
 - `src/actions/students.ts`
 - Практически все страницы в `src/app/s/[slug]/dashboard/`
 
-Если у пользователя нет организации — `TypeError: Cannot read properties of undefined`.
+Если у пользователя нет организации - `TypeError: Cannot read properties of undefined`.
 
 ---
 
@@ -210,7 +210,7 @@ if (...) {
 Zod-схемы определены в `src/schemas/` (auth.ts, student.ts, group.ts и т.д.), но **ни один server action их не использует**. Сырые Prisma-аргументы принимаются как есть.
 
 ```typescript
-// Текущий код — НЕТ валидации:
+// Текущий код - НЕТ валидации:
 export const createStudent = async (payload: Prisma.StudentCreateArgs) => {
   await prisma.student.create(payload)
 }
@@ -245,7 +245,7 @@ if (!session) {
 
 ### M5. Отсутствие индексов на внешних ключах
 
-**Файл:** `prisma/schema.prisma` — FK-поля без `@@index`:
+**Файл:** `prisma/schema.prisma` - FK-поля без `@@index`:
 
 | Модель       | Поля без индекса                           |
 | ------------ | ------------------------------------------ |
@@ -262,7 +262,7 @@ if (!session) {
 
 ---
 
-### M6. `Category.name @unique` — глобальная уникальность вместо per-org
+### M6. `Category.name @unique` - глобальная уникальность вместо per-org
 
 ```prisma
 model Category {
@@ -282,7 +282,7 @@ model Category {
 Последовательные `await` для независимых запросов вместо `Promise.all`:
 
 ```typescript
-// groups/[id]/page.tsx — текущий код (ПОСЛЕДОВАТЕЛЬНО):
+// groups/[id]/page.tsx - текущий код (ПОСЛЕДОВАТЕЛЬНО):
 const group = await getGroup({...})
 const students = await getStudents({...})
 const canCreateLesson = await auth.api.hasPermission({...})
@@ -307,7 +307,7 @@ model Product {
 }
 ```
 
-При этом в `Payment` уже используется `Int` — несогласованность.
+При этом в `Payment` уже используется `Int` - несогласованность.
 
 **Исправление:** `Decimal` или `Int` (хранить в копейках).
 
@@ -339,7 +339,7 @@ queryKey: organizationKeys.permission(), // одинаковый для всех
 
 ---
 
-### M11. `getDismissed` — несоответствие типа и реализации
+### M11. `getDismissed` - несоответствие типа и реализации
 
 **Файл:** `src/actions/dismissed.ts`
 
@@ -355,12 +355,12 @@ export async function getDismissed(payload: Prisma.DismissedFindFirstArgs) {
 
 Определён в двух местах с **разными** include-структурами:
 
-- `src/types/student.ts` — включает `course`, `location`
-- `src/actions/students.ts` — **не** включает `course`, `location`
+- `src/types/student.ts` - включает `course`, `location`
+- `src/actions/students.ts` - **не** включает `course`, `location`
 
 ---
 
-### M13. `updateAttendanceComment` — экшен с полным доступом к update
+### M13. `updateAttendanceComment` - экшен с полным доступом к update
 
 **Файл:** `src/actions/attendance.ts`
 
@@ -380,16 +380,16 @@ export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateAr
 
 ---
 
-### M15. Дублирование DataTable — две реализации
+### M15. Дублирование DataTable - две реализации
 
-1. `src/components/data-table.tsx` — общий компонент
-2. Локальная реализация внутри `dashboard.tsx` — ~90% совпадения кода
+1. `src/components/data-table.tsx` - общий компонент
+2. Локальная реализация внутри `dashboard.tsx` - ~90% совпадения кода
 
 ---
 
 ### M16. Прямые Prisma-запросы в серверных компонентах
 
-Часть страниц использует server actions, часть — прямой `prisma.*`:
+Часть страниц использует server actions, часть - прямой `prisma.*`:
 
 - `lessons/[id]/page.tsx` → `prisma.lesson.findFirst({...})`
 - `me/page.tsx` → `prisma.payCheck.findMany({...})`
@@ -415,7 +415,7 @@ const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
 
 ---
 
-### M18. Утечка пароля ученика — отображение в таблице
+### M18. Утечка пароля ученика - отображение в таблице
 
 **Файл:** `src/app/s/[slug]/dashboard/students/_components/students-table.tsx`
 
@@ -515,7 +515,7 @@ enum UserStatus {
 
 ### m8. Осиротевший тип `RoleDTO`
 
-**Файл:** `src/types/role.ts` — содержит поля `code`, `description`, но в Prisma-схеме модели `Role` нет.
+**Файл:** `src/types/role.ts` - содержит поля `code`, `description`, но в Prisma-схеме модели `Role` нет.
 
 ---
 
@@ -536,7 +536,7 @@ revalidatePath('dashboard/users/${id}')
 
 ### m10. Экспорт типов из файлов `'use server'`
 
-Файлы с `'use server'` экспортируют TypeScript-типы — они предназначены только для серверных функций:
+Файлы с `'use server'` экспортируют TypeScript-типы - они предназначены только для серверных функций:
 
 ```typescript
 // attendance.ts
@@ -550,9 +550,9 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{...}>
 
 ### m11. `columns` определены внутри компонента
 
-**Файлы:** `users-table.tsx`, `members-table.tsx` — массив `columns` определён внутри компонента без мемоизации → пересоздание при каждом рендере.
+**Файлы:** `users-table.tsx`, `members-table.tsx` - массив `columns` определён внутри компонента без мемоизации → пересоздание при каждом рендере.
 
-При этом в `dashboard.tsx` есть бесполезный `useMemo(() => LESSON_COLUMNS, [])` — мемоизация уже-константы.
+При этом в `dashboard.tsx` есть бесполезный `useMemo(() => LESSON_COLUMNS, [])` - мемоизация уже-константы.
 
 ---
 
@@ -568,9 +568,9 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{...}>
 
 ---
 
-### m13. `useIsMobile` — потенциальный hydration mismatch
+### m13. `useIsMobile` - потенциальный hydration mismatch
 
-**Файл:** `src/hooks/use-mobile.ts` — начальное значение `undefined`, возвращает `!!isMobile` (false). При SSR может не совпасть с клиентом.
+**Файл:** `src/hooks/use-mobile.ts` - начальное значение `undefined`, возвращает `!!isMobile` (false). При SSR может не совпасть с клиентом.
 
 ---
 
@@ -609,7 +609,7 @@ export const GroupsStudentSchema = z.object({
 
 ---
 
-### m17. `OrganizationActiveParams` — copy-paste название
+### m17. `OrganizationActiveParams` - copy-paste название
 
 **Файл:** `src/data/user/user-set-password-mutation.ts`
 
@@ -625,7 +625,7 @@ export interface OrganizationActiveParams {
 
 ### m18. N+1 запросы в циклах
 
-**Файл:** `src/actions/groups.ts` — `updateGroup`:
+**Файл:** `src/actions/groups.ts` - `updateGroup`:
 
 ```typescript
 for (const lesson of lessons) {
@@ -633,7 +633,7 @@ for (const lesson of lessons) {
 }
 ```
 
-**Файл:** `src/actions/dismissed.ts` — `returnToGroup`:
+**Файл:** `src/actions/dismissed.ts` - `returnToGroup`:
 
 ```typescript
 for (const lesson of lessons) {
@@ -645,16 +645,16 @@ for (const lesson of lessons) {
 
 ---
 
-### m19. `NavOrganization` — DropdownMenu без содержимого
+### m19. `NavOrganization` - DropdownMenu без содержимого
 
-**Файл:** `src/components/sidebar/nav-organization.tsx` — `DropdownMenu` с `DropdownMenuTrigger`, но без `DropdownMenuContent`.
+**Файл:** `src/components/sidebar/nav-organization.tsx` - `DropdownMenu` с `DropdownMenuTrigger`, но без `DropdownMenuContent`.
 
 ---
 
 ### m20. Несогласованный нейминг
 
 - Схемы: `CreateGroupSchema` (PascalCase) vs `editGroupSchema` (camelCase)
-- Функции: arrow functions vs function declarations — смешение стилей
+- Функции: arrow functions vs function declarations - смешение стилей
 - Query keys: `locationsKeys.ts` (мн.ч.) vs `keys.ts` (ед.ч.)
 
 ---
@@ -675,7 +675,7 @@ export async function deletePaycheck(payload: Prisma.PayCheckDeleteArgs) {
 
 ### m22. `signOutMutation` использует `getQueryClient()` вместо `useQueryClient()`
 
-**Файл:** `src/data/user/sign-out-mutation.ts` — не через контекст React, может неправильно взаимодействовать с React-деревом.
+**Файл:** `src/data/user/sign-out-mutation.ts` - не через контекст React, может неправильно взаимодействовать с React-деревом.
 
 ---
 
@@ -691,13 +691,13 @@ try {
 }
 ```
 
-`mutate()` не бросает исключений. Сообщение `'Failed to process image'` — copy-paste.
+`mutate()` не бросает исключений. Сообщение `'Failed to process image'` - copy-paste.
 
 ---
 
 ### m24. `useDebounce` хук не используется
 
-**Файл:** `src/hooks/use-debounce.ts` — в `groups-table.tsx` и `students-table.tsx` используется `debounce` из `es-toolkit` вместо этого хука.
+**Файл:** `src/hooks/use-debounce.ts` - в `groups-table.tsx` и `students-table.tsx` используется `debounce` из `es-toolkit` вместо этого хука.
 
 ---
 
@@ -705,46 +705,46 @@ try {
 
 ### 🔴 CRITICAL
 
-- [ ] **C1** — Нет аутентификации · Все 16 файлов actions
-- [ ] **C2** — Нет авторизации (RBAC) · Все 16 файлов actions
-- [ ] **C3** — Prisma query injection · 12+ функций get\*
-- [ ] **C4** — Нет tenant isolation · Все CRUD + `@default(1)`
-- [ ] **C5** — Unsafe file upload · `products.ts`
-- [ ] **C6** — Нет Error Boundaries · Все маршруты `src/app/`
-- [x] **C7** — `next/router` в App Router · `no-organization/page.tsx`
-- [x] **C8** — Двойное хеширование пароля · `member-create-mutation.ts`
-- [ ] **C9** — Пароли студентов в открытом виде · `schema.prisma`, `students-table.tsx`
+- [ ] **C1** - Нет аутентификации · Все 16 файлов actions
+- [ ] **C2** - Нет авторизации (RBAC) · Все 16 файлов actions
+- [ ] **C3** - Prisma query injection · 12+ функций get\*
+- [ ] **C4** - Нет tenant isolation · Все CRUD + `@default(1)`
+- [ ] **C5** - Unsafe file upload · `products.ts`
+- [ ] **C6** - Нет Error Boundaries · Все маршруты `src/app/`
+- [x] **C7** - `next/router` в App Router · `no-organization/page.tsx`
+- [x] **C8** - Двойное хеширование пароля · `member-create-mutation.ts`
+- [ ] **C9** - Пароли студентов в открытом виде · `schema.prisma`, `students-table.tsx`
 
 ### 🟠 MAJOR
 
-- [ ] **M1** — Race condition (no tx) · `orders.ts`, `groups.ts`
-- [x] **M2** — Unsafe `members[0]` · 15+ файлов
-- [ ] **M3** — Нет валидации входных данных · Все actions
-- [ ] **M4** — Auth-проверка дублирована · 15+ страниц
-- [x] **M5** — Нет индексов на FK · `schema.prisma` (10+ полей)
-- [x] **M6** — `Category @unique` глобально · `schema.prisma`
-- [ ] **M7** — Waterfall-запросы · 5+ страниц
-- [x] **M8** — `Float` для денег · `schema.prisma`
-- [ ] **M9** — Одинаковый queryKey для permissions · `organization-permission-query.ts`
-- [ ] **M10** — Тяжёлые запросы без агрегации · `attendance.ts`, `dismissed.ts`, `students.ts`
-- [ ] **M11** — Type mismatch `FindFirst/findMany` · `dismissed.ts`
-- [ ] **M12** — Дублирование типа `StudentWith...` · `types/student.ts`, `actions/students.ts`
-- [ ] **M13** — Unrestricted update `attendance` · `attendance.ts`
-- [ ] **M14** — Дублирование `Filters` компонента · `dashboard.tsx`, `groups-table.tsx`
-- [ ] **M15** — Дублирование `DataTable` · `data-table.tsx`, `dashboard.tsx`
-- [ ] **M16** — Смешение actions и inline prisma · 6+ страниц
-- [ ] **M17** — `organizationId!` non-null assertion · `dashboard.tsx`
-- [ ] **M18** — Пароль в таблице · `students-table.tsx`
+- [ ] **M1** - Race condition (no tx) · `orders.ts`, `groups.ts`
+- [x] **M2** - Unsafe `members[0]` · 15+ файлов
+- [ ] **M3** - Нет валидации входных данных · Все actions
+- [ ] **M4** - Auth-проверка дублирована · 15+ страниц
+- [x] **M5** - Нет индексов на FK · `schema.prisma` (10+ полей)
+- [x] **M6** - `Category @unique` глобально · `schema.prisma`
+- [ ] **M7** - Waterfall-запросы · 5+ страниц
+- [x] **M8** - `Float` для денег · `schema.prisma`
+- [ ] **M9** - Одинаковый queryKey для permissions · `organization-permission-query.ts`
+- [ ] **M10** - Тяжёлые запросы без агрегации · `attendance.ts`, `dismissed.ts`, `students.ts`
+- [ ] **M11** - Type mismatch `FindFirst/findMany` · `dismissed.ts`
+- [ ] **M12** - Дублирование типа `StudentWith...` · `types/student.ts`, `actions/students.ts`
+- [ ] **M13** - Unrestricted update `attendance` · `attendance.ts`
+- [ ] **M14** - Дублирование `Filters` компонента · `dashboard.tsx`, `groups-table.tsx`
+- [ ] **M15** - Дублирование `DataTable` · `data-table.tsx`, `dashboard.tsx`
+- [ ] **M16** - Смешение actions и inline prisma · 6+ страниц
+- [ ] **M17** - `organizationId!` non-null assertion · `dashboard.tsx`
+- [ ] **M18** - Пароль в таблице · `students-table.tsx`
 
 ### 🟡 MINOR
 
-- [ ] **m1–m24** — UI/нейминг/стиль/copy-paste · Разные файлы
+- [ ] **m1–m24** - UI/нейминг/стиль/copy-paste · Разные файлы
 
 ---
 
 ## РЕКОМЕНДУЕМЫЙ ПЛАН ИСПРАВЛЕНИЙ
 
-### Приоритет 1 — Безопасность (C1–C5, C8–C9)
+### Приоритет 1 - Безопасность (C1–C5, C8–C9)
 
 - [ ] **Создать `requireAuth()` middleware:**
   - Проверяет сессию
@@ -767,7 +767,7 @@ try {
 
 - [ ] **Хешировать пароли студентов.** Убрать колонку `password` из UI.
 
-### Приоритет 2 — Целостность данных (M1, M5–M6, M8–M9)
+### Приоритет 2 - Целостность данных (M1, M5–M6, M8–M9)
 
 - [ ] Обернуть связанные операции в `prisma.$transaction`
 - [x] Добавить `@@index` на все FK-поля
@@ -775,7 +775,7 @@ try {
 - [x] `Product.price`: `Decimal` или `Int`
 - [ ] Включить `permission` в queryKey
 
-### Приоритет 3 — Архитектура (C6–C7, M4, M7, M10)
+### Приоритет 3 - Архитектура (C6–C7, M4, M7, M10)
 
 - [ ] Добавить `global-error.tsx`, `error.tsx`, `loading.tsx`
 - [x] Исправить `next/router` → `next/navigation`
@@ -783,7 +783,7 @@ try {
 - [ ] Параллелизировать запросы через `Promise.all`
 - [ ] Заменить in-memory агрегации на SQL-агрегации
 
-### Приоритет 4 — Качество кода (M11–M18, m1–m24)
+### Приоритет 4 - Качество кода (M11–M18, m1–m24)
 
 - [ ] Унифицировать язык (i18n или единый язык)
 - [ ] Вынести типы из `'use server'` файлов

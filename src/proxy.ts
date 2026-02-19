@@ -29,7 +29,7 @@ function extractSubdomain(request: NextRequest): string | null {
     return hostname.split('---')[0] ?? null
   }
 
-  // Проверяем, что hostname — поддомен rootHostname (не сам root и не www)
+  // Проверяем, что hostname - поддомен rootHostname (не сам root и не www)
   if (
     hostname !== rootHostname &&
     hostname !== `www.${rootHostname}` &&

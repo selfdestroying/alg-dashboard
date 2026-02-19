@@ -48,11 +48,11 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                     .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
                     .map((s) => (
                       <span key={s.id} className="truncate">
-                        {DaysOfWeek.full[s.dayOfWeek]} — {s.time}
+                        {DaysOfWeek.full[s.dayOfWeek]} - {s.time}
                       </span>
                     ))
                 : group.dayOfWeek != null
-                  ? `${DaysOfWeek.full[group.dayOfWeek]} — ${group.time}`
+                  ? `${DaysOfWeek.full[group.dayOfWeek]} - ${group.time}`
                   : '-'}
             </div>
           </div>

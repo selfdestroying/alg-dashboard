@@ -150,7 +150,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     sorting: true,
   })
 
-  // Date range filter — managed separately via URL params
+  // Date range filter - managed separately via URL params
   const [dateFrom, setDateFrom] = useQueryState(
     'dateFrom',
     parseAsIsoDate.withOptions({ shallow: true })
