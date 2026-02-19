@@ -30,7 +30,7 @@ import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
-import { timeSlots } from '../../../groups/_components/create-group-dialog'
+import { timeSlots } from '@/src/shared/time-slots'
 
 interface EditLessonButtonProps {
   lesson: Lesson
