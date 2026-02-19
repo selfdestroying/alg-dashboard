@@ -102,6 +102,10 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
     },
   },
   {
+    header: 'Комментарий',
+    cell: ({ row }) => row.original.comment,
+  },
+  {
     id: 'location',
     header: 'Локация',
     cell: ({ row }) => row.original.lesson.group.location?.name ?? '-',
