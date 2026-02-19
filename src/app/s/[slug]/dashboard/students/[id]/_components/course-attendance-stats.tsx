@@ -1,6 +1,7 @@
 import { Badge } from '@/src/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { StudentWithGroupsAndAttendance } from '@/src/types/student'
-import { BarChart3, CheckCircle2, RefreshCw, XCircle } from 'lucide-react'
+import { BarChart3, CheckCircle2, Info, RefreshCw, XCircle } from 'lucide-react'
 
 interface CourseStats {
   courseName: string
@@ -11,38 +12,62 @@ interface CourseStats {
 }
 
 function computeCourseStats(student: StudentWithGroupsAndAttendance): CourseStats[] {
-  const groupToCourse = new Map<number, { courseId: number; courseName: string }>()
-  const courseLessonsMap = new Map<number, { courseName: string; totalLessons: number }>()
+  const courseStats = new Map<number, CourseStats>()
+  // Считаем totalLessons из текущих групп
+  const countedGroupIds = new Set<number>()
+  const currentGroupIds = new Set<number>()
 
   for (const sg of student.groups) {
     const group = sg.group
     const courseId = group.course.id
-    const courseName = group.course.name
-    groupToCourse.set(group.id, { courseId, courseName })
+    countedGroupIds.add(group.id)
+    currentGroupIds.add(group.id)
 
-    const existing = courseLessonsMap.get(courseId) || { courseName, totalLessons: 0 }
-    existing.totalLessons += group.lessons.length
-    courseLessonsMap.set(courseId, existing)
-  }
-
-  const courseStats = new Map<number, CourseStats>()
-
-  for (const [courseId, data] of courseLessonsMap) {
-    courseStats.set(courseId, {
-      courseName: data.courseName,
-      totalLessons: data.totalLessons,
+    const existing = courseStats.get(courseId) || {
+      courseName: group.course.name,
+      totalLessons: 0,
       attended: 0,
       madeUp: 0,
       missed: 0,
-    })
+    }
+    existing.totalLessons += group.lessons.length
+    courseStats.set(courseId, existing)
   }
 
+  // Обрабатываем все посещения (включая старые группы)
+  // Отработки в чужих группах полностью пропускаем — они не влияют на статистику
   for (const attendance of student.attendances) {
-    const courseInfo = groupToCourse.get(attendance.lesson.groupId)
-    if (!courseInfo) continue
+    const group = attendance.lesson.group
+    const isMakeup = !!attendance.asMakeupFor
 
-    const stats = courseStats.get(courseInfo.courseId)
-    if (!stats) continue
+    // Отработка в группе, где ученик не состоит — пропускаем полностью
+    if (isMakeup && !countedGroupIds.has(group.id) && !currentGroupIds.has(group.id)) {
+      continue
+    }
+
+    const courseId = group.course.id
+    const courseName = group.course.name
+
+    if (!courseStats.has(courseId)) {
+      courseStats.set(courseId, {
+        courseName,
+        totalLessons: 0,
+        attended: 0,
+        madeUp: 0,
+        missed: 0,
+      })
+    }
+
+    const stats = courseStats.get(courseId)!
+
+    // Если группа не среди текущих и это не отработка — считаем уроки из посещений
+    if (!countedGroupIds.has(group.id) && !isMakeup) {
+      countedGroupIds.add(group.id)
+      const lessonsInGroup = student.attendances.filter(
+        (a) => a.lesson.groupId === group.id && !a.asMakeupFor
+      ).length
+      stats.totalLessons += lessonsInGroup
+    }
 
     if (attendance.status === 'PRESENT') {
       stats.attended++
@@ -83,6 +108,15 @@ export default function CourseAttendanceStats({
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
         <BarChart3 size={20} />
         Статистика посещаемости
+        <Tooltip>
+          <TooltipTrigger className="text-warning cursor-help">
+            <Info size={16} />
+          </TooltipTrigger>
+          <TooltipContent>
+            Раздел в режиме тестирования. Статистика включает данные из всех групп ученика (текущих
+            и прошлых) и может отображаться некорректно.
+          </TooltipContent>
+        </Tooltip>
       </h3>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((course) => {
