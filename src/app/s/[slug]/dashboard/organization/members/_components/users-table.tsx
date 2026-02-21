@@ -48,12 +48,23 @@ const columns: ColumnDef<Prisma.MemberGetPayload<{ include: { user: true } }>>[]
     },
   },
   {
-    header: 'Ставка за урок',
-    cell: ({ row }) => row.original.user.bidForLesson,
-  },
-  {
-    header: 'Ставка за индив',
-    cell: ({ row }) => row.original.user.bidForIndividual,
+    header: 'Ставки',
+    cell: ({ row }) => {
+      const { bidForLesson, bidForIndividual, bonusPerStudent } = row.original.user
+      const parts = [
+        `${bidForLesson?.toLocaleString() ?? '—'}`,
+        `${bidForIndividual?.toLocaleString() ?? '—'}`,
+        `${bonusPerStudent?.toLocaleString() ?? '0'}`,
+      ]
+      return (
+        <span
+          className="text-xs tabular-nums"
+          title={`Группа: ${parts[0]} ₽ / Индив: ${parts[1]} ₽ / Бонус: ${parts[2]} ₽`}
+        >
+          {parts[0]} / {parts[1]} / {parts[2]} ₽
+        </span>
+      )
+    },
   },
   {
     header: 'Статус',
