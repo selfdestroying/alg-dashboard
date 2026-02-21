@@ -129,7 +129,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <CardTitle>Список учеников</CardTitle>
           {canCreateStudentGroup && (
             <CardAction>
-              <AddStudentToGroupButton group={group} students={students} />
+              <AddStudentToGroupButton
+                group={group}
+                students={students}
+                isFull={group.students.length >= group.maxStudents}
+              />
             </CardAction>
           )}
         </CardHeader>

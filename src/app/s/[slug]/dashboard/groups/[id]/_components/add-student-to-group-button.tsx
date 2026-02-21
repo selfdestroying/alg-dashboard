@@ -39,6 +39,7 @@ interface AddStudentToGroupButtonProps {
   group?: Group // When adding a student to this group
   groups?: GroupDTO[] // When adding this student to a group
   student?: StudentDTO
+  isFull?: boolean // Whether the current group is at max capacity (for isAddToGroup mode)
 }
 
 const Schema = z.object({
@@ -59,6 +60,7 @@ export default function AddStudentToGroupButton({
   group,
   groups,
   student,
+  isFull,
 }: AddStudentToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
@@ -79,8 +81,9 @@ export default function AddStudentToGroupButton({
     }
     if (isAddToStudent && groups) {
       return groups.map((g) => ({
-        label: getGroupName(g),
+        label: `${getGroupName(g)} (${g.students.length}/${g.maxStudents})`,
         value: g.id,
+        disabled: g.students.length >= g.maxStudents,
       }))
     }
     return []
@@ -133,6 +136,8 @@ export default function AddStudentToGroupButton({
     return null
   }
 
+  const isGroupFull = isAddToGroup && isFull
+
   const dialogTitle = isAddToGroup ? 'Добавить студента' : 'Добавить в группу'
   const label = isAddToGroup ? 'Студент' : 'Группа'
   const emptyMessage = isAddToGroup ? 'Нет доступных студентов' : 'Нет доступных групп'
@@ -143,7 +148,15 @@ export default function AddStudentToGroupButton({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
+      <DialogTrigger
+        render={
+          <Button
+            size={'icon'}
+            disabled={isGroupFull}
+            title={isGroupFull ? 'Группа заполнена' : undefined}
+          />
+        }
+      >
         <Plus />
       </DialogTrigger>
       <DialogContent>
@@ -174,7 +187,7 @@ export default function AddStudentToGroupButton({
 
 interface AddEntityFormProps {
   form: ReturnType<typeof useForm<SchemaType>>
-  items: { label: string; value: number }[]
+  items: { label: string; value: number; disabled?: boolean }[]
   label: string
   emptyMessage: string
   onSubmit: (data: SchemaType) => void
@@ -204,7 +217,7 @@ function AddEntityForm({ form, items, label, emptyMessage, onSubmit }: AddEntity
                   <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
-                      <ComboboxItem key={item.value} value={item}>
+                      <ComboboxItem key={item.value} value={item} disabled={item.disabled}>
                         {item.label}
                       </ComboboxItem>
                     )}
