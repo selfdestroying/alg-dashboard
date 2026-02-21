@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import { Toaster } from '../components/toaster'
+import { TooltipProvider } from '../components/ui/tooltip'
 import { ThemeProvider } from './theme-provider'
 
 type Props = {
@@ -17,14 +18,16 @@ const Providers = ({ children }: Props) => {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools
-          client={queryClient}
-          initialIsOpen={false}
-          buttonPosition="bottom-right"
-          position="bottom"
-        />
-        {children}
-        <Toaster />
+        <TooltipProvider>
+          <ReactQueryDevtools
+            client={queryClient}
+            initialIsOpen={false}
+            buttonPosition="bottom-right"
+            position="bottom"
+          />
+          {children}
+          <Toaster />
+        </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )
