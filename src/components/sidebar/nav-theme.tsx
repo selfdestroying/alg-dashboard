@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
-import { Monitor, Moon, Sun } from 'lucide-react'
+import { Loader, Monitor, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useSyncExternalStore } from 'react'
 
@@ -37,17 +37,17 @@ export default function NavTheme() {
               />
             }
           >
-            {mounted && theme && themeNames[theme]}
+            {mounted ? theme && themeNames[theme] : <Loader className="animate-spin" />}
             <span>Тема</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => setTheme('light')}>
-                <Sun className="h-4 w-4" />
+                <Sun />
                 Светлая
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('dark')}>
-                <Moon className="h-4 w-4" />
+                <Moon />
                 Тёмная
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('system')}>

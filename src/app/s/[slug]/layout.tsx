@@ -1,8 +1,9 @@
 import { AppSidebar } from '@/src/components/sidebar/app-sidebar'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/src/components/ui/sidebar'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { auth } from '@/src/lib/auth'
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
+import { Suspense } from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers()
@@ -22,6 +23,9 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get('sidebar_state')?.value !== 'false'
+
   return (
     <>
       {/* Decorative background orbs */}
@@ -33,15 +37,9 @@ export default async function Layout({
       {/* Subtle grid pattern */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-30" />
 
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="space-y-2 overflow-hidden bg-transparent p-2">
-          <div className="flex items-center justify-between">
-            <SidebarTrigger variant={'outline'} />
-          </div>
-          {children}
-        </SidebarInset>
-      </SidebarProvider>
+      <Suspense fallback={<Skeleton className="h-full w-full" />}>
+        <AppSidebar defaultOpen={defaultOpen}>{children}</AppSidebar>
+      </Suspense>
     </>
   )
 }
