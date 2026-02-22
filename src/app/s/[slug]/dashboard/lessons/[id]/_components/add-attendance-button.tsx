@@ -41,6 +41,7 @@ import z from 'zod/v4'
 interface AddAttendanceButtonProps {
   lessonId: number
   students: Student[]
+  isFull?: boolean
 }
 
 const studentStatusMap = {
@@ -61,7 +62,11 @@ const Schema = z.object({
 
 type SchemaType = z.infer<typeof Schema>
 
-export default function AddAttendanceButton({ lessonId, students }: AddAttendanceButtonProps) {
+export default function AddAttendanceButton({
+  lessonId,
+  students,
+  isFull,
+}: AddAttendanceButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
   const [open, setOpen] = useState(false)
@@ -104,7 +109,11 @@ export default function AddAttendanceButton({ lessonId, students }: AddAttendanc
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
+      <DialogTrigger
+        render={
+          <Button size={'icon'} disabled={isFull} title={isFull ? 'Урок заполнен' : undefined} />
+        }
+      >
         <Plus />
       </DialogTrigger>
       <DialogContent>

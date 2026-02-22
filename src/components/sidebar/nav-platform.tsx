@@ -1,36 +1,21 @@
 'use client'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/src/components/ui/collapsible'
+
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from '@/src/components/ui/sidebar'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { OrganizationRole } from '@/src/lib/auth'
-import { ChevronRight, Folder, LayoutDashboard, Users, Wallet } from 'lucide-react'
+import type { OrganizationRole } from '@/src/lib/auth'
+import { Folder, LayoutDashboard, Users, Wallet } from 'lucide-react'
 import Link from 'next/link'
-
-type NavItem = {
-  title: string
-  url: string
-  roles: OrganizationRole[]
-}
-
-type NavGroup = {
-  title: string
-  icon: typeof Users
-  roles: OrganizationRole[]
-  items: NavItem[]
-}
+import { usePathname } from 'next/navigation'
+import { useMemo } from 'react'
+import { filterNavByRole } from './lib/filter-nav-by-role'
+import type { NavGroup } from './lib/types'
+import NavGroupList from './nav-group-list'
 
 const navLists: NavGroup[] = [
   {
@@ -108,59 +93,31 @@ const navLists: NavGroup[] = [
   },
 ]
 
-function filterNavByRole(nav: NavGroup[], role: OrganizationRole): NavGroup[] {
-  return nav
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => item.roles.includes(role)),
-    }))
-    .filter((group) => group.roles.includes(role) && group.items.length > 0)
-}
-
 export default function NavPlatform() {
-  const { data: session } = useSessionQuery()
+  const { data: session, isLoading } = useSessionQuery()
+  const pathname = usePathname()
   const role = session?.memberRole as OrganizationRole | undefined
 
-  const filteredNavList = role ? filterNavByRole(navLists, role) : []
+  const filteredNavList = useMemo(() => (role ? filterNavByRole(navLists, role) : []), [role])
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Платформа</SidebarGroupLabel>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton render={<Link href={'/dashboard'} />}>
-            <LayoutDashboard />
-            <span>Панель управления</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-      <SidebarMenu>
-        {filteredNavList.map((item) => (
-          <Collapsible
-            key={item.title}
-            render={<SidebarMenuItem />}
-            defaultOpen
-            className="group/collapsible"
-          >
-            <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
-              {item.icon && <item.icon />}
-              <span>{item.title}</span>
-              <ChevronRight className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
-                {item.items?.map((subItem) => (
-                  <SidebarMenuSubItem key={subItem.title}>
-                    <SidebarMenuSubButton render={<Link href={subItem.url} />}>
-                      <span>{subItem.title}</span>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            </CollapsibleContent>
-          </Collapsible>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
+    <>
+      <SidebarGroup>
+        <SidebarGroupLabel>Платформа</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={pathname === '/dashboard'}
+              render={<Link href="/dashboard" />}
+            >
+              <LayoutDashboard />
+              <span>Панель управления</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+
+      <NavGroupList label="Навигация" groups={filteredNavList} isLoading={isLoading} />
+    </>
   )
 }

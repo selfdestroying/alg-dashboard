@@ -34,8 +34,8 @@ export default function SignIn() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-30" />
 
       <div className="animate-landing-enter relative z-10 flex w-full max-w-sm flex-col items-center">
-        {/* Theme toggle - top right corner */}
-        <div className="absolute -top-12 right-0">
+        {/* Theme toggle */}
+        <div className="mb-2 flex w-full justify-end">
           <SwitchThemeButton />
         </div>
 

@@ -365,5 +365,22 @@ export const getAbsentStatistics = async (organizationId: number) => {
       }
     })
 
-  return { averagePrice, monthly, weekly }
+  return {
+    averagePrice,
+    monthly,
+    weekly,
+    totalAbsences: absences.length,
+    totalSaved: absences.filter((a) => a.missedMakeup?.makeUpAttendance?.status === 'PRESENT')
+      .length,
+    makeupRate:
+      absences.length > 0
+        ? Math.round(
+            (absences.filter((a) => a.missedMakeup?.makeUpAttendance?.status === 'PRESENT').length /
+              absences.length) *
+              1000
+          ) / 10
+        : 0,
+    totalLostMoney: Math.round(monthly.reduce((s, m) => s + m.missedMoney - m.savedMoney, 0)),
+    totalSavedMoney: Math.round(monthly.reduce((s, m) => s + m.savedMoney, 0)),
+  }
 }

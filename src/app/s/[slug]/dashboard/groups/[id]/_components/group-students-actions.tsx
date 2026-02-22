@@ -82,7 +82,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const [isPending, startTransition] = useTransition()
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
-  const [groups, setGroups] = useState<{ label: string; value: number }[]>([])
+  const [groups, setGroups] = useState<{ label: string; value: number; disabled?: boolean }[]>([])
 
   useEffect(() => {
     async function fetchGroups() {
@@ -111,7 +111,12 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           const location = group.location?.name
           const teachers = group.teachers.map((t) => t.teacher.name).join(', ')
           const parts = [name, location, teachers].filter(Boolean)
-          return { label: parts.join(' · '), value: group.id }
+          const isFull = group.students.length >= group.maxStudents
+          return {
+            label: `${parts.join(' · ')} (${group.students.length}/${group.maxStudents})`,
+            value: group.id,
+            disabled: isFull,
+          }
         })
       )
     }
@@ -406,7 +411,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                         <ComboboxEmpty>Нет доступных студентов</ComboboxEmpty>
                         <ComboboxList>
                           {(item) => (
-                            <ComboboxItem key={item.value} value={item}>
+                            <ComboboxItem key={item.value} value={item} disabled={item.disabled}>
                               {item.label}
                             </ComboboxItem>
                           )}

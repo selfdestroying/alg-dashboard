@@ -116,7 +116,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <CardTitle>Список учеников</CardTitle>
           {canCreateStudentLesson && (
             <CardAction>
-              <AddAttendanceButton lessonId={lesson.id} students={students} />
+              <AddAttendanceButton
+                lessonId={lesson.id}
+                students={students}
+                isFull={lesson.attendance.length >= lesson.group.maxStudents}
+              />
             </CardAction>
           )}
         </CardHeader>

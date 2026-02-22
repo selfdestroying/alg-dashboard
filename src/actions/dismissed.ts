@@ -89,114 +89,131 @@ export async function returnToGroup(payload: {
 }
 
 export async function getDismissedStatistics(organizationId: number) {
-  const dismissed = await prisma.dismissed.findMany({
-    where: { organizationId },
-    include: {
-      group: {
-        include: {
-          course: true,
-          location: true,
-          teachers: {
-            include: {
-              teacher: true,
-            },
+  const [dismissed, allGroups, activeCount] = await Promise.all([
+    prisma.dismissed.findMany({
+      where: { organizationId },
+      include: {
+        group: {
+          include: {
+            course: true,
+            location: true,
+            teachers: { include: { teacher: true } },
           },
         },
+        student: true,
       },
-      student: true,
-    },
-    orderBy: {
-      date: 'asc',
-    },
+      orderBy: { date: 'asc' },
+    }),
+    prisma.teacherGroup.findMany({
+      where: { organizationId },
+      include: {
+        group: { select: { _count: { select: { students: true } } } },
+        teacher: true,
+      },
+      orderBy: { teacher: { id: 'asc' } },
+    }),
+    prisma.studentGroup.count({ where: { organizationId } }),
+  ])
+
+  const totalDismissed = dismissed.length
+  const churnRate =
+    activeCount + totalDismissed > 0
+      ? Math.round((totalDismissed / (activeCount + totalDismissed)) * 1000) / 10
+      : 0
+
+  // Monthly grouping with timestamps for proper sorting
+  const monthlyStatsMap = new Map<string, { count: number; timestamp: number }>()
+  dismissed.forEach((item) => {
+    const date = new Date(item.date)
+    const y = date.getFullYear()
+    const m = date.getMonth()
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`
+    const existing = monthlyStatsMap.get(key)
+    if (existing) {
+      existing.count++
+    } else {
+      monthlyStatsMap.set(key, { count: 1, timestamp: new Date(y, m, 1).getTime() })
+    }
   })
 
-  // Группировка по месяцам
-  const monthlyStats = dismissed.reduce(
-    (acc, item) => {
-      const monthKey = new Date(item.date).toLocaleDateString('ru-RU', {
-        month: 'short',
-      })
-      acc[monthKey] = (acc[monthKey] || 0) + 1
-      return acc
-    },
-    {} as Record<string, number>
-  )
+  const monthly = Array.from(monthlyStatsMap.entries())
+    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    .map(([, val]) => {
+      const d = new Date(val.timestamp)
+      return {
+        month: d.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
+        count: val.count,
+      }
+    })
 
-  // Расчет статистики по преподавателям с процентами
-  // Собираем информацию о всех студентах преподавателей
-  const allGroups = await prisma.teacherGroup.findMany({
-    where: { organizationId },
-    include: {
-      group: {
-        select: {
-          _count: { select: { students: true } },
-        },
-      },
-      teacher: true,
-    },
-    orderBy: { teacher: { id: 'asc' } },
-  })
+  // KPI: this month vs previous
+  const now = new Date()
+  const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const prevMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`
+  const thisMonthCount = monthlyStatsMap.get(thisMonthKey)?.count ?? 0
+  const prevMonthCount = monthlyStatsMap.get(prevMonthKey)?.count ?? 0
 
+  // Teacher stats with churn %
   const teacherStudentCounts: Record<string, number> = {}
   allGroups.forEach((tg) => {
-    const teacherName = tg.teacher.name
-    const studentCount = tg.group._count.students
-    if (!teacherStudentCounts[teacherName]) {
-      teacherStudentCounts[teacherName] = 0
-    }
-    teacherStudentCounts[teacherName] += studentCount
+    const name = tg.teacher.name
+    teacherStudentCounts[name] = (teacherStudentCounts[name] || 0) + tg.group._count.students
   })
 
-  // Считаем количество отчисленных по каждому преподавателю
   const dismissedByTeacher: Record<string, number> = {}
   dismissed.forEach((item) => {
     item.group.teachers.forEach((tg) => {
-      const teacherName = tg.teacher.name
-      if (!dismissedByTeacher[teacherName]) {
-        dismissedByTeacher[teacherName] = 0
-      }
-      dismissedByTeacher[teacherName] += 1
+      const name = tg.teacher.name
+      dismissedByTeacher[name] = (dismissedByTeacher[name] || 0) + 1
     })
   })
 
-  // Формируем итоговую статистику с процентами
-  const teacherStats = Object.entries(dismissedByTeacher).map(([teacherName, count]) => {
-    const totalStudents = teacherStudentCounts[teacherName] || 0
-    const percentage =
-      totalStudents > 0 ? (Number(count) / (totalStudents + Number(count))) * 100 : 0
-    return {
-      teacherName,
-      dismissedCount: Number(count),
-      totalStudents,
-      percentage: Math.round(percentage * 100) / 100, // Округление до двух знаков
-    }
-  })
+  const teachers = Object.entries(dismissedByTeacher)
+    .map(([teacherName, count]) => {
+      const totalStudents = teacherStudentCounts[teacherName] || 0
+      const percentage = totalStudents > 0 ? (count / (totalStudents + count)) * 100 : 0
+      return {
+        teacherName,
+        dismissedCount: count,
+        totalStudents,
+        percentage: Math.round(percentage * 100) / 100,
+      }
+    })
+    .sort((a, b) => b.percentage - a.percentage)
 
-  // Группировка по курсам
+  // Course stats
   const courseStats = dismissed.reduce(
     (acc, item) => {
-      const courseName = item.group.course.name
-      acc[courseName] = (acc[courseName] || 0) + 1
+      const name = item.group.course.name
+      acc[name] = (acc[name] || 0) + 1
       return acc
     },
     {} as Record<string, number>
   )
 
-  // Группировка по локациям
+  // Location stats
   const locationStats = dismissed.reduce(
     (acc, item) => {
-      const locationName = item.group.location?.name || 'Не указано'
-      acc[locationName] = (acc[locationName] || 0) + 1
+      const name = item.group.location?.name || 'Не указано'
+      acc[name] = (acc[name] || 0) + 1
       return acc
     },
     {} as Record<string, number>
   )
 
+  // Top dismissal reasons (by course pattern)
+  const topCourse = Object.entries(courseStats).sort((a, b) => b[1] - a[1])[0]
+
   return {
-    monthly: Object.entries(monthlyStats)
-      .map(([month, count]) => ({ month, count }))
-      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()),
-    teachers: teacherStats.sort((a, b) => b.percentage - a.percentage),
+    totalDismissed,
+    churnRate,
+    thisMonthCount,
+    prevMonthCount,
+    topCourseName: topCourse?.[0] ?? '—',
+    topCourseCount: topCourse?.[1] ?? 0,
+    monthly,
+    teachers,
     courses: Object.entries(courseStats)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),

@@ -307,41 +307,58 @@ export async function getActiveStudentStatistics(organizationId: number) {
     },
   })
 
-  // 1. Monthly Statistics (New Students per Month)
+  // Unique students
   const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()
   activeStudentGroups.forEach((sg) => {
     uniqueStudentsMap.set(sg.student.id, sg.student)
   })
 
-  const monthlyStats: Record<string, number> = {}
+  const totalStudents = uniqueStudentsMap.size
+
+  // 1. Monthly Statistics with timestamps for proper sorting
+  const monthlyStatsMap = new Map<string, { count: number; timestamp: number }>()
   uniqueStudentsMap.forEach((student) => {
     const date = new Date(student.createdAt)
-    const monthKey = date.toLocaleDateString('ru-RU', {
-      month: 'short',
-    })
-    monthlyStats[monthKey] = (monthlyStats[monthKey] || 0) + 1
+    const y = date.getFullYear()
+    const m = date.getMonth()
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`
+    const existing = monthlyStatsMap.get(key)
+    if (existing) {
+      existing.count++
+    } else {
+      monthlyStatsMap.set(key, { count: 1, timestamp: new Date(y, m, 1).getTime() })
+    }
   })
 
-  const monthly = Object.entries(monthlyStats).map(([month, count]) => ({
-    month,
-    count,
-  }))
+  const monthly = Array.from(monthlyStatsMap.entries())
+    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    .map(([, val]) => {
+      const d = new Date(val.timestamp)
+      return {
+        month: d.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
+        count: val.count,
+      }
+    })
+
+  // KPI: new this month vs previous month
+  const now = new Date()
+  const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const prevMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`
+  const newThisMonth = monthlyStatsMap.get(thisMonthKey)?.count ?? 0
+  const newPrevMonth = monthlyStatsMap.get(prevMonthKey)?.count ?? 0
+  const growthPercent =
+    newPrevMonth > 0 ? Math.round(((newThisMonth - newPrevMonth) / newPrevMonth) * 100) : 0
 
   // 2. By Location
   const locationStats: Record<string, Set<number>> = {}
   activeStudentGroups.forEach((sg) => {
     const locName = sg.group.location?.name || 'Не указано'
-    if (!locationStats[locName]) {
-      locationStats[locName] = new Set()
-    }
+    if (!locationStats[locName]) locationStats[locName] = new Set()
     locationStats[locName].add(sg.studentId)
   })
-
   const locations = Object.entries(locationStats)
-    .map(([name, studentSet]) => ({
-      name,
-      count: studentSet.size,
-    }))
+    .map(([name, s]) => ({ name, count: s.size }))
     .sort((a, b) => b.count - a.count)
 
   // 3. By Teacher
@@ -349,38 +366,36 @@ export async function getActiveStudentStatistics(organizationId: number) {
   activeStudentGroups.forEach((sg) => {
     sg.group.teachers.forEach((tg) => {
       const teacherName = tg.teacher.name
-      if (!teacherStats[teacherName]) {
-        teacherStats[teacherName] = new Set()
-      }
+      if (!teacherStats[teacherName]) teacherStats[teacherName] = new Set()
       teacherStats[teacherName].add(sg.studentId)
     })
   })
-
   const teachers = Object.entries(teacherStats)
-    .map(([name, studentSet]) => ({
-      name,
-      count: studentSet.size,
-    }))
+    .map(([name, s]) => ({ name, count: s.size }))
     .sort((a, b) => b.count - a.count)
 
   // 4. By Course
   const courseStats: Record<string, Set<number>> = {}
   activeStudentGroups.forEach((sg) => {
     const courseName = sg.group.course.name
-    if (!courseStats[courseName]) {
-      courseStats[courseName] = new Set()
-    }
+    if (!courseStats[courseName]) courseStats[courseName] = new Set()
     courseStats[courseName].add(sg.studentId)
   })
-
   const courses = Object.entries(courseStats)
-    .map(([name, studentSet]) => ({
-      name,
-      count: studentSet.size,
-    }))
+    .map(([name, s]) => ({ name, count: s.size }))
     .sort((a, b) => b.count - a.count)
 
+  // 5. Groups count
+  const totalGroups = new Set(activeStudentGroups.map((sg) => sg.groupId)).size
+  const avgPerGroup = totalGroups > 0 ? Math.round((totalStudents / totalGroups) * 10) / 10 : 0
+
   return {
+    totalStudents,
+    newThisMonth,
+    newPrevMonth,
+    growthPercent,
+    totalGroups,
+    avgPerGroup,
     monthly,
     locations,
     teachers,

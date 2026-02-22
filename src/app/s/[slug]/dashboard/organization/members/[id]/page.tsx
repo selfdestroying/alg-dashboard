@@ -96,18 +96,24 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </CardAction>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <div>
-              <div className="text-muted-foreground">Ставка за урок</div>
+              <div className="text-muted-foreground text-xs">Ставка за урок</div>
               <div className="text-sm font-bold">
-                {member.user.bidForLesson ? member.user.bidForLesson.toLocaleString() : '-'} ₽
+                {member.user.bidForLesson ? member.user.bidForLesson.toLocaleString() : '—'} ₽
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground">Ставка за индив.</div>
+              <div className="text-muted-foreground text-xs">Ставка за индив.</div>
               <div className="text-sm font-bold">
-                {member.user.bidForIndividual ? member.user.bidForIndividual.toLocaleString() : '-'}{' '}
+                {member.user.bidForIndividual ? member.user.bidForIndividual.toLocaleString() : '—'}{' '}
                 ₽
+              </div>
+            </div>
+            <div>
+              <div className="text-muted-foreground text-xs">Бонус за ученика</div>
+              <div className="text-sm font-bold">
+                {member.user.bonusPerStudent?.toLocaleString() ?? '0'} ₽
               </div>
             </div>
           </div>
