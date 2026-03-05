@@ -227,7 +227,7 @@ model Group {
 
   // Relations
   organizationId Int
-  courseId        Int
+  courseId       Int
   locationId     Int
   groupTypeId    Int?
   location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
@@ -400,7 +400,7 @@ model Rate {
 
   // Relations
   organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   teacherGroups  TeacherGroup[]
   groupTypes     GroupType[]
 
@@ -608,7 +608,7 @@ model Product {
   description    String?
   price          Int
   originalPrice  Int?
-  image          String     @default("placeholder.svg")
+  imageUrl       String
   categoryId     Int
   rating         Float      @default(0)
   reviews        Int        @default(0)
