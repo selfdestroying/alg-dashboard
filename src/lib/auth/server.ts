@@ -3,7 +3,7 @@ import { betterAuth, type BetterAuthOptions } from 'better-auth'
 import { nextCookies } from 'better-auth/next-js'
 import { admin as adminPlugin, customSession, organization } from 'better-auth/plugins'
 import prisma from '../db/prisma'
-import global from '../permissions/global'
+import globalPermissions from '../permissions/global'
 import organizationPermissions from '../permissions/organization'
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.split(':')[0]
@@ -31,25 +31,7 @@ const options = {
   rateLimit: {
     enabled: true,
   },
-  databaseHooks: {
-    session: {
-      create: {
-        before: async (session) => {
-          const userId = Number(session.userId)
-          const member = await prisma.member.findFirst({
-            where: { userId },
-          })
 
-          return {
-            data: {
-              ...session,
-              activeOrganizationId: member?.organizationId.toString() ?? null,
-            },
-          }
-        },
-      },
-    },
-  },
   advanced: {
     useSecureCookies: process.env.NODE_ENV === 'production',
     crossSubDomainCookies: {
@@ -76,7 +58,7 @@ const options = {
     return []
   },
   plugins: [
-    adminPlugin({ ...global }),
+    adminPlugin({ ...globalPermissions }),
     organization({
       ...organizationPermissions,
       allowUserToCreateOrganization: true,

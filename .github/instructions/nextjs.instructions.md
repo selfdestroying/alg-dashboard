@@ -27,7 +27,7 @@ This document summarizes the latest, authoritative best practices for building, 
 - **Route Groups:** Use parentheses (e.g., `(admin)`) to group routes without affecting the URL path.
 - **Private Folders:** Prefix with `_` (e.g., `_internal`) to opt out of routing and signal implementation details.
 
-- **Feature Folders:** For large apps, group by feature (e.g., `app/dashboard/`, `app/auth/`).
+- **Feature Folders:** For large apps, group by feature (e.g., `app/`, `app/auth/`).
 - **Use `src/`** (optional): Place all source code in `src/` to separate from config files.
 
 ## 2.1. Server and Client Component Integration (App Router)
@@ -45,7 +45,7 @@ This document summarizes the latest, authoritative best practices for building, 
 
 ```tsx
 // Server Component
-import DashboardNavbar from '@/components/DashboardNavbar'
+import DashboardNavbar from '@/components/Navbar'
 
 export default async function DashboardPage() {
   // ...server logic...

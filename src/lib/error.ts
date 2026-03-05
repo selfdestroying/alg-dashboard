@@ -37,3 +37,10 @@ export class ConflictError extends ActionError {
     this.name = 'ConflictError'
   }
 }
+
+export class InternalServerError extends ActionError {
+  constructor(message = 'Внутрення ошибка сервера') {
+    super(message)
+    this.name = 'InternalServerError'
+  }
+}

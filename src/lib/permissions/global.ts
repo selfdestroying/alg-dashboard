@@ -16,4 +16,6 @@ const owner = ac.newRole({
   ...adminAc.statements,
 })
 
-export default { ac, roles: { user, admin, owner } }
+const globalPermissions = { ac, roles: { user, admin, owner } }
+
+export default globalPermissions

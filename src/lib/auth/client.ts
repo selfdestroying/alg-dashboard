@@ -7,8 +7,8 @@ import {
 import { nextCookies } from 'better-auth/next-js'
 import { createAuthClient } from 'better-auth/react'
 
-import global from '../permissions/global'
-import organization from '../permissions/organization'
+import globalPermissions from '../permissions/global'
+import organizationPermissions from '../permissions/organization'
 import type { auth } from './server'
 
 export const authClient = createAuthClient({
@@ -16,7 +16,7 @@ export const authClient = createAuthClient({
     inferAdditionalFields<typeof auth>(),
     nextCookies(),
     customSessionClient<typeof auth>(),
-    adminClient({ ...global }),
-    organizationClient({ ...organization }),
+    adminClient({ ...globalPermissions }),
+    organizationClient({ ...organizationPermissions }),
   ],
 })

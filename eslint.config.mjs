@@ -9,7 +9,11 @@ const eslintConfig = defineConfig([
   ...nextTs,
   ...tanstackQuery.configs['flat/recommended'],
   eslintConfigPrettier,
-
+  {
+    rules: {
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
   globalIgnores([
     '.next/**',
     'out/**',

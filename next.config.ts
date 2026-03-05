@@ -10,9 +10,13 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
-  reactCompiler: true,
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.eduda.online',
+        pathname: '/images/**',
+      },
       {
         protocol: 'http',
         hostname: 'images.alg.tw1.ru',

@@ -56,7 +56,7 @@
 ```typescript
 // src/actions/groups.ts
 export const getGroups = async <T extends Prisma.GroupFindManyArgs>(
-  payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>
+  payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>,
 ) => {
   return await prisma.group.findMany<T>(payload)
 }
@@ -155,7 +155,7 @@ const createMember = async ({ userParams, memberRole, organizationId }) => {
 
 **Схема:** `prisma/schema.prisma` - `Student.password String` без хеширования.
 
-**UI:** `src/app/s/[slug]/dashboard/students/_components/students-table.tsx`:
+**UI:** `src/app/s/[slug]/students/_components/students-table.tsx`:
 
 ```tsx
 {
@@ -195,11 +195,11 @@ if (...) {
 - `src/app/page.tsx`
 - `src/app/auth/page.tsx`
 - `src/app/auth/sign-in/page.tsx`
-- `src/app/s/[slug]/dashboard/page.tsx`
+- `src/app/s/[slug]/page.tsx`
 - `src/actions/attendance.ts`
 - `src/actions/payments.ts`
 - `src/actions/students.ts`
-- Практически все страницы в `src/app/s/[slug]/dashboard/`
+- Практически все страницы в `src/app/s/[slug]/`
 
 Если у пользователя нет организации - `TypeError: Cannot read properties of undefined`.
 
@@ -376,7 +376,7 @@ export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateAr
 
 ### M14. Дублирование компонента `Filters`
 
-`src/app/s/[slug]/dashboard/_components/dashboard.tsx` и `src/app/s/[slug]/dashboard/groups/_components/groups-table.tsx` содержат почти идентичные компоненты `Filters` с одинаковыми query-хуками, обработчиками и Skeleton-загрузками.
+`src/app/s/[slug]/_components/.tsx` и `src/app/s/[slug]/groups/_components/groups-table.tsx` содержат почти идентичные компоненты `Filters` с одинаковыми query-хуками, обработчиками и Skeleton-загрузками.
 
 ---
 
@@ -404,7 +404,7 @@ export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateAr
 
 ### M17. `useLessonListQuery` вызывается с `organizationId!`
 
-**Файл:** `src/app/s/[slug]/dashboard/_components/dashboard.tsx`
+**Файл:** `src/app/s/[slug]/_components/.tsx`
 
 ```tsx
 const organizationId = session?.members?.[0]?.organizationId
@@ -417,7 +417,7 @@ const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
 
 ### M18. Утечка пароля ученика - отображение в таблице
 
-**Файл:** `src/app/s/[slug]/dashboard/students/_components/students-table.tsx`
+**Файл:** `src/app/s/[slug]/students/_components/students-table.tsx`
 
 ```tsx
 {
@@ -523,8 +523,8 @@ enum UserStatus {
 
 ```typescript
 // С ведущим `/`:
-revalidatePath('/dashboard/categories')
-revalidatePath('/dashboard/groups/${id}')
+revalidatePath('/categories')
+revalidatePath('/groups/${id}')
 
 // Без ведущего `/`:
 revalidatePath('dashboard/groups')
@@ -666,7 +666,7 @@ for (const lesson of lessons) {
 ```typescript
 export async function deletePaycheck(payload: Prisma.PayCheckDeleteArgs) {
   await prisma.payCheck.delete(payload)
-  revalidatePath(`/dashboard/users/${payload.where.userId}`)
+  revalidatePath(`/users/${payload.where.userId}`)
   // payload.where может содержать id, а не userId → путь undefined
 }
 ```

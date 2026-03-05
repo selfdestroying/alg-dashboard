@@ -70,4 +70,6 @@ export type OrganizationPermissionCheck = {
   [R in OrganizationStatementKeys]?: Array<OrganizationAction<R>>
 }
 
-export default { ac, roles: { owner, manager, teacher } }
+const organizationPermissions = { ac, roles: { owner, manager, teacher } }
+
+export default organizationPermissions
