@@ -25,12 +25,12 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Сотрудники',
-        url: '/dashboard/organization/members',
+        url: '/organization/members',
         roles: ['owner', 'manager'],
       },
       {
         title: 'Ставки',
-        url: '/dashboard/organization/rates',
+        url: '/organization/rates',
         roles: ['owner', 'manager'],
       },
     ],
@@ -42,22 +42,22 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Все',
-        url: '/dashboard/students',
+        url: '/students',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Активные',
-        url: '/dashboard/students/active',
+        url: '/students/active',
         roles: ['owner', 'manager'],
       },
       {
         title: 'Пропустившие',
-        url: '/dashboard/students/absent',
+        url: '/students/absent',
         roles: ['owner', 'manager'],
       },
       {
         title: 'Отчисленные',
-        url: '/dashboard/students/dismissed',
+        url: '/students/dismissed',
         roles: ['owner', 'manager'],
       },
     ],
@@ -69,12 +69,12 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Группы',
-        url: '/dashboard/groups',
+        url: '/groups',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Типы',
-        url: '/dashboard/groups/types',
+        url: '/groups/types',
         roles: ['owner', 'manager'],
       },
     ],
@@ -86,17 +86,17 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Оплаты',
-        url: '/dashboard/finances/payments',
+        url: '/finances/payments',
         roles: ['owner', 'manager'],
       },
       {
         title: 'Выручка',
-        url: '/dashboard/finances/revenue',
+        url: '/finances/revenue',
         roles: ['owner'],
       },
       {
         title: 'Зарплаты',
-        url: '/dashboard/finances/salaries',
+        url: '/finances/salaries',
         roles: ['owner', 'manager', 'teacher'],
       },
     ],
@@ -116,10 +116,7 @@ export default function NavPlatform() {
         <SidebarGroupLabel>Платформа</SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              isActive={pathname === '/dashboard'}
-              render={<Link href="/dashboard" />}
-            >
+            <SidebarMenuButton isActive={pathname === '/'} render={<Link href="/" />}>
               <LayoutDashboard />
               <span>Панель управления</span>
             </SidebarMenuButton>

@@ -8,5 +8,5 @@ export const createMakeUp = async (data: Prisma.MakeUpUncheckedCreateInput) => {
     data,
     include: { missedAttendance: true },
   })
-  revalidatePath(`/dashboard/lessons/${makeUp.missedAttendance.lessonId}`)
+  revalidatePath(`/lessons/${makeUp.missedAttendance.lessonId}`)
 }

@@ -95,7 +95,7 @@ export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
       baseDate.setUTCDate(baseDate.getUTCDate() + 7)
     }
   }
-  revalidatePath(`/dashboard/groups/${payload.where.id}`)
+  revalidatePath(`/groups/${payload.where.id}`)
 }
 
 export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
@@ -140,7 +140,7 @@ export const createStudentGroup = async (
     }
   })
 
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const updateStudentGroup = async (
@@ -198,9 +198,9 @@ export const updateStudentGroup = async (
     }
 
     if (isGroupChanged) {
-      revalidatePath(`/dashboard/groups/${oldStudentGroup.groupId}`)
+      revalidatePath(`/groups/${oldStudentGroup.groupId}`)
     }
-    revalidatePath(`/dashboard/groups/${sg.groupId}`)
+    revalidatePath(`/groups/${sg.groupId}`)
   })
 }
 
@@ -240,7 +240,7 @@ export const deleteStudentGroup = async (payload: Prisma.StudentGroupDeleteArgs)
         },
       })
     }
-    revalidatePath(`/dashboard/groups/${studentGroup.groupId}`)
+    revalidatePath(`/groups/${studentGroup.groupId}`)
   })
 }
 
@@ -271,7 +271,7 @@ export const updateTeacherGroup = async (
     }
   })
 
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const createTeacherGroup = async (
@@ -309,7 +309,7 @@ export const createTeacherGroup = async (
       }
     }
   })
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const deleteTeacherGroup = async (
@@ -335,5 +335,5 @@ export const deleteTeacherGroup = async (
       })
     }
   })
-  revalidatePath(`/dashboard/groups/${payload.where.groupId}`)
+  revalidatePath(`/groups/${payload.where.groupId}`)
 }

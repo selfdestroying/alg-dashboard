@@ -40,7 +40,7 @@ export const createGroupTypeAction = authAction
       },
     })
 
-    revalidatePath('/dashboard')
+    revalidatePath('/')
   })
 
 export const updateGroupTypeAction = authAction
@@ -56,7 +56,7 @@ export const updateGroupTypeAction = authAction
       data,
     })
 
-    revalidatePath('/dashboard')
+    revalidatePath('/')
   })
 
 export const deleteGroupTypeAction = authAction
@@ -76,5 +76,5 @@ export const deleteGroupTypeAction = authAction
 
     await prisma.groupType.delete({ where: { id: parsedInput.id } })
 
-    revalidatePath('/dashboard')
+    revalidatePath('/')
   })

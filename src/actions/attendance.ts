@@ -206,7 +206,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
 
     await tx.attendance.update(payload)
   })
-  revalidatePath(`/dashboard/lessons/${payload.where.studentId_lessonId?.lessonId}`)
+  revalidatePath(`/lessons/${payload.where.studentId_lessonId?.lessonId}`)
 }
 
 export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateArgs) => {
@@ -220,7 +220,7 @@ export const updateDataMock = async (time: number) => {
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
   await prisma.attendance.delete(data)
 
-  revalidatePath(`/dashboard/lessons/${data.where.lessonId}`)
+  revalidatePath(`/lessons/${data.where.lessonId}`)
 }
 
 export const getAbsentStatistics = async (organizationId: number) => {
@@ -340,7 +340,7 @@ export const getAbsentStatistics = async (organizationId: number) => {
   // Format and Sort Monthly
   const monthly = Array.from(monthlyStatsMap.entries())
     .sort((a, b) => a[1].timestamp - b[1].timestamp)
-    .map(([key, val]) => {
+    .map(([, val]) => {
       const dateRep = new Date(val.timestamp)
       return {
         name: dateRep.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
@@ -355,7 +355,7 @@ export const getAbsentStatistics = async (organizationId: number) => {
   // Format and Sort Weekly
   const weekly = Array.from(weeklyStatsMap.entries())
     .sort((a, b) => a[1].timestamp - b[1].timestamp)
-    .map(([key, val]) => {
+    .map(([, val]) => {
       const dateRep = new Date(val.timestamp)
       return {
         name: dateRep.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),

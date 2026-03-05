@@ -129,7 +129,7 @@ export async function updateStudent(
 
   const lessonsBalanceAudit = audit?.[StudentFinancialField.LESSONS_BALANCE]
   if (lessonsBalanceAudit?.reason === StudentLessonsBalanceChangeReason.PAYMENT_CREATED) {
-    revalidatePath('/dashboard/finances/payments')
+    revalidatePath('/finances/payments')
   }
 }
 
@@ -518,7 +518,7 @@ export async function updateStudentBalanceHistory(
   payload: Prisma.StudentLessonsBalanceHistoryUpdateArgs,
 ) {
   const history = await prisma.studentLessonsBalanceHistory.update(payload)
-  revalidatePath(`/dashboard/students/${history.studentId}`)
+  revalidatePath(`/students/${history.studentId}`)
 }
 
 export const deleteStudent = async (payload: Prisma.StudentDeleteArgs) => {

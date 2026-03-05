@@ -20,7 +20,7 @@ export default function SignIn() {
       return
     }
 
-    window.location.href = `${protocol}://${session.organization.slug}.${rootDomain}/dashboard`
+    window.location.href = `${protocol}://${session.organization.slug}.${rootDomain}/`
   }
 
   return (

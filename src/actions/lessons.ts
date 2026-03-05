@@ -65,7 +65,7 @@ export const getLesson = async <T extends Prisma.LessonFindFirstArgs>(
 
 export const updateLesson = async (payload: Prisma.LessonUpdateArgs) => {
   await prisma.lesson.update(payload)
-  revalidatePath(`/dashboard/lessons/${payload.where.id}`)
+  revalidatePath(`/lessons/${payload.where.id}`)
 }
 
 export const createLesson = async (payload: Prisma.LessonCreateArgs) => {
@@ -78,15 +78,15 @@ export const createLesson = async (payload: Prisma.LessonCreateArgs) => {
 
 export async function createTeacherLesson(payload: Prisma.TeacherLessonCreateArgs) {
   await prisma.teacherLesson.create(payload)
-  revalidatePath(`/dashboard/lessons/${payload.data.lessonId}`)
+  revalidatePath(`/lessons/${payload.data.lessonId}`)
 }
 
 export async function deleteTeacherLesson(payload: Prisma.TeacherLessonDeleteArgs) {
   await prisma.teacherLesson.delete(payload)
-  revalidatePath(`/dashboard/lessons/${payload.where.lessonId}`)
+  revalidatePath(`/lessons/${payload.where.lessonId}`)
 }
 
 export async function updateTeacherLesson(payload: Prisma.TeacherLessonUpdateArgs) {
   await prisma.teacherLesson.update(payload)
-  revalidatePath(`/dashboard/lessons/${payload.where.lessonId}`)
+  revalidatePath(`/lessons/${payload.where.lessonId}`)
 }

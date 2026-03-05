@@ -123,7 +123,7 @@ function handleOrgSubdomain(
     return NextResponse.redirect(ROOT_URL)
   }
 
-  const response = NextResponse.rewrite(new URL(`/s/${subdomain}${pathname}${search}`, request.url))
+  const response = NextResponse.rewrite(new URL(`/${subdomain}${pathname}${search}`, request.url))
   response.headers.set('x-organization', subdomain)
   return response
 }

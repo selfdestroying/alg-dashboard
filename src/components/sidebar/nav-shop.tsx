@@ -16,17 +16,17 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Товары',
-        url: '/dashboard/shop/products',
+        url: '/shop/products',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Категории',
-        url: '/dashboard/shop/categories',
+        url: '/shop/categories',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Заказы',
-        url: '/dashboard/shop/orders',
+        url: '/shop/orders',
         roles: ['owner', 'manager', 'teacher'],
       },
     ],

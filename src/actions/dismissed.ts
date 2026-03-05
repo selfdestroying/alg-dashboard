@@ -25,12 +25,12 @@ export async function getDismissed(payload: Prisma.DismissedFindFirstArgs) {
 
 export async function createDismissed(payload: Prisma.DismissedCreateArgs) {
   await prisma.dismissed.create(payload)
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export async function removeDismissed(payload: Prisma.DismissedDeleteArgs) {
   await prisma.dismissed.delete(payload)
-  revalidatePath('/dashboard/dismissed')
+  revalidatePath('/dismissed')
 }
 
 export async function returnToGroup(payload: {
@@ -86,7 +86,7 @@ export async function returnToGroup(payload: {
     }
   })
 
-  revalidatePath('/dashboard/dismissed')
+  revalidatePath('/dismissed')
 }
 
 export async function getDismissedStatistics(organizationId: number) {

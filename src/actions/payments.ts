@@ -24,12 +24,12 @@ export const getPayments = async <T extends Prisma.PaymentFindManyArgs>(
 
 export const createPayment = async (payload: Prisma.PaymentCreateArgs) => {
   await prisma.payment.create(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const deletePayment = async (payload: Prisma.PaymentDeleteArgs) => {
   await prisma.payment.delete(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
@@ -135,17 +135,17 @@ export const cancelPayment = async (payload: Prisma.PaymentDeleteArgs) => {
       })
     }
   })
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const createPaymentProduct = async (payload: Prisma.PaymentProductCreateArgs) => {
   await prisma.paymentProduct.create(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const deletePaymentProduct = async (payload: Prisma.PaymentProductDeleteArgs) => {
   await prisma.paymentProduct.delete(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const getUnprocessedPayments = async <T extends Prisma.UnprocessedPaymentFindManyArgs>(
@@ -156,10 +156,10 @@ export const getUnprocessedPayments = async <T extends Prisma.UnprocessedPayment
 
 export const updateUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentUpdateArgs) => {
   await prisma.unprocessedPayment.update(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }
 
 export const deleteUnprocessedPayment = async (payload: Prisma.UnprocessedPaymentDeleteArgs) => {
   await prisma.unprocessedPayment.delete(payload)
-  revalidatePath('/dashboard/finances/payments')
+  revalidatePath('/finances/payments')
 }

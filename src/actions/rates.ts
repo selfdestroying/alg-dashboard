@@ -19,7 +19,7 @@ export const getRate = async <T extends Prisma.RateFindFirstArgs>(
 
 export const createRate = async (payload: Prisma.RateCreateArgs) => {
   await prisma.rate.create(payload)
-  revalidatePath('/dashboard')
+  revalidatePath('/')
 }
 
 export const updateRate = async (payload: Prisma.RateUpdateArgs, isApplyToLessons: boolean) => {
@@ -50,7 +50,7 @@ export const updateRate = async (payload: Prisma.RateUpdateArgs, isApplyToLesson
     }
   })
 
-  revalidatePath('/dashboard')
+  revalidatePath('/')
 }
 
 export const deleteRate = async (payload: Prisma.RateDeleteArgs) => {
@@ -64,5 +64,5 @@ export const deleteRate = async (payload: Prisma.RateDeleteArgs) => {
   }
 
   await prisma.rate.delete(payload)
-  revalidatePath('/dashboard')
+  revalidatePath('/')
 }
