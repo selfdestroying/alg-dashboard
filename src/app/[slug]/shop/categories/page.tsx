@@ -1,4 +1,3 @@
-import { getCategories } from '@/src/actions/categories'
 import {
   Card,
   CardAction,
@@ -7,27 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
-import { auth } from '@/src/lib/auth/server'
-import { protocol, rootDomain } from '@/src/lib/utils'
-import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
-import AddCategoryButton from './_components/add-category-button'
-import CategoriesTable from './_components/categories-table'
+import AddCategoryButton from '@/src/features/shop/categories/components/add-category-button'
+import CategoriesTable from '@/src/features/shop/categories/components/categories-table'
 
 export const metadata = { title: 'Категории' }
 
-export default async function Page() {
-  const requestHeaders = await headers()
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  })
-  if (!session || !session.organizationId) {
-    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
-  }
-  const categories = await getCategories({
-    where: { organizationId: session.organizationId! },
-  })
-
+export default function Page() {
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
@@ -39,7 +23,7 @@ export default async function Page() {
           </CardAction>
         </CardHeader>
         <CardContent className="overflow-hidden">
-          <CategoriesTable data={categories} />
+          <CategoriesTable />
         </CardContent>
       </Card>
     </div>

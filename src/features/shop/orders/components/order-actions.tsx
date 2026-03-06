@@ -1,7 +1,6 @@
 'use client'
 
 import { Order } from '@/prisma/generated/client'
-import { changeOrderStatus, OrderWithProductAndStudent } from '@/src/actions/orders'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -29,8 +28,9 @@ import {
   SelectValue,
 } from '@/src/components/ui/select'
 import { Loader, MoreVertical, Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { useChangeOrderStatusMutation } from '../queries'
+import { OrderWithProductAndStudent } from '../types'
 import { OrderStatusMap } from './orders-table'
 
 interface OrderActionsProps {
@@ -40,21 +40,17 @@ interface OrderActionsProps {
 export default function OrderActions({ order }: OrderActionsProps) {
   const [open, setOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const [status, setStatus] = useState<Order['status']>(order.status)
 
+  const changeStatusMutation = useChangeOrderStatusMutation()
+
   const handleChangeStatus = () => {
-    startTransition(() => {
-      const ok = changeOrderStatus(order, status)
-      toast.promise(ok, {
-        loading: 'Обновление данных...',
-        success: 'Данные успешно обновлены!',
-        error: 'Ошибка при обновлении данных.',
-        finally: () => {
-          setEditDialogOpen(false)
-        },
-      })
-    })
+    changeStatusMutation.mutate(
+      { id: order.id, newStatus: status },
+      {
+        onSuccess: () => setEditDialogOpen(false),
+      },
+    )
   }
 
   return (
@@ -108,8 +104,8 @@ export default function OrderActions({ order }: OrderActionsProps) {
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button disabled={isPending} onClick={handleChangeStatus}>
-              {isPending && <Loader className="animate-spin" />}
+            <Button disabled={changeStatusMutation.isPending} onClick={handleChangeStatus}>
+              {changeStatusMutation.isPending && <Loader className="animate-spin" />}
               Сохранить
             </Button>
           </DialogFooter>

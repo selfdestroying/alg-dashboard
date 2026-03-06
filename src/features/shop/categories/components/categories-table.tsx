@@ -1,7 +1,9 @@
 'use client'
+
 import { Category } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import {
   ColumnDef,
@@ -13,27 +15,34 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useMemo } from 'react'
+import { useCategoryListQuery } from '../queries'
 import CategoryActions from './category-actions'
 
-const columns: ColumnDef<Category>[] = [
-  {
-    header: 'Название',
-    accessorKey: 'name',
-    meta: {
-      filterVariant: 'text',
-    },
-  },
-  {
-    header: 'Описание',
-    accessorKey: 'description',
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <CategoryActions category={row.original} />,
-  },
-]
+export default function CategoriesTable() {
+  const { data: categories = [], isLoading, isError } = useCategoryListQuery()
 
-export default function CategoriesTable({ data }: { data: Category[] }) {
+  const columns: ColumnDef<Category>[] = useMemo(
+    () => [
+      {
+        header: 'Название',
+        accessorKey: 'name',
+        meta: {
+          filterVariant: 'text',
+        },
+      },
+      {
+        header: 'Описание',
+        accessorKey: 'description',
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => <CategoryActions category={row.original} />,
+      },
+    ],
+    [],
+  )
+
   const { globalFilter, setGlobalFilter, pagination, setPagination, sorting, setSorting } =
     useTableSearchParams({
       search: true,
@@ -42,7 +51,7 @@ export default function CategoriesTable({ data }: { data: Category[] }) {
     })
 
   const table = useReactTable({
-    data,
+    data: categories,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -64,6 +73,19 @@ export default function CategoriesTable({ data }: { data: Category[] }) {
       sorting,
     },
   })
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return <div className="text-destructive">Ошибка при загрузке категорий.</div>
+  }
 
   return (
     <DataTable
