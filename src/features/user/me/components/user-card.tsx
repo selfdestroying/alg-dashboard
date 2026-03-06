@@ -11,23 +11,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/src/components/ui/dialog'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { useSessionRevokeMutation } from '@/src/data/user/session-revoke-mutation'
-import type { Session } from '@/src/lib/auth/server'
 import { Laptop, Loader2, Smartphone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { UAParser } from 'ua-parser-js'
+import { useActiveSessionsQuery } from '../queries'
 import { ChangePasswordForm } from './change-password-form'
 
-const UserCard = (props: { session: Session | null; activeSessions: Session['session'][] }) => {
+export default function UserCard() {
   const router = useRouter()
   const revokeSessionMutation = useSessionRevokeMutation()
-  const { data } = useSessionQuery()
-  const session = data || props.session
-  const [activeSessions, setActiveSessions] = useState(props.activeSessions)
-  const removeActiveSession = (id: string) =>
-    setActiveSessions(activeSessions.filter((session) => session.id !== id))
+  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
+  const { data: activeSessions = [], isLoading: isSessionsLoading } = useActiveSessionsQuery()
+
+  if (isSessionLoading || isSessionsLoading) return <Skeleton className="h-48 w-full" />
 
   return (
     <Card>
@@ -55,31 +55,30 @@ const UserCard = (props: { session: Session | null; activeSessions: Session['ses
         <div className="flex w-max flex-col gap-1 border-l-2 px-2">
           <p className="text-xs font-medium">Активные сессии</p>
           {activeSessions
-            .filter((session) => session.userAgent)
-            .map((session) => {
-              const isCurrentSession = session.id === props.session?.session.id
+            .filter((s) => s.userAgent)
+            .map((s) => {
+              const isCurrentSession = s.id === session?.session.id
               const isTerminating =
                 revokeSessionMutation.isPending &&
-                revokeSessionMutation.variables?.token === session.token
+                revokeSessionMutation.variables?.token === s.token
 
               return (
-                <div key={session.id}>
+                <div key={s.id}>
                   <div className="flex items-center gap-2 text-sm font-medium text-black dark:text-white">
-                    {new UAParser(session.userAgent || '').getDevice().type === 'mobile' ? (
+                    {new UAParser(s.userAgent || '').getDevice().type === 'mobile' ? (
                       <Smartphone />
                     ) : (
                       <Laptop size={16} />
                     )}
-                    {new UAParser(session.userAgent || '').getOS().name || session.userAgent},{' '}
-                    {new UAParser(session.userAgent || '').getBrowser().name}
+                    {new UAParser(s.userAgent || '').getOS().name || s.userAgent},{' '}
+                    {new UAParser(s.userAgent || '').getBrowser().name}
                     <Button
                       variant={'destructive'}
                       onClick={() => {
                         revokeSessionMutation.mutate(
-                          { token: session.token },
+                          { token: s.token },
                           {
                             onSuccess: () => {
-                              removeActiveSession(session.id)
                               if (isCurrentSession) {
                                 router.push('/')
                               }
@@ -108,7 +107,6 @@ const UserCard = (props: { session: Session | null; activeSessions: Session['ses
     </Card>
   )
 }
-export default UserCard
 
 function ChangePassword() {
   const [open, setOpen] = useState<boolean>(false)
