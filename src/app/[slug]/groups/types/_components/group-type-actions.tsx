@@ -71,7 +71,7 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
       setOpen(false)
     },
     onError: ({ error }) => {
-      toast.error(error.serverError ?? 'Ошибка при обновлении типа группы')
+      toast.error(error.serverError?.message ?? 'Ошибка при обновлении типа группы')
     },
   })
 
@@ -82,7 +82,7 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
       setOpen(false)
     },
     onError: ({ error }) => {
-      toast.error(error.serverError ?? 'Ошибка при удалении типа группы')
+      toast.error(error.serverError?.message ?? 'Ошибка при удалении типа группы')
     },
   })
 
