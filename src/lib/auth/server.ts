@@ -1,5 +1,5 @@
 import { prismaAdapter } from '@better-auth/prisma-adapter'
-import { betterAuth, type BetterAuthOptions } from 'better-auth'
+import { APIError, betterAuth, type BetterAuthOptions } from 'better-auth'
 import { nextCookies } from 'better-auth/next-js'
 import { admin as adminPlugin, customSession, organization } from 'better-auth/plugins'
 import prisma from '../db/prisma'
@@ -30,6 +30,32 @@ const options = {
   },
   rateLimit: {
     enabled: true,
+  },
+
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const member = await prisma.member.findFirst({
+            where: { userId: Number(session.userId) },
+            include: { organization: true },
+          })
+
+          if (!member) {
+            throw new APIError('UNAUTHORIZED', {
+              message: 'Вы не состоите ни в одной школе.',
+            })
+          }
+
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: member.organizationId.toString(),
+            },
+          }
+        },
+      },
+    },
   },
 
   advanced: {
