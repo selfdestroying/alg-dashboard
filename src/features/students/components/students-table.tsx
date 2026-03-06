@@ -1,7 +1,8 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
+
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { getFullName } from '@/src/lib/utils'
 import {
@@ -15,8 +16,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import Link from 'next/link'
-
-type StudentWithGroups = Prisma.StudentGetPayload<{ include: { groups: true } }>
+import { useStudentListQuery } from '../queries'
+import { StudentWithGroups } from '../types'
 
 function getAggregateBalance(student: StudentWithGroups) {
   return student.groups.reduce((sum, sg) => sum + sg.lessonsBalance, 0) + student.lessonsBalance
@@ -72,7 +73,9 @@ const columns: ColumnDef<StudentWithGroups>[] = [
   },
 ]
 
-export default function StudentsTable({ data }: { data: StudentWithGroups[] }) {
+export default function StudentsTable() {
+  const { data: students = [], isLoading, isError } = useStudentListQuery()
+
   const { globalFilter, setGlobalFilter, pagination, setPagination, sorting, setSorting } =
     useTableSearchParams({
       search: true,
@@ -81,7 +84,7 @@ export default function StudentsTable({ data }: { data: StudentWithGroups[] }) {
     })
 
   const table = useReactTable({
-    data,
+    data: students,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -96,13 +99,15 @@ export default function StudentsTable({ data }: { data: StudentWithGroups[] }) {
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-
     state: {
       globalFilter,
       pagination,
       sorting,
     },
   })
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError) return <div className="text-destructive">Ошибка загрузки</div>
 
   return (
     <DataTable
