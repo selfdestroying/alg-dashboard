@@ -13,22 +13,22 @@ import {
 
 import DataTable from '@/src/components/data-table'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { useMemo } from 'react'
 
-import { Category } from '@/prisma/generated/client'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
+import { Coins } from 'lucide-react'
 import Image from 'next/image'
-import { ProductWithCategory } from '../actions'
+import { useCategoryListQuery } from '../../categories/queries'
+import { useProductListQuery } from '../queries'
+import { ProductWithCategory } from '../types'
 import ProductActions from './product-actions'
 
-export default function ProductsTable({
-  data,
-  categories,
-}: {
-  data: ProductWithCategory[]
-  categories: Category[]
-}) {
+export default function ProductsTable() {
+  const { data: products = [], isLoading: isProductsLoading, isError } = useProductListQuery()
+  const { data: categories = [], isLoading: isCategoriesLoading } = useCategoryListQuery()
+  const isLoading = isProductsLoading || isCategoriesLoading
   const {
     columnFilters,
     setColumnFilters,
@@ -49,6 +49,7 @@ export default function ProductsTable({
       {
         header: 'Картинка',
         accessorKey: 'image',
+        enableSorting: false,
         cell: ({ row }) => (
           <div className="relative h-12 w-12 min-w-12 overflow-hidden rounded-lg">
             <Image
@@ -72,6 +73,16 @@ export default function ProductsTable({
       {
         header: 'Цена',
         accessorKey: 'price',
+        cell: ({ row }) => (
+          <span className="flex items-center gap-2 tabular-nums">
+            {row.original.price} <Coins className="text-primary h-4 w-4" />
+          </span>
+        ),
+      },
+      {
+        header: 'Количество',
+        accessorKey: 'quantity',
+        cell: ({ row }) => <span className="tabular-nums">{row.original.quantity}</span>,
       },
       {
         id: 'category',
@@ -85,14 +96,14 @@ export default function ProductsTable({
       },
       {
         id: 'actions',
-        cell: ({ row }) => <ProductActions product={row.original} categories={categories} />,
+        cell: ({ row }) => <ProductActions product={row.original} />,
       },
     ],
-    [categories],
+    [],
   )
 
   const table = useReactTable({
-    data,
+    data: products,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -142,6 +153,19 @@ export default function ProductsTable({
     const values = filter.value as string[]
     return mappedCategories.filter((c) => values.includes(c.label.toLowerCase()))
   }, [columnFilters, mappedCategories])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return <div className="text-destructive">Ошибка при загрузке товаров.</div>
+  }
 
   return (
     <DataTable

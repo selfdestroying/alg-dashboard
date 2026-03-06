@@ -1,15 +1,6 @@
 'use client'
-import { Category } from '@/prisma/generated/client'
 
 import { Button } from '@/src/components/ui/button'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogClose,
@@ -20,20 +11,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/src/components/ui/dialog'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
-import { Textarea } from '@/src/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
-import { useMemo, useState, useTransition } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { createProduct } from '../actions'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useMappedCategoryListQuery } from '../../categories/queries'
+import { useProductCreateMutation } from '../queries'
 import { CreateProductSchema, CreateProductSchemaType } from '../schemas'
+import ProductForm from './product-form'
 
-export default function AddProductButton({ categories }: { categories: Category[] }) {
-  const [isPending, startTransition] = useTransition()
+export default function AddProductButton() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const { data: categories = [] } = useMappedCategoryListQuery()
+  const createMutation = useProductCreateMutation()
+
   const form = useForm<CreateProductSchemaType>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
@@ -45,30 +36,15 @@ export default function AddProductButton({ categories }: { categories: Category[
       image: undefined,
     },
   })
+
   const onSubmit = (values: CreateProductSchemaType) => {
-    startTransition(() => {
-      console.log(values)
-      const ok = createProduct(values)
-      toast.promise(ok, {
-        loading: 'Создание продукта...',
-        success: 'Продукт успешно создан!',
-        error: 'Ошибка при создании продукта.',
-        finally: () => {
-          form.reset()
-          setDialogOpen(false)
-        },
-      })
+    createMutation.mutate(values, {
+      onSuccess: () => {
+        form.reset()
+        setDialogOpen(false)
+      },
     })
   }
-
-  const mappedCategories = useMemo(
-    () =>
-      categories.map((category) => ({
-        label: category.name,
-        value: category.id.toString(),
-      })),
-    [categories],
-  )
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -80,134 +56,15 @@ export default function AddProductButton({ categories }: { categories: Category[
           <DialogTitle>Добавить продукт</DialogTitle>
           <DialogDescription>Создайте новый продукт</DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} id="create-product-form">
-          <FieldGroup>
-            <Controller
-              control={form.control}
-              name="name"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="name-field">Название</FieldLabel>
-                  <Input
-                    id="name-field"
-                    placeholder="Введите название продукта"
-                    aria-invalid={fieldState.invalid}
-                    {...field}
-                    value={field.value ?? ''}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="price"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="price-field">Цена</FieldLabel>
-                  <Input
-                    id="price-field"
-                    type="number"
-                    placeholder="Введите цену продукта"
-                    aria-invalid={fieldState.invalid}
-                    {...field}
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="quantity"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="quantity-field">Количество</FieldLabel>
-                  <Input
-                    id="quantity-field"
-                    type="number"
-                    placeholder="Введите количество продукта"
-                    aria-invalid={fieldState.invalid}
-                    {...field}
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="categoryId"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="form-rhf-select-category">Категория</FieldLabel>
-                  <Combobox
-                    items={mappedCategories}
-                    onValueChange={(item: (typeof mappedCategories)[number] | null) => {
-                      field.onChange(Number(item?.value))
-                    }}
-                  >
-                    <ComboboxInput id="form-rhf-select-category" placeholder="Выберите категорию" />
-                    <ComboboxContent>
-                      <ComboboxEmpty>Не найдены категории</ComboboxEmpty>
-                      <ComboboxList>
-                        {(category: (typeof mappedCategories)[number]) => (
-                          <ComboboxItem key={category.value} value={category}>
-                            {category.label}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="description"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="description-field">Описание</FieldLabel>
-                  <Textarea
-                    id="description-field"
-                    placeholder="Введите описание продукта"
-                    aria-invalid={fieldState.invalid}
-                    {...field}
-                    value={field.value ?? ''}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="image"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="image-field">Изображение</FieldLabel>
-                  <Input
-                    id="image-field"
-                    type="file"
-                    accept="image/png, image/jpeg, image/svg+xml, image/webp"
-                    aria-invalid={fieldState.invalid}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      field.onChange(file)
-                    }}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-        </form>
+        <ProductForm form={form} formId="create-product-form" categories={categories} />
         <DialogFooter>
           <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-          <Button type="submit" form="create-product-form" disabled={isPending}>
-            {isPending && <Loader className="animate-spin" />}
+          <Button
+            type="button"
+            disabled={createMutation.isPending}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {createMutation.isPending && <Loader className="animate-spin" />}
             Создать
           </Button>
         </DialogFooter>

@@ -1,6 +1,5 @@
 'use client'
 
-import { Category, Prisma } from '@/prisma/generated/client'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -11,14 +10,6 @@ import {
   AlertDialogTitle,
 } from '@/src/components/ui/alert-dialog'
 import { Button } from '@/src/components/ui/button'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogClose,
@@ -36,28 +27,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
-import { Textarea } from '@/src/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
-import Image from 'next/image'
-import { useMemo, useState, useTransition } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { deleteProduct, updateProduct } from '../actions'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useMappedCategoryListQuery } from '../../categories/queries'
+import { useProductDeleteMutation, useProductUpdateMutation } from '../queries'
 import { UpdateProductSchema, UpdateProductSchemaType } from '../schemas'
+import { ProductWithCategory } from '../types'
+import ProductForm from './product-form'
 
 interface ProductActionsProps {
-  product: Prisma.ProductGetPayload<{ include: { category: true } }>
-  categories: Category[]
+  product: ProductWithCategory
 }
 
-export default function ProductActions({ product, categories }: ProductActionsProps) {
+export default function ProductActions({ product }: ProductActionsProps) {
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+
+  const { data: categories = [] } = useMappedCategoryListQuery()
+
+  const updateMutation = useProductUpdateMutation()
+  const deleteMutation = useProductDeleteMutation()
 
   const form = useForm<UpdateProductSchemaType>({
     resolver: zodResolver(UpdateProductSchema),
@@ -73,38 +65,23 @@ export default function ProductActions({ product, categories }: ProductActionsPr
   })
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteProduct({ id: product.id })
-      toast.promise(ok, {
-        loading: 'Удаление продукта...',
-        success: 'Продукт успешно удален',
-        error: 'Не удалось удалить продукт',
-      })
-    })
+    deleteMutation.mutate(
+      { id: product.id },
+      {
+        onSuccess: () => setConfirmOpen(false),
+      },
+    )
   }
 
   const onSubmit = (values: UpdateProductSchemaType) => {
-    startTransition(() => {
-      const ok = updateProduct(values)
-      toast.promise(ok, {
-        loading: 'Обновление продукта...',
-        success: 'Продукт успешно обновлен!',
-        error: 'Ошибка при обновлении продукта.',
-        finally: () => {
-          setEditDialogOpen(false)
-          form.reset()
-        },
-      })
+    updateMutation.mutate(values, {
+      onSuccess: () => {
+        setEditDialogOpen(false)
+        form.reset()
+      },
     })
   }
-  const mappedCategories = useMemo(
-    () =>
-      categories.map((category) => ({
-        label: category.name,
-        value: category.id.toString(),
-      })),
-    [categories],
-  )
+
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -149,8 +126,12 @@ export default function ProductActions({ product, categories }: ProductActionsPr
 
           <AlertDialogFooter>
             <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <Button variant="destructive" disabled={isPending} onClick={handleDelete}>
-              {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
+            <Button
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={handleDelete}
+            >
+              {deleteMutation.isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -162,145 +143,20 @@ export default function ProductActions({ product, categories }: ProductActionsPr
             <DialogTitle>Редактировать товар</DialogTitle>
             <DialogDescription>Обновите информацию о товаре</DialogDescription>
           </DialogHeader>
-          <div className="relative h-12 w-12 min-w-12 overflow-hidden rounded-lg">
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="50px"
-            />
-          </div>
-          <form id="edit-category-form" onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup>
-              <Controller
-                control={form.control}
-                name="name"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Название</FieldLabel>
-                    <Input placeholder="Введите название категории" {...field} />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="price"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor="price-field">Цена</FieldLabel>
-                    <Input
-                      id="price-field"
-                      type="number"
-                      placeholder="Введите цену продукта"
-                      aria-invalid={fieldState.invalid}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="quantity"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor="quantity-field">Количество</FieldLabel>
-                    <Input
-                      id="quantity-field"
-                      type="number"
-                      placeholder="Введите количество продукта"
-                      aria-invalid={fieldState.invalid}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="categoryId"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor="category-field">Категория</FieldLabel>
-                    <Combobox
-                      items={mappedCategories}
-                      value={
-                        mappedCategories.find(
-                          (category) => category.value === field.value?.toString(),
-                        ) ?? null
-                      }
-                      onValueChange={(item: (typeof mappedCategories)[number] | null) =>
-                        item ? field.onChange(Number(item?.value)) : ''
-                      }
-                    >
-                      <ComboboxInput
-                        id="form-rhf-select-category"
-                        placeholder="Выберите категорию"
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>Не найдены категории</ComboboxEmpty>
-                        <ComboboxList>
-                          {(category: (typeof mappedCategories)[number]) => (
-                            <ComboboxItem key={category.value} value={category}>
-                              {category.label}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="description"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor="description-field">Описание</FieldLabel>
-                    <Textarea
-                      id="description-field"
-                      placeholder="Введите описание продукта"
-                      aria-invalid={fieldState.invalid}
-                      {...field}
-                      value={field.value ?? ''}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                control={form.control}
-                name="image"
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor="image-field">Изображение</FieldLabel>
-                    <Input
-                      id="image-field"
-                      type="file"
-                      accept="image/png, image/jpeg, image/svg+xml, image/webp"
-                      aria-invalid={fieldState.invalid}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        field.onChange(file)
-                      }}
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-          </form>
+          <ProductForm
+            form={form}
+            formId="edit-product-form"
+            categories={categories}
+            existingImageUrl={product.imageUrl}
+          />
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
-            <Button type="submit" form="edit-category-form" disabled={isPending}>
-              {isPending && <Loader className="animate-spin" />}
+            <Button
+              type="button"
+              disabled={updateMutation.isPending}
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              {updateMutation.isPending && <Loader className="animate-spin" />}
               Сохранить
             </Button>
           </DialogFooter>
