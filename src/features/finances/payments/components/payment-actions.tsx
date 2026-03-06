@@ -1,7 +1,6 @@
 'use client'
 
 import { Payment } from '@/prisma/generated/client'
-import { cancelPayment } from '@/src/actions/payments'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,30 +18,20 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { CircleX, Loader2, MoreVertical } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { usePaymentCancelMutation } from '../queries'
 
-interface PaymentsActionsProps {
+interface PaymentActionsProps {
   payment: Payment
 }
 
-export default function PaymentsActions({ payment }: PaymentsActionsProps) {
+export default function PaymentActions({ payment }: PaymentActionsProps) {
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const cancelMutation = usePaymentCancelMutation()
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = cancelPayment({
-        where: { id: payment.id },
-      })
-      toast.promise(ok, {
-        loading: 'Отмена оплаты...',
-        success: 'Оплата успешно отменена',
-        error: 'Не удалось отменить оплату',
-        finally: () => setConfirmOpen(false),
-      })
-    })
+    cancelMutation.mutate({ id: payment.id }, { onSuccess: () => setConfirmOpen(false) })
   }
 
   return (
@@ -78,8 +67,12 @@ export default function PaymentsActions({ payment }: PaymentsActionsProps) {
 
           <AlertDialogFooter>
             <AlertDialogCancel>Отмена</AlertDialogCancel>
-            <Button variant="destructive" disabled={isPending} onClick={handleDelete}>
-              {isPending ? <Loader2 className="animate-spin" /> : 'Отменить'}
+            <Button
+              variant="destructive"
+              disabled={cancelMutation.isPending}
+              onClick={handleDelete}
+            >
+              {cancelMutation.isPending ? <Loader2 className="animate-spin" /> : 'Отменить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
