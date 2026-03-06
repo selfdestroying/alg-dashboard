@@ -1,5 +1,5 @@
 'use client'
-import { createPaycheck } from '@/src/actions/paycheck'
+
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import {
@@ -14,23 +14,22 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
-import { CreatePaycheckSchema, CreatePaycheckSchemaType } from '@/src/schemas/paycheck'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { usePaycheckCreateMutation } from '../queries'
+import { CreatePaycheckSchema, CreatePaycheckSchemaType } from '../schemas'
 
 interface AddCheckButtonProps {
-  organizationId: number
   userId: number
   userName: string
 }
 
-export default function AddCheckButton({ organizationId, userId, userName }: AddCheckButtonProps) {
+export default function AddCheckButton({ userId, userName }: AddCheckButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const { mutate, isPending } = usePaycheckCreateMutation(userId)
 
   const form = useForm<CreatePaycheckSchemaType>({
     resolver: zodResolver(CreatePaycheckSchema),
@@ -42,23 +41,11 @@ export default function AddCheckButton({ organizationId, userId, userName }: Add
   })
 
   const onSubmit = (values: CreatePaycheckSchemaType) => {
-    startTransition(() => {
-      const ok = createPaycheck({
-        data: {
-          organizationId,
-          userId,
-          ...values,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Добавление чека...',
-        success: 'Чек успешно добавлен!',
-        error: 'Ошибка при добавлении чека.',
-        finally: () => {
-          form.reset()
-          setDialogOpen(false)
-        },
-      })
+    mutate(values, {
+      onSuccess: () => {
+        form.reset()
+        setDialogOpen(false)
+      },
     })
   }
 

@@ -1,6 +1,6 @@
 'use client'
+
 import { PayCheck } from '@/prisma/generated/client'
-import { deletePaycheck, updatePaycheck } from '@/src/actions/paycheck'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -28,27 +28,31 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { CreatePaycheckSchema, CreatePaycheckSchemaType } from '@/src/schemas/paycheck'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { usePaycheckDeleteMutation, usePaycheckUpdateMutation } from '../queries'
+import { CreatePaycheckSchema, CreatePaycheckSchemaType } from '../schemas'
 
-interface AddCheckButtonProps {
+interface PayCheckActionsProps {
   paycheck: PayCheck
   userName: string
+  userId: number
 }
 
-export default function PayCheckActions({ paycheck, userName }: AddCheckButtonProps) {
-  const [open, setOpen] = useState<boolean>(false)
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  const [isDeleteDisabled, setIsDeleteDisabled] = useState<boolean>(false)
-  const [deleteCountdown, setDeleteCountdown] = useState<number>(0)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
+export default function PayCheckActions({ paycheck, userName, userId }: PayCheckActionsProps) {
+  const [open, setOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
+  const [deleteCountdown, setDeleteCountdown] = useState(0)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-  const [isPending, startTransition] = useTransition()
+  const { mutate: updateMutate, isPending: isUpdatePending } = usePaycheckUpdateMutation(userId)
+  const { mutate: deleteMutate, isPending: isDeletePending } = usePaycheckDeleteMutation(userId)
+
+  const isPending = isUpdatePending || isDeletePending
 
   const form = useForm<CreatePaycheckSchemaType>({
     resolver: zodResolver(CreatePaycheckSchema),
@@ -60,41 +64,27 @@ export default function PayCheckActions({ paycheck, userName }: AddCheckButtonPr
   })
 
   const onSubmit = (values: CreatePaycheckSchemaType) => {
-    startTransition(() => {
-      const ok = updatePaycheck({
-        where: { id: paycheck.id },
-        data: values,
-      })
-      toast.promise(ok, {
-        loading: 'Редактирование чека...',
-        success: 'Чек успешно отредактирован!',
-        error: 'Ошибка при редактировании чека.',
-        finally: () => {
+    updateMutate(
+      { ...values, id: paycheck.id },
+      {
+        onSuccess: () => {
           form.reset()
           setDialogOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deletePaycheck({
-        where: {
-          id: paycheck.id,
-          userId: paycheck.userId,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Удаление чека...',
-        success: 'Чек успешно удален',
-        error: 'Ошибка при удалении чека',
-        finally: () => {
+    deleteMutate(
+      { id: paycheck.id },
+      {
+        onSuccess: () => {
           setDeleteDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   useEffect(() => {

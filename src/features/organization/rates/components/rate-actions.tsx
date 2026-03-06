@@ -1,7 +1,5 @@
 'use client'
 
-import { Prisma } from '@/prisma/generated/client'
-import { deleteRate, updateRate } from '@/src/actions/rates'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -39,16 +37,13 @@ import {
 } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Switch } from '@/src/components/ui/switch'
-import { EditRateSchema, EditRateSchemaType } from '@/src/schemas/rate'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-
-type RateWithCount = Prisma.RateGetPayload<{
-  include: { _count: { select: { teacherGroups: true } } }
-}>
+import { useRateDeleteMutation, useRateUpdateMutation } from '../queries'
+import { UpdateRateSchema, UpdateRateSchemaType } from '../schemas'
+import type { RateWithCount } from '../types'
 
 interface RateActionsProps {
   rate: RateWithCount
@@ -58,13 +53,18 @@ export default function RateActions({ rate }: RateActionsProps) {
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
-  const form = useForm<EditRateSchemaType>({
-    resolver: zodResolver(EditRateSchema),
+  const { mutate: updateMutate, isPending: isUpdatePending } = useRateUpdateMutation()
+  const { mutate: deleteMutate, isPending: isDeletePending } = useRateDeleteMutation()
+
+  const isPending = isUpdatePending || isDeletePending
+
+  const form = useForm<UpdateRateSchemaType>({
+    resolver: zodResolver(UpdateRateSchema),
     defaultValues: {
+      id: rate.id,
       name: rate.name,
       bid: rate.bid,
       bonusPerStudent: rate.bonusPerStudent,
@@ -72,44 +72,25 @@ export default function RateActions({ rate }: RateActionsProps) {
     },
   })
 
-  const handleEdit = (data: EditRateSchemaType) => {
-    startTransition(() => {
-      const { isApplyToLessons, ...payload } = data
-      const ok = updateRate(
-        {
-          where: { id: rate.id },
-          data: payload,
-        },
-        isApplyToLessons,
-      )
-      toast.promise(ok, {
-        loading: 'Обновление ставки...',
-        success: 'Ставка успешно обновлена',
-        error: 'Ошибка при обновлении ставки',
-        finally: () => {
-          setEditDialogOpen(false)
-          setOpen(false)
-        },
-      })
+  const handleEdit = (data: UpdateRateSchemaType) => {
+    updateMutate(data, {
+      onSuccess: () => {
+        setEditDialogOpen(false)
+        setOpen(false)
+      },
     })
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteRate({ where: { id: rate.id } })
-      toast.promise(ok, {
-        loading: 'Удаление ставки...',
-        success: 'Ставка удалена',
-        error:
-          rate._count.teacherGroups > 0
-            ? 'Невозможно удалить ставку, которая используется в группах'
-            : 'Ошибка при удалении ставки',
-        finally: () => {
+    deleteMutate(
+      { id: rate.id },
+      {
+        onSuccess: () => {
           setDeleteDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   useEffect(() => {
@@ -133,6 +114,7 @@ export default function RateActions({ rate }: RateActionsProps) {
 
   useEffect(() => {
     form.reset({
+      id: rate.id,
       name: rate.name,
       bid: rate.bid,
       bonusPerStudent: rate.bonusPerStudent,

@@ -1,18 +1,12 @@
 'use client'
 
-import { Prisma } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useRateListQuery } from '../queries'
+import type { RateWithCount } from '../types'
 import RateActions from './rate-actions'
-
-type RateWithCount = Prisma.RateGetPayload<{
-  include: { _count: { select: { teacherGroups: true } } }
-}>
-
-interface RatesTableProps {
-  data: RateWithCount[]
-}
 
 function RateActionsCell({ rate }: { rate: RateWithCount }) {
   const { data: canEdit } = useOrganizationPermissionQuery({ rate: ['update'] })
@@ -55,12 +49,17 @@ const columns: ColumnDef<RateWithCount>[] = [
   },
 ]
 
-export default function RatesTable({ data }: RatesTableProps) {
+export default function RatesTable() {
+  const { data: rates = [], isLoading, isError } = useRateListQuery()
+
   const table = useReactTable({
-    data,
+    data: rates,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError) return <div className="text-destructive">Ошибка загрузки</div>
 
   return <DataTable table={table} emptyMessage="Нет ставок. Создайте первую ставку." />
 }

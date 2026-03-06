@@ -24,22 +24,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/src/components/ui/sheet'
-import { useMemberCreateMutation } from '@/src/data/member/member-create-mutation'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useIsMobile } from '@/src/hooks/use-mobile'
-import { CreateUserSchema, CreateUserSchemaType } from '@/src/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { useMemberCreateMutation } from '../queries'
+import { CreateMemberSchema, CreateMemberSchemaType } from '../schemas'
 
-export default function CreateUserDialog() {
+export default function CreateMemberDialog() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const isMobile = useIsMobile()
-  const { data: session } = useSessionQuery()
   const { mutate, isPending } = useMemberCreateMutation()
-  const form = useForm<CreateUserSchemaType>({
-    resolver: zodResolver(CreateUserSchema),
+  const form = useForm<CreateMemberSchemaType>({
+    resolver: zodResolver(CreateMemberSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -48,35 +45,17 @@ export default function CreateUserDialog() {
     },
   })
 
-  const onSubmit = (values: CreateUserSchemaType) => {
-    mutate(
-      {
-        userParams: {
-          email: values.email,
-          name: `${values.firstName} ${values.lastName}`,
-          password: values.password,
-          role: 'user',
-          data: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-          },
-        },
-        memberRole: values.role,
-        organizationId: session!.organizationId!.toString(),
+  const onSubmit = (values: CreateMemberSchemaType) => {
+    mutate(values, {
+      onSuccess: () => {
+        setDialogOpen(false)
+        form.reset()
       },
-      {
-        onSuccess: () => {
-          toast.success('Сотрудник успешно создан')
-          setDialogOpen(false)
-          form.reset()
-        },
-        onError: () => {
-          toast.error('Ошибка при создании сотрудника')
-          setDialogOpen(false)
-          form.reset()
-        },
+      onError: () => {
+        setDialogOpen(false)
+        form.reset()
       },
-    )
+    })
   }
 
   return (

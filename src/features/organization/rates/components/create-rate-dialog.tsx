@@ -1,6 +1,5 @@
 'use client'
 
-import { createRate } from '@/src/actions/rates'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -14,20 +13,16 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { CreateRateSchema, CreateRateSchemaType } from '@/src/schemas/rate'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useRateCreateMutation } from '../queries'
+import { CreateRateSchema, CreateRateSchemaType } from '../schemas'
 
-interface CreateRateDialogProps {
-  organizationId: number
-}
-
-export default function CreateRateDialog({ organizationId }: CreateRateDialogProps) {
+export default function CreateRateDialog() {
   const [open, setOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const { mutate, isPending } = useRateCreateMutation()
 
   const form = useForm<CreateRateSchemaType>({
     resolver: zodResolver(CreateRateSchema),
@@ -39,22 +34,11 @@ export default function CreateRateDialog({ organizationId }: CreateRateDialogPro
   })
 
   const onSubmit = (values: CreateRateSchemaType) => {
-    startTransition(() => {
-      const ok = createRate({
-        data: {
-          ...values,
-          organizationId,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Создание ставки...',
-        success: 'Ставка успешно создана!',
-        error: 'Не удалось создать ставку.',
-        finally: () => {
-          setOpen(false)
-          form.reset()
-        },
-      })
+    mutate(values, {
+      onSuccess: () => {
+        setOpen(false)
+        form.reset()
+      },
     })
   }
 

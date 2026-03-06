@@ -1,6 +1,5 @@
 'use client'
 
-import { Prisma } from '@/prisma/generated/client'
 import { Button } from '@/src/components/ui/button'
 import {
   DropdownMenu,
@@ -10,13 +9,14 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { MoreVertical, Pen } from 'lucide-react'
 import { useState } from 'react'
-import EditUserButton from './edit-user-dialog'
+import type { MemberWithUser } from '../types'
+import EditMemberDialog from './edit-member-dialog'
 
-interface UsersActionsProps {
-  member: Prisma.MemberGetPayload<{ include: { user: true } }>
+interface MemberActionsProps {
+  member: MemberWithUser
 }
 
-export default function UsersActions({ member }: UsersActionsProps) {
+export default function MemberActions({ member }: MemberActionsProps) {
   const [open, setOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
 
@@ -40,7 +40,7 @@ export default function UsersActions({ member }: UsersActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <EditUserButton
+      <EditMemberDialog
         member={member}
         open={editOpen}
         onOpenChange={setEditOpen}

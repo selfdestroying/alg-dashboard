@@ -6,34 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
-import { auth } from '@/src/lib/auth/server'
-import prisma from '@/src/lib/db/prisma'
-import { protocol, rootDomain } from '@/src/lib/utils'
-import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
-import CreateUserDialog from './_components/create-user-dialog'
-import UsersTable from './_components/users-table'
+import CreateMemberDialog from '@/src/features/organization/members/components/create-member-dialog'
+import MembersTable from '@/src/features/organization/members/components/members-table'
 
 export const metadata = { title: 'Пользователи' }
 
-export default async function Page() {
-  const requestHeaders = await headers()
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  })
-  if (!session || !session.organizationId) {
-    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
-  }
-  const members = await prisma.member.findMany({
-    where: {
-      organizationId: session.organizationId!,
-      NOT: { userId: Number(session.user.id) },
-    },
-    include: {
-      user: true,
-    },
-  })
-
+export default function Page() {
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
@@ -41,11 +19,11 @@ export default async function Page() {
           <CardTitle>Пользователи</CardTitle>
           <CardDescription>Список всех пользователей системы</CardDescription>
           <CardAction>
-            <CreateUserDialog />
+            <CreateMemberDialog />
           </CardAction>
         </CardHeader>
         <CardContent className="overflow-hidden">
-          <UsersTable data={members} />
+          <MembersTable />
         </CardContent>
       </Card>
     </div>

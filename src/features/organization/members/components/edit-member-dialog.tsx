@@ -3,8 +3,6 @@
 import { Input } from '@/src/components/ui/input'
 import { Controller, useForm } from 'react-hook-form'
 
-import { Prisma } from '@/prisma/generated/client'
-import { updateUser } from '@/src/actions/users'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
@@ -27,16 +25,16 @@ import {
   SheetTrigger,
 } from '@/src/components/ui/sheet'
 import { useIsMobile } from '@/src/hooks/use-mobile'
-import { authClient } from '@/src/lib/auth/client'
 import { OrganizationRole } from '@/src/lib/auth/server'
-import { EditUserSchema, EditUserSchemaType } from '@/src/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { useMemberUpdateMutation } from '../queries'
+import { UpdateMemberSchema, UpdateMemberSchemaType } from '../schemas'
+import type { MemberWithUser } from '../types'
 
-interface EditUserButtonProps {
-  member: Prisma.MemberGetPayload<{ include: { user: true } }>
+interface EditMemberDialogProps {
+  member: MemberWithUser
   variant?: 'default' | 'ghost' | 'outline'
   size?: 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm'
   open?: boolean
@@ -49,57 +47,40 @@ const mappedRoles = [
   { label: 'Учитель', value: 'teacher' },
 ]
 
-export default function EditUserButton({
+export default function EditMemberDialog({
   member,
   variant = 'default',
   size = 'icon',
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   showTrigger = true,
-}: EditUserButtonProps) {
-  const [isPending, startTransition] = useTransition()
+}: EditMemberDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const isMobile = useIsMobile()
+  const { mutate, isPending } = useMemberUpdateMutation()
 
   const isControlled = controlledOpen !== undefined
   const isOpen = isControlled ? controlledOpen : internalOpen
   const setIsOpen = isControlled ? controlledOnOpenChange! : setInternalOpen
 
-  const form = useForm<EditUserSchemaType>({
-    resolver: zodResolver(EditUserSchema),
+  const form = useForm<UpdateMemberSchemaType>({
+    resolver: zodResolver(UpdateMemberSchema),
     defaultValues: {
+      memberId: member.id.toString(),
+      userId: member.userId,
       firstName: member.user.name?.split(' ')[0] || '',
       lastName: member.user.name?.split(' ').slice(1).join(' ') || undefined,
-      role: member.user.role
+      role: member.role
         ? { label: memberRoleLabels[member.role as OrganizationRole], value: member.role }
         : undefined,
       banned: member.user.banned !== null ? member.user.banned : undefined,
     },
   })
 
-  const onSubmit = (values: EditUserSchemaType) => {
-    startTransition(() => {
-      const { role, firstName, lastName, ...payload } = values
-      const ok = updateUser({
-        where: { id: member.user.id },
-        data: {
-          ...payload,
-          name: `${firstName} ${lastName || ''}`.trim(),
-        },
-      }).then(() =>
-        authClient.organization.updateMemberRole({
-          memberId: member.id.toString(),
-          role: role.value,
-        }),
-      )
-      toast.promise(ok, {
-        loading: 'Обновление пользователя...',
-        success: 'Пользователь успешно обновлен!',
-        error: 'Не удалось обновить пользователя. Пожалуйста, попробуйте еще раз.',
-        finally: () => {
-          setIsOpen(false)
-        },
-      })
+  const onSubmit = (values: UpdateMemberSchemaType) => {
+    mutate(values, {
+      onSuccess: () => setIsOpen(false),
+      onError: () => setIsOpen(false),
     })
   }
 

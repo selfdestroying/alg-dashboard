@@ -1,8 +1,15 @@
 'use client'
+
 import DataTable from '@/src/components/data-table'
 import TableFilter from '@/src/components/table-filter'
+import { ColumnDef } from '@tanstack/react-table'
+
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
+import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
+import { OrganizationRole } from '@/src/lib/auth/server'
 import {
-  ColumnDef,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -10,21 +17,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-
-import { Prisma } from '@/prisma/generated/client'
-import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
-import { Input } from '@/src/components/ui/input'
-import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
-import { OrganizationRole } from '@/src/lib/auth/server'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import UsersActions from './users-actions'
+import { useMemberListQuery } from '../queries'
+import type { MemberWithUser } from '../types'
+import MemberActions from './member-actions'
 
-interface UsersTableProps {
-  data: Prisma.MemberGetPayload<{ include: { user: true } }>[]
-}
-
-const columns: ColumnDef<Prisma.MemberGetPayload<{ include: { user: true } }>>[] = [
+const columns: ColumnDef<MemberWithUser>[] = [
   {
     id: 'user',
     header: 'Полное имя',
@@ -47,7 +46,6 @@ const columns: ColumnDef<Prisma.MemberGetPayload<{ include: { user: true } }>>[]
       return filterValue.length === 0 || filterValue.includes(row.original.role)
     },
   },
-
   {
     header: 'Статус',
     accessorKey: 'status',
@@ -59,7 +57,7 @@ const columns: ColumnDef<Prisma.MemberGetPayload<{ include: { user: true } }>>[]
   },
   {
     id: 'actions',
-    cell: ({ row }) => <UsersActions member={row.original} />,
+    cell: ({ row }) => <MemberActions member={row.original} />,
   },
 ]
 
@@ -68,7 +66,9 @@ const mappedRoles = [
   { label: 'Менеджер', value: 'manager' },
 ]
 
-export default function UsersTable({ data }: UsersTableProps) {
+export default function MembersTable() {
+  const { data: members = [], isLoading, isError } = useMemberListQuery()
+
   const { columnFilters, setColumnFilters, globalFilter, setGlobalFilter, sorting, setSorting } =
     useTableSearchParams({
       filters: { role: 'string' },
@@ -77,7 +77,7 @@ export default function UsersTable({ data }: UsersTableProps) {
     })
 
   const table = useReactTable({
-    data,
+    data: members,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -116,6 +116,9 @@ export default function UsersTable({ data }: UsersTableProps) {
     const ids = filter.value as string[]
     return mappedRoles.filter((r) => ids.includes(r.value))
   }, [columnFilters])
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError) return <div className="text-destructive">Ошибка загрузки</div>
 
   return (
     <DataTable
