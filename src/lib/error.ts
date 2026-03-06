@@ -1,9 +1,9 @@
-import 'server-only'
-
 /**
  * Базовый класс ошибок для server actions.
  */
 export abstract class ActionError extends Error {
+  type = 'ACTION_ERROR'
+
   constructor(message: string) {
     super(message)
     this.name = 'ActionError'
@@ -39,6 +39,8 @@ export class ConflictError extends ActionError {
 }
 
 export class InternalServerError extends ActionError {
+  type: string = 'INTERNAL_SERVER_ERROR'
+
   constructor(message = 'Внутрення ошибка сервера') {
     super(message)
     this.name = 'InternalServerError'

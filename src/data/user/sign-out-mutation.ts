@@ -1,7 +1,7 @@
 import { authClient } from '@/src/lib/auth/client'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { getQueryClient } from '../query-client'
+import { getQueryClient } from '../../lib/query-client'
 
 export async function signOut() {
   const { data, error } = await authClient.signOut()

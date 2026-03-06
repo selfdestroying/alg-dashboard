@@ -21,10 +21,10 @@ const baseClient = createSafeActionClient({
   defineMetadataSchema: () => metadataSchema,
   handleServerError(error) {
     if (error instanceof ActionError) {
-      return error.message
+      return error
     }
 
-    return DEFAULT_SERVER_ERROR_MESSAGE
+    return new Error(error.message || DEFAULT_SERVER_ERROR_MESSAGE)
   },
 })
 
@@ -56,6 +56,8 @@ export const authAction = baseClient.use(async ({ next }) => {
   }
 
   return next({
-    ctx: { session },
+    ctx: {
+      session,
+    },
   })
 })
