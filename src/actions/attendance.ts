@@ -91,116 +91,118 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
   const studentId = payload.where.studentId_lessonId?.studentId
   const lessonId = payload.where.studentId_lessonId?.lessonId
 
+  // Read outside the transaction to avoid parallel sub-queries on the same
+  // pg.Client (deep includes may trigger concurrent relation-loading queries
+  // inside a transaction, causing pg DeprecationWarning).
+  const oldAttendance =
+    status && studentId && lessonId
+      ? await prisma.attendance.findFirst({
+          where: {
+            studentId,
+            lessonId,
+          },
+          include: {
+            lesson: {
+              include: {
+                group: {
+                  include: {
+                    course: true,
+                    location: true,
+                  },
+                },
+              },
+            },
+            asMakeupFor: {
+              include: {
+                missedAttendance: {
+                  include: {
+                    lesson: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+      : null
+
   await prisma.$transaction(async (tx) => {
-    if (status && studentId && lessonId) {
-      const oldAttendance = await tx.attendance.findFirst({
-        where: {
-          studentId,
-          lessonId,
-        },
-        include: {
-          lesson: {
-            include: {
-              group: {
-                include: {
-                  course: true,
-                  location: true,
-                },
-              },
-            },
+    if (oldAttendance && oldAttendance.studentStatus !== 'TRIAL') {
+      await updateCoins(
+        tx,
+        status as AttendanceStatus,
+        oldAttendance.status,
+        oldAttendance.studentId,
+      )
+
+      const delta = getLessonsBalanceDelta(
+        oldAttendance.status,
+        status as AttendanceStatus,
+        oldAttendance.isWarned,
+        isWarned as boolean | null,
+      )
+
+      if (delta !== 0) {
+        const groupId = oldAttendance.asMakeupFor
+          ? oldAttendance.asMakeupFor.missedAttendance.lesson.groupId
+          : oldAttendance.lesson.groupId
+        const studentGroup = await tx.studentGroup.findUnique({
+          where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
+          select: { lessonsBalance: true },
+        })
+        if (!studentGroup) throw new Error('Ученик не найден в группе')
+
+        const balanceBefore = studentGroup.lessonsBalance
+        const updated = await tx.studentGroup.update({
+          where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
+          data: {
+            lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
           },
-          asMakeupFor: {
-            include: {
-              missedAttendance: {
-                include: {
-                  lesson: true,
-                },
-              },
-            },
-          },
-        },
-      })
+          select: { lessonsBalance: true },
+        })
 
-      if (oldAttendance && oldAttendance.studentStatus !== 'TRIAL') {
-        await updateCoins(
-          tx,
-          status as AttendanceStatus,
-          oldAttendance.status,
-          oldAttendance.studentId,
-        )
+        const balanceAfter = updated.lessonsBalance
+        const isMakeupAttendance = Boolean(oldAttendance.asMakeupFor)
 
-        const delta = getLessonsBalanceDelta(
-          oldAttendance.status,
-          status as AttendanceStatus,
-          oldAttendance.isWarned,
-          isWarned as boolean | null,
-        )
+        const reason = (() => {
+          if (delta >= 0) return StudentLessonsBalanceChangeReason.ATTENDANCE_REVERTED
 
-        if (delta !== 0) {
-          const groupId = oldAttendance.asMakeupFor
-            ? oldAttendance.asMakeupFor.missedAttendance.lesson.groupId
-            : oldAttendance.lesson.groupId
-          console.log(oldAttendance)
-          const studentGroup = await tx.studentGroup.findUnique({
-            where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
-            select: { lessonsBalance: true },
-          })
-          if (!studentGroup) throw new Error('Ученик не найден в группе')
+          // delta < 0 => списание 1 урока
+          if (isMakeupAttendance) {
+            return StudentLessonsBalanceChangeReason.MAKEUP_ATTENDED_CHARGED
+          }
 
-          const balanceBefore = studentGroup.lessonsBalance
-          const updated = await tx.studentGroup.update({
-            where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
-            data: {
-              lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
-            },
-            select: { lessonsBalance: true },
-          })
+          if (status === AttendanceStatus.PRESENT) {
+            return StudentLessonsBalanceChangeReason.ATTENDANCE_PRESENT_CHARGED
+          }
 
-          const balanceAfter = updated.lessonsBalance
-          const isMakeupAttendance = Boolean(oldAttendance.asMakeupFor)
+          return StudentLessonsBalanceChangeReason.ATTENDANCE_ABSENT_CHARGED
+        })()
 
-          const reason = (() => {
-            if (delta >= 0) return StudentLessonsBalanceChangeReason.ATTENDANCE_REVERTED
+        const lessonName =
+          getGroupName(oldAttendance.lesson.group) + ` ${formatDateOnly(oldAttendance.lesson.date)}`
 
-            // delta < 0 => списание 1 урока
-            if (isMakeupAttendance) {
-              return StudentLessonsBalanceChangeReason.MAKEUP_ATTENDED_CHARGED
-            }
-
-            if (status === AttendanceStatus.PRESENT) {
-              return StudentLessonsBalanceChangeReason.ATTENDANCE_PRESENT_CHARGED
-            }
-
-            return StudentLessonsBalanceChangeReason.ATTENDANCE_ABSENT_CHARGED
-          })()
-
-          const lessonName =
-            getGroupName(oldAttendance.lesson.group) +
-            ` ${formatDateOnly(oldAttendance.lesson.date)}`
-
-          await writeLessonsBalanceHistoryTx(tx, {
-            organizationId: session.organizationId!,
-            studentId: oldAttendance.studentId,
-            actorUserId: Number(session.user.id),
+        await writeLessonsBalanceHistoryTx(tx, {
+          organizationId: session.organizationId!,
+          studentId: oldAttendance.studentId,
+          actorUserId: Number(session.user.id),
+          groupId,
+          reason,
+          delta: balanceAfter - balanceBefore,
+          balanceBefore,
+          balanceAfter,
+          meta: {
+            attendanceId: oldAttendance.id,
+            lessonId: oldAttendance.lessonId,
+            lessonName,
             groupId,
-            reason,
-            delta: balanceAfter - balanceBefore,
-            balanceBefore,
-            balanceAfter,
-            meta: {
-              attendanceId: oldAttendance.id,
-              lessonId: oldAttendance.lessonId,
-              lessonName,
-              groupId,
 
-              oldStatus: oldAttendance.status,
-              newStatus: status,
-              oldIsWarned: oldAttendance.isWarned,
-              newIsWarned: isWarned,
-              isMakeupAttendance,
-            },
-          })
-        }
+            oldStatus: oldAttendance.status,
+            newStatus: status,
+            oldIsWarned: oldAttendance.isWarned,
+            newIsWarned: isWarned,
+            isMakeupAttendance,
+          },
+        })
       }
     }
 
@@ -244,8 +246,6 @@ export const getAbsentStatistics = async (organizationId: number) => {
       },
     },
   })
-
-  console.log(absences)
 
   function getPerGroupRate(
     studentGroups: { groupId: number; totalPayments: number; totalLessons: number }[],
