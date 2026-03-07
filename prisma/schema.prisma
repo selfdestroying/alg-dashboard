@@ -105,7 +105,6 @@ model Organization {
   groups                         Group[]
   payChecks                      PayCheck[]
   studentGroups                  StudentGroup[]
-  dismisseds                     Dismissed[]
   teacherGroups                  TeacherGroup[]
   teacherLessons                 TeacherLesson[]
   lessons                        Lesson[]
@@ -209,7 +208,6 @@ model Student {
   payments              Payment[]
   groups                StudentGroup[]
   unprocessedPayments   UnprocessedPayment[]
-  dismisseds            Dismissed[]
   lessonsBalanceHistory StudentLessonsBalanceHistory[]
 
   @@index([organizationId])
@@ -218,8 +216,6 @@ model Student {
 model Group {
   id          Int      @id @default(autoincrement())
   startDate   DateTime @db.Date
-  dayOfWeek   Int
-  time        String
   maxStudents Int
   url         String?
   createdAt   DateTime @default(now())
@@ -238,7 +234,6 @@ model Group {
   lessons               Lesson[]
   students              StudentGroup[]
   teachers              TeacherGroup[]
-  dismisseds            Dismissed[]
   schedules             GroupSchedule[]
   payments              Payment[]
   balanceHistoryEntries StudentLessonsBalanceHistory[]
@@ -350,12 +345,16 @@ model StudentLessonsBalanceHistory {
 // Relation models
 
 model StudentGroup {
-  status         StudentStatus
-  lessonsBalance Int           @default(0)
-  totalLessons   Int           @default(0)
-  totalPayments  Int           @default(0)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  status          StudentStatus
+  lessonsBalance  Int           @default(0)
+  totalLessons    Int           @default(0)
+  totalPayments   Int           @default(0)
+  dismissComment  String?
+  dismissedAt     DateTime?     @db.Date
+  transferComment String?
+  transferredAt   DateTime?     @db.Date
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   // Relations
   organizationId Int
@@ -366,26 +365,6 @@ model StudentGroup {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@id([studentId, groupId])
-  @@index([groupId])
-  @@index([organizationId])
-}
-
-model Dismissed {
-  id        Int      @id @default(autoincrement())
-  comment   String
-  date      DateTime @db.Date
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  organizationId Int
-  studentId      Int
-  groupId        Int
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
   @@index([groupId])
   @@index([organizationId])
 }
@@ -664,6 +643,7 @@ enum StudentStatus {
   TRIAL
   ACTIVE
   DISMISSED
+  TRANSFERRED
 }
 
 enum StudentLessonsBalanceChangeReason {
