@@ -1,12 +1,13 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useDismissedListQuery } from '@/src/features/students/dismissed/queries'
+import { DismissedWithStudentAndGroup } from '@/src/features/students/dismissed/types'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
+import { formatDateOnly } from '@/src/lib/timezone'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import {
   ColumnDef,
@@ -19,29 +20,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import Link from 'next/link'
+import DismissedActions from './dismissed-actions'
 
-type ActiveStudent = Prisma.StudentGroupGetPayload<{
-  include: {
-    group: {
-      include: {
-        location: true
-        course: true
-        teachers: {
-          include: {
-            teacher: true
-          }
-        }
-      }
-    }
-    student: {
-      include: {
-        payments: true
-      }
-    }
-  }
-}>
-
-const columns: ColumnDef<ActiveStudent>[] = [
+const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   {
     header: 'Имя',
     accessorFn: (value) => value.studentId,
@@ -73,7 +54,7 @@ const columns: ColumnDef<ActiveStudent>[] = [
         {getGroupName(row.original.group)}
       </Link>
     ),
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (row, id, filterValue) => {
       return filterValue.length === 0 || filterValue.includes(row.original.group.course.id)
     },
   },
@@ -107,51 +88,55 @@ const columns: ColumnDef<ActiveStudent>[] = [
     },
   },
   {
+    header: 'Комментарий',
+    cell: ({ row }) => (
+      <p className="max-w-52 truncate" title={row.original.dismissComment || ''}>
+        {row.original.dismissComment || '-'}
+      </p>
+    ),
+  },
+  {
     id: 'location',
     header: 'Локация',
-    accessorFn: (value) => value.group.location?.id,
     cell: ({ row }) => row.original.group.location?.name,
-    filterFn: (row, columnId, filterValue) => {
+    filterFn: (row, id, filterValue) => {
       return filterValue.length === 0 || filterValue.includes(row.original.group.location?.id)
     },
   },
   {
-    header: 'Оплат',
-    accessorFn: (row) => row.totalPayments,
+    header: 'Дата отчисления',
+    accessorKey: 'dismissedAt',
+    cell: ({ row }) => (row.original.dismissedAt ? formatDateOnly(row.original.dismissedAt) : '-'),
   },
   {
-    header: 'Уроков',
-    accessorFn: (row) => row.totalLessons,
-  },
-  {
-    header: 'Баланс уроков',
-    accessorFn: (row) => row.lessonsBalance,
+    id: 'actions',
     cell: ({ row }) => (
-      <span className={row.original.lessonsBalance < 2 ? 'text-destructive' : undefined}>
-        {row.original.lessonsBalance}
-      </span>
+      <DismissedActions
+        groupId={row.original.groupId}
+        studentId={row.original.studentId}
+        studentName={getFullName(row.original.student.firstName, row.original.student.lastName)}
+      />
     ),
   },
 ]
 
-export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] }) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
+export default function DismissedStudentsTable() {
+  const { data = [], isLoading, isError } = useDismissedListQuery()
 
   const {
     columnFilters,
+    pagination,
+    setPagination,
     setColumnFilters,
     globalFilter,
     setGlobalFilter,
-    pagination,
-    setPagination,
     sorting,
     setSorting,
   } = useTableSearchParams({
     filters: { course: 'integer', location: 'integer', teacher: 'integer' },
     search: true,
-    pagination: true,
     sorting: true,
+    pagination: true,
   })
 
   const table = useReactTable({
@@ -161,6 +146,9 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedRowModel: getFacetedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = String(filterValue).toLowerCase()
       const fullName = getFullName(
@@ -169,28 +157,27 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
       ).toLowerCase()
       return fullName.includes(searchValue)
     },
-    onPaginationChange: setPagination,
-    getPaginationRowModel: getPaginationRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
 
+    onSortingChange: setSorting,
     state: {
       columnFilters,
       globalFilter,
-      pagination,
       sorting,
+      pagination,
     },
   })
 
-  if (isSessionLoading || !session) {
-    return <Skeleton className="h-full w-full" />
+  if (isLoading) {
+    return <Skeleton className="h-64 w-full" />
   }
+  if (isError) return <div className="text-destructive">Ошибка загрузки</div>
 
   return (
     <DataTable
       table={table}
-      emptyMessage="Нет активных учеников."
+      emptyMessage="Нет отчисленных учеников."
       showPagination
       toolbar={
         <FieldGroup className="flex flex-col items-end gap-2 md:flex-row">
@@ -200,7 +187,6 @@ export default function ActiveStudentsTable({ data }: { data: ActiveStudent[] })
             placeholder="Поиск..."
           />
           <CourseLocationTeacherFilters
-            organizationId={organizationId!}
             columnFilters={columnFilters}
             setFilters={setColumnFilters}
           />

@@ -12,31 +12,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/src/components/ui/chart'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import { useAbsentStatisticsQuery } from '@/src/features/statistics/queries'
 import { Ban, CircleDollarSign, ShieldCheck, TrendingDown } from 'lucide-react'
 
 type TimeFrame = 'weekly' | 'monthly'
 type ViewMode = 'count' | 'money'
-
-interface ChartDataPoint {
-  name: string
-  missed: number
-  saved: number
-  missedMoney: number
-  savedMoney: number
-  lossMoney: number
-}
-
-interface AbsentStatisticsProps {
-  averagePrice: number
-  monthly: ChartDataPoint[]
-  weekly: ChartDataPoint[]
-  totalAbsences: number
-  totalSaved: number
-  makeupRate: number
-  totalLostMoney: number
-  totalSavedMoney: number
-}
 
 const chartConfig = {
   missed: { label: 'Пропущено', color: 'var(--destructive)' },
@@ -88,18 +70,24 @@ function KpiCard({
   )
 }
 
-export default function AbsentStatistics({
-  averagePrice,
-  monthly,
-  weekly,
-  totalAbsences,
-  totalSaved,
-  makeupRate,
-  totalLostMoney,
-  totalSavedMoney,
-}: AbsentStatisticsProps) {
+export default function AbsentStatistics() {
+  const { data: stats, isLoading, isError } = useAbsentStatisticsQuery()
   const [timeFrame, setTimeFrame] = React.useState<TimeFrame>('monthly')
   const [viewMode, setViewMode] = React.useState<ViewMode>('count')
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError || !stats) return <div className="text-destructive">Ошибка загрузки статистики</div>
+
+  const {
+    averagePrice,
+    monthly,
+    weekly,
+    totalAbsences,
+    totalSaved,
+    makeupRate,
+    totalLostMoney,
+    totalSavedMoney,
+  } = stats
   const chartData = timeFrame === 'monthly' ? monthly : weekly
 
   return (

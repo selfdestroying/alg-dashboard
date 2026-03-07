@@ -1,4 +1,3 @@
-import { removeDismissed, returnToGroup } from '@/src/actions/dismissed'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -18,59 +17,54 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import {
+  useDismissedDeleteMutation,
+  useDismissedReturnMutation,
+} from '@/src/features/students/dismissed/queries'
 import { Loader2, MoreVertical, Trash2, Undo } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
 
 interface DismissedActionsProps {
-  dismissedId: number
   studentName: string
   studentId: number
   groupId: number
 }
 
 export default function DismissedActions({
-  dismissedId,
   studentName,
   studentId,
   groupId,
 }: DismissedActionsProps) {
-  const { data: session } = useSessionQuery()
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const [confirmText, setConfirmText] = useState('')
+  const deleteMutation = useDismissedDeleteMutation()
+  const returnMutation = useDismissedReturnMutation()
+
+  const isPending = deleteMutation.isPending || returnMutation.isPending
 
   const handleReturnToGroup = () => {
-    startTransition(() => {
-      const ok = returnToGroup({
-        dismissedId,
-        groupId,
-        studentId,
-        organizationId: session!.organizationId!,
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ученик успешно возвращен в группу',
-        error: (e) => e.message,
-      })
-      setConfirmOpen(false)
-      setOpen(false)
-    })
+    returnMutation.mutate(
+      { groupId, studentId },
+      {
+        onSettled: () => {
+          setConfirmOpen(false)
+          setOpen(false)
+        },
+      },
+    )
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = removeDismissed({ where: { id: dismissedId } })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ученик успешно удален',
-        error: (e) => e.message,
-      })
-      setConfirmOpen(false)
-      setOpen(false)
-    })
+    deleteMutation.mutate(
+      { studentId, groupId },
+      {
+        onSettled: () => {
+          setConfirmOpen(false)
+          setOpen(false)
+        },
+      },
+    )
   }
 
   return (

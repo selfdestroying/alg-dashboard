@@ -1,5 +1,4 @@
 'use client'
-import { AttendanceWithStudents } from '@/src/actions/attendance'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
 import { Button } from '@/src/components/ui/button'
@@ -8,7 +7,8 @@ import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useAbsentListQuery } from '@/src/features/students/absent/queries'
+import { AbsentAttendance } from '@/src/features/students/absent/types'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { getFullName, getGroupName } from '@/src/lib/utils'
@@ -30,7 +30,7 @@ import { parseAsIsoDate, useQueryState } from 'nuqs'
 import { useMemo } from 'react'
 import { DateRange } from 'react-day-picker'
 
-const columns: ColumnDef<AttendanceWithStudents>[] = [
+const columns: ColumnDef<AbsentAttendance>[] = [
   {
     header: 'Имя',
     accessorFn: (value) => value.studentId,
@@ -126,9 +126,8 @@ const columns: ColumnDef<AttendanceWithStudents>[] = [
   },
 ]
 
-export default function StudentsTable({ data }: { data: AttendanceWithStudents[] }) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
+export default function AbsentAttendanceTable() {
+  const { data = [], isLoading, isError } = useAbsentListQuery()
 
   const {
     columnFilters: baseColumnFilters,
@@ -180,7 +179,7 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
   }
 
   const table = useReactTable({
-    data,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -209,9 +208,10 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
     },
   })
 
-  if (isSessionLoading || !session) {
-    return <Skeleton className="h-full w-full" />
+  if (isLoading) {
+    return <Skeleton className="h-64 w-full" />
   }
+  if (isError) return <div className="text-destructive">Ошибка загрузки</div>
 
   return (
     <DataTable
@@ -226,7 +226,6 @@ export default function StudentsTable({ data }: { data: AttendanceWithStudents[]
             placeholder="Поиск..."
           />
           <CourseLocationTeacherFilters
-            organizationId={organizationId!}
             columnFilters={baseColumnFilters}
             setFilters={setColumnFilters}
           />

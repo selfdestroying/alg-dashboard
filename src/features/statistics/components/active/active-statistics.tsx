@@ -7,24 +7,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useActiveStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Layers, TrendingDown, TrendingUp, Users } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
 type ChartDataKeyCount = { name: string; count: number }
-type MonthlyData = { month: string; count: number }
-
-type ActiveStatisticsProps = {
-  totalStudents: number
-  newThisMonth: number
-  newPrevMonth: number
-  growthPercent: number
-  totalGroups: number
-  avgPerGroup: number
-  monthly: MonthlyData[]
-  locations: ChartDataKeyCount[]
-  teachers: ChartDataKeyCount[]
-  courses: ChartDataKeyCount[]
-}
 
 const trendConfig = {
   count: { label: 'Ученики', color: 'var(--chart-1)' },
@@ -116,17 +104,23 @@ function CompactBarList({
   )
 }
 
-export default function ActiveStatistics({
-  totalStudents,
-  newThisMonth,
-  growthPercent,
-  totalGroups,
-  avgPerGroup,
-  monthly,
-  locations,
-  teachers,
-  courses,
-}: ActiveStatisticsProps) {
+export default function ActiveStatistics() {
+  const { data: stats, isLoading, isError } = useActiveStatisticsQuery()
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError || !stats) return <div className="text-destructive">Ошибка загрузки статистики</div>
+
+  const {
+    totalStudents,
+    newThisMonth,
+    growthPercent,
+    totalGroups,
+    avgPerGroup,
+    monthly,
+    locations,
+    teachers,
+    courses,
+  } = stats
   return (
     <div className="space-y-2">
       {/* KPI Row */}

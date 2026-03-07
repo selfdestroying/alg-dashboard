@@ -7,30 +7,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
+import { Skeleton } from '@/src/components/ui/skeleton'
+import { useDismissedStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Percent, TrendingDown, TrendingUp, UserMinus } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
-type MonthlyData = { month: string; count: number }
-type TeacherData = {
-  teacherName: string
-  dismissedCount: number
-  totalStudents: number
-  percentage: number
-}
 type NameCount = { name: string; count: number }
-
-type DismissedStatisticsProps = {
-  totalDismissed: number
-  churnRate: number
-  thisMonthCount: number
-  prevMonthCount: number
-  topCourseName: string
-  topCourseCount: number
-  monthly: MonthlyData[]
-  teachers: TeacherData[]
-  courses: NameCount[]
-  locations: NameCount[]
-}
 
 const trendConfig = {
   count: { label: 'Отчислено', color: 'var(--destructive)' },
@@ -129,18 +111,24 @@ function CompactBarList({
   )
 }
 
-export default function DismissedStatistics({
-  totalDismissed,
-  churnRate,
-  thisMonthCount,
-  prevMonthCount,
-  topCourseName,
-  topCourseCount,
-  monthly,
-  teachers,
-  courses,
-  locations,
-}: DismissedStatisticsProps) {
+export default function DismissedStatistics() {
+  const { data: stats, isLoading, isError } = useDismissedStatisticsQuery()
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />
+  if (isError || !stats) return <div className="text-destructive">Ошибка загрузки статистики</div>
+
+  const {
+    totalDismissed,
+    churnRate,
+    thisMonthCount,
+    prevMonthCount,
+    topCourseName,
+    topCourseCount,
+    monthly,
+    teachers,
+    courses,
+    locations,
+  } = stats
   const monthDelta = thisMonthCount - prevMonthCount
 
   return (
