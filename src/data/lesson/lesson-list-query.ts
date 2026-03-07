@@ -17,7 +17,7 @@ async function getLessonList(organizationId: number, date?: Date) {
     },
     include: {
       attendance: true,
-      group: { include: { course: true, location: true } },
+      group: { include: { course: true, location: true, schedules: true } },
       teachers: { include: { teacher: true } },
     },
     orderBy: { time: 'asc' },
@@ -42,7 +42,7 @@ async function getDayStatuses(organizationId: number, date: Date) {
     },
     include: {
       attendance: true,
-      group: { include: { course: true, location: true } },
+      group: { include: { course: true, location: true, schedules: true } },
       teachers: { include: { teacher: true } },
     },
     orderBy: [{ date: 'asc' }, { time: 'asc' }],

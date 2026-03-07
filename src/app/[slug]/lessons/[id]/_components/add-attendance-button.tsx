@@ -47,6 +47,7 @@ interface AddAttendanceButtonProps {
 const studentStatusMap = {
   ACTIVE: 'Активен',
   TRIAL: 'Пробный',
+  TRANSFERRED: 'Переведён',
 }
 
 export default function AddAttendanceButton({

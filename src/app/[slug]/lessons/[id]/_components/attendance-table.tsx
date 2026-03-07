@@ -19,6 +19,7 @@ export const StudentStatusMap: { [key in StudentStatus]: string } = {
   ACTIVE: 'Ученик',
   DISMISSED: 'Отчислен',
   TRIAL: 'Пробный',
+  TRANSFERRED: 'Переведён',
 }
 
 function AttendanceActionsCell({ attendance }: { attendance: AttendanceWithStudents }) {

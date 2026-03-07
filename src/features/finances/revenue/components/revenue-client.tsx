@@ -22,10 +22,9 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useMappedCourseListQuery } from '@/src/features/courses/queries'
+import { useMappedLocationListQuery } from '@/src/features/locations/queries'
+import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
 import { dateOnlyToLocal, moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { cn, getGroupName } from '@/src/lib/utils'
 import {
@@ -134,12 +133,12 @@ function transformLessonsToRevenueData(lessons: LessonWithAttendance[]): DayReve
               ? calculateStudentRevenue(att.student, lesson.group.id)
               : 0,
           isTrial: att.studentStatus === 'TRIAL',
-          isAbsent: att.status === 'ABSENT',
+          status: att.status,
         }))
 
         const paidStudents = students.filter((s) => !s.isTrial)
-        const presentStudents = students.filter((s) => !s.isAbsent)
-        const absentStudents = students.filter((s) => s.isAbsent)
+        const presentStudents = students.filter((s) => s.status !== 'ABSENT')
+        const absentStudents = students.filter((s) => s.status == 'ABSENT')
         const trialStudents = students.filter((s) => s.isTrial)
 
         return {
@@ -151,7 +150,9 @@ function transformLessonsToRevenueData(lessons: LessonWithAttendance[]): DayReve
           groupTypeName: lesson.group.groupType?.name || null,
           locationName: lesson.group.location?.name || null,
           revenue: Math.floor(
-            paidStudents.filter((s) => !s.isAbsent).reduce((sum, s) => sum + s.revenue, 0),
+            paidStudents
+              .filter((s) => s.status !== 'ABSENT')
+              .reduce((sum, s) => sum + s.revenue, 0),
           ),
           students,
           studentCount: students.length,
@@ -178,8 +179,6 @@ function transformLessonsToRevenueData(lessons: LessonWithAttendance[]): DayReve
 }
 
 export default function RevenueClient() {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
@@ -235,10 +234,6 @@ export default function RevenueClient() {
     if (!dateRange?.from) return 'Выберите период'
     if (!dateRange.to) return format(dateRange.from, 'd MMM yyyy', { locale: ru })
     return `${format(dateRange.from, 'd MMM', { locale: ru })} – ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
-  }
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
   }
 
   return (
@@ -299,14 +294,11 @@ export default function RevenueClient() {
                 </Button>
               )}
             </div>
-            {organizationId && (
-              <Filters
-                organizationId={organizationId}
-                onCoursesChange={setSelectedCourses}
-                onLocationsChange={setSelectedLocations}
-                onTeachersChange={setSelectedTeachers}
-              />
-            )}
+            <Filters
+              onCoursesChange={setSelectedCourses}
+              onLocationsChange={setSelectedLocations}
+              onTeachersChange={setSelectedTeachers}
+            />
           </div>
         </CardContent>
       </Card>
@@ -392,22 +384,14 @@ export default function RevenueClient() {
 }
 
 interface FiltersProps {
-  organizationId: number
   onCoursesChange: Dispatch<SetStateAction<TableFilterItem[]>>
   onLocationsChange: Dispatch<SetStateAction<TableFilterItem[]>>
   onTeachersChange: Dispatch<SetStateAction<TableFilterItem[]>>
 }
-function Filters({
-  organizationId,
-  onCoursesChange,
-  onLocationsChange,
-  onTeachersChange,
-}: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
+function Filters({ onCoursesChange, onLocationsChange, onTeachersChange }: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery()
+  const { data: locations, isLoading: isLocationsLoading } = useMappedLocationListQuery()
+  const { data: mappedUsers, isLoading: isMembersLoading } = useMappedMemberListQuery()
 
   if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
     return (
@@ -653,15 +637,15 @@ function LessonCard({ lesson }: LessonCardProps) {
                   <TableRow
                     key={student.id}
                     className={cn(
-                      student.isAbsent && 'bg-warning/5',
-                      student.isTrial && !student.isAbsent && 'bg-info/5',
+                      student.status === 'ABSENT' && 'bg-warning/5',
+                      student.isTrial && student.status !== 'ABSENT' && 'bg-info/5',
                     )}
                   >
                     <TableCell className="py-2">
                       <div className="flex items-center gap-2">
                         {student.isTrial ? (
                           <Sparkles className="text-info h-3 w-3" />
-                        ) : student.isAbsent ? (
+                        ) : student.status === 'ABSENT' ? (
                           <UserX className="text-warning h-3 w-3" />
                         ) : (
                           <User className="text-muted-foreground h-3 w-3" />
@@ -669,7 +653,7 @@ function LessonCard({ lesson }: LessonCardProps) {
                         <span
                           className={cn(
                             student.isTrial && 'text-info font-medium',
-                            student.isAbsent && !student.isTrial && 'text-warning',
+                            student.status === 'ABSENT' && !student.isTrial && 'text-warning',
                           )}
                         >
                           {student.name}
@@ -682,18 +666,25 @@ function LessonCard({ lesson }: LessonCardProps) {
                       </div>
                     </TableCell>
                     <TableCell className="py-2 text-right">
-                      {student.isAbsent ? (
+                      {student.status === 'ABSENT' ? (
                         <Badge variant="outline" className="border-warning/50 text-warning text-xs">
                           Пропуск
                         </Badge>
-                      ) : (
+                      ) : student.status === 'PRESENT' ? (
                         <Badge variant="outline" className="border-success/50 text-success text-xs">
                           Присут.
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="border-muted/50 text-muted-foreground text-xs"
+                        >
+                          Не отмечен
                         </Badge>
                       )}
                     </TableCell>
                     <TableCell className="py-2 text-right">
-                      {student.isAbsent ? (
+                      {student.status === 'ABSENT' ? (
                         <span className="text-muted-foreground">-</span>
                       ) : student.revenue > 0 ? (
                         <span className="text-success font-medium">

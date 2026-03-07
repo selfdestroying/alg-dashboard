@@ -33,7 +33,7 @@ export const getStudentsForPayments = authAction
       include: {
         groups: {
           include: {
-            group: { include: { course: true, location: true } },
+            group: { include: { course: true, location: true, schedules: true } },
           },
         },
       },

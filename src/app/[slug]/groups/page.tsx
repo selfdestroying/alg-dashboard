@@ -30,7 +30,7 @@ export default async function Page() {
   const groups = await getGroups({
     where: { organizationId: session.organizationId! },
     include: {
-      students: true,
+      students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
       schedules: true,
       groupType: { include: { rate: true } },
       teachers: {

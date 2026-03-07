@@ -29,9 +29,8 @@ import {
 } from '@/src/components/ui/field'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
-import { useMappedRateListQuery } from '@/src/data/rate/rate-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
+import { useMappedRateListQuery } from '@/src/features/organization/rates/queries'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -53,8 +52,6 @@ interface AddTeacherToGroupButtonProps {
 }
 
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const defaultRate = group.groupType
@@ -104,10 +101,6 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
     form.reset()
   }, [dialogOpen, form])
 
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
-  }
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger render={<Button size={'icon'} />}>
@@ -118,7 +111,7 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
           <DialogTitle>Добавить преподавателя</DialogTitle>
         </DialogHeader>
 
-        <GroupTeacherForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
+        <GroupTeacherForm form={form} onSubmit={handleSubmit} />
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
@@ -136,12 +129,11 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
 interface GroupTeacherFormProps {
   form: ReturnType<typeof useForm<AddTeacherToGroupSchemaType>>
   onSubmit: (data: AddTeacherToGroupSchemaType) => void
-  organizationId: number
 }
 
-function GroupTeacherForm({ form, onSubmit, organizationId }: GroupTeacherFormProps) {
-  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery(organizationId)
-  const { data: rates, isLoading: isRatesLoading } = useMappedRateListQuery(organizationId)
+function GroupTeacherForm({ form, onSubmit }: GroupTeacherFormProps) {
+  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery()
+  const { data: rates, isLoading: isRatesLoading } = useMappedRateListQuery()
 
   if (isMembersLoading || isRatesLoading) {
     return <Skeleton className="h-full w-full" />

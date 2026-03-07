@@ -1,9 +1,9 @@
-import { LessonStatus, Prisma } from '@/prisma/generated/client'
+import { AttendanceStatus, LessonStatus, Prisma } from '@/prisma/generated/client'
 
 export type LessonWithAttendance = Prisma.LessonGetPayload<{
   include: {
     attendance: { include: { student: { include: { groups: true } } } }
-    group: { include: { course: true; location: true; groupType: true } }
+    group: { include: { course: true; location: true; groupType: true; schedules: true } }
     teachers: { include: { teacher: true } }
   }
 }>
@@ -13,7 +13,7 @@ export interface StudentRevenue {
   name: string
   revenue: number
   isTrial: boolean
-  isAbsent: boolean
+  status: AttendanceStatus
 }
 
 export interface LessonRevenue {

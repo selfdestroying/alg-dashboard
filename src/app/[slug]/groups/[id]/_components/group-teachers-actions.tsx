@@ -45,8 +45,7 @@ import {
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
-import { useRateListQuery } from '@/src/data/rate/rate-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useRateListQuery } from '@/src/features/organization/rates/queries'
 import { EditTeacherGroupSchema, EditTeacherGroupSchemaType } from '@/src/schemas/teacher-group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
@@ -72,9 +71,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
-  const { data: session } = useSessionQuery()
-  const organizationId = session?.organizationId
-  const { data: rates, isLoading: isRatesLoading } = useRateListQuery(organizationId!)
+  const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
 
   const form = useForm<EditTeacherGroupSchemaType>({
     resolver: zodResolver(EditTeacherGroupSchema),

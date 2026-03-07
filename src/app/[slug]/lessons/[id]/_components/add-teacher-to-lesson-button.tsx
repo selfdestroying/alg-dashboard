@@ -21,8 +21,8 @@ import {
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
@@ -105,7 +105,7 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
           <DialogTitle>Добавить преподавателя</DialogTitle>
         </DialogHeader>
 
-        <LessonTeacherForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
+        <LessonTeacherForm form={form} onSubmit={handleSubmit} />
 
         <DialogFooter>
           <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
@@ -123,11 +123,10 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
 interface LessonTeacherFormProps {
   form: ReturnType<typeof useForm<AddTeacherToLessonSchemaType>>
   onSubmit: (data: AddTeacherToLessonSchemaType) => void
-  organizationId: number
 }
 
-function LessonTeacherForm({ form, onSubmit, organizationId }: LessonTeacherFormProps) {
-  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery(organizationId)
+function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
+  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery()
 
   if (isMembersLoading) {
     return <Skeleton className="h-full w-full" />

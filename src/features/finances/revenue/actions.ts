@@ -33,7 +33,7 @@ export const getRevenueLessons = authAction
         attendance: {
           include: { student: { include: { groups: true } } },
         },
-        group: { include: { course: true, location: true, groupType: true } },
+        group: { include: { course: true, location: true, groupType: true, schedules: true } },
         teachers: { include: { teacher: true } },
       },
       orderBy: [{ date: 'asc' }, { time: 'asc' }],

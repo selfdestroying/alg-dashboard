@@ -13,6 +13,7 @@ export type LessonWithPrice = Prisma.LessonGetPayload<{
         course: true
         location: true
         groupType: true
+        schedules: true
       }
     }
     _count: { select: { attendance: { where: { status: 'PRESENT' } } } }

@@ -16,11 +16,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useMappedCourseListQuery } from '@/src/features/courses/queries'
+import { useMappedLocationListQuery } from '@/src/features/locations/queries'
+import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
 import { dateOnlyToLocal, moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { cn, getGroupName } from '@/src/lib/utils'
 import { cva } from 'class-variance-authority'
@@ -87,8 +86,6 @@ const datePresets = [
 ]
 
 export default function Salaries() {
-  const { data: session } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
   const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])
@@ -218,9 +215,8 @@ export default function Salaries() {
             </div>
 
             {/* Фильтры — shown only when user has readAll */}
-            {hasPermission?.success && organizationId && (
+            {hasPermission?.success && (
               <Filters
-                organizationId={organizationId}
                 onCoursesChange={setSelectedCourses}
                 onLocationsChange={setSelectedLocations}
                 onTeachersChange={setSelectedTeachers}
@@ -318,22 +314,14 @@ export default function Salaries() {
 }
 
 interface FiltersProps {
-  organizationId: number
   onCoursesChange: Dispatch<SetStateAction<TableFilterItem[]>>
   onLocationsChange: Dispatch<SetStateAction<TableFilterItem[]>>
   onTeachersChange: Dispatch<SetStateAction<TableFilterItem[]>>
 }
-function Filters({
-  organizationId,
-  onCoursesChange,
-  onLocationsChange,
-  onTeachersChange,
-}: FiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
+function Filters({ onCoursesChange, onLocationsChange, onTeachersChange }: FiltersProps) {
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery()
+  const { data: locations, isLoading: isLocationsLoading } = useMappedLocationListQuery()
+  const { data: mappedUsers, isLoading: isMembersLoading } = useMappedMemberListQuery()
 
   if (isCoursesLoading || isLocationsLoading || isMembersLoading) {
     return (

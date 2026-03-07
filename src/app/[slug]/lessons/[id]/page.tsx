@@ -32,10 +32,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
       group: {
         include: {
-          _count: { select: { students: true } },
-          students: { include: { student: true } },
+          _count: { select: { students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } } },
+          students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } }, include: { student: true } },
           course: true,
           location: true,
+          schedules: true,
           groupType: { include: { rate: true } },
         },
       },
@@ -44,7 +45,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           NOT: {
             AND: [
               { status: 'UNSPECIFIED' },
-              { student: { groups: { some: { status: 'DISMISSED' } } } },
+              {
+                student: {
+                  groups: {
+                    some: {
+                      status: { in: ['DISMISSED', 'TRANSFERRED'] },
+                      groupId: +id,
+                    },
+                  },
+                },
+              },
             ],
           },
         },

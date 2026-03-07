@@ -3,14 +3,13 @@
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery } from '@/src/data/member/member-list-query'
+import { useMappedCourseListQuery } from '@/src/features/courses/queries'
+import { useMappedLocationListQuery } from '@/src/features/locations/queries'
+import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
 import { ColumnFiltersState } from '@tanstack/react-table'
 import { useCallback, useMemo } from 'react'
 
 interface CourseLocationTeacherFiltersProps {
-  organizationId: number
   columnFilters: ColumnFiltersState
   setFilters: (
     updater: ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState),
@@ -28,18 +27,15 @@ interface CourseLocationTeacherFiltersProps {
  * Используется в ActiveStudents, DismissedStudents и Dashboard.
  */
 export default function CourseLocationTeacherFilters({
-  organizationId,
   columnFilters,
   setFilters,
   lockedTeacherId,
   disableTeacherFilter,
   wrapInFieldGroup,
 }: CourseLocationTeacherFiltersProps) {
-  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery(organizationId)
-  const { data: locations, isLoading: isLocationsLoading } =
-    useMappedLocationListQuery(organizationId)
-  const { data: mappedUsers, isLoading: isMembersLoading } =
-    useMappedMemberListQuery(organizationId)
+  const { data: courses, isLoading: isCoursesLoading } = useMappedCourseListQuery()
+  const { data: locations, isLoading: isLocationsLoading } = useMappedLocationListQuery()
+  const { data: mappedUsers, isLoading: isMembersLoading } = useMappedMemberListQuery()
 
   const handleCourseFilterChange = useCallback(
     (selectedCourses: TableFilterItem[]) => {

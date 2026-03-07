@@ -14,9 +14,10 @@ interface InfoSectionsProps {
     include: {
       group: {
         include: {
-          _count: { select: { students: true } }
+          _count: { select: { students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } } }
           course: true
           location: true
+          schedules: true
         }
       }
       attendance: true

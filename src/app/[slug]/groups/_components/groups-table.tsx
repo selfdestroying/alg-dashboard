@@ -5,8 +5,6 @@ import CourseLocationTeacherFilters from '@/src/components/course-location-teach
 import DataTable from '@/src/components/data-table'
 import { Field, FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { DaysOfWeek, getGroupName } from '@/src/lib/utils'
 import {
@@ -47,10 +45,10 @@ const columns: ColumnDef<GroupDTO>[] = [
   },
   {
     header: 'Расписание',
-    accessorKey: 'dayOfWeek',
+    accessorKey: 'schedules',
     cell: ({ row }) => {
       const schedules = row.original.schedules
-      if (schedules && schedules.length > 0) {
+      if (schedules.length > 0) {
         const sorted = [...schedules].sort(
           (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
         )
@@ -64,9 +62,7 @@ const columns: ColumnDef<GroupDTO>[] = [
           </div>
         )
       }
-      return row.original.dayOfWeek !== null
-        ? `${DaysOfWeek.short[row.original.dayOfWeek]} ${row.original.time}`
-        : '-'
+      return '-'
     },
   },
   {
@@ -149,9 +145,6 @@ const columns: ColumnDef<GroupDTO>[] = [
 ]
 
 export default function GroupsTable({ data }: { data: GroupDTO[] }) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
-
   const {
     columnFilters: baseColumnFilters,
     setColumnFilters,
@@ -215,10 +208,6 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
     },
   })
 
-  if (isSessionLoading || !session) {
-    return <Skeleton className="h-full w-full" />
-  }
-
   return (
     <DataTable
       table={table}
@@ -254,7 +243,6 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
             />
           </Field>
           <CourseLocationTeacherFilters
-            organizationId={organizationId!}
             columnFilters={baseColumnFilters}
             setFilters={setColumnFilters}
           />
