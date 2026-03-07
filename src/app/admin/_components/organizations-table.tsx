@@ -9,7 +9,6 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import CreateOrganizationDialog from './create-organization-dialog'
 import type { AdminDashboardData, AdminOrganization } from './types'
 
 interface OrganizationsTableProps {
@@ -47,7 +46,6 @@ export default function OrganizationsTable({ data }: OrganizationsTableProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <CreateOrganizationDialog />
           </div>
         </CardTitle>
       </CardHeader>

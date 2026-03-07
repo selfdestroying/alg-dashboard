@@ -206,7 +206,6 @@ export default function Dashboard() {
         </CardContent>
         <CardFooter>
           <CourseLocationTeacherFilters
-            organizationId={organizationId!}
             columnFilters={columnFilters}
             setFilters={setColumnFilters}
             lockedTeacherId={lockedTeacherId}
