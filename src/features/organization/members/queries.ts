@@ -39,6 +39,22 @@ export const useMemberListQuery = () => {
   })
 }
 
+export const useMappedMemberListQuery = () => {
+  return useQuery({
+    queryKey: memberKeys.all,
+    queryFn: async () => {
+      const { data, serverError } = await getMembers()
+      if (serverError) throw serverError
+      return data ?? []
+    },
+    select: (members) =>
+      members.map((member) => ({
+        value: member.id.toString(),
+        label: member.user.name,
+      })),
+  })
+}
+
 export const useMemberDetailQuery = (userId: number) => {
   return useQuery({
     queryKey: memberKeys.detail(userId),
