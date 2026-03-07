@@ -49,6 +49,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         },
       },
       students: {
+        where: { status: { in: ['ACTIVE', 'TRIAL'] } },
         include: {
           student: true,
         },

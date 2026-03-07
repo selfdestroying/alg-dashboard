@@ -21,13 +21,10 @@ import {
   SelectValue,
 } from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useCourseListQuery } from '@/src/data/course/course-list-query'
 import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
-import { useLocationListQuery } from '@/src/data/location/location-list-query'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { DaysOfWeek } from '@/src/lib/utils'
+import { useCourseListQuery } from '@/src/features/courses/queries'
+import { useLocationListQuery } from '@/src/features/locations/queries'
 import { EditGroupSchema, EditGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -42,7 +39,7 @@ type GroupDTO = Prisma.GroupGetPayload<{
   }
 }>
 
-import { AlertTriangle, Pen } from 'lucide-react'
+import { Pen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -54,7 +51,6 @@ interface EditGroupButtonProps {
 export default function EditGroupButton({ group }: EditGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId
-  const { data: hasPermission } = useOrganizationPermissionQuery({ group: ['update'] })
   const [isPending, startTransition] = useTransition()
   const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
@@ -62,10 +58,8 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
     defaultValues: {
       courseId: group.courseId,
       locationId: group.locationId!,
-      time: group.time!,
       url: group.url ?? '',
       groupTypeId: group.groupTypeId ?? undefined,
-      dayOfWeek: group.dayOfWeek!,
     },
   })
 
@@ -82,10 +76,6 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
   }
   if (isSessionLoading || !session) {
     return <Skeleton className="h-full w-full" />
-  }
-
-  if (!hasPermission?.success) {
-    return null
   }
 
   return (
@@ -118,8 +108,8 @@ interface EditGroupFormProps {
 }
 
 function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
-  const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery(organizationId)
-  const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery(organizationId)
+  const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery()
+  const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery()
   const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery(organizationId)
 
   if (isLocationsLoading || isCoursesLoading || isGroupTypesLoading) {
@@ -196,26 +186,6 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
           )}
         />
         <Controller
-          name="time"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldContent>
-                <FieldLabel htmlFor="form-rhf-select-time">Время</FieldLabel>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </FieldContent>
-              <Input
-                id="form-rhf-select-time"
-                type="time"
-                name={field.name}
-                value={field.value || ''}
-                onChange={(e) => field.onChange(e.target.value)}
-                aria-invalid={fieldState.invalid}
-              />
-            </Field>
-          )}
-        />
-        <Controller
           name="groupTypeId"
           control={form.control}
           render={({ field, fieldState }) => (
@@ -243,48 +213,6 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-          )}
-        />
-        <Controller
-          name="dayOfWeek"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldContent>
-                <div className="flex items-center gap-2">
-                  <FieldLabel htmlFor="form-rhf-select-dayOfWeek">День занятия</FieldLabel>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={<span className="text-warning cursor-help" aria-label="Бета" />}
-                    >
-                      <AlertTriangle className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <b>Тестовая функция.</b> При изменении этого поля будут пересчитаны будущие
-                      уроки.
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </FieldContent>
-              <Select
-                name={field.name}
-                value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-                itemToStringLabel={(itemValue) => DaysOfWeek.full[Number(itemValue)] ?? ''}
-              >
-                <SelectTrigger id="form-rhf-select-dayOfWeek" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите день недели" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DaysOfWeek.full.map((day, index) => (
-                    <SelectItem key={index} value={index.toString()}>
-                      {day}
-                    </SelectItem>
-                  ))}
                 </SelectContent>
               </Select>
             </Field>

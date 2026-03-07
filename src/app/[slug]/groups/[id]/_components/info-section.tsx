@@ -16,8 +16,14 @@ type GroupDTO = Prisma.GroupGetPayload<{
 
 import { Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
 import EditGroupButton from './edit-group-button'
+import EditScheduleButton from './edit-schedule-button'
+import RegenerateLessonsButton from './regenerate-lessons-button'
 
 export default async function InfoSection({ group }: { group: GroupDTO }) {
+  const sortedSchedules = [...group.schedules].sort(
+    (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
+  )
+
   return (
     <Card className="shadow-none">
       <CardHeader>
@@ -26,7 +32,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
           <EditGroupButton group={group} />
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col">
             <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">
@@ -47,18 +53,14 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
                 Расписание
               </span>
             </div>
-            <div className="flex flex-col gap-0.5">
-              {group.schedules && group.schedules.length > 0
-                ? [...group.schedules]
-                    .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7))
-                    .map((s) => (
-                      <span key={s.id} className="truncate">
-                        {DaysOfWeek.full[s.dayOfWeek]} - {s.time}
-                      </span>
-                    ))
-                : group.dayOfWeek != null
-                  ? `${DaysOfWeek.full[group.dayOfWeek]} - ${group.time}`
-                  : '-'}
+            <div className="flex flex-col gap-0.5 text-sm">
+              {sortedSchedules.length > 0
+                ? sortedSchedules.map((s) => (
+                    <span key={s.id}>
+                      {DaysOfWeek.full[s.dayOfWeek]} - {s.time}
+                    </span>
+                  ))
+                : '-'}
             </div>
           </div>
 
@@ -120,6 +122,11 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <EditScheduleButton groupId={group.id} schedules={group.schedules} />
+          <RegenerateLessonsButton groupId={group.id} />
         </div>
       </CardContent>
     </Card>

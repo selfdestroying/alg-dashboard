@@ -24,12 +24,15 @@ import {
 } from '@/src/components/ui/select'
 import { Separator } from '@/src/components/ui/separator'
 import { Toggle } from '@/src/components/ui/toggle'
-import { useMappedCourseListQuery } from '@/src/data/course/course-list-query'
 import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
-import { useMappedLocationListQuery } from '@/src/data/location/location-list-query'
-import { useMappedMemberListQuery, useMemberListQuery } from '@/src/data/member/member-list-query'
-import { useRateListQuery } from '@/src/data/rate/rate-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useMappedCourseListQuery } from '@/src/features/courses/queries'
+import { useMappedLocationListQuery } from '@/src/features/locations/queries'
+import {
+  useMappedMemberListQuery,
+  useMemberListQuery,
+} from '@/src/features/organization/members/queries'
+import { useRateListQuery } from '@/src/features/organization/rates/queries'
 import { DaysOfWeek } from '@/src/lib/utils'
 import { CreateGroupSchema, CreateGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -80,17 +83,11 @@ export default function CreateGroupForm() {
   const router = useRouter()
   const { data: session } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
-  const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery(
-    organizationId!,
-  )
-  const { data: mappedLocations, isLoading: isLocationsLoading } = useMappedLocationListQuery(
-    organizationId!,
-  )
-  const { data: mappedMembers, isLoading: isMappedMembersLoading } = useMappedMemberListQuery(
-    organizationId!,
-  )
-  const { data: members, isLoading: isMembersLoading } = useMemberListQuery(organizationId!)
-  const { data: rates, isLoading: isRatesLoading } = useRateListQuery(organizationId!)
+  const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery()
+  const { data: mappedLocations, isLoading: isLocationsLoading } = useMappedLocationListQuery()
+  const { data: mappedMembers, isLoading: isMappedMembersLoading } = useMappedMemberListQuery()
+  const { data: members, isLoading: isMembersLoading } = useMemberListQuery()
+  const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
   const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery(
     organizationId!,
   )
@@ -181,15 +178,11 @@ export default function CreateGroupForm() {
         currentDate.setUTCDate(currentDate.getUTCDate() + 1)
       }
 
-      const primaryDay = sortedSchedule[0]
-      if (!primaryDay) return
-
       const ok = createGroup(
         {
           data: {
             groupTypeId: values.groupTypeId,
             url,
-            time: primaryDay.time,
             organizationId: organizationId!,
             courseId: Number(course.value),
             locationId: Number(location.value),
@@ -205,7 +198,6 @@ export default function CreateGroupForm() {
             },
             lessons: { createMany: { data: lessons } },
             startDate: startDate,
-            dayOfWeek: primaryDay.dayOfWeek,
           },
         },
         sortedSchedule.map((s) => ({ dayOfWeek: s.dayOfWeek, time: s.time })),
