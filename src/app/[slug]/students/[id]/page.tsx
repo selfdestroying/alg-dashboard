@@ -45,6 +45,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       where: { id: studentId, organizationId: session.organizationId! },
       include: {
         groups: {
+          where: { status: { in: ['ACTIVE', 'TRIAL'] } },
           include: {
             group: {
               include: {
@@ -63,6 +64,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 },
                 course: true,
                 location: true,
+                schedules: true,
               },
             },
           },
@@ -71,7 +73,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           include: {
             lesson: {
               include: {
-                group: { include: { course: true } },
+                group: {
+                  include: {
+                    course: true,
+                    schedules: true,
+                    _count: { select: { lessons: true } },
+                  },
+                },
               },
             },
             asMakeupFor: true,
@@ -86,7 +94,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         organizationId: session.organizationId!,
       },
       include: {
-        students: true,
+        students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
         course: true,
         location: true,
         schedules: true,
@@ -97,7 +105,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           },
         },
       },
-      orderBy: [{ dayOfWeek: 'asc' }, { time: 'asc' }],
+      orderBy: [{ startDate: 'asc' }],
     }),
     getStudentLessonsBalanceHistory(studentId, 50),
     getStudentGroupHistory(studentId, session.organizationId!),

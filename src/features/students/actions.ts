@@ -10,7 +10,6 @@ import {
   writeFinancialHistoryTx,
 } from '@/src/lib/lessons-balance'
 import { authAction } from '@/src/lib/safe-action'
-import { moscowNow, toMoscow } from '@/src/lib/timezone'
 import * as z from 'zod'
 import { CreateStudentSchema, DeleteStudentSchema } from './schemas'
 
@@ -21,7 +20,7 @@ export const getStudents = authAction
   .action(async ({ ctx }) => {
     return await prisma.student.findMany({
       where: { organizationId: ctx.session.organizationId! },
-      include: { groups: true },
+      include: { groups: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } },
       orderBy: { id: 'asc' },
     })
   })
@@ -531,15 +530,11 @@ export const getStudentGroupHistory = authAction
     }
 
     function buildGroupName(g: (typeof attendances)[number]['lesson']['group']) {
-      const schedules = g.schedules
-      if (schedules && schedules.length > 0) {
-        const sorted = [...schedules].sort(
-          (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
-        )
-        const parts = sorted.map((s) => `${DaysShort[s.dayOfWeek]} ${s.time}`)
-        return `${g.course.name} ${parts.join(', ')}`
-      }
-      return `${g.course.name} ${DaysShort[g.dayOfWeek]} ${g.time}`
+      const sorted = [...g.schedules].sort(
+        (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
+      )
+      const parts = sorted.map((s) => `${DaysShort[s.dayOfWeek]} ${s.time}`)
+      return `${g.course.name} ${parts.join(', ')}`
     }
 
     const entries: StudentGroupHistoryEntry[] = []
@@ -555,7 +550,7 @@ export const getStudentGroupHistory = authAction
         status: currentGroupMap.get(groupId) ?? undefined,
       })
 
-      if (!currentGroupMap.has(groupId)) {
+      if (!currentGroupMap.has(groupId) || currentGroupMap.get(groupId) === 'DISMISSED') {
         entries.push({
           type: 'dismissed',
           date: stats.lastDate,
@@ -568,123 +563,4 @@ export const getStudentGroupHistory = authAction
     entries.sort((a, b) => b.date.getTime() - a.date.getTime())
 
     return entries
-  })
-
-// ─── STATISTICS ──────────────────────────────────────────────────────────────
-
-export const getActiveStudentStatistics = authAction
-  .metadata({ actionName: 'getActiveStudentStatistics' })
-  .action(async ({ ctx }) => {
-    const organizationId = ctx.session.organizationId!
-
-    const activeStudentGroups = await prisma.studentGroup.findMany({
-      where: { organizationId },
-      include: {
-        group: {
-          include: {
-            course: true,
-            location: true,
-            teachers: {
-              include: {
-                teacher: true,
-              },
-            },
-          },
-        },
-        student: true,
-      },
-      orderBy: {
-        student: {
-          createdAt: 'asc',
-        },
-      },
-    })
-
-    const uniqueStudentsMap = new Map<number, (typeof activeStudentGroups)[0]['student']>()
-    activeStudentGroups.forEach((sg) => {
-      uniqueStudentsMap.set(sg.student.id, sg.student)
-    })
-
-    const totalStudents = uniqueStudentsMap.size
-
-    const monthlyStatsMap = new Map<string, { count: number; timestamp: number }>()
-    uniqueStudentsMap.forEach((student) => {
-      const date = toMoscow(student.createdAt)
-      const y = date.getFullYear()
-      const m = date.getMonth()
-      const key = `${y}-${String(m + 1).padStart(2, '0')}`
-      const existing = monthlyStatsMap.get(key)
-      if (existing) {
-        existing.count++
-      } else {
-        monthlyStatsMap.set(key, { count: 1, timestamp: new Date(y, m, 1).getTime() })
-      }
-    })
-
-    const monthly = Array.from(monthlyStatsMap.entries())
-      .sort((a, b) => a[1].timestamp - b[1].timestamp)
-      .map(([, val]) => {
-        const d = new Date(val.timestamp)
-        return {
-          month: d.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' }),
-          count: val.count,
-        }
-      })
-
-    const now = moscowNow()
-    const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const prevMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`
-    const newThisMonth = monthlyStatsMap.get(thisMonthKey)?.count ?? 0
-    const newPrevMonth = monthlyStatsMap.get(prevMonthKey)?.count ?? 0
-    const growthPercent =
-      newPrevMonth > 0 ? Math.round(((newThisMonth - newPrevMonth) / newPrevMonth) * 100) : 0
-
-    const locationStats: Record<string, Set<number>> = {}
-    activeStudentGroups.forEach((sg) => {
-      const locName = sg.group.location?.name || 'Не указано'
-      if (!locationStats[locName]) locationStats[locName] = new Set()
-      locationStats[locName].add(sg.studentId)
-    })
-    const locations = Object.entries(locationStats)
-      .map(([name, s]) => ({ name, count: s.size }))
-      .sort((a, b) => b.count - a.count)
-
-    const teacherStats: Record<string, Set<number>> = {}
-    activeStudentGroups.forEach((sg) => {
-      sg.group.teachers.forEach((tg) => {
-        const teacherName = tg.teacher.name
-        if (!teacherStats[teacherName]) teacherStats[teacherName] = new Set()
-        teacherStats[teacherName].add(sg.studentId)
-      })
-    })
-    const teachers = Object.entries(teacherStats)
-      .map(([name, s]) => ({ name, count: s.size }))
-      .sort((a, b) => b.count - a.count)
-
-    const courseStats: Record<string, Set<number>> = {}
-    activeStudentGroups.forEach((sg) => {
-      const courseName = sg.group.course.name
-      if (!courseStats[courseName]) courseStats[courseName] = new Set()
-      courseStats[courseName].add(sg.studentId)
-    })
-    const courses = Object.entries(courseStats)
-      .map(([name, s]) => ({ name, count: s.size }))
-      .sort((a, b) => b.count - a.count)
-
-    const totalGroups = new Set(activeStudentGroups.map((sg) => sg.groupId)).size
-    const avgPerGroup = totalGroups > 0 ? Math.round((totalStudents / totalGroups) * 10) / 10 : 0
-
-    return {
-      totalStudents,
-      newThisMonth,
-      newPrevMonth,
-      growthPercent,
-      totalGroups,
-      avgPerGroup,
-      monthly,
-      locations,
-      teachers,
-      courses,
-    }
   })

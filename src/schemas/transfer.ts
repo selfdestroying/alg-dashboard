@@ -3,6 +3,7 @@ import { comboboxNumber } from './_primitives'
 
 export const TransferStudentSchema = z.object({
   group: comboboxNumber('Выберите группу'),
+  transferBalance: z.boolean(),
 })
 
 export type TransferStudentSchemaType = z.infer<typeof TransferStudentSchema>

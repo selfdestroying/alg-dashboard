@@ -13,6 +13,7 @@ const statusLabels: Record<string, string> = {
   TRIAL: 'Пробный',
   ACTIVE: 'Активный',
   DISMISSED: 'Отчислен',
+  TRANSFERRED: 'Переведён',
 }
 
 function formatDate(date: Date) {

@@ -19,13 +19,20 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
             }
             course: true
             location: true
+            schedules: true
           }
         }
       }
     }
     attendances: {
       include: {
-        lesson: { include: { group: { include: { course: true } } } }
+        lesson: {
+          include: {
+            group: {
+              include: { course: true; schedules: true; _count: { select: { lessons: true } } }
+            }
+          }
+        }
         asMakeupFor: true
         missedMakeup: { include: { makeUpAttendance: true } }
       }

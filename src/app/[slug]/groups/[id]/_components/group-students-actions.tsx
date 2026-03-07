@@ -1,7 +1,11 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
-import { createDismissed } from '@/src/actions/dismissed'
-import { deleteStudentGroup, getGroups, updateStudentGroup } from '@/src/actions/groups'
+import {
+  deleteStudentGroup,
+  dismissStudentFromGroup,
+  getGroups,
+  transferStudentToGroup,
+} from '@/src/actions/groups'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import {
   AlertDialog,
@@ -14,6 +18,7 @@ import {
 } from '@/src/components/ui/alert-dialog'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
+import { Checkbox } from '@/src/components/ui/checkbox'
 import {
   Combobox,
   ComboboxContent,
@@ -41,6 +46,7 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
+import { Label } from '@/src/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
@@ -101,7 +107,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           location: true,
           course: true,
           schedules: true,
-          students: true,
+          students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
           teachers: {
             include: {
               teacher: true,
@@ -138,28 +144,18 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     resolver: zodResolver(TransferStudentSchema),
     defaultValues: {
       group: undefined,
+      transferBalance: sg.lessonsBalance > 0,
     },
   })
 
   const handleDismiss = (values: DismissStudentSchemaType) => {
     startTransition(() => {
-      const ok = deleteStudentGroup({
-        where: {
-          studentId_groupId: {
-            studentId: sg.student.id,
-            groupId: sg.groupId,
-          },
-        },
-      }).then(() =>
-        createDismissed({
-          data: {
-            ...values,
-            studentId: sg.student.id,
-            groupId: sg.groupId,
-            organizationId: sg.organizationId,
-          },
-        }),
-      )
+      const ok = dismissStudentFromGroup({
+        studentId: sg.student.id,
+        groupId: sg.groupId,
+        dismissComment: values.comment,
+        dismissedAt: values.date,
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Студент успешно переведен в отток',
@@ -196,20 +192,14 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
 
   const handleTransfer = (values: TransferStudentSchemaType) => {
     startTransition(() => {
-      const ok = updateStudentGroup(
-        {
-          where: {
-            studentId_groupId: {
-              studentId: sg.student.id,
-              groupId: sg.groupId,
-            },
-          },
-          data: {
-            groupId: values.group.value,
-          },
-        },
-        true,
-      )
+      const ok = transferStudentToGroup({
+        studentId: sg.student.id,
+        oldGroupId: sg.groupId,
+        newGroupId: values.group.value,
+        organizationId: sg.organizationId,
+        actorUserId: session?.user?.id ? Number(session.user.id) : 0,
+        transferBalance: values.transferBalance,
+      })
       toast.promise(ok, {
         loading: 'Загрузка...',
         success: 'Студент успешно переведен в другую группу',
@@ -453,6 +443,25 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                   </Field>
                 )}
               />
+
+              {sg.lessonsBalance > 0 && (
+                <Controller
+                  control={transferForm.control}
+                  name="transferBalance"
+                  render={({ field }) => (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="transfer-balance"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label htmlFor="transfer-balance" className="text-sm font-normal">
+                        Перенести остаток уроков ({sg.lessonsBalance} ур.)
+                      </Label>
+                    </div>
+                  )}
+                />
+              )}
             </FieldGroup>
           </form>
 
