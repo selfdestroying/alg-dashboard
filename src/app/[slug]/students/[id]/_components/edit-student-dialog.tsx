@@ -1,12 +1,9 @@
 'use client'
-import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 
-import { updateStudent, updateStudentGroupBalance } from '@/src/actions/students'
+import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { Label } from '@/src/components/ui/label'
-import { Separator } from '@/src/components/ui/separator'
 import {
   Sheet,
   SheetClose,
@@ -18,7 +15,7 @@ import {
   SheetTrigger,
 } from '@/src/components/ui/sheet'
 import { useIsMobile } from '@/src/hooks/use-mobile'
-import { getAgeFromBirthDate, getGroupName } from '@/src/lib/utils'
+import { getAgeFromBirthDate } from '@/src/lib/utils'
 import { EditStudentSchema, EditStudentSchemaType } from '@/src/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Pen } from 'lucide-react'
@@ -36,14 +33,6 @@ export default function EditStudentDialog({
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  const initialGroupBalances = student.groups.map((sg) => ({
-    groupId: sg.groupId,
-    groupName: getGroupName(sg.group),
-    lessonsBalance: sg.lessonsBalance,
-    totalPayments: sg.totalPayments,
-    totalLessons: sg.totalLessons,
-  }))
-
   const form = useForm<EditStudentSchemaType>({
     resolver: zodResolver(EditStudentSchema),
     defaultValues: {
@@ -56,7 +45,6 @@ export default function EditStudentDialog({
       login: student.login,
       password: student.password,
       coins: student.coins,
-      groupBalances: initialGroupBalances,
     },
   })
 
@@ -70,72 +58,24 @@ export default function EditStudentDialog({
     const age = getAgeFromBirthDate(values.birthDate)
     startTransition(async () => {
       try {
-        // 1. Update basic student fields
-        const { groupBalances, ...basicFields } = values
         await updateStudent(
           {
             where: { id: student.id },
             data: {
-              firstName: basicFields.firstName,
-              lastName: basicFields.lastName,
+              firstName: values.firstName,
+              lastName: values.lastName,
               age,
-              birthDate: basicFields.birthDate,
-              parentsName: basicFields.parentsName ?? null,
-              parentsPhone: basicFields.parentsPhone ?? null,
-              url: basicFields.url ?? null,
-              login: basicFields.login,
-              password: basicFields.password,
-              coins: basicFields.coins,
+              birthDate: values.birthDate,
+              parentsName: values.parentsName ?? null,
+              parentsPhone: values.parentsPhone ?? null,
+              url: values.url ?? null,
+              login: values.login,
+              password: values.password,
+              coins: values.coins,
             },
           },
           {},
         )
-
-        // 2. Update per-group financial fields
-        for (let i = 0; i < groupBalances.length; i++) {
-          const gb = groupBalances[i]
-          const original = initialGroupBalances[i]
-          if (!gb || !original) continue
-
-          const changes: Record<string, number> = {}
-          if (gb.lessonsBalance !== original.lessonsBalance && gb.lessonsBalance !== undefined) {
-            changes.lessonsBalance = gb.lessonsBalance
-          }
-          if (gb.totalPayments !== original.totalPayments && gb.totalPayments !== undefined) {
-            changes.totalPayments = gb.totalPayments
-          }
-          if (gb.totalLessons !== original.totalLessons && gb.totalLessons !== undefined) {
-            changes.totalLessons = gb.totalLessons
-          }
-          if (Object.keys(changes).length === 0) continue
-
-          const audit: Partial<
-            Record<
-              StudentFinancialField,
-              { reason: StudentLessonsBalanceChangeReason; meta: Record<string, string | number> }
-            >
-          > = {}
-          if ('lessonsBalance' in changes) {
-            audit[StudentFinancialField.LESSONS_BALANCE] = {
-              reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
-              meta: { source: 'edit-student-dialog', groupId: gb.groupId },
-            }
-          }
-          if ('totalPayments' in changes) {
-            audit[StudentFinancialField.TOTAL_PAYMENTS] = {
-              reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
-              meta: { source: 'edit-student-dialog', groupId: gb.groupId },
-            }
-          }
-          if ('totalLessons' in changes) {
-            audit[StudentFinancialField.TOTAL_LESSONS] = {
-              reason: StudentLessonsBalanceChangeReason.MANUAL_SET,
-              meta: { source: 'edit-student-dialog', groupId: gb.groupId },
-            }
-          }
-
-          await updateStudentGroupBalance(student.id, gb.groupId, changes, audit)
-        }
 
         toast.success('Ученик успешно обновлён!')
         setDialogOpen(false)
@@ -313,77 +253,6 @@ export default function EditStudentDialog({
               )}
             />
           </FieldGroup>
-
-          {initialGroupBalances.length > 0 && (
-            <>
-              <Separator className="my-4" />
-              <Label className="text-base font-semibold">Баланс по группам</Label>
-              {initialGroupBalances.map((gb, index) => (
-                <div key={gb.groupId} className="mt-3 space-y-2">
-                  <Label className="text-muted-foreground text-sm">{gb.groupName}</Label>
-                  <FieldGroup>
-                    <Controller
-                      control={form.control}
-                      name={`groupBalances.${index}.lessonsBalance`}
-                      disabled={isPending}
-                      render={({ field, fieldState }) => (
-                        <Field>
-                          <FieldLabel htmlFor={`gb-${gb.groupId}-lb`}>Баланс уроков</FieldLabel>
-                          <Input
-                            id={`gb-${gb.groupId}-lb`}
-                            {...field}
-                            type="number"
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                            aria-invalid={fieldState.invalid}
-                          />
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      )}
-                    />
-                    <Controller
-                      control={form.control}
-                      name={`groupBalances.${index}.totalPayments`}
-                      disabled={isPending}
-                      render={({ field, fieldState }) => (
-                        <Field>
-                          <FieldLabel htmlFor={`gb-${gb.groupId}-tp`}>Сумма оплат</FieldLabel>
-                          <Input
-                            id={`gb-${gb.groupId}-tp`}
-                            {...field}
-                            type="number"
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                            aria-invalid={fieldState.invalid}
-                          />
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      )}
-                    />
-                    <Controller
-                      control={form.control}
-                      name={`groupBalances.${index}.totalLessons`}
-                      disabled={isPending}
-                      render={({ field, fieldState }) => (
-                        <Field>
-                          <FieldLabel htmlFor={`gb-${gb.groupId}-tl`}>Всего уроков</FieldLabel>
-                          <Input
-                            id={`gb-${gb.groupId}-tl`}
-                            {...field}
-                            type="number"
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                            aria-invalid={fieldState.invalid}
-                          />
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
-                      )}
-                    />
-                  </FieldGroup>
-                </div>
-              ))}
-            </>
-          )}
         </form>
         <SheetFooter>
           <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>

@@ -1,24 +1,9 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
-import {
-  deleteStudentGroup,
-  dismissStudentFromGroup,
-  getGroups,
-  transferStudentToGroup,
-} from '@/src/actions/groups'
+import { dismissStudentFromGroup, getGroups, transferStudentToGroup } from '@/src/actions/groups'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/src/components/ui/alert-dialog'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
-import { Checkbox } from '@/src/components/ui/checkbox'
 import {
   Combobox,
   ComboboxContent,
@@ -40,13 +25,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import { Label } from '@/src/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
@@ -55,15 +38,7 @@ import { DismissStudentSchema, DismissStudentSchemaType } from '@/src/schemas/di
 import { TransferStudentSchema, TransferStudentSchemaType } from '@/src/schemas/transfer'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
-import {
-  CalendarIcon,
-  DoorOpen,
-  GitCompare,
-  Loader2,
-  MoreVertical,
-  Trash,
-  TriangleAlert,
-} from 'lucide-react'
+import { CalendarIcon, DoorOpen, GitCompare, MoreVertical, TriangleAlert } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -75,12 +50,9 @@ interface UsersActionsProps {
 export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const [open, setOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
-  const [deleteCountdown, setDeleteCountdown] = useState(0)
   const [groups, setGroups] = useState<
     {
       label: string
@@ -144,7 +116,6 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     resolver: zodResolver(TransferStudentSchema),
     defaultValues: {
       group: undefined,
-      transferBalance: sg.lessonsBalance > 0,
     },
   })
 
@@ -168,28 +139,6 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     })
   }
 
-  const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteStudentGroup({
-        where: {
-          studentId_groupId: {
-            studentId: sg.student.id,
-            groupId: sg.groupId,
-          },
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Учитель успешно удален',
-        error: 'Ошибка при удалении учителя',
-        finally: () => {
-          setDeleteDialogOpen(false)
-          setOpen(false)
-        },
-      })
-    })
-  }
-
   const handleTransfer = (values: TransferStudentSchemaType) => {
     startTransition(() => {
       const ok = transferStudentToGroup({
@@ -198,7 +147,6 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
         newGroupId: values.group.value,
         organizationId: sg.organizationId,
         actorUserId: session?.user?.id ? Number(session.user.id) : 0,
-        transferBalance: values.transferBalance,
       })
       toast.promise(ok, {
         loading: 'Загрузка...',
@@ -211,25 +159,6 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       })
     })
   }
-
-  useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | undefined
-    if (deleteDialogOpen) {
-      intervalId = setInterval(() => {
-        setDeleteCountdown((prev) => {
-          if (prev <= 1) {
-            setIsDeleteDisabled(false)
-            if (intervalId) clearInterval(intervalId)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId)
-    }
-  }, [deleteDialogOpen])
 
   useEffect(() => {
     dismissForm.reset()
@@ -254,7 +183,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
             }}
           >
             <DoorOpen />
-            Перевести в оттток
+            Перевести в отток
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -265,55 +194,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
             <GitCompare />
             Перевести в группу
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => {
-              setDeleteCountdown(3)
-              setIsDeleteDisabled(true)
-              setDeleteDialogOpen(true)
-              setOpen(false)
-            }}
-          >
-            <Trash />
-            Удалить
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogMedia>
-              <TriangleAlert />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Подтвердите удаление</AlertDialogTitle>
-            <AlertDialogDescription>
-              Неотмеченные записи посещаемости в текущей группе будут удалены.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <Button variant={'secondary'} size={'sm'} onClick={() => setDeleteDialogOpen(false)}>
-              Отмена
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isPending || isDeleteDisabled}
-              size={'sm'}
-            >
-              {isPending ? (
-                <Loader2 className="animate-spin" />
-              ) : isDeleteDisabled && deleteCountdown > 0 ? (
-                `${deleteCountdown} с`
-              ) : (
-                'Удалить'
-              )}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <Dialog open={dismissDialogOpen} onOpenChange={setDismissDialogOpen}>
         <DialogContent>
@@ -378,7 +260,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           </Alert>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Отмена</DialogClose>
             <Button type="submit" size={'sm'} form="dismiss-form" disabled={isPending}>
               Подтвердить
             </Button>
@@ -390,7 +272,9 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Перевести</DialogTitle>
-            <DialogDescription>Выберите группу для перевода студента</DialogDescription>
+            <DialogDescription>
+              Выберите группу для перевода. Кошелёк будет автоматически привязан к новой группе.
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={transferForm.handleSubmit(handleTransfer)} id="transfer-form">
@@ -443,25 +327,6 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                   </Field>
                 )}
               />
-
-              {sg.lessonsBalance > 0 && (
-                <Controller
-                  control={transferForm.control}
-                  name="transferBalance"
-                  render={({ field }) => (
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="transfer-balance"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                      <Label htmlFor="transfer-balance" className="text-sm font-normal">
-                        Перенести остаток уроков ({sg.lessonsBalance} ур.)
-                      </Label>
-                    </div>
-                  )}
-                />
-              )}
             </FieldGroup>
           </form>
 

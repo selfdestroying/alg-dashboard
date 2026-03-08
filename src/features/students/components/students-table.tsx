@@ -20,7 +20,7 @@ import { useStudentListQuery } from '../queries'
 import { StudentWithGroups } from '../types'
 
 function getAggregateBalance(student: StudentWithGroups) {
-  return student.groups.reduce((sum, sg) => sum + sg.lessonsBalance, 0) + student.lessonsBalance
+  return student.wallets.reduce((sum, w) => sum + w.lessonsBalance, 0) + student.lessonsBalance
 }
 
 const columns: ColumnDef<StudentWithGroups>[] = [
@@ -40,12 +40,11 @@ const columns: ColumnDef<StudentWithGroups>[] = [
   {
     header: 'Всего оплат',
     accessorFn: (row) =>
-      row.groups.reduce((sum, sg) => sum + sg.totalPayments, 0) + row.totalPayments,
+      row.wallets.reduce((sum, w) => sum + w.totalPayments, 0) + row.totalPayments,
   },
   {
     header: 'Всего уроков',
-    accessorFn: (row) =>
-      row.groups.reduce((sum, sg) => sum + sg.totalLessons, 0) + row.totalLessons,
+    accessorFn: (row) => row.wallets.reduce((sum, w) => sum + w.totalLessons, 0) + row.totalLessons,
   },
   {
     header: 'Баланс уроков',

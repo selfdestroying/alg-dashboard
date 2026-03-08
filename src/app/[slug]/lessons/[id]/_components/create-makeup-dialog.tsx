@@ -7,7 +7,6 @@ import {
   deleteAttendance,
 } from '@/src/actions/attendance'
 import { createMakeUp } from '@/src/actions/makeup'
-import { updateStudentGroupBalance } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import {
@@ -32,6 +31,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import { Switch } from '@/src/components/ui/switch'
 import { useMappedLessonListQuery } from '@/src/data/lesson/lesson-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { updateStudentGroupBalance } from '@/src/features/students/actions'
 import { getFullName } from '@/src/lib/utils'
 import { startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
@@ -95,11 +95,11 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
     if (creditBalance) {
       const originalGroupId = attendance.lesson.groupId
 
-      await updateStudentGroupBalance(
-        attendance.studentId,
-        originalGroupId,
-        { lessonsBalance: { increment: 1 } },
-        {
+      await updateStudentGroupBalance({
+        studentId: attendance.studentId,
+        groupId: originalGroupId,
+        data: { lessonsBalance: { increment: 1 } },
+        audit: {
           [StudentFinancialField.LESSONS_BALANCE]: {
             reason: StudentLessonsBalanceChangeReason.MAKEUP_GRANTED,
             meta: {
@@ -111,7 +111,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
             },
           },
         },
-      )
+      })
     }
   }
 

@@ -33,7 +33,9 @@ export default function StudentGroupsSection({
           <Users size={20} />
           Группы
         </h3>
-        {canCreateStudentGroup && <AddStudentToGroupButton groups={groups} student={student} />}
+        {canCreateStudentGroup && (
+          <AddStudentToGroupButton groups={groups} student={student} wallets={student.wallets} />
+        )}
       </div>
       {student.groups.length > 0 ? (
         <div className="space-y-6">

@@ -19,5 +19,6 @@ export type ActiveStudent = Prisma.StudentGroupGetPayload<{
         payments: true
       }
     }
+    wallet: true
   }
 }>

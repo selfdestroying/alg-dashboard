@@ -102,13 +102,18 @@ const datePresets = [
 // Функция расчета выручки по ученику в конкретной группе
 function calculateStudentRevenue(
   student: {
-    groups: { groupId: number; totalLessons: number; totalPayments: number }[]
+    groups: {
+      groupId: number
+      wallet: { totalLessons: number; totalPayments: number } | null
+    }[]
   },
   groupId: number,
 ): number {
   const group = student.groups.find((g) => g.groupId === groupId)
-  if (!group || group.totalLessons === 0) return 0
-  return group.totalPayments / group.totalLessons
+  if (!group || !group.wallet) return 0
+  const { totalLessons, totalPayments } = group.wallet
+  if (totalLessons === 0) return 0
+  return totalPayments / totalLessons
 }
 
 // Трансформация уроков в данные выручки
@@ -542,7 +547,7 @@ function LessonCard({ lesson }: LessonCardProps) {
                   <BookOpen className="text-muted-foreground h-4 w-4 shrink-0" />
                 )}
                 <Link
-                  href={`/groups/${lesson.groupId}`}
+                  href={`/lessons/${lesson.id}`}
                   className={cn(
                     'truncate font-medium hover:underline',
                     isCancelled ? 'text-destructive line-through' : 'text-primary',
@@ -656,7 +661,12 @@ function LessonCard({ lesson }: LessonCardProps) {
                             student.status === 'ABSENT' && !student.isTrial && 'text-warning',
                           )}
                         >
-                          {student.name}
+                          <Link
+                            href={`/students/${student.id}`}
+                            className="text-primary hover:underline"
+                          >
+                            {student.name}
+                          </Link>
                         </span>
                         {student.isTrial && (
                           <Badge className="bg-info/10 text-info border-info/30 text-xs">

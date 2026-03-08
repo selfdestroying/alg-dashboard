@@ -1,10 +1,10 @@
 'use client'
 
-import { redistributeBalance } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
+import { redistributeBalance } from '@/src/features/students/actions'
 import { getGroupName } from '@/src/lib/utils'
 import { ArrowRightLeft, Loader } from 'lucide-react'
 import { useState, useTransition } from 'react'
@@ -15,7 +15,7 @@ interface RedistributeBalanceProps {
   student: StudentWithGroupsAndAttendance
 }
 
-type GroupAllocation = {
+type WalletAllocation = {
   lessons: number
   totalLessons: number
   totalPayments: number
@@ -31,10 +31,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
   const hasAnythingToRedistribute =
     unallocatedLessons > 0 || unallocatedTotalLessons > 0 || unallocatedTotalPayments > 0
 
-  const [allocations, setAllocations] = useState<Record<number, GroupAllocation>>(() => {
-    const initial: Record<number, GroupAllocation> = {}
-    for (const sg of student.groups) {
-      initial[sg.groupId] = { lessons: 0, totalLessons: 0, totalPayments: 0 }
+  const [allocations, setAllocations] = useState<Record<number, WalletAllocation>>(() => {
+    const initial: Record<number, WalletAllocation> = {}
+    for (const w of student.wallets) {
+      initial[w.id] = { lessons: 0, totalLessons: 0, totalPayments: 0 }
     }
     return initial
   })
@@ -51,11 +51,11 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
     remainingLessons < 0 || remainingTotalLessons < 0 || remainingTotalPayments < 0
   const hasChanges = sumLessons > 0 || sumTotalLessons > 0 || sumTotalPayments > 0
 
-  const updateField = (groupId: number, field: keyof GroupAllocation, value: number) => {
+  const updateField = (walletId: number, field: keyof WalletAllocation, value: number) => {
     setAllocations((prev) => ({
       ...prev,
-      [groupId]: {
-        ...(prev[groupId] ?? { lessons: 0, totalLessons: 0, totalPayments: 0 }),
+      [walletId]: {
+        ...(prev[walletId] ?? { lessons: 0, totalLessons: 0, totalPayments: 0 }),
         [field]: Math.max(0, value),
       },
     }))
@@ -69,24 +69,27 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
 
     const entries = Object.entries(allocations)
       .filter(([, a]) => a.lessons > 0 || a.totalLessons > 0 || a.totalPayments > 0)
-      .map(([groupId, a]) => ({
-        groupId: Number(groupId),
+      .map(([walletId, a]) => ({
+        walletId: Number(walletId),
         lessons: a.lessons || undefined,
         totalLessons: a.totalLessons || undefined,
         totalPayments: a.totalPayments || undefined,
       }))
 
     if (entries.length === 0) {
-      toast.error('Укажите хотя бы одну группу для распределения')
+      toast.error('Укажите хотя бы один кошелёк для распределения')
       return
     }
 
     startTransition(async () => {
       try {
-        await redistributeBalance(student.id, entries)
+        await redistributeBalance({
+          studentId: student.id,
+          allocations: entries,
+        })
         toast.success('Баланс успешно перераспределён!')
         setAllocations((prev) => {
-          const reset: Record<number, GroupAllocation> = {}
+          const reset: Record<number, WalletAllocation> = {}
           for (const k of Object.keys(prev)) {
             reset[Number(k)] = { lessons: 0, totalLessons: 0, totalPayments: 0 }
           }
@@ -98,7 +101,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
     })
   }
 
-  if (!hasAnythingToRedistribute || student.groups.length === 0) {
+  if (!hasAnythingToRedistribute || student.wallets.length === 0) {
     return null
   }
 
@@ -131,11 +134,15 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
       </div>
 
       <div className="space-y-4">
-        {student.groups.map((sg) => {
-          const alloc = allocations[sg.groupId]
+        {student.wallets.map((w) => {
+          const alloc = allocations[w.id]
+          const groupNames = w.studentGroups.map((sg) => getGroupName(sg.group)).join(', ')
+          const walletLabel = w.name
+            ? `${w.name} (${groupNames || 'без групп'})`
+            : groupNames || `Кошелёк #${w.id}`
           return (
-            <div key={sg.groupId} className="space-y-2">
-              <Label className="text-sm font-medium">{getGroupName(sg.group)}</Label>
+            <div key={w.id} className="space-y-2">
+              <Label className="text-sm font-medium">{walletLabel}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {unallocatedLessons > 0 && (
                   <Field>
@@ -144,11 +151,11 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       type="number"
                       min={0}
                       value={alloc?.lessons ?? 0}
-                      onChange={(e) => updateField(sg.groupId, 'lessons', Number(e.target.value))}
+                      onChange={(e) => updateField(w.id, 'lessons', Number(e.target.value))}
                       disabled={isPending}
                     />
                     <span className="text-muted-foreground text-xs">
-                      сейчас: {sg.lessonsBalance}
+                      сейчас: {w.lessonsBalance}
                     </span>
                   </Field>
                 )}
@@ -159,12 +166,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       type="number"
                       min={0}
                       value={alloc?.totalLessons ?? 0}
-                      onChange={(e) =>
-                        updateField(sg.groupId, 'totalLessons', Number(e.target.value))
-                      }
+                      onChange={(e) => updateField(w.id, 'totalLessons', Number(e.target.value))}
                       disabled={isPending}
                     />
-                    <span className="text-muted-foreground text-xs">сейчас: {sg.totalLessons}</span>
+                    <span className="text-muted-foreground text-xs">сейчас: {w.totalLessons}</span>
                   </Field>
                 )}
                 {unallocatedTotalPayments > 0 && (
@@ -174,14 +179,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       type="number"
                       min={0}
                       value={alloc?.totalPayments ?? 0}
-                      onChange={(e) =>
-                        updateField(sg.groupId, 'totalPayments', Number(e.target.value))
-                      }
+                      onChange={(e) => updateField(w.id, 'totalPayments', Number(e.target.value))}
                       disabled={isPending}
                     />
-                    <span className="text-muted-foreground text-xs">
-                      сейчас: {sg.totalPayments}
-                    </span>
+                    <span className="text-muted-foreground text-xs">сейчас: {w.totalPayments}</span>
                   </Field>
                 )}
               </div>

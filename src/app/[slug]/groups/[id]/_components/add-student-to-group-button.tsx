@@ -29,10 +29,20 @@ import {
   FieldTitle,
 } from '@/src/components/ui/field'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import type { WalletWithGroups } from '@/src/features/wallets/types'
+import { getWalletLabel } from '@/src/features/wallets/utils'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -62,6 +72,7 @@ interface AddStudentToGroupButtonProps {
   groups?: GroupDTO[]
   student?: Student
   isFull?: boolean
+  wallets?: WalletWithGroups[]
 }
 
 export default function AddStudentToGroupButton({
@@ -71,6 +82,7 @@ export default function AddStudentToGroupButton({
   groups,
   student,
   isFull,
+  wallets,
 }: AddStudentToGroupButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
@@ -127,12 +139,18 @@ export default function AddStudentToGroupButton({
     defaultValues: {
       target: undefined,
       isApplyToLesson: true,
+      walletId: wallets?.length === 1 ? wallets[0]!.id : undefined,
     },
   })
 
   const handleSubmit = (data: AddStudentToGroupSchemaType) => {
+    if (isAddToStudent && wallets && wallets.length > 0 && !data.walletId) {
+      form.setError('walletId', { message: 'Выберите кошелёк' })
+      return
+    }
+
     startTransition(() => {
-      const { isApplyToLesson, target } = data
+      const { isApplyToLesson, target, walletId } = data
 
       const groupId = isAddToGroup ? group!.id : target.value
       const studentId = isAddToGroup ? target.value : student!.id
@@ -144,6 +162,7 @@ export default function AddStudentToGroupButton({
             groupId,
             studentId,
             status: 'ACTIVE',
+            ...(walletId ? { walletId } : {}),
           },
         },
         isApplyToLesson,
@@ -162,8 +181,12 @@ export default function AddStudentToGroupButton({
   }
 
   useEffect(() => {
-    form.reset()
-  }, [dialogOpen, form])
+    form.reset({
+      target: undefined,
+      isApplyToLesson: true,
+      walletId: wallets?.length === 1 ? wallets[0]!.id : undefined,
+    })
+  }, [dialogOpen, form, wallets])
 
   if ((!isAddToGroup && !isAddToStudent) || !hasPermission) return null
 
@@ -201,6 +224,7 @@ export default function AddStudentToGroupButton({
           label={label}
           emptyMessage={emptyMessage}
           onSubmit={handleSubmit}
+          wallets={isAddToStudent ? wallets : undefined}
         />
 
         <DialogFooter>
@@ -228,9 +252,17 @@ interface AddEntityFormProps {
   label: string
   emptyMessage: string
   onSubmit: (data: AddStudentToGroupSchemaType) => void
+  wallets?: WalletWithGroups[]
 }
 
-function AddEntityForm({ form, items, label, emptyMessage, onSubmit }: AddEntityFormProps) {
+function AddEntityForm({
+  form,
+  items,
+  label,
+  emptyMessage,
+  onSubmit,
+  wallets,
+}: AddEntityFormProps) {
   return (
     <form id="add-entity-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
@@ -283,6 +315,47 @@ function AddEntityForm({ form, items, label, emptyMessage, onSubmit }: AddEntity
             </Field>
           )}
         />
+
+        {wallets && wallets.length > 0 && (
+          <Controller
+            name="walletId"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldContent>
+                  <FieldLabel htmlFor="form-rhf-select-wallet">Кошелёк</FieldLabel>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </FieldContent>
+                <Select
+                  name={field.name}
+                  value={field.value?.toString() || ''}
+                  onValueChange={(value) => field.onChange(Number(value))}
+                  itemToStringLabel={(v) => {
+                    const w = wallets?.find((w) => w.id.toString() === v)
+                    return w ? getWalletLabel(w) : ''
+                  }}
+                >
+                  <SelectTrigger
+                    id="form-rhf-select-wallet"
+                    className="w-full"
+                    aria-invalid={fieldState.invalid}
+                  >
+                    <SelectValue placeholder="Выберите кошелёк" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {wallets.map((w) => (
+                        <SelectItem key={w.id} value={w.id.toString()}>
+                          {getWalletLabel(w)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
+          />
+        )}
 
         <Controller
           name="isApplyToLesson"

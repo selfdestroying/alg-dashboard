@@ -7,11 +7,15 @@ export type PaymentWithStudentAndGroup = Prisma.PaymentGetPayload<{
   }
 }>
 
-export type StudentWithGroupsForPayment = Prisma.StudentGetPayload<{
+export type StudentWithWalletsForPayment = Prisma.StudentGetPayload<{
   include: {
-    groups: {
+    wallets: {
       include: {
-        group: { include: { course: true; location: true } }
+        studentGroups: {
+          include: {
+            group: { include: { course: true; location: true; schedules: true } }
+          }
+        }
       }
     }
   }

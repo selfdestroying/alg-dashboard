@@ -6,6 +6,7 @@ import {
 } from '@/src/actions/students'
 import { Avatar, AvatarFallback } from '@/src/components/ui/avatar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import WalletsSection from '@/src/features/wallets/components/wallets-section'
 import { auth } from '@/src/lib/auth/server'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
@@ -15,7 +16,7 @@ import EditStudentDialog from './_components/edit-student-dialog'
 import GroupHistory from './_components/group-history'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
 import PaymentSection from './_components/payment-section'
-import RedistributeBalance from './_components/redistribute-balance'
+
 import StudentCard from './_components/student-card'
 import StudentGroupsSection from './_components/student-groups-section'
 
@@ -65,6 +66,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 course: true,
                 location: true,
                 schedules: true,
+              },
+            },
+          },
+        },
+        wallets: {
+          include: {
+            studentGroups: {
+              include: {
+                group: { include: { course: true, location: true, schedules: true } },
               },
             },
           },
@@ -149,7 +159,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <CardContent className="space-y-6">
           <StudentCard student={student} />
           <PaymentSection student={student} />
-          <RedistributeBalance student={student} />
+          <WalletsSection student={student} />
           <StudentGroupsSection
             student={student}
             groups={groups}

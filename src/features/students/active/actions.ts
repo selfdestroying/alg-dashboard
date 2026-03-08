@@ -28,6 +28,7 @@ export const getActiveStudents = authAction
             payments: true,
           },
         },
+        wallet: true,
       },
     })
   })

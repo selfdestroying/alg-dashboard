@@ -24,6 +24,15 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
         }
       }
     }
+    wallets: {
+      include: {
+        studentGroups: {
+          include: {
+            group: { include: { course: true; location: true; schedules: true } }
+          }
+        }
+      }
+    }
     attendances: {
       include: {
         lesson: {

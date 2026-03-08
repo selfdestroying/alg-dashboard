@@ -2,7 +2,15 @@ import { AttendanceStatus, LessonStatus, Prisma } from '@/prisma/generated/clien
 
 export type LessonWithAttendance = Prisma.LessonGetPayload<{
   include: {
-    attendance: { include: { student: { include: { groups: true } } } }
+    attendance: {
+      include: {
+        student: {
+          include: {
+            groups: { include: { wallet: true } }
+          }
+        }
+      }
+    }
     group: { include: { course: true; location: true; groupType: true; schedules: true } }
     teachers: { include: { teacher: true } }
   }

@@ -96,20 +96,19 @@ const columns: ColumnDef<ActiveStudent>[] = [
   },
   {
     header: 'Оплат',
-    accessorFn: (row) => row.totalPayments,
+    accessorFn: (row) => row.wallet?.totalPayments ?? 0,
   },
   {
     header: 'Уроков',
-    accessorFn: (row) => row.totalLessons,
+    accessorFn: (row) => row.wallet?.totalLessons ?? 0,
   },
   {
     header: 'Баланс уроков',
-    accessorFn: (row) => row.lessonsBalance,
-    cell: ({ row }) => (
-      <span className={row.original.lessonsBalance < 2 ? 'text-destructive' : undefined}>
-        {row.original.lessonsBalance}
-      </span>
-    ),
+    accessorFn: (row) => row.wallet?.lessonsBalance ?? 0,
+    cell: ({ row }) => {
+      const balance = row.original.wallet?.lessonsBalance ?? 0
+      return <span className={balance < 2 ? 'text-destructive' : undefined}>{balance}</span>
+    },
   },
 ]
 

@@ -47,14 +47,17 @@ export default function PaymentForm<T extends FieldValues>({
     | { value: number; label: string }
     | undefined
 
-  const mappedGroups = useMemo(() => {
+  const mappedWallets = useMemo(() => {
     if (!selectedStudent?.value) return []
     const student = students.find((s) => s.id === selectedStudent.value)
     if (!student) return []
-    return student.groups.map((sg) => ({
-      label: getGroupName(sg.group),
-      value: sg.groupId,
-    }))
+    return student.wallets.map((w) => {
+      const groupNames = w.studentGroups.map((sg) => getGroupName(sg.group)).join(', ')
+      const label = w.name
+        ? `${w.name} (${groupNames || 'без групп'})`
+        : groupNames || `Кошелёк #${w.id}`
+      return { label, value: w.id }
+    })
   }, [selectedStudent, students])
 
   return (
@@ -89,24 +92,24 @@ export default function PaymentForm<T extends FieldValues>({
           )}
         />
         <Controller
-          name={'group' as Path<T>}
+          name={'wallet' as Path<T>}
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor={`${formId}-group`}>Группа</FieldLabel>
+              <FieldLabel htmlFor={`${formId}-wallet`}>Кошелёк</FieldLabel>
               <Combobox
-                items={mappedGroups}
+                items={mappedWallets}
                 value={(field.value || null) as { value: number; label: string } | null}
                 onValueChange={field.onChange}
                 isItemEqualToValue={(a, b) => a?.value === b?.value}
               >
                 <ComboboxInput
-                  id={`${formId}-group`}
+                  id={`${formId}-wallet`}
                   aria-invalid={fieldState.invalid}
                   disabled={!selectedStudent?.value}
                 />
                 <ComboboxContent>
-                  <ComboboxEmpty>Нет доступных групп</ComboboxEmpty>
+                  <ComboboxEmpty>Нет доступных кошельков</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
                       <ComboboxItem key={item.value} value={item}>

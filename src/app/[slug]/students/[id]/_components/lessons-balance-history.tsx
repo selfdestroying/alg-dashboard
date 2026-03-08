@@ -71,6 +71,8 @@ const reasonLabel: Record<StudentLessonsBalanceChangeReason, string> = {
   TOTAL_PAYMENTS_MANUAL_SET: 'Ручная правка (сумма оплат)',
   TOTAL_LESSONS_MANUAL_SET: 'Ручная правка (всего уроков)',
   BALANCE_REDISTRIBUTED: 'Перераспределение баланса',
+  WALLET_MERGED: 'Объединение кошельков',
+  WALLET_TRANSFER: 'Перевод между кошельками',
 }
 
 const fieldLabel: Record<StudentFinancialField, string> = {
