@@ -346,7 +346,10 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
             <span className="text-foreground font-medium">{student.lessonsBalance} ур.</span>
             {' — '}не привязан ни к одному кошельку
           </span>
-          <Hint text="Этот баланс остался от старой системы учёта и не привязан ни к одному кошельку. Используйте «Распределение баланса» чтобы перенести его." variant="warning" />
+          <Hint
+            text="Этот баланс остался от старой системы учёта и не привязан ни к одному кошельку. Используйте «Распределение баланса» чтобы перенести его."
+            variant="warning"
+          />
         </div>
       )}
 

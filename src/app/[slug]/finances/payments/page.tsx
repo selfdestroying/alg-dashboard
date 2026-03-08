@@ -25,7 +25,10 @@ export default function Page() {
         <CardHeader>
           <CardTitle>
             Неразобранное
-            <Hint text="Оплаты, которые поступили из CRM, но не были автоматически привязаны к ученику. Требуют ручной обработки." variant="warning" />
+            <Hint
+              text="Оплаты, которые поступили из CRM, но не были автоматически привязаны к ученику. Требуют ручной обработки."
+              variant="warning"
+            />
           </CardTitle>
         </CardHeader>
         <CardContent>
