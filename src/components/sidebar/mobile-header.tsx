@@ -7,19 +7,19 @@ import { usePathname } from 'next/navigation'
 import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
 
 const pageTitles: Record<string, string> = {
-  '/dashboard': 'Панель управления',
-  '/dashboard/organization/members': 'Пользователи',
-  '/dashboard/students': 'Все ученики',
-  '/dashboard/students/active': 'Активные ученики',
-  '/dashboard/students/absent': 'Пропустившие',
-  '/dashboard/students/dismissed': 'Отчисленные',
-  '/dashboard/groups': 'Группы',
-  '/dashboard/finances/payments': 'Оплаты',
-  '/dashboard/finances/revenue': 'Выручка',
-  '/dashboard/finances/salaries': 'Зарплаты',
-  '/dashboard/shop/products': 'Товары',
-  '/dashboard/shop/categories': 'Категории',
-  '/dashboard/shop/orders': 'Заказы',
+  '/': 'Панель управления',
+  '/organization/members': 'Пользователи',
+  '/students': 'Все ученики',
+  '/students/active': 'Активные ученики',
+  '/students/absent': 'Пропустившие',
+  '/students/dismissed': 'Отчисленные',
+  '/groups': 'Группы',
+  '/finances/payments': 'Оплаты',
+  '/finances/revenue': 'Выручка',
+  '/finances/salaries': 'Зарплаты',
+  '/shop/products': 'Товары',
+  '/shop/categories': 'Категории',
+  '/shop/orders': 'Заказы',
 }
 
 function getPageTitle(pathname: string): string {

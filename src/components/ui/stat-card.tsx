@@ -3,6 +3,7 @@ import * as React from 'react'
 import { cn } from '@/src/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { LucideIcon } from 'lucide-react'
+import { Hint } from '@/src/components/hint'
 
 const statCardVariants = cva('relative overflow-hidden rounded-lg p-3 transition-colors', {
   variants: {
@@ -37,6 +38,7 @@ interface StatCardProps extends React.ComponentProps<'div'>, VariantProps<typeof
   value: React.ReactNode
   description?: string
   icon?: LucideIcon
+  hint?: string
 }
 
 function StatCard({
@@ -44,6 +46,7 @@ function StatCard({
   value,
   description,
   icon: Icon,
+  hint,
   variant,
   className,
   ...props
@@ -51,7 +54,10 @@ function StatCard({
   return (
     <div className={cn(statCardVariants({ variant }), className)} {...props}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-muted-foreground text-xs font-medium">{label}</span>
+        <span className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
+          {label}
+          {hint && <Hint text={hint} />}
+        </span>
         {Icon && <Icon className={cn(statIconVariants({ variant }))} />}
       </div>
       <div className="mt-1 text-lg font-semibold tracking-tight">{value}</div>

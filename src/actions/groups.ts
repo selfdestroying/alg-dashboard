@@ -1,25 +1,26 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
-import { normalizeDateOnly, moscowNow } from '@/src/lib/timezone'
+import prisma from '@/src/lib/db/prisma'
+import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
+import { getGroupName } from '@/src/lib/utils'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
 
 export const getGroups = async <T extends Prisma.GroupFindManyArgs>(
-  payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>
+  payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>,
 ) => {
   return await prisma.group.findMany<T>(payload)
 }
 
 export const getGroup = async <T extends Prisma.GroupFindFirstArgs>(
-  payload?: Prisma.SelectSubset<T, Prisma.GroupFindFirstArgs>
+  payload?: Prisma.SelectSubset<T, Prisma.GroupFindFirstArgs>,
 ) => {
   return await prisma.group.findFirst(payload)
 }
 
 export const createGroup = async (
   payload: Prisma.GroupCreateArgs,
-  schedule?: Array<{ dayOfWeek: number; time: string }>
+  schedule?: Array<{ dayOfWeek: number; time: string }>,
 ) => {
   await prisma.$transaction(async (tx) => {
     const group = await tx.group.create({
@@ -32,6 +33,7 @@ export const createGroup = async (
       },
     })
     const firstTeacher = group.teachers[0]
+    if (!firstTeacher) throw new Error('Group must have at least one teacher')
     const lessons = group.lessons.map((l) => ({
       organizationId: group.organizationId,
       lessonId: l.id,
@@ -59,42 +61,7 @@ export const createGroup = async (
 
 export const updateGroup = async (payload: Prisma.GroupUpdateArgs) => {
   await prisma.group.update(payload)
-  const dayOfWeek = payload.data.dayOfWeek
-  const time = payload.data.time
-  const todayDate = normalizeDateOnly(moscowNow())
-
-  if (time != null) {
-    await prisma.lesson.updateMany({
-      where: { groupId: payload.where.id, date: { gte: todayDate } },
-      data: { time },
-    })
-  }
-  if (dayOfWeek != null) {
-    const lessons = await prisma.lesson.findMany({
-      where: { groupId: payload.where.id, date: { gte: todayDate } },
-    })
-
-    const now = moscowNow()
-    const currentDay = now.getDay()
-
-    let diff = ((dayOfWeek as number) - currentDay + 7) % 7
-
-    if (diff === 0) {
-      diff = 7
-    }
-
-    // Generate UTC midnight dates for each future lesson
-    const baseDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + diff))
-
-    for (const lesson of lessons) {
-      await prisma.lesson.update({
-        where: { id: lesson.id },
-        data: { date: new Date(baseDate.getTime()) },
-      })
-      baseDate.setUTCDate(baseDate.getUTCDate() + 7)
-    }
-  }
-  revalidatePath(`/dashboard/groups/${payload.where.id}`)
+  revalidatePath(`/groups/${payload.where.id}`)
 }
 
 export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
@@ -102,11 +69,131 @@ export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
   revalidatePath('dashboard/groups')
 }
 
+export const updateGroupSchedule = async (
+  groupId: number,
+  organizationId: number,
+  schedule: Array<{ dayOfWeek: number; time: string }>,
+) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.groupSchedule.deleteMany({ where: { groupId } })
+    await tx.groupSchedule.createMany({
+      data: schedule.map((s) => ({
+        dayOfWeek: s.dayOfWeek,
+        time: s.time,
+        groupId,
+        organizationId,
+      })),
+    })
+  })
+  revalidatePath(`/groups/${groupId}`)
+}
+
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
+
+export const regenerateLessons = async (
+  groupId: number,
+  organizationId: number,
+  startDate: Date,
+  lessonCount: number,
+) => {
+  await prisma.$transaction(async (tx) => {
+    // 1. Fetch schedules
+    const schedules = await tx.groupSchedule.findMany({
+      where: { groupId },
+    })
+    if (schedules.length === 0) throw new Error('Группа не имеет расписания')
+
+    const sortedSchedules = [...schedules].sort(
+      (a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek),
+    )
+    const scheduleDaysMap = new Map(sortedSchedules.map((s) => [s.dayOfWeek, s.time]))
+
+    // 2. Delete future lessons (cascade deletes attendance & teacher-lesson)
+    await tx.lesson.deleteMany({
+      where: {
+        groupId,
+        date: { gte: startDate },
+      },
+    })
+
+    // 3. Generate new lesson dates
+    const lessons: Array<{ date: Date; time: string; organizationId: number }> = []
+    const currentDate = new Date(startDate.getTime())
+    const maxIterations = lessonCount * 7 + 7
+
+    for (let i = 0; i < maxIterations && lessons.length < lessonCount; i++) {
+      const time = scheduleDaysMap.get(currentDate.getUTCDay())
+      if (time) {
+        lessons.push({
+          date: new Date(currentDate.getTime()),
+          time,
+          organizationId,
+        })
+      }
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1)
+    }
+
+    // 4. Create lessons
+    const createdLessons = await Promise.all(
+      lessons.map((l) =>
+        tx.lesson.create({
+          data: {
+            date: l.date,
+            time: l.time,
+            organizationId: l.organizationId,
+            groupId,
+          },
+        }),
+      ),
+    )
+
+    // 5. Assign teachers to all new lessons
+    const teachers = await tx.teacherGroup.findMany({
+      where: { groupId },
+      include: { rate: true },
+    })
+
+    if (teachers.length > 0) {
+      const teacherLessonData = createdLessons.flatMap((lesson) =>
+        teachers.map((t) => ({
+          organizationId,
+          lessonId: lesson.id,
+          teacherId: t.teacherId,
+          bid: t.rate.bid,
+          bonusPerStudent: t.rate.bonusPerStudent,
+        })),
+      )
+      await tx.teacherLesson.createMany({ data: teacherLessonData })
+    }
+
+    // 6. Create UNSPECIFIED attendance for active students
+    const students = await tx.studentGroup.findMany({
+      where: { groupId, status: { in: ['ACTIVE', 'TRIAL'] } },
+    })
+
+    if (students.length > 0) {
+      const attendanceData = createdLessons.flatMap((lesson) =>
+        students.map((s) => ({
+          organizationId,
+          lessonId: lesson.id,
+          studentId: s.studentId,
+          status: 'UNSPECIFIED' as const,
+          studentStatus: s.status,
+          comment: '',
+        })),
+      )
+      await tx.attendance.createMany({ data: attendanceData })
+    }
+  })
+
+  revalidatePath(`/groups/${groupId}`)
+}
+
 // Student-Group Relations
 
 export const createStudentGroup = async (
   payload: Prisma.StudentGroupCreateArgs,
-  isApplyToLessons: boolean
+  isApplyToLessons: boolean,
 ) => {
   await prisma.$transaction(async (tx) => {
     await tx.studentGroup.create(payload)
@@ -139,13 +226,19 @@ export const createStudentGroup = async (
     }
   })
 
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const updateStudentGroup = async (
   payload: Prisma.StudentGroupUpdateArgs,
-  isApplyToLessons: boolean
+  isApplyToLessons: boolean,
 ) => {
+  if (payload.data && 'groupId' in payload.data) {
+    throw new Error(
+      'Изменение groupId через updateStudentGroup запрещено. Используйте transferStudentToGroup.',
+    )
+  }
+
   await prisma.$transaction(async (tx) => {
     const oldStudentGroup = await tx.studentGroup.findUniqueOrThrow({
       where: payload.where,
@@ -197,55 +290,157 @@ export const updateStudentGroup = async (
     }
 
     if (isGroupChanged) {
-      revalidatePath(`/dashboard/groups/${oldStudentGroup.groupId}`)
+      revalidatePath(`/groups/${oldStudentGroup.groupId}`)
     }
-    revalidatePath(`/dashboard/groups/${sg.groupId}`)
+    revalidatePath(`/groups/${sg.groupId}`)
   })
 }
 
-export const deleteStudentGroup = async (payload: Prisma.StudentGroupDeleteArgs) => {
+export const dismissStudentFromGroup = async (payload: {
+  studentId: number
+  groupId: number
+  dismissComment: string
+  dismissedAt: Date
+}) => {
+  const { studentId, groupId, dismissComment, dismissedAt } = payload
   await prisma.$transaction(async (tx) => {
-    const studentGroup = await tx.studentGroup.delete(payload)
-
-    // Transfer remaining per-group balance back to unallocated (student-level)
-    if (
-      studentGroup.lessonsBalance !== 0 ||
-      studentGroup.totalLessons !== 0 ||
-      studentGroup.totalPayments !== 0
-    ) {
-      // Remaining group balance is preserved as unallocated on the Student record
-      // (Student.lessonsBalance stays unchanged, but the allocated portion decreases)
-      // No additional action needed — the unallocated balance auto-increases
-    }
+    await tx.studentGroup.update({
+      where: { studentId_groupId: { studentId, groupId } },
+      data: {
+        status: 'DISMISSED',
+        dismissComment,
+        dismissedAt,
+      },
+    })
 
     const todayDate = normalizeDateOnly(moscowNow())
 
     const futureLessons = await tx.lesson.findMany({
       where: {
-        groupId: studentGroup.groupId,
+        groupId,
         date: { gte: todayDate },
       },
-      select: { id: true, organizationId: true },
+      select: { id: true },
     })
 
     if (futureLessons.length > 0) {
-      const lessonIds = futureLessons.map((l) => l.id)
-
       await tx.attendance.deleteMany({
         where: {
-          studentId: studentGroup.studentId,
-          lessonId: { in: lessonIds },
+          studentId,
+          lessonId: { in: futureLessons.map((l) => l.id) },
           status: 'UNSPECIFIED',
         },
       })
     }
-    revalidatePath(`/dashboard/groups/${studentGroup.groupId}`)
   })
+  revalidatePath(`/groups/${groupId}`)
+}
+
+export const transferStudentToGroup = async (payload: {
+  studentId: number
+  oldGroupId: number
+  newGroupId: number
+  organizationId: number
+  actorUserId: number
+}) => {
+  const { studentId, oldGroupId, newGroupId, organizationId } = payload
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Read old StudentGroup
+    const oldSg = await tx.studentGroup.findUniqueOrThrow({
+      where: { studentId_groupId: { studentId, groupId: oldGroupId } },
+    })
+
+    // 2. Read new group info for the transfer comment
+    const newGroup = await tx.group.findUniqueOrThrow({
+      where: { id: newGroupId },
+      include: { course: true, location: true, schedules: true },
+    })
+    const newGroupName = getGroupName(newGroup)
+
+    // 3. Mark old StudentGroup as TRANSFERRED (keep walletId linked)
+    await tx.studentGroup.update({
+      where: { studentId_groupId: { studentId, groupId: oldGroupId } },
+      data: {
+        status: 'TRANSFERRED',
+        transferredAt: normalizeDateOnly(moscowNow()),
+        transferComment: `Переведён в группу ${newGroupName}`,
+      },
+    })
+
+    // 4. Handle new group enrollment — always link to the same wallet
+    const existingSg = await tx.studentGroup.findUnique({
+      where: { studentId_groupId: { studentId, groupId: newGroupId } },
+    })
+
+    if (existingSg) {
+      if (existingSg.status === 'ACTIVE' || existingSg.status === 'TRIAL') {
+        throw new Error('Ученик уже в этой группе')
+      }
+      // Reactivate DISMISSED or TRANSFERRED record
+      await tx.studentGroup.update({
+        where: { studentId_groupId: { studentId, groupId: newGroupId } },
+        data: {
+          status: 'ACTIVE',
+          dismissComment: null,
+          dismissedAt: null,
+          transferComment: null,
+          transferredAt: null,
+          walletId: oldSg.walletId,
+        },
+      })
+    } else {
+      await tx.studentGroup.create({
+        data: {
+          studentId,
+          groupId: newGroupId,
+          organizationId,
+          status: 'ACTIVE',
+          walletId: oldSg.walletId,
+        },
+      })
+    }
+
+    // 5. Remove UNSPECIFIED attendance from old group
+    await tx.attendance.deleteMany({
+      where: {
+        studentId,
+        status: 'UNSPECIFIED',
+        lesson: { groupId: oldGroupId },
+      },
+    })
+
+    // 6. Create UNSPECIFIED attendance for future lessons in new group
+    const today = normalizeDateOnly(moscowNow())
+    const newFutureLessons = await tx.lesson.findMany({
+      where: {
+        groupId: newGroupId,
+        date: { gte: today },
+      },
+      select: { id: true, organizationId: true },
+    })
+
+    if (newFutureLessons.length > 0) {
+      await tx.attendance.createMany({
+        data: newFutureLessons.map((lesson) => ({
+          organizationId: lesson.organizationId,
+          lessonId: lesson.id,
+          studentId,
+          comment: '',
+          status: 'UNSPECIFIED' as const,
+        })),
+        skipDuplicates: true,
+      })
+    }
+  })
+
+  revalidatePath(`/groups/${oldGroupId}`)
+  revalidatePath(`/groups/${newGroupId}`)
 }
 
 export const updateTeacherGroup = async (
   payload: Prisma.TeacherGroupUpdateArgs,
-  isApplyToLessons: boolean
+  isApplyToLessons: boolean,
 ) => {
   await prisma.$transaction(async (tx) => {
     const teacherGroup = await tx.teacherGroup.update({
@@ -270,12 +465,12 @@ export const updateTeacherGroup = async (
     }
   })
 
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const createTeacherGroup = async (
   payload: Prisma.TeacherGroupCreateArgs,
-  isApplyToLessons: boolean
+  isApplyToLessons: boolean,
 ) => {
   await prisma.$transaction(async (tx) => {
     const teacherGroup = await tx.teacherGroup.create({
@@ -308,12 +503,12 @@ export const createTeacherGroup = async (
       }
     }
   })
-  revalidatePath(`/dashboard/groups/${payload.data.groupId}`)
+  revalidatePath(`/groups/${payload.data.groupId}`)
 }
 
 export const deleteTeacherGroup = async (
   payload: Prisma.TeacherGroupDeleteArgs,
-  isApplyToLessons: boolean
+  isApplyToLessons: boolean,
 ) => {
   await prisma.$transaction(async (tx) => {
     const teacherGroup = await tx.teacherGroup.delete({
@@ -334,5 +529,5 @@ export const deleteTeacherGroup = async (
       })
     }
   })
-  revalidatePath(`/dashboard/groups/${payload.where.groupId}`)
+  revalidatePath(`/groups/${payload.where.groupId}`)
 }

@@ -52,22 +52,10 @@ export const CreateStudentSchema = z
 
 export type CreateStudentSchemaType = z.infer<typeof CreateStudentSchema>
 
-// Per-group financial balance entry for the edit form
-export const GroupBalanceSchema = z.object({
-  groupId: z.number(),
-  groupName: z.string(),
-  lessonsBalance: z.number().int().optional(),
-  totalPayments: z.number().int().optional(),
-  totalLessons: z.number().int().optional(),
-})
-
-export type GroupBalanceSchemaType = z.infer<typeof GroupBalanceSchema>
-
 export const EditStudentSchema = z
   .object({
     ...StudentBaseFields,
     parentsName: z.string().min(2, 'Минимум 2 символа').optional(),
-    groupBalances: z.array(GroupBalanceSchema),
   })
   .superRefine(validateAge)
 

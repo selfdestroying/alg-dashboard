@@ -3,10 +3,10 @@ import { Building2, House, LogIn } from 'lucide-react'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { Logo } from '../components/logo'
+import { SignOutButton } from '../components/sign-out-button'
 import { SwitchThemeButton } from '../components/switch-theme-button'
-import { auth } from '../lib/auth'
+import { auth } from '../lib/auth/server'
 import { protocol, rootDomain } from '../lib/utils'
-import { SignOutButton } from './_components/sign-out-button'
 
 export default async function HomePage() {
   const requestHeaders = await headers()

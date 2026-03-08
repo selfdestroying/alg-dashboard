@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
+import prisma from '@/src/lib/db/prisma'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
 
@@ -16,15 +16,15 @@ export async function getPaycheck(payload: Prisma.PayCheckFindFirstArgs) {
 
 export async function createPaycheck(payload: Prisma.PayCheckCreateArgs) {
   await prisma.payCheck.create(payload)
-  revalidatePath(`/dashboard/users/${payload.data.userId}`)
+  revalidatePath(`/users/${payload.data.userId}`)
 }
 
 export async function updatePaycheck(payload: Prisma.PayCheckUpdateArgs) {
   await prisma.payCheck.update(payload)
-  revalidatePath(`/dashboard/users/${payload.data.userId}`)
+  revalidatePath(`/users/${payload.data.userId}`)
 }
 
 export async function deletePaycheck(payload: Prisma.PayCheckDeleteArgs) {
   await prisma.payCheck.delete(payload)
-  revalidatePath(`/dashboard/users/${payload.where.userId}`)
+  revalidatePath(`/users/${payload.where.userId}`)
 }

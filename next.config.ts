@@ -13,11 +13,21 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: 'storage.eduda.online',
+        pathname: '/images/**',
+      },
+      {
         protocol: 'http',
         hostname: 'images.alg.tw1.ru',
       },
     ],
-  } /* config options here */,
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 }
 
 export default nextConfig

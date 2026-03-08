@@ -127,7 +127,7 @@ src/actions/
   attendance.ts   → getAbsentStatistics()
   dismissed.ts    → getDismissedStatistics()
 
-src/app/s/[slug]/dashboard/students/
+src/app/s/[slug]/students/
   active/statistics/active-statistics.tsx      - KPI + area chart + bar lists
   absent/statistics/absent-statistics.tsx      - KPI + area chart с переключением
   dismissed/statistics/dismissed-statistics.tsx - KPI + area chart + bar lists

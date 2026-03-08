@@ -1,41 +1,71 @@
 'use server'
 
-import prisma from '@/src/lib/prisma'
+import prisma from '@/src/lib/db/prisma'
+import { ConflictError } from '@/src/lib/error'
+import { authAction } from '@/src/lib/safe-action'
+import { GroupTypeSchema } from '@/src/schemas/group-type'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { Prisma } from '../../prisma/generated/client'
 
+// ─── Read (остаются обычными server-функциями для data-fetching) ───
+
 export const getGroupTypes = async <T extends Prisma.GroupTypeFindManyArgs>(
-  payload?: Prisma.SelectSubset<T, Prisma.GroupTypeFindManyArgs>
+  payload?: Prisma.SelectSubset<T, Prisma.GroupTypeFindManyArgs>,
 ) => {
   return await prisma.groupType.findMany<T>(payload)
 }
 
 export const getGroupType = async <T extends Prisma.GroupTypeFindFirstArgs>(
-  payload: Prisma.SelectSubset<T, Prisma.GroupTypeFindFirstArgs>
+  payload: Prisma.SelectSubset<T, Prisma.GroupTypeFindFirstArgs>,
 ) => {
   return await prisma.groupType.findFirst(payload)
 }
 
-export const createGroupType = async (payload: Prisma.GroupTypeCreateArgs) => {
-  await prisma.groupType.create(payload)
-  revalidatePath('/dashboard')
-}
+// ─── Mutations (safe actions с валидацией и проверкой прав) ─────────
 
-export const updateGroupType = async (payload: Prisma.GroupTypeUpdateArgs) => {
-  await prisma.groupType.update(payload)
-  revalidatePath('/dashboard')
-}
+export const createGroupTypeAction = authAction
+  .metadata({ actionName: 'createGroupType' })
+  .schema(GroupTypeSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    await prisma.groupType.create({
+      data: {
+        ...parsedInput,
+        organizationId: ctx.session.organizationId!,
+      },
+    })
 
-export const deleteGroupType = async (payload: Prisma.GroupTypeDeleteArgs) => {
-  const groupType = await prisma.groupType.findUnique({
-    where: payload.where,
-    include: { _count: { select: { groups: true } } },
+    revalidatePath('/')
   })
 
-  if (groupType && groupType._count.groups > 0) {
-    throw new Error('Невозможно удалить тип группы, который используется в группах')
-  }
+export const updateGroupTypeAction = authAction
+  .metadata({ actionName: 'updateGroupType' })
+  .schema(GroupTypeSchema.extend({ id: z.number().int().positive() }))
+  .action(async ({ parsedInput }) => {
+    const { id, ...data } = parsedInput
 
-  await prisma.groupType.delete(payload)
-  revalidatePath('/dashboard')
-}
+    await prisma.groupType.update({
+      where: { id },
+      data,
+    })
+
+    revalidatePath('/')
+  })
+
+export const deleteGroupTypeAction = authAction
+  .metadata({ actionName: 'deleteGroupType' })
+  .schema(z.object({ id: z.number().int().positive() }))
+  .action(async ({ parsedInput }) => {
+    const groupType = await prisma.groupType.findUnique({
+      where: { id: parsedInput.id },
+      include: { _count: { select: { groups: true } } },
+    })
+
+    if (groupType && groupType._count.groups > 0) {
+      throw new ConflictError('Невозможно удалить тип группы, который используется в группах')
+    }
+
+    await prisma.groupType.delete({ where: { id: parsedInput.id } })
+
+    revalidatePath('/')
+  })

@@ -1,6 +1,5 @@
 'use client'
 
-import { addMember } from '@/src/actions/organizations'
 import DataTable from '@/src/components/data-table'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -23,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
-import { authClient } from '@/src/lib/auth-client'
+import { authClient } from '@/src/lib/auth/client'
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -32,7 +31,7 @@ import {
 } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Loader, Trash2, UserPlus } from 'lucide-react'
+import { Loader, Trash2 } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import type { AdminDashboardData } from './types'
@@ -62,11 +61,6 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
   const [isPending, startTransition] = useTransition()
   const [loadingMemberId, setLoadingMemberId] = useState<number | null>(null)
 
-  // Add member state
-  const [addMemberOrgId, setAddMemberOrgId] = useState<string | null>('')
-  const [addMemberUserId, setAddMemberUserId] = useState<string | null>('')
-  const [addMemberRole, setAddMemberRole] = useState<string | null>('teacher')
-
   const flatMembers = useMemo<FlatMember[]>(() => {
     return data.organizations.flatMap((org) =>
       org.members.map((member) => ({
@@ -80,7 +74,7 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
         organizationSlug: org.slug,
         createdAt: new Date(member.createdAt),
         banned: data.users.find((u) => u.id === member.userId)?.banned ?? null,
-      }))
+      })),
     )
   }, [data])
 
@@ -92,7 +86,7 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
         (m) =>
           m.userName.toLowerCase().includes(q) ||
           m.userEmail.toLowerCase().includes(q) ||
-          m.organizationName.toLowerCase().includes(q)
+          m.organizationName.toLowerCase().includes(q),
       )
     }
     if (orgFilter && orgFilter !== 'all') {
@@ -122,29 +116,6 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
         toast.error(e instanceof Error ? e.message : 'Ошибка удаления')
       } finally {
         setLoadingMemberId(null)
-      }
-    })
-  }
-
-  const handleAddMember = () => {
-    if (!addMemberOrgId || !addMemberUserId || !addMemberRole) {
-      toast.error('Заполните все поля')
-      return
-    }
-    startTransition(async () => {
-      try {
-        await addMember({
-          userId: addMemberUserId,
-          organizationId: addMemberOrgId,
-          role: addMemberRole as 'owner' | 'manager' | 'teacher',
-        })
-        toast.success('Участник добавлен')
-        setAddMemberOrgId('')
-        setAddMemberUserId('')
-        setAddMemberRole('teacher')
-        onRefresh()
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : 'Ошибка добавления')
       }
     })
   }
@@ -305,77 +276,6 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
                 </SelectGroup>
               </SelectContent>
             </Select>
-
-            {/* Добавить участника */}
-            <Dialog>
-              <DialogTrigger render={<Button />}>
-                <UserPlus />
-                Добавить
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Добавить участника</DialogTitle>
-                  <DialogDescription>Выберите пользователя, организацию и роль</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-3">
-                  <Select value={addMemberOrgId} onValueChange={setAddMemberOrgId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите организацию" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {data.organizations.map((org) => (
-                          <SelectItem key={org.id} value={org.id.toString()}>
-                            {org.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={addMemberUserId} onValueChange={setAddMemberUserId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите пользователя" />
-                    </SelectTrigger>
-                    <SelectContent className={'w-max'}>
-                      <SelectGroup>
-                        {data.users.map((user) => (
-                          <SelectItem key={user.id} value={user.id.toString()}>
-                            {user.name} ({user.email})
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={addMemberRole} onValueChange={setAddMemberRole}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Роль" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="owner">owner</SelectItem>
-                        <SelectItem value="manager">manager</SelectItem>
-                        <SelectItem value="teacher">teacher</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  <DialogClose
-                    render={
-                      <Button className="w-full" onClick={handleAddMember} disabled={isPending} />
-                    }
-                  >
-                    {isPending ? (
-                      <Loader className="mr-2 size-4 animate-spin" />
-                    ) : (
-                      <UserPlus className="mr-2 size-4" />
-                    )}
-                    Добавить участника
-                  </DialogClose>
-                </div>
-              </DialogContent>
-            </Dialog>
           </div>
         </CardTitle>
       </CardHeader>

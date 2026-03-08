@@ -1,9 +1,9 @@
 'use client'
 
+import { SignOutButton } from '@/src/components/sign-out-button'
 import { Button } from '@/src/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
-import { LogOut, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import AdminStats from './admin-stats'
@@ -19,7 +19,6 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ initialData }: AdminDashboardProps) {
-  const signOutMutation = useSignOutMutation()
   const router = useRouter()
   const [isRefreshing, startRefresh] = useTransition()
 
@@ -44,13 +43,7 @@ export default function AdminDashboard({ initialData }: AdminDashboardProps) {
             <RefreshCw className={`${isRefreshing ? 'animate-spin' : ''}`} />
             Обновить
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => signOutMutation.mutate(undefined, { onSuccess: () => router.push('/') })}
-          >
-            <LogOut />
-          </Button>
+          <SignOutButton />
         </div>
       </div>
 

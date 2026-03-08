@@ -1,7 +1,7 @@
 'use client'
 
 import { useSessionQuery } from '@/src/data/user/session-query'
-import type { OrganizationRole } from '@/src/lib/auth'
+import type { OrganizationRole } from '@/src/lib/auth/server'
 import { ShoppingCart } from 'lucide-react'
 import { useMemo } from 'react'
 import { filterNavByRole } from './lib/filter-nav-by-role'
@@ -16,17 +16,17 @@ const navLists: NavGroup[] = [
     items: [
       {
         title: 'Товары',
-        url: '/dashboard/shop/products',
+        url: '/shop/products',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Категории',
-        url: '/dashboard/shop/categories',
+        url: '/shop/categories',
         roles: ['owner', 'manager', 'teacher'],
       },
       {
         title: 'Заказы',
-        url: '/dashboard/shop/orders',
+        url: '/shop/orders',
         roles: ['owner', 'manager', 'teacher'],
       },
     ],
