@@ -1,12 +1,11 @@
 import { getGroup } from '@/src/actions/groups'
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Hint } from '@/src/components/hint'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth/server'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import AddLessonButton from './_components/add-lesson-button'
-import AddStudentToGroupButton from './_components/add-student-to-group-button'
 import AddTeacherToGroupButton from './_components/add-teacher-to-group-button'
 import { GroupAttendanceTable } from './_components/group-attendance-table'
 import GroupStudentsTable from './_components/group-students-table'
@@ -122,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card>
         <CardHeader>
           <CardTitle>Список учеников</CardTitle>
-          {canCreateStudentGroup && (
+          {/* {canCreateStudentGroup && (
             <CardAction>
               <AddStudentToGroupButton
                 group={group}
@@ -130,7 +129,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 isFull={group.students.length >= group.maxStudents}
               />
             </CardAction>
-          )}
+          )} */}
         </CardHeader>
         <CardContent>
           <GroupStudentsTable data={group.students} />
