@@ -31,9 +31,13 @@ export const getStudentsForPayments = authAction
       where: { organizationId: ctx.session.organizationId! },
       orderBy: { id: 'asc' },
       include: {
-        groups: {
+        wallets: {
           include: {
-            group: { include: { course: true, location: true, schedules: true } },
+            studentGroups: {
+              include: {
+                group: { include: { course: true, location: true, schedules: true } },
+              },
+            },
           },
         },
       },
@@ -44,29 +48,31 @@ export const createPaymentWithBalance = authAction
   .metadata({ actionName: 'createPaymentWithBalance' })
   .inputSchema(CreatePaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { student, group, lessonCount, price, leadName, productName } = parsedInput
+    const { student, wallet: walletInput, lessonCount, price, leadName, productName } = parsedInput
     const studentId = student.value
-    const groupId = group.value
+    const walletId = walletInput.value
 
-    const paymentMeta = { lessonCount, price, leadName, productName, groupId }
+    const paymentMeta = { lessonCount, price, leadName, productName, walletId }
 
     await prisma.$transaction(async (tx) => {
-      const sg = await tx.studentGroup.findUnique({
-        where: { studentId_groupId: { studentId, groupId } },
+      const wallet = await tx.wallet.findUnique({
+        where: { id: walletId },
         select: {
           lessonsBalance: true,
           totalPayments: true,
           totalLessons: true,
           organizationId: true,
+          studentId: true,
         },
       })
-      if (!sg) throw new Error('Ученик не найден в группе')
+      if (!wallet) throw new Error('Кошелёк не найден')
+      if (wallet.studentId !== studentId) throw new Error('Кошелёк не принадлежит этому ученику')
 
       await tx.payment.create({
         data: {
-          organizationId: sg.organizationId,
+          organizationId: wallet.organizationId,
           studentId,
-          groupId,
+          walletId,
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
@@ -75,8 +81,8 @@ export const createPaymentWithBalance = authAction
         },
       })
 
-      const updated = await tx.studentGroup.update({
-        where: { studentId_groupId: { studentId, groupId } },
+      const updated = await tx.wallet.update({
+        where: { id: walletId },
         data: {
           lessonsBalance: { increment: lessonCount },
           totalLessons: { increment: lessonCount },
@@ -105,11 +111,11 @@ export const createPaymentWithBalance = authAction
           organizationId: ctx.session.organizationId!,
           studentId,
           actorUserId: Number(ctx.session.user.id),
-          groupId,
+          walletId,
           field: f.field,
           reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
-          delta: updated[f.key] - sg[f.key],
-          balanceBefore: sg[f.key],
+          delta: updated[f.key] - wallet[f.key],
+          balanceBefore: wallet[f.key],
           balanceAfter: updated[f.key],
           meta: paymentMeta,
         })
@@ -126,26 +132,22 @@ export const cancelPayment = authAction
         where: { id: parsedInput.id, organizationId: ctx.session.organizationId! },
       })
 
-      // Determine where to decrement: per-group or global (legacy)
-      const hasGroup = payment.groupId != null
       let balancesBefore: { lessonsBalance: number; totalPayments: number; totalLessons: number }
       let balancesAfter: { lessonsBalance: number; totalPayments: number; totalLessons: number }
+      const resolvedWalletId: number | null = payment.walletId
 
-      if (hasGroup) {
-        const sg = await tx.studentGroup.findUnique({
-          where: {
-            studentId_groupId: { studentId: payment.studentId, groupId: payment.groupId! },
-          },
+      if (payment.walletId) {
+        // Wallet-based payment — decrement the wallet
+        const wallet = await tx.wallet.findUnique({
+          where: { id: payment.walletId },
           select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
         })
-        if (!sg) throw new Error('Ученик не найден в группе')
+        if (!wallet) throw new Error('Кошелёк не найден')
 
-        balancesBefore = sg
+        balancesBefore = wallet
 
-        const updatedSg = await tx.studentGroup.update({
-          where: {
-            studentId_groupId: { studentId: payment.studentId, groupId: payment.groupId! },
-          },
+        const updatedWallet = await tx.wallet.update({
+          where: { id: payment.walletId },
           data: {
             totalLessons: { decrement: payment.lessonCount },
             totalPayments: { decrement: payment.price },
@@ -154,7 +156,7 @@ export const cancelPayment = authAction
           select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
         })
 
-        balancesAfter = updatedSg
+        balancesAfter = updatedWallet
       } else {
         // Legacy payments without groupId — decrement global student balance
         const student = await tx.student.findUnique({
@@ -183,6 +185,7 @@ export const cancelPayment = authAction
         lessonCount: payment.lessonCount,
         price: payment.price,
         groupId: payment.groupId,
+        walletId: payment.walletId,
       }
 
       const fields = [
@@ -208,6 +211,7 @@ export const cancelPayment = authAction
           studentId: payment.studentId,
           actorUserId: Number(ctx.session.user.id),
           groupId: payment.groupId,
+          walletId: resolvedWalletId,
           field: f.field,
           reason: StudentLessonsBalanceChangeReason.PAYMENT_CANCELLED,
           delta: after - before,
@@ -232,37 +236,46 @@ export const resolveUnprocessedPayment = authAction
   .metadata({ actionName: 'resolveUnprocessedPayment' })
   .inputSchema(ResolveUnprocessedPaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { unprocessedPaymentId, student, group, lessonCount, price, leadName, productName } =
-      parsedInput
+    const {
+      unprocessedPaymentId,
+      student,
+      wallet: walletInput,
+      lessonCount,
+      price,
+      leadName,
+      productName,
+    } = parsedInput
     const studentId = student.value
-    const groupId = group.value
+    const walletId = walletInput.value
 
     const paymentMeta = {
       lessonCount,
       price,
       leadName,
       productName,
-      groupId,
+      walletId,
       unprocessedPaymentId,
     }
 
     await prisma.$transaction(async (tx) => {
-      const sg = await tx.studentGroup.findUnique({
-        where: { studentId_groupId: { studentId, groupId } },
+      const wallet = await tx.wallet.findUnique({
+        where: { id: walletId },
         select: {
           lessonsBalance: true,
           totalPayments: true,
           totalLessons: true,
           organizationId: true,
+          studentId: true,
         },
       })
-      if (!sg) throw new Error('Ученик не найден в группе')
+      if (!wallet) throw new Error('Кошелёк не найден')
+      if (wallet.studentId !== studentId) throw new Error('Кошелёк не принадлежит этому ученику')
 
       await tx.payment.create({
         data: {
-          organizationId: sg.organizationId,
+          organizationId: wallet.organizationId,
           studentId,
-          groupId,
+          walletId,
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
@@ -271,8 +284,8 @@ export const resolveUnprocessedPayment = authAction
         },
       })
 
-      const updated = await tx.studentGroup.update({
-        where: { studentId_groupId: { studentId, groupId } },
+      const updated = await tx.wallet.update({
+        where: { id: walletId },
         data: {
           lessonsBalance: { increment: lessonCount },
           totalLessons: { increment: lessonCount },
@@ -306,11 +319,11 @@ export const resolveUnprocessedPayment = authAction
           organizationId: ctx.session.organizationId!,
           studentId,
           actorUserId: Number(ctx.session.user.id),
-          groupId,
+          walletId,
           field: f.field,
           reason: StudentLessonsBalanceChangeReason.PAYMENT_CREATED,
-          delta: updated[f.key] - sg[f.key],
-          balanceBefore: sg[f.key],
+          delta: updated[f.key] - wallet[f.key],
+          balanceBefore: wallet[f.key],
           balanceAfter: updated[f.key],
           meta: paymentMeta,
         })

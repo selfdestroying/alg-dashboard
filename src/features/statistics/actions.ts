@@ -275,7 +275,14 @@ export const getAbsentStatistics = authAction
         status: 'ABSENT',
       },
       include: {
-        student: { include: { groups: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } } },
+        student: {
+          include: {
+            groups: {
+              where: { status: { in: ['ACTIVE', 'TRIAL'] } },
+              include: { wallet: true },
+            },
+          },
+        },
         lesson: true,
         missedMakeup: {
           include: {
@@ -291,12 +298,15 @@ export const getAbsentStatistics = authAction
     })
 
     function getPerGroupRate(
-      studentGroups: { groupId: number; totalPayments: number; totalLessons: number }[],
+      studentGroups: {
+        groupId: number
+        wallet: { totalPayments: number; totalLessons: number } | null
+      }[],
       groupId: number,
     ): number {
       const sg = studentGroups.find((g) => g.groupId === groupId)
-      if (!sg || sg.totalLessons === 0) return 0
-      return sg.totalPayments / sg.totalLessons
+      if (!sg?.wallet || sg.wallet.totalLessons === 0) return 0
+      return sg.wallet.totalPayments / sg.wallet.totalLessons
     }
 
     let rateSum = 0

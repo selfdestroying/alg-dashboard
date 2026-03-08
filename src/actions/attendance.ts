@@ -148,13 +148,21 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
           : oldAttendance.lesson.groupId
         const studentGroup = await tx.studentGroup.findUnique({
           where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
-          select: { lessonsBalance: true },
+          select: { walletId: true },
         })
         if (!studentGroup) throw new Error('Ученик не найден в группе')
+        if (!studentGroup.walletId) throw new Error('У ученика нет привязанного кошелька')
 
-        const balanceBefore = studentGroup.lessonsBalance
-        const updated = await tx.studentGroup.update({
-          where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
+        // Charge the wallet
+        const wallet = await tx.wallet.findUnique({
+          where: { id: studentGroup.walletId },
+          select: { lessonsBalance: true },
+        })
+        if (!wallet) throw new Error('Кошелёк не найден')
+
+        const balanceBefore = wallet.lessonsBalance
+        const updated = await tx.wallet.update({
+          where: { id: studentGroup.walletId },
           data: {
             lessonsBalance: delta > 0 ? { increment: delta } : { decrement: Math.abs(delta) },
           },
@@ -187,6 +195,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
           studentId: oldAttendance.studentId,
           actorUserId: Number(session.user.id),
           groupId,
+          walletId: studentGroup.walletId,
           reason,
           delta: balanceAfter - balanceBefore,
           balanceBefore,

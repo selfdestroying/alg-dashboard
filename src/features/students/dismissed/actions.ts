@@ -3,7 +3,7 @@
 import prisma from '@/src/lib/db/prisma'
 import { authAction } from '@/src/lib/safe-action'
 import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
-import { DeleteDismissedSchema, ReturnToGroupSchema } from './schemas'
+import { ReturnToGroupSchema } from './schemas'
 
 // ─── READ ────────────────────────────────────────────────────────────────────
 
@@ -31,21 +31,6 @@ export const getDismissedStudents = authAction
   })
 
 // ─── MUTATIONS ───────────────────────────────────────────────────────────────
-
-export const removeDismissed = authAction
-  .metadata({ actionName: 'removeDismissed' })
-  .inputSchema(DeleteDismissedSchema)
-  .action(async ({ ctx, parsedInput }) => {
-    await prisma.studentGroup.delete({
-      where: {
-        studentId_groupId: {
-          studentId: parsedInput.studentId,
-          groupId: parsedInput.groupId,
-        },
-        organizationId: ctx.session.organizationId!,
-      },
-    })
-  })
 
 export const returnToGroup = authAction
   .metadata({ actionName: 'returnToGroup' })

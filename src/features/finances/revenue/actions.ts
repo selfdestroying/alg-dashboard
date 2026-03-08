@@ -31,7 +31,13 @@ export const getRevenueLessons = authAction
       },
       include: {
         attendance: {
-          include: { student: { include: { groups: true } } },
+          include: {
+            student: {
+              include: {
+                groups: { include: { wallet: true } },
+              },
+            },
+          },
         },
         group: { include: { course: true, location: true, groupType: true, schedules: true } },
         teachers: { include: { teacher: true } },

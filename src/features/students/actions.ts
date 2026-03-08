@@ -20,7 +20,10 @@ export const getStudents = authAction
   .action(async ({ ctx }) => {
     return await prisma.student.findMany({
       where: { organizationId: ctx.session.organizationId! },
-      include: { groups: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } },
+      include: {
+        groups: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
+        wallets: true,
+      },
       orderBy: { id: 'asc' },
     })
   })
@@ -222,13 +225,12 @@ export const updateStudentGroupBalance = authAction
       const sg = await tx.studentGroup.findUnique({
         where: { studentId_groupId: { studentId, groupId } },
         select: {
-          lessonsBalance: true,
-          totalPayments: true,
-          totalLessons: true,
           organizationId: true,
+          walletId: true,
         },
       })
       if (!sg) throw new Error('Ученик не найден в группе')
+      if (!sg.walletId) throw new Error('У ученика нет привязанного кошелька')
 
       if (payment) {
         await tx.payment.create({
@@ -236,6 +238,7 @@ export const updateStudentGroupBalance = authAction
             organizationId: sg.organizationId,
             studentId,
             groupId,
+            walletId: sg.walletId,
             lessonCount: payment.lessonCount,
             price: payment.price,
             bidForLesson: payment.bidForLesson,
@@ -245,15 +248,21 @@ export const updateStudentGroupBalance = authAction
         })
       }
 
-      const updated = await tx.studentGroup.update({
-        where: { studentId_groupId: { studentId, groupId } },
+      const wallet = await tx.wallet.findUnique({
+        where: { id: sg.walletId },
+        select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
+      })
+      if (!wallet) throw new Error('Кошелёк не найден')
+
+      const updated = await tx.wallet.update({
+        where: { id: sg.walletId },
         data,
         select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
       })
 
       for (const c of changes) {
         const fieldAudit = audit[c.field]!
-        const balanceBefore = sg[c.key]
+        const balanceBefore = wallet[c.key]
         const balanceAfter = updated[c.key]
         const delta = balanceAfter - balanceBefore
 
@@ -262,6 +271,7 @@ export const updateStudentGroupBalance = authAction
           studentId,
           actorUserId: Number(ctx.session.user.id),
           groupId,
+          walletId: sg.walletId,
           field: c.field,
           reason: fieldAudit.reason,
           delta,
@@ -283,7 +293,7 @@ export const redistributeBalance = authAction
       studentId: z.number().int().positive(),
       allocations: z.array(
         z.object({
-          groupId: z.number().int().positive(),
+          walletId: z.number().int().positive(),
           lessons: z.number().optional(),
           totalLessons: z.number().optional(),
           totalPayments: z.number().optional(),
@@ -327,13 +337,19 @@ export const redistributeBalance = authAction
         const hasTotalPayments = (alloc.totalPayments ?? 0) > 0
         if (!hasLessons && !hasTotalLessons && !hasTotalPayments) continue
 
-        const sg = await tx.studentGroup.findUnique({
-          where: { studentId_groupId: { studentId, groupId: alloc.groupId } },
-          select: { lessonsBalance: true, totalLessons: true, totalPayments: true },
+        const wallet = await tx.wallet.findUnique({
+          where: { id: alloc.walletId },
+          select: {
+            lessonsBalance: true,
+            totalLessons: true,
+            totalPayments: true,
+            studentId: true,
+          },
         })
-        if (!sg) throw new Error(`Ученик не состоит в группе ${alloc.groupId}`)
+        if (!wallet) throw new Error(`Кошелёк ${alloc.walletId} не найден`)
+        if (wallet.studentId !== studentId) throw new Error('Кошелёк не принадлежит этому ученику')
 
-        const updateData: Prisma.StudentGroupUpdateInput = {}
+        const updateData: Prisma.WalletUpdateInput = {}
         const decrementStudent: Prisma.StudentUpdateInput = {}
 
         if (hasLessons) {
@@ -349,8 +365,8 @@ export const redistributeBalance = authAction
           decrementStudent.totalPayments = { decrement: alloc.totalPayments! }
         }
 
-        const updated = await tx.studentGroup.update({
-          where: { studentId_groupId: { studentId, groupId: alloc.groupId } },
+        const updated = await tx.wallet.update({
+          where: { id: alloc.walletId },
           data: updateData,
           select: { lessonsBalance: true, totalLessons: true, totalPayments: true },
         })
@@ -365,13 +381,13 @@ export const redistributeBalance = authAction
             organizationId: ctx.session.organizationId!,
             studentId,
             actorUserId: Number(ctx.session.user.id),
-            groupId: alloc.groupId,
+            walletId: alloc.walletId,
             field: StudentFinancialField.LESSONS_BALANCE,
             reason: StudentLessonsBalanceChangeReason.BALANCE_REDISTRIBUTED,
             delta: alloc.lessons!,
-            balanceBefore: sg.lessonsBalance,
+            balanceBefore: wallet.lessonsBalance,
             balanceAfter: updated.lessonsBalance,
-            comment: 'Распределение баланса уроков по группам',
+            comment: 'Распределение баланса уроков по кошелькам',
           })
         }
         if (hasTotalLessons) {
@@ -379,13 +395,13 @@ export const redistributeBalance = authAction
             organizationId: ctx.session.organizationId!,
             studentId,
             actorUserId: Number(ctx.session.user.id),
-            groupId: alloc.groupId,
+            walletId: alloc.walletId,
             field: StudentFinancialField.TOTAL_LESSONS,
             reason: StudentLessonsBalanceChangeReason.BALANCE_REDISTRIBUTED,
             delta: alloc.totalLessons!,
-            balanceBefore: sg.totalLessons,
+            balanceBefore: wallet.totalLessons,
             balanceAfter: updated.totalLessons,
-            comment: 'Распределение всего уроков по группам',
+            comment: 'Распределение всего уроков по кошелькам',
           })
         }
         if (hasTotalPayments) {
@@ -393,13 +409,13 @@ export const redistributeBalance = authAction
             organizationId: ctx.session.organizationId!,
             studentId,
             actorUserId: Number(ctx.session.user.id),
-            groupId: alloc.groupId,
+            walletId: alloc.walletId,
             field: StudentFinancialField.TOTAL_PAYMENTS,
             reason: StudentLessonsBalanceChangeReason.BALANCE_REDISTRIBUTED,
             delta: alloc.totalPayments!,
-            balanceBefore: sg.totalPayments,
+            balanceBefore: wallet.totalPayments,
             balanceAfter: updated.totalPayments,
-            comment: 'Распределение суммы оплат по группам',
+            comment: 'Распределение суммы оплат по кошелькам',
           })
         }
       }

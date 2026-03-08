@@ -1,15 +1,10 @@
 'use server'
 
 import prisma from '@/src/lib/db/prisma'
-import { writeFinancialHistoryTx } from '@/src/lib/lessons-balance'
 import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { getGroupName } from '@/src/lib/utils'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '../../prisma/generated/client'
-import {
-  StudentFinancialField,
-  StudentLessonsBalanceChangeReason,
-} from '../../prisma/generated/enums'
 
 export const getGroups = async <T extends Prisma.GroupFindManyArgs>(
   payload?: Prisma.SelectSubset<T, Prisma.GroupFindManyArgs>,
@@ -301,35 +296,6 @@ export const updateStudentGroup = async (
   })
 }
 
-export const deleteStudentGroup = async (payload: Prisma.StudentGroupDeleteArgs) => {
-  await prisma.$transaction(async (tx) => {
-    const studentGroup = await tx.studentGroup.delete(payload)
-
-    const todayDate = normalizeDateOnly(moscowNow())
-
-    const futureLessons = await tx.lesson.findMany({
-      where: {
-        groupId: studentGroup.groupId,
-        date: { gte: todayDate },
-      },
-      select: { id: true, organizationId: true },
-    })
-
-    if (futureLessons.length > 0) {
-      const lessonIds = futureLessons.map((l) => l.id)
-
-      await tx.attendance.deleteMany({
-        where: {
-          studentId: studentGroup.studentId,
-          lessonId: { in: lessonIds },
-          status: 'UNSPECIFIED',
-        },
-      })
-    }
-    revalidatePath(`/groups/${studentGroup.groupId}`)
-  })
-}
-
 export const dismissStudentFromGroup = async (payload: {
   studentId: number
   groupId: number
@@ -376,13 +342,11 @@ export const transferStudentToGroup = async (payload: {
   newGroupId: number
   organizationId: number
   actorUserId: number
-  transferBalance: boolean
 }) => {
-  const { studentId, oldGroupId, newGroupId, organizationId, actorUserId, transferBalance } =
-    payload
+  const { studentId, oldGroupId, newGroupId, organizationId } = payload
 
   await prisma.$transaction(async (tx) => {
-    // 1. Read old StudentGroup with all financial data
+    // 1. Read old StudentGroup
     const oldSg = await tx.studentGroup.findUniqueOrThrow({
       where: { studentId_groupId: { studentId, groupId: oldGroupId } },
     })
@@ -394,7 +358,7 @@ export const transferStudentToGroup = async (payload: {
     })
     const newGroupName = getGroupName(newGroup)
 
-    // 3. Mark old StudentGroup as TRANSFERRED
+    // 3. Mark old StudentGroup as TRANSFERRED (keep walletId linked)
     await tx.studentGroup.update({
       where: { studentId_groupId: { studentId, groupId: oldGroupId } },
       data: {
@@ -404,7 +368,7 @@ export const transferStudentToGroup = async (payload: {
       },
     })
 
-    // 4. Handle new group enrollment
+    // 4. Handle new group enrollment — always link to the same wallet
     const existingSg = await tx.studentGroup.findUnique({
       where: { studentId_groupId: { studentId, groupId: newGroupId } },
     })
@@ -422,9 +386,7 @@ export const transferStudentToGroup = async (payload: {
           dismissedAt: null,
           transferComment: null,
           transferredAt: null,
-          lessonsBalance: 0,
-          totalLessons: 0,
-          totalPayments: 0,
+          walletId: oldSg.walletId,
         },
       })
     } else {
@@ -434,119 +396,12 @@ export const transferStudentToGroup = async (payload: {
           groupId: newGroupId,
           organizationId,
           status: 'ACTIVE',
+          walletId: oldSg.walletId,
         },
       })
     }
 
-    // 5. Transfer balance if requested (with proportional financial fields)
-    if (transferBalance && oldSg.lessonsBalance > 0) {
-      const balanceDelta = oldSg.lessonsBalance
-
-      // Calculate proportional totalLessons and totalPayments to transfer
-      const totalLessonsDelta = balanceDelta
-      const rate = oldSg.totalLessons > 0 ? Math.floor(oldSg.totalPayments / oldSg.totalLessons) : 0
-      const totalPaymentsDelta = balanceDelta * rate
-
-      // Decrement old group
-      await tx.studentGroup.update({
-        where: { studentId_groupId: { studentId, groupId: oldGroupId } },
-        data: {
-          lessonsBalance: { decrement: balanceDelta },
-          totalLessons: { decrement: totalLessonsDelta },
-          totalPayments: { decrement: totalPaymentsDelta },
-        },
-      })
-
-      // Increment new group
-      const updatedNewSg = await tx.studentGroup.update({
-        where: { studentId_groupId: { studentId, groupId: newGroupId } },
-        data: {
-          lessonsBalance: { increment: balanceDelta },
-          totalLessons: { increment: totalLessonsDelta },
-          totalPayments: { increment: totalPaymentsDelta },
-        },
-        select: { lessonsBalance: true, totalLessons: true, totalPayments: true },
-      })
-
-      const transferComment = `Перенос при переводе в группу ${newGroupName}`
-      const receiveComment = `Перенос при переводе из другой группы`
-
-      // Audit trail — old group (3 fields)
-      const oldGroupAudits = [
-        {
-          field: StudentFinancialField.LESSONS_BALANCE,
-          delta: -balanceDelta,
-          before: oldSg.lessonsBalance,
-          after: oldSg.lessonsBalance - balanceDelta,
-        },
-        {
-          field: StudentFinancialField.TOTAL_LESSONS,
-          delta: -totalLessonsDelta,
-          before: oldSg.totalLessons,
-          after: oldSg.totalLessons - totalLessonsDelta,
-        },
-        {
-          field: StudentFinancialField.TOTAL_PAYMENTS,
-          delta: -totalPaymentsDelta,
-          before: oldSg.totalPayments,
-          after: oldSg.totalPayments - totalPaymentsDelta,
-        },
-      ]
-
-      for (const a of oldGroupAudits) {
-        await writeFinancialHistoryTx(tx, {
-          organizationId,
-          studentId,
-          actorUserId,
-          groupId: oldGroupId,
-          field: a.field,
-          reason: StudentLessonsBalanceChangeReason.BALANCE_REDISTRIBUTED,
-          delta: a.delta,
-          balanceBefore: a.before,
-          balanceAfter: a.after,
-          comment: transferComment,
-        })
-      }
-
-      // Audit trail — new group (3 fields)
-      const newGroupAudits = [
-        {
-          field: StudentFinancialField.LESSONS_BALANCE,
-          delta: balanceDelta,
-          before: updatedNewSg.lessonsBalance - balanceDelta,
-          after: updatedNewSg.lessonsBalance,
-        },
-        {
-          field: StudentFinancialField.TOTAL_LESSONS,
-          delta: totalLessonsDelta,
-          before: updatedNewSg.totalLessons - totalLessonsDelta,
-          after: updatedNewSg.totalLessons,
-        },
-        {
-          field: StudentFinancialField.TOTAL_PAYMENTS,
-          delta: totalPaymentsDelta,
-          before: updatedNewSg.totalPayments - totalPaymentsDelta,
-          after: updatedNewSg.totalPayments,
-        },
-      ]
-
-      for (const a of newGroupAudits) {
-        await writeFinancialHistoryTx(tx, {
-          organizationId,
-          studentId,
-          actorUserId,
-          groupId: newGroupId,
-          field: a.field,
-          reason: StudentLessonsBalanceChangeReason.BALANCE_REDISTRIBUTED,
-          delta: a.delta,
-          balanceBefore: a.before,
-          balanceAfter: a.after,
-          comment: receiveComment,
-        })
-      }
-    }
-
-    // 6. Remove UNSPECIFIED attendance from old group
+    // 5. Remove UNSPECIFIED attendance from old group
     await tx.attendance.deleteMany({
       where: {
         studentId,
@@ -555,7 +410,7 @@ export const transferStudentToGroup = async (payload: {
       },
     })
 
-    // 7. Create UNSPECIFIED attendance for future lessons in new group
+    // 6. Create UNSPECIFIED attendance for future lessons in new group
     const today = normalizeDateOnly(moscowNow())
     const newFutureLessons = await tx.lesson.findMany({
       where: {
