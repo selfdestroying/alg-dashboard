@@ -17,6 +17,7 @@ const statement = {
   teacherLesson: ['create', 'read', 'update', 'delete'],
   studentGroup: ['create', 'read', 'update', 'delete'],
   studentLesson: ['create', 'read', 'update', 'delete', 'selectWarned'],
+  wallet: ['create', 'read', 'update', 'delete'],
 
   lessonStudentHistory: ['read', 'update'],
 } as const
@@ -37,6 +38,7 @@ const teacher = ac.newRole({
   studentGroup: ['read'],
   teacherLesson: ['read'],
   studentLesson: ['read', 'update'],
+  wallet: ['read'],
 })
 
 const manager = ac.newRole({
@@ -54,6 +56,7 @@ const manager = ac.newRole({
   studentGroup: ['create', 'read', 'update', 'delete'],
   teacherLesson: ['create', 'read', 'update', 'delete'],
   studentLesson: ['create', 'read', 'update', 'delete', 'selectWarned'],
+  wallet: ['create', 'read', 'update', 'delete'],
 
   lessonStudentHistory: ['read', 'update'],
 })

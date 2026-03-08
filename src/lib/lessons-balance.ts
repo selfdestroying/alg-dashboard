@@ -48,6 +48,7 @@ export async function writeFinancialHistoryTx(
     studentId: number
     actorUserId: number
     groupId?: number | null
+    walletId?: number | null
     field: StudentFinancialField
     reason: StudentLessonsBalanceChangeReason
     delta: number
@@ -64,6 +65,7 @@ export async function writeFinancialHistoryTx(
       studentId: args.studentId,
       actorUserId: args.actorUserId,
       groupId: args.groupId ?? null,
+      walletId: args.walletId ?? null,
       field: args.field,
       reason: args.reason,
       delta: args.delta,
@@ -86,6 +88,7 @@ export async function writeLessonsBalanceHistoryTx(
     studentId: number
     actorUserId: number
     groupId?: number | null
+    walletId?: number | null
     reason: StudentLessonsBalanceChangeReason
     delta: number
     balanceBefore: number
