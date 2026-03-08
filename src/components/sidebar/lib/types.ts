@@ -5,6 +5,7 @@ export type NavItem = {
   title: string
   url: string
   roles: OrganizationRole[]
+  disabled?: boolean
 }
 
 export type NavGroup = {

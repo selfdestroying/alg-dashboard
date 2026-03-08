@@ -27,6 +27,7 @@ import {
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Button } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
 import type { NavGroup } from './lib/types'
 
@@ -95,6 +96,7 @@ export default function NavGroupList({ label, groups, isLoading }: NavGroupListP
                             ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
                             : ''
                         }
+                        disabled={subItem.disabled}
                       >
                         <span>{subItem.title}</span>
                       </DropdownMenuItem>
@@ -121,7 +123,13 @@ export default function NavGroupList({ label, groups, isLoading }: NavGroupListP
                     <SidebarMenuSubItem key={subItem.url}>
                       <SidebarMenuSubButton
                         isActive={pathname === subItem.url}
-                        render={<Link href={subItem.url} />}
+                        render={
+                          subItem.disabled ? (
+                            <Button disabled variant={'ghost'} />
+                          ) : (
+                            <Link href={subItem.url} />
+                          )
+                        }
                       >
                         <span>{subItem.title}</span>
                       </SidebarMenuSubButton>

@@ -103,6 +103,7 @@ const navLists: NavGroup[] = [
         title: 'Выручка',
         url: '/finances/revenue',
         roles: ['owner'],
+        disabled: true,
       },
       {
         title: 'Зарплаты',
