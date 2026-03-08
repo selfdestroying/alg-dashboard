@@ -2,6 +2,7 @@
 
 import { Prisma } from '@/prisma/generated/client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
+import { Hint } from '@/src/components/hint'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import { Card, CardContent, CardFooter } from '@/src/components/ui/card'
 import { Skeleton } from '@/src/components/ui/skeleton'
@@ -120,7 +121,13 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
   },
 
   {
-    header: 'Отметки',
+    id: 'marks',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Отметки
+        <Hint text="Показывает, все ли ученики отмечены на уроке. Зелёная галочка — все отмечены, красный крестик — есть неотмеченные." />
+      </span>
+    ),
     accessorFn: (lesson) =>
       lesson.attendance.some((a) => a.status === 'UNSPECIFIED') ? 'unmarked' : 'marked',
     cell: (info) =>

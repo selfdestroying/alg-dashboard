@@ -1,6 +1,7 @@
 'use client'
 
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
+import { Hint } from '@/src/components/hint'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -324,6 +325,7 @@ export default function RevenueClient() {
             icon={<GraduationCap className="h-4 w-4" />}
             description={`${stats.totalLessons} уроков`}
             loading={isPending}
+            hint="Общее количество посещений учениками уроков за период. Один урок с 5 учениками = 5 ученикоуроков."
           />
           <StatCard
             title="Оплачено"
@@ -331,6 +333,7 @@ export default function RevenueClient() {
             icon={<Percent className="h-4 w-4" />}
             description={`${stats.paidStudentLessons} из ${stats.totalStudentLessons}`}
             loading={isPending}
+            hint="Доля оплаченных ученикоуроков от общего числа. Пробные ученики не считаются оплаченными."
           />
           <StatCard
             title="Средняя выручка"
@@ -338,6 +341,7 @@ export default function RevenueClient() {
             icon={<TrendingUp className="h-4 w-4" />}
             description="за ученикоурок"
             loading={isPending}
+            hint="Средняя выручка с одного оплаченного ученикоурока. Рассчитывается как общая выручка / количество оплаченных ученикоуроков."
           />
         </div>
       )}
@@ -436,13 +440,17 @@ interface StatCardProps {
   icon: React.ReactNode
   description: string
   loading?: boolean
+  hint?: string
 }
 
-function StatCard({ title, value, icon, description, loading }: StatCardProps) {
+function StatCard({ title, value, icon, description, loading, hint }: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-muted-foreground flex items-center gap-0.5 text-sm font-medium">
+          {title}
+          {hint && <Hint text={hint} />}
+        </CardTitle>
         <span className="text-muted-foreground">{icon}</span>
       </CardHeader>
       <CardContent>

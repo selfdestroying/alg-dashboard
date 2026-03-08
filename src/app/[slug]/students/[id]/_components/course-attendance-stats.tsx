@@ -1,4 +1,5 @@
 import { Badge } from '@/src/components/ui/badge'
+import { Hint } from '@/src/components/hint'
 import { getGroupName } from '@/src/lib/utils'
 import { BarChart3, CheckCircle2, RefreshCw, XCircle } from 'lucide-react'
 import { StudentWithGroupsAndAttendance } from './types'
@@ -117,6 +118,7 @@ export default function CourseAttendanceStats({
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
         <BarChart3 size={20} />
         Статистика посещаемости
+        <Hint text="Процент посещаемости = (посещения + отработки) / всего уроков. Зелёная галочка — посещено, синяя стрелка — отработано, красный крестик — пропущено." />
       </h3>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((group) => {

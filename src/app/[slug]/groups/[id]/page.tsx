@@ -1,5 +1,6 @@
 import { getGroup } from '@/src/actions/groups'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { Hint } from '@/src/components/hint'
 import { auth } from '@/src/lib/auth/server'
 import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
@@ -104,7 +105,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
       <Card>
         <CardHeader>
-          <CardTitle>Посещаемость</CardTitle>
+          <CardTitle>
+            Посещаемость
+            <Hint text="Зелёный — присутствовал, красный — пропустил, градиент — пробный ученик. Контур ячейки показывает статус отработки." />
+          </CardTitle>
           {canCreateLesson && (
             <CardAction>
               <AddLessonButton group={group} />

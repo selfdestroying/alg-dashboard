@@ -7,6 +7,7 @@ import {
 } from '@/prisma/generated/client'
 import { updateStudentBalanceHistory } from '@/src/actions/students'
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -204,7 +205,13 @@ const columns: ColumnDef<HistoryRow>[] = [
     },
   },
   {
-    header: 'Поле',
+    id: 'field',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Поле
+        <Hint text="Какой показатель был изменён: баланс уроков, сумма оплат или общее количество оплаченных уроков." />
+      </span>
+    ),
     accessorFn: (row) => row.field,
     cell: ({ row }) => fieldLabel[row.original.field] ?? row.original.field,
   },
@@ -237,7 +244,13 @@ const columns: ColumnDef<HistoryRow>[] = [
     meta: { className: 'text-right' },
   },
   {
-    header: 'Δ',
+    id: 'delta',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Δ
+        <Hint text="Изменение значения: положительное число — начисление, отрицательное — списание." />
+      </span>
+    ),
     accessorFn: (row) => row.delta,
     cell: ({ row }) => {
       const deltaText =

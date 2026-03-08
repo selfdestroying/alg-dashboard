@@ -2,6 +2,7 @@
 
 import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
+import { Hint } from '@/src/components/hint'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -311,6 +312,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
         <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
           <Wallet size={20} />
           Кошельки
+          <Hint text="Кошельки хранят баланс уроков и привязаны к группам. Один кошелёк может обслуживать несколько групп. Оплаты зачисляются на конкретный кошелёк." />
         </h3>
         <div className="flex gap-1">
           <Button size="sm" variant="outline" onClick={() => setActiveSheet('create')}>
@@ -344,6 +346,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
             <span className="text-foreground font-medium">{student.lessonsBalance} ур.</span>
             {' — '}не привязан ни к одному кошельку
           </span>
+          <Hint text="Этот баланс остался от старой системы учёта и не привязан ни к одному кошельку. Используйте «Распределение баланса» чтобы перенести его." variant="warning" />
         </div>
       )}
 

@@ -1,6 +1,7 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
@@ -34,7 +35,13 @@ const columns: ColumnDef<TeacherGroupWithRate>[] = [
     cell: ({ row }) => <BalanceBadge balance={row.original.rate.bid} />,
   },
   {
-    header: 'Бонус за уч.',
+    id: 'bonusPerStudent',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Бонус за уч.
+        <Hint text="Доплата преподавателю за каждого присутствующего ученика. Итого за урок = ставка + (бонус × кол-во учеников)." />
+      </span>
+    ),
     cell: ({ row }) => <BalanceBadge balance={row.original.rate.bonusPerStudent} />,
   },
   {

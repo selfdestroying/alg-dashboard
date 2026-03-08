@@ -2,6 +2,7 @@
 
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldLabel } from '@/src/components/ui/field'
+import { Hint } from '@/src/components/hint'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { redistributeBalance } from '@/src/features/students/actions'
@@ -110,6 +111,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
         <ArrowRightLeft size={20} />
         Распределение баланса
+        <Hint text="Перенос нераспределённого баланса (уроков, оплат) со старого поля ученика на конкретные кошельки. Это одноразовая миграция данных." />
       </h3>
 
       <div className="space-y-1 text-sm">

@@ -7,6 +7,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
+import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useActiveStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Layers, TrendingDown, TrendingUp, Users } from 'lucide-react'
@@ -24,19 +25,24 @@ function KpiCard({
   subtitle,
   icon: Icon,
   trend,
+  hint,
 }: {
   title: string
   value: string | number
   subtitle?: string
   icon: React.ComponentType<{ className?: string }>
   trend?: { value: number; label: string }
+  hint?: string
 }) {
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-1">
-            <p className="text-muted-foreground text-xs font-medium">{title}</p>
+            <p className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
+              {title}
+              {hint && <Hint text={hint} />}
+            </p>
             <p className="text-2xl font-bold tracking-tight">{value}</p>
             {trend && (
               <div className="flex items-center gap-1">
@@ -137,6 +143,7 @@ export default function ActiveStatistics() {
           icon={TrendingUp}
           trend={growthPercent !== 0 ? { value: growthPercent, label: 'vs прошлый' } : undefined}
           subtitle={growthPercent === 0 ? 'нет данных за прошлый месяц' : undefined}
+          hint="Количество учеников, ставших активными в текущем месяце. Процент показывает рост или падение по сравнению с прошлым месяцем."
         />
         <KpiCard
           title="Групп"
@@ -157,7 +164,10 @@ export default function ActiveStatistics() {
         {/* Trend Chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Динамика набора</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Динамика набора
+              <Hint text="Количество новых активных учеников по месяцам. Показывает темп набора новых учеников в организацию." />
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <ChartContainer config={trendConfig} className="h-40 w-full">

@@ -1,6 +1,7 @@
 'use client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
@@ -103,7 +104,13 @@ const columns: ColumnDef<ActiveStudent>[] = [
     accessorFn: (row) => row.wallet?.totalLessons ?? 0,
   },
   {
-    header: 'Баланс уроков',
+    id: 'lessonsBalance',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Баланс уроков
+        <Hint text="Оставшееся количество оплаченных уроков. Красным выделяются ученики с балансом менее 2 — им скоро потребуется оплата." />
+      </span>
+    ),
     accessorFn: (row) => row.wallet?.lessonsBalance ?? 0,
     cell: ({ row }) => {
       const balance = row.original.wallet?.lessonsBalance ?? 0

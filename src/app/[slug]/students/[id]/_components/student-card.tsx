@@ -1,5 +1,6 @@
 import { Separator } from '@/src/components/ui/separator'
 import { StatCard } from '@/src/components/ui/stat-card'
+import { Hint } from '@/src/components/hint'
 import {
   Cake,
   Coins,
@@ -61,7 +62,10 @@ export default async function StudentCard({ student }: StudentCardProps) {
         <StatCard label="Пароль" value={student.password} icon={KeyRound} />
         <div className="bg-muted/50 relative overflow-hidden rounded-lg p-3 transition-colors">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground text-xs font-medium">Астрокоины</span>
+            <span className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
+              Астрокоины
+              <Hint text="Внутренняя валюта, которую ученик зарабатывает за активность на уроках и может потратить в магазине наград." />
+            </span>
             <Coins className="text-muted-foreground size-4 shrink-0" />
           </div>
           <div className="mt-1 flex items-center gap-2">

@@ -1,3 +1,4 @@
+import type { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
 import { cva } from 'class-variance-authority'
 import { CircleAlert, CircleCheck, CircleHelp, CircleX } from 'lucide-react'
 import { Button } from './ui/button'
@@ -6,9 +7,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 interface HintProps {
   text: string
   variant?: 'default' | 'destructive' | 'warning' | 'success'
+  side?: TooltipPrimitive.Positioner.Props['side']
+  className?: string
 }
 
-const hintVariants = cva('text-sm px-3 py-1.5 rounded-md', {
+const hintVariants = cva('cursor-help', {
   variants: {
     variant: {
       default: '',
@@ -22,6 +25,7 @@ const hintVariants = cva('text-sm px-3 py-1.5 rounded-md', {
     variant: 'default',
   },
 })
+
 const iconMap = {
   default: CircleHelp,
   destructive: CircleX,
@@ -29,21 +33,29 @@ const iconMap = {
   success: CircleCheck,
 } as const
 
-export default function Hint({ text, variant = 'default' }: HintProps) {
+function Hint({ text, variant = 'default', side, className }: HintProps) {
   const Icon = iconMap[variant]
 
   return (
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button size="icon-sm" variant="ghost" className={hintVariants({ variant })}>
-            <Icon />
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            className={hintVariants({ variant, className })}
+            aria-label={text}
+          >
+            <Icon aria-hidden />
           </Button>
         }
       />
-      <TooltipContent>
+      <TooltipContent side={side}>
         <p>{text}</p>
       </TooltipContent>
     </Tooltip>
   )
 }
+
+export { Hint }

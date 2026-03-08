@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
+import { Hint } from '@/src/components/hint'
 import CreateRateDialog from '@/src/features/organization/rates/components/create-rate-dialog'
 import RatesTable from '@/src/features/organization/rates/components/rates-table'
 
@@ -16,7 +17,10 @@ export default function Page() {
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
         <CardHeader>
-          <CardTitle>Ставки</CardTitle>
+          <CardTitle>
+            Ставки
+            <Hint text="Ставки определяют оплату преподавателей за проведённые уроки. Ставка включает базовую сумму за урок и опциональный бонус за каждого присутствующего ученика." />
+          </CardTitle>
           <CardDescription>Управление ставками преподавателей</CardDescription>
           <CardAction>
             <CreateRateDialog />

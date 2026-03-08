@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
+import { Hint } from '@/src/components/hint'
 import { auth } from '@/src/lib/auth/server'
 import prisma from '@/src/lib/db/prisma'
 import { protocol, rootDomain } from '@/src/lib/utils'
@@ -54,7 +55,10 @@ export default async function Page() {
     <div className="grid min-h-0 flex-1 grid-cols-1">
       <Card>
         <CardHeader>
-          <CardTitle>Типы групп</CardTitle>
+          <CardTitle>
+            Типы групп
+            <Hint text="Тип группы определяет ставку преподавателя по умолчанию. При создании группы выбранный тип автоматически подставит привязанную ставку." />
+          </CardTitle>
           <CardDescription>Управление типами групп и привязка ставок</CardDescription>
           <CardAction>
             <CreateGroupTypeDialog rates={rates} />

@@ -32,12 +32,18 @@ export default function PaymentSection({ student }: PaymentSectionProps) {
           value={`${totalPaymentsAggregate.toLocaleString('ru-RU')} ₽`}
           icon={ReceiptRussianRuble}
         />
-        <StatCard label="Всего уроков" value={totalLessonsAggregate} icon={BookOpen} />
+        <StatCard
+          label="Всего уроков"
+          value={totalLessonsAggregate}
+          icon={BookOpen}
+          hint="Общее количество оплаченных уроков по всем кошелькам ученика (включая нераспределённый остаток)."
+        />
         <StatCard
           label="Средняя стоимость"
           value={avgCost === '—' ? avgCost : `${Number(avgCost).toLocaleString('ru-RU')} ₽`}
           description={avgCost !== '—' ? 'за урок' : undefined}
           icon={Calculator}
+          hint="Средняя цена одного урока = общая сумма оплат / общее количество оплаченных уроков."
         />
         <StatCard
           label="Баланс уроков"
@@ -45,6 +51,7 @@ export default function PaymentSection({ student }: PaymentSectionProps) {
           description={getBalanceLabel(balanceVariant)}
           variant={balanceVariant}
           icon={Wallet}
+          hint="Оставшееся количество оплаченных уроков по всем кошелькам. При посещении урока списывается 1 урок. Отрицательный баланс означает долг."
         />
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
@@ -47,7 +48,12 @@ export default function PaymentsTable() {
         accessorKey: 'productName',
       },
       {
-        header: 'Занятий оплачено',
+        header: () => (
+          <span className="flex items-center gap-0.5">
+            Занятий оплачено
+            <Hint text="Количество уроков, зачисленных на баланс кошелька ученика по этой оплате." />
+          </span>
+        ),
         accessorKey: 'lessonCount',
       },
       {
@@ -55,7 +61,12 @@ export default function PaymentsTable() {
         accessorKey: 'price',
       },
       {
-        header: 'Ставка за урок',
+        header: () => (
+          <span className="flex items-center gap-0.5">
+            Ставка за урок
+            <Hint text="Стоимость одного урока = сумма оплаты / количество оплаченных занятий." />
+          </span>
+        ),
         accessorKey: 'bidForLesson',
       },
       {

@@ -7,6 +7,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
+import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useDismissedStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Percent, TrendingDown, TrendingUp, UserMinus } from 'lucide-react'
@@ -24,6 +25,7 @@ function KpiCard({
   subtitle,
   icon: Icon,
   trend,
+  hint,
   variant = 'default',
 }: {
   title: string
@@ -31,6 +33,7 @@ function KpiCard({
   subtitle?: string
   icon: React.ComponentType<{ className?: string }>
   trend?: { value: number; label: string; inverse?: boolean }
+  hint?: string
   variant?: 'default' | 'destructive'
 }) {
   const iconColor = variant === 'destructive' ? 'text-red-500' : 'text-muted-foreground'
@@ -41,7 +44,10 @@ function KpiCard({
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-1">
-            <p className="text-muted-foreground text-xs font-medium">{title}</p>
+            <p className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
+              {title}
+              {hint && <Hint text={hint} />}
+            </p>
             <p className="text-2xl font-bold tracking-tight">{value}</p>
             {trend && (
               <div className="flex items-center gap-1">
@@ -148,6 +154,7 @@ export default function DismissedStatistics() {
           icon={Percent}
           variant="destructive"
           subtitle="от всех учеников"
+          hint="Процент оттока — доля отчисленных учеников от общего числа всех учеников (активных + отчисленных). Чем ниже, тем лучше."
         />
         <KpiCard
           title="В этом месяце"
@@ -159,6 +166,7 @@ export default function DismissedStatistics() {
               : undefined
           }
           subtitle={prevMonthCount === 0 ? 'нет данных за прошлый месяц' : undefined}
+          hint="Количество отчислений за текущий месяц. Стрелка показывает изменение по сравнению с прошлым месяцем."
         />
         <KpiCard
           title="Самый частый курс"
@@ -214,8 +222,9 @@ export default function DismissedStatistics() {
             <div className="grid gap-4 sm:grid-cols-3">
               {/* Teacher churn with percentage */}
               <div className="space-y-2">
-                <p className="text-muted-foreground text-xs font-medium">
+                <p className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
                   По преподавателям (% оттока)
+                  <Hint text="Процент оттока по преподавателю = количество отчислений / общее количество учеников у этого преподавателя." />
                 </p>
                 <div className="space-y-1.5">
                   {teachers.slice(0, 5).map((t) => (

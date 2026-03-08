@@ -1,6 +1,7 @@
 'use client'
 
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
@@ -26,7 +27,12 @@ const columns: ColumnDef<RateWithCount>[] = [
     cell: ({ row }) => <span className="tabular-nums">{row.original.bid.toLocaleString()} ₽</span>,
   },
   {
-    header: 'Бонус за уч.',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Бонус за уч.
+        <Hint text="Дополнительная надбавка к ставке преподавателя за каждого присутствующего ученика на уроке." />
+      </span>
+    ),
     accessorKey: 'bonusPerStudent',
     cell: ({ row }) =>
       row.original.bonusPerStudent > 0 ? (
@@ -36,7 +42,13 @@ const columns: ColumnDef<RateWithCount>[] = [
       ),
   },
   {
-    header: 'Привязано групп',
+    id: 'linkedGroups',
+    header: () => (
+      <span className="flex items-center gap-0.5">
+        Привязано групп
+        <Hint text="Количество связей «преподаватель — группа», использующих эту ставку." />
+      </span>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground tabular-nums">
         {row.original._count.teacherGroups}

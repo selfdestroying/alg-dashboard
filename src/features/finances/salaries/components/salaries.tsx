@@ -3,6 +3,7 @@
 import { PayCheck } from '@/prisma/generated/browser'
 import { LessonStatus } from '@/prisma/generated/client'
 import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
+import { Hint } from '@/src/components/hint'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -235,6 +236,7 @@ export default function Salaries() {
             icon={<Banknote className="h-4 w-4" />}
             description={`${stats.teacherCount} сотрудник(ов)`}
             loading={isPending}
+            hint="Суммарная зарплата всех преподавателей за выбранный период, включая оплату за уроки и дополнительные выплаты по чекам."
           />
           <StatCard
             title="Проведено уроков"
@@ -251,6 +253,7 @@ export default function Salaries() {
             icon={<TrendingUp className="h-4 w-4" />}
             description="за урок"
             loading={isPending}
+            hint="Средняя стоимость одного проведённого урока по всем преподавателям. Отменённые уроки не учитываются."
           />
           <StatCard
             title="Доп. выплаты"
@@ -258,6 +261,7 @@ export default function Salaries() {
             icon={<Receipt className="h-4 w-4" />}
             description="по чекам"
             loading={isPending}
+            hint="Выплаты по чекам — дополнительные начисления преподавателям, не связанные напрямую с уроками (бонусы, компенсации и т.д.)."
           />
         </div>
       )}
@@ -361,13 +365,17 @@ interface StatCardProps {
   icon: React.ReactNode
   description: string
   loading?: boolean
+  hint?: string
 }
 
-function StatCard({ title, value, icon, description, loading }: StatCardProps) {
+function StatCard({ title, value, icon, description, loading, hint }: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-muted-foreground flex items-center gap-0.5 text-sm font-medium">
+          {title}
+          {hint && <Hint text={hint} />}
+        </CardTitle>
         <span className="text-muted-foreground">{icon}</span>
       </CardHeader>
       <CardContent>

@@ -12,6 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/src/components/ui/chart'
+import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { useAbsentStatisticsQuery } from '@/src/features/statistics/queries'
@@ -32,12 +33,14 @@ function KpiCard({
   value,
   subtitle,
   icon: Icon,
+  hint,
   variant = 'default',
 }: {
   title: string
   value: string | number
   subtitle?: string
   icon: React.ComponentType<{ className?: string }>
+  hint?: string
   variant?: 'default' | 'success' | 'destructive'
 }) {
   const iconColors = {
@@ -55,7 +58,10 @@ function KpiCard({
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-1">
-            <p className="text-muted-foreground text-xs font-medium">{title}</p>
+            <p className="text-muted-foreground flex items-center gap-0.5 text-xs font-medium">
+              {title}
+              {hint && <Hint text={hint} />}
+            </p>
             <p className="text-2xl font-bold tracking-tight">{value}</p>
             {subtitle && <p className="text-muted-foreground text-xs">{subtitle}</p>}
           </div>
@@ -100,6 +106,7 @@ export default function AbsentStatistics() {
           icon={Ban}
           subtitle={`средняя ставка: ${averagePrice.toLocaleString('ru-RU')} ₽`}
           variant="destructive"
+          hint="Общее количество пропусков за всё время. Средняя ставка — средняя стоимость урока для расчёта потерь."
         />
         <KpiCard
           title="Отработано"
@@ -107,6 +114,7 @@ export default function AbsentStatistics() {
           icon={ShieldCheck}
           subtitle={`${makeupRate}% от пропусков`}
           variant="success"
+          hint="Количество пропущенных уроков, которые были отработаны — ученик посетил занятие в другой группе или в другой день."
         />
         <KpiCard
           title="Потери"
@@ -114,6 +122,7 @@ export default function AbsentStatistics() {
           icon={TrendingDown}
           subtitle="неотработанные пропуски"
           variant="destructive"
+          hint="Стоимость неотработанных пропусков = (всего пропусков − отработано) × средняя ставка."
         />
         <KpiCard
           title="Возвращено"
@@ -121,6 +130,7 @@ export default function AbsentStatistics() {
           icon={CircleDollarSign}
           subtitle="через отработки"
           variant="success"
+          hint="Стоимость отработанных пропусков. Ученик посетил дополнительный урок и не потерял оплаченное занятие."
         />
       </div>
 

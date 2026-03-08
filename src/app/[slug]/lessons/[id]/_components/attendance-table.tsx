@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { AttendanceStatus, StudentStatus } from '@/prisma/generated/enums'
 import { AttendanceWithStudents, updateAttendanceComment } from '@/src/actions/attendance'
 import DataTable from '@/src/components/data-table'
+import { Hint } from '@/src/components/hint'
 import { Input } from '@/src/components/ui/input'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import useSkipper from '@/src/hooks/use-skipper'
@@ -48,7 +49,13 @@ const getColumns = (
       ),
     },
     {
-      header: 'Статус ученика',
+      id: 'studentStatus',
+      header: () => (
+        <span className="flex items-center gap-0.5">
+          Статус ученика
+          <Hint text="Статус ученика в группе: «Ученик» (активный, списывается баланс), «Пробный» (без списания), «Отчислен» или «Переведён»." />
+        </span>
+      ),
       cell: ({ row }) => StudentStatusMap[row.original.studentStatus],
     },
     {
@@ -56,7 +63,13 @@ const getColumns = (
       cell: ({ row }) => <AttendanceStatusSwitcher attendance={row.original} />,
     },
     {
-      header: 'Отработка',
+      id: 'makeup',
+      header: () => (
+        <span className="flex items-center gap-0.5">
+          Отработка
+          <Hint text="Связь с отработкой: если ученик пропустил урок — ссылка на урок-отработку. Если пришёл на отработку — ссылка на пропущенный урок." />
+        </span>
+      ),
       cell: ({ row }) =>
         row.original.asMakeupFor ? (
           <Link
