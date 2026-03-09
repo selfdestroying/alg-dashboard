@@ -23,7 +23,7 @@ export const walletKeys = {
   byStudent: (studentId: number) => ['wallets', 'student', studentId] as const,
 }
 
-export const useStudentWalletsQuery = (studentId: number) => {
+export const useStudentWalletsQuery = (studentId: number, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: walletKeys.byStudent(studentId),
     queryFn: async () => {
@@ -31,6 +31,7 @@ export const useStudentWalletsQuery = (studentId: number) => {
       if (serverError) throw serverError
       return data ?? []
     },
+    enabled: options?.enabled,
   })
 }
 

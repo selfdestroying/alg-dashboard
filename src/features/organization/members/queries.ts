@@ -49,7 +49,7 @@ export const useMappedMemberListQuery = () => {
     },
     select: (members) =>
       members.map((member) => ({
-        value: member.id.toString(),
+        value: member.userId.toString(),
         label: member.user.name,
       })),
   })

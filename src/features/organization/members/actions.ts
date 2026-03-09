@@ -27,7 +27,6 @@ export const getMembers = authAction
     return await prisma.member.findMany({
       where: {
         organizationId: ctx.session.organizationId!,
-        NOT: { userId: Number(ctx.session.user.id) },
       },
       include: { user: true },
       orderBy: { userId: 'asc' },
