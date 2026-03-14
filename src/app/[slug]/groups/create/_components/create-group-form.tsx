@@ -456,7 +456,6 @@ export default function CreateGroupForm() {
                 pressed={fields.some((f) => f.dayOfWeek === day.dayOfWeek)}
                 onPressedChange={() => toggleDay(day.dayOfWeek)}
                 disabled={isPending}
-                size="sm"
                 variant="outline"
               >
                 {day.label}
