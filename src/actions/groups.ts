@@ -69,12 +69,27 @@ export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
   revalidatePath('dashboard/groups')
 }
 
-export const updateGroupSchedule = async (
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
+
+export type ScheduleAndLessonsResult = {
+  scheduleUpdated: boolean
+  deletedLessonsCount: number
+  createdLessonsCount: number
+  assignedTeachersCount: number
+  assignedStudentsCount: number
+  firstLessonDate: Date | null
+  lastLessonDate: Date | null
+}
+
+export const updateScheduleAndRegenerateLessons = async (
   groupId: number,
   organizationId: number,
   schedule: Array<{ dayOfWeek: number; time: string }>,
-) => {
-  await prisma.$transaction(async (tx) => {
+  startDate: Date,
+  lessonCount: number,
+): Promise<ScheduleAndLessonsResult> => {
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Update schedule
     await tx.groupSchedule.deleteMany({ where: { groupId } })
     await tx.groupSchedule.createMany({
       data: schedule.map((s) => ({
@@ -84,39 +99,22 @@ export const updateGroupSchedule = async (
         organizationId,
       })),
     })
-  })
-  revalidatePath(`/groups/${groupId}`)
-}
 
-const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
-
-export const regenerateLessons = async (
-  groupId: number,
-  organizationId: number,
-  startDate: Date,
-  lessonCount: number,
-) => {
-  await prisma.$transaction(async (tx) => {
-    // 1. Fetch schedules
-    const schedules = await tx.groupSchedule.findMany({
-      where: { groupId },
-    })
-    if (schedules.length === 0) throw new Error('Группа не имеет расписания')
-
-    const sortedSchedules = [...schedules].sort(
+    // 2. Build schedule map from new schedule
+    const sortedSchedules = [...schedule].sort(
       (a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek),
     )
     const scheduleDaysMap = new Map(sortedSchedules.map((s) => [s.dayOfWeek, s.time]))
 
-    // 2. Delete future lessons (cascade deletes attendance & teacher-lesson)
-    await tx.lesson.deleteMany({
+    // 3. Delete future lessons (cascade deletes attendance & teacher-lesson)
+    const { count: deletedLessonsCount } = await tx.lesson.deleteMany({
       where: {
         groupId,
         date: { gte: startDate },
       },
     })
 
-    // 3. Generate new lesson dates
+    // 4. Generate new lesson dates
     const lessons: Array<{ date: Date; time: string; organizationId: number }> = []
     const currentDate = new Date(startDate.getTime())
     const maxIterations = lessonCount * 7 + 7
@@ -133,7 +131,7 @@ export const regenerateLessons = async (
       currentDate.setUTCDate(currentDate.getUTCDate() + 1)
     }
 
-    // 4. Create lessons
+    // 5. Create lessons
     const createdLessons = await Promise.all(
       lessons.map((l) =>
         tx.lesson.create({
@@ -147,7 +145,7 @@ export const regenerateLessons = async (
       ),
     )
 
-    // 5. Assign teachers to all new lessons
+    // 6. Assign teachers to all new lessons
     const teachers = await tx.teacherGroup.findMany({
       where: { groupId },
       include: { rate: true },
@@ -166,7 +164,7 @@ export const regenerateLessons = async (
       await tx.teacherLesson.createMany({ data: teacherLessonData })
     }
 
-    // 6. Create UNSPECIFIED attendance for active students
+    // 7. Create UNSPECIFIED attendance for active students
     const students = await tx.studentGroup.findMany({
       where: { groupId, status: { in: ['ACTIVE', 'TRIAL'] } },
     })
@@ -184,9 +182,20 @@ export const regenerateLessons = async (
       )
       await tx.attendance.createMany({ data: attendanceData })
     }
+
+    return {
+      scheduleUpdated: true,
+      deletedLessonsCount,
+      createdLessonsCount: createdLessons.length,
+      assignedTeachersCount: teachers.length,
+      assignedStudentsCount: students.length,
+      firstLessonDate: createdLessons[0]?.date ?? null,
+      lastLessonDate: createdLessons[createdLessons.length - 1]?.date ?? null,
+    } satisfies ScheduleAndLessonsResult
   })
 
   revalidatePath(`/groups/${groupId}`)
+  return result
 }
 
 // Student-Group Relations

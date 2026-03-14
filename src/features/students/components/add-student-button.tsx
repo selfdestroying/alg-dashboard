@@ -136,7 +136,7 @@ export default function AddStudentButton() {
           <SheetDescription>Заполните форму ниже, чтобы создать нового ученика.</SheetDescription>
         </SheetHeader>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, (errors) => console.log(errors))}
           id="create-student-form"
           className="no-scrollbar overflow-auto px-6 py-2"
         >
@@ -189,7 +189,7 @@ export default function AddStudentButton() {
                         mode="single"
                         onSelect={field.onChange}
                         locale={ru}
-                        selected={field.value}
+                        selected={field.value ?? undefined}
                         captionLayout="dropdown"
                       />
                     </PopoverContent>
@@ -265,7 +265,6 @@ export default function AddStudentButton() {
                     <Button
                       type="button"
                       variant="ghost"
-                      size="sm"
                       disabled={createMutation.isPending}
                       onClick={generateLogin}
                       className="h-auto px-2 py-1 text-xs"

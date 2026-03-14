@@ -178,14 +178,13 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button variant="secondary" size="sm" onClick={() => setDeleteDialogOpen(false)}>
+            <Button variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
               Отмена
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isPending || isDeleteDisabled || groupType._count.groups > 0}
-              size="sm"
             >
               {isPending ? (
                 <Loader2 className="animate-spin" />
@@ -260,8 +259,8 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
           </form>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size="sm" />}>Отмена</DialogClose>
-            <Button type="submit" size="sm" form="group-type-edit-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
+            <Button type="submit" form="group-type-edit-form" disabled={isPending}>
               Сохранить
             </Button>
           </DialogFooter>

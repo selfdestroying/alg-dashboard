@@ -1,7 +1,7 @@
 'use client'
 
-import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Hint } from '@/src/components/hint'
+import TableFilter, { TableFilterItem } from '@/src/components/table-filter'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -272,7 +272,6 @@ export default function RevenueClient() {
                           <Button
                             key={preset.label}
                             variant="ghost"
-                            size="sm"
                             className="justify-start text-xs"
                             onClick={() => handlePresetSelect(preset)}
                           >

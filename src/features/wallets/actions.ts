@@ -16,6 +16,7 @@ import {
   DeleteWalletSchema,
   LinkGroupToWalletSchema,
   MergeWalletsSchema,
+  RenameWalletSchema,
   TransferWalletBalanceSchema,
   UpdateWalletBalanceSchema,
 } from './schemas'
@@ -365,6 +366,24 @@ export const transferWalletBalance = authAction
           comment: `Перевод из кошелька #${sourceWalletId}`,
         })
       }
+    })
+  })
+
+// ─── RENAME ──────────────────────────────────────────────────────────────────
+
+export const renameWallet = authAction
+  .metadata({ actionName: 'renameWallet' })
+  .inputSchema(RenameWalletSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    const wallet = await prisma.wallet.findUnique({
+      where: { id: parsedInput.walletId, organizationId: ctx.session.organizationId! },
+      select: { id: true },
+    })
+    if (!wallet) throw new Error('Кошелёк не найден')
+
+    return await prisma.wallet.update({
+      where: { id: parsedInput.walletId },
+      data: { name: parsedInput.name || null },
     })
   })
 

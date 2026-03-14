@@ -23,7 +23,7 @@ export default function MemberActions({ member }: MemberActionsProps) {
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <MoreVertical />
         </DropdownMenuTrigger>
 
