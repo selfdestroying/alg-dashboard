@@ -173,14 +173,13 @@ export default function RateActions({ rate }: RateActionsProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button variant="secondary" size="sm" onClick={() => setDeleteDialogOpen(false)}>
+            <Button variant="secondary" onClick={() => setDeleteDialogOpen(false)}>
               Отмена
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isPending || isDeleteDisabled || rate._count.teacherGroups > 0}
-              size="sm"
             >
               {isPending ? (
                 <Loader2 className="animate-spin" />
@@ -283,8 +282,8 @@ export default function RateActions({ rate }: RateActionsProps) {
           </form>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size="sm" />}>Отмена</DialogClose>
-            <Button type="submit" size="sm" form="rate-edit-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
+            <Button type="submit" form="rate-edit-form" disabled={isPending}>
               Сохранить
             </Button>
           </DialogFooter>

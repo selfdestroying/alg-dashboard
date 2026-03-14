@@ -14,7 +14,7 @@ export default function NavCollapse() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton size="sm" onClick={toggleSidebar}>
+        <SidebarMenuButton onClick={toggleSidebar}>
           {state === 'expanded' ? <PanelLeftClose /> : <PanelLeftOpen />}
           <span>Свернуть</span>
         </SidebarMenuButton>

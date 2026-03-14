@@ -31,10 +31,7 @@ export default function NavTheme() {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton
-                size="sm"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              />
+              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground" />
             }
           >
             {mounted ? theme && themeNames[theme] : <Loader className="animate-spin" />}
