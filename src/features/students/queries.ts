@@ -32,7 +32,8 @@ export const useStudentCreateMutation = () => {
       queryClient.invalidateQueries({ queryKey: studentKeys.all })
       toast.success('Ученик успешно создан!')
     },
-    onError: () => {
+    onError: (e) => {
+      console.error(e)
       toast.error('Ошибка при создании ученика.')
     },
   })

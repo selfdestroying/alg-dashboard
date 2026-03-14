@@ -5,7 +5,8 @@ import * as z from 'zod'
 const MIN_STUDENT_AGE = 6
 const MAX_STUDENT_AGE = 17
 
-const validateAge = (values: { birthDate: Date }, ctx: z.RefinementCtx) => {
+const validateAge = (values: { birthDate?: Date | null }, ctx: z.RefinementCtx) => {
+  if (!values.birthDate) return
   const age = getAgeFromBirthDate(values.birthDate)
 
   if (age < MIN_STUDENT_AGE) {
@@ -34,7 +35,7 @@ const StudentBaseFields = {
   password: z
     .string({ error: 'Укажите пароль' })
     .min(2, 'Пароль должен содержать минимум 2 символа'),
-  birthDate: z.date({ error: 'Укажите дату рождения' }).transform(normalizeDateOnly),
+  birthDate: z.date().transform(normalizeDateOnly).nullish(),
   parentsPhone: z
     .string()
     .regex(/^\+?[0-9\s\-()]{7,15}$/, 'Укажите корректный номер телефона')

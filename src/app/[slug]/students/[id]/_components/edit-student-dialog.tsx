@@ -55,7 +55,7 @@ export default function EditStudentDialog({
       : null
 
   const onSubmit = (values: EditStudentSchemaType) => {
-    const age = getAgeFromBirthDate(values.birthDate)
+    const age = values.birthDate ? getAgeFromBirthDate(values.birthDate) : null
     startTransition(async () => {
       try {
         await updateStudent(
@@ -65,7 +65,7 @@ export default function EditStudentDialog({
               firstName: values.firstName,
               lastName: values.lastName,
               age,
-              birthDate: values.birthDate,
+              birthDate: values.birthDate ?? null,
               parentsName: values.parentsName ?? null,
               parentsPhone: values.parentsPhone ?? null,
               url: values.url ?? null,

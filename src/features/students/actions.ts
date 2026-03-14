@@ -50,12 +50,13 @@ export const createStudent = authAction
   .inputSchema(CreateStudentSchema)
   .action(async ({ ctx, parsedInput }) => {
     const { birthDate, ...rest } = parsedInput
-    const age =
-      new Date().getFullYear() -
-      birthDate.getFullYear() -
-      (new Date() < new Date(new Date().getFullYear(), birthDate.getMonth(), birthDate.getDate())
-        ? 1
-        : 0)
+    const age = birthDate
+      ? new Date().getFullYear() -
+        birthDate.getFullYear() -
+        (new Date() < new Date(new Date().getFullYear(), birthDate.getMonth(), birthDate.getDate())
+          ? 1
+          : 0)
+      : null
 
     await prisma.student.create({
       data: {
