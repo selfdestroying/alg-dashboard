@@ -16,8 +16,7 @@ type GroupDTO = Prisma.GroupGetPayload<{
 
 import { Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
 import EditGroupButton from './edit-group-button'
-import EditScheduleButton from './edit-schedule-button'
-import RegenerateLessonsButton from './regenerate-lessons-button'
+import ManageScheduleButton from './manage-schedule-button'
 
 export default async function InfoSection({ group }: { group: GroupDTO }) {
   const sortedSchedules = [...group.schedules].sort(
@@ -125,8 +124,7 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <EditScheduleButton groupId={group.id} schedules={group.schedules} />
-          <RegenerateLessonsButton groupId={group.id} />
+          <ManageScheduleButton groupId={group.id} schedules={group.schedules} />
         </div>
       </CardContent>
     </Card>

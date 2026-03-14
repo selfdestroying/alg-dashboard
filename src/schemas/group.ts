@@ -31,10 +31,15 @@ export const EditGroupSchema = z.object({
   courseId: z.number().int().positive().optional(),
   locationId: z.number().int().positive().optional(),
   groupTypeId: z.number().int().positive().optional(),
+  maxStudents: z
+    .number('Введите максимальное количество учеников')
+    .int()
+    .positive('Количество должно быть положительным')
+    .optional(),
   url: z.string().optional(),
 })
 
-export const UpdateScheduleSchema = z.object({
+export const UpdateScheduleAndLessonsSchema = z.object({
   schedule: z
     .array(
       z.object({
@@ -43,14 +48,10 @@ export const UpdateScheduleSchema = z.object({
       }),
     )
     .min(1, 'Выберите хотя бы один день занятий'),
-})
-
-export const RegenerateLessonsSchema = z.object({
   startDate: DateOnlySchema,
   lessonCount: z.number().int().positive('Количество занятий должно быть положительным'),
 })
 
 export type CreateGroupSchemaType = z.infer<typeof CreateGroupSchema>
 export type EditGroupSchemaType = z.infer<typeof EditGroupSchema>
-export type UpdateScheduleSchemaType = z.infer<typeof UpdateScheduleSchema>
-export type RegenerateLessonsSchemaType = z.infer<typeof RegenerateLessonsSchema>
+export type UpdateScheduleAndLessonsSchemaType = z.infer<typeof UpdateScheduleAndLessonsSchema>
