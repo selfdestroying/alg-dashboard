@@ -1,6 +1,10 @@
 'use client'
 
 import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
+import {
+  computeGroupStats,
+  type GroupStats,
+} from '@/src/app/[slug]/students/[id]/_components/course-attendance-stats'
 import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
 import { Hint } from '@/src/components/hint'
 import {
@@ -46,25 +50,30 @@ import {
   deleteWallet,
   linkGroupToWallet,
   mergeWallets,
+  renameWallet,
   transferWalletBalance,
   updateWalletBalance,
 } from '@/src/features/wallets/actions'
 import { getBadgeVariant, getBalanceVariant, getWalletLabel } from '@/src/features/wallets/utils'
 import { cn, getGroupName } from '@/src/lib/utils'
 import {
+  ArrowDown,
   ArrowLeftRight,
+  CheckCircle2,
   ChevronDown,
   Link2,
   Loader,
   Merge,
   Pen,
   Plus,
+  RefreshCw,
   Trash2,
   TrendingDown,
   TriangleAlert,
   Wallet,
+  XCircle,
 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 type SheetType = 'create' | 'merge' | 'transfer' | 'link' | 'edit' | 'reassign' | null
@@ -97,6 +106,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
 
   // Edit wallet state
   const [editWalletId, setEditWalletId] = useState<number | null>(null)
+  const [editWalletName, setEditWalletName] = useState('')
   const [editLessonsBalance, setEditLessonsBalance] = useState(0)
   const [editTotalPayments, setEditTotalPayments] = useState(0)
   const [editTotalLessons, setEditTotalLessons] = useState(0)
@@ -121,10 +131,17 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
 
   const openEditSheet = (w: StudentWithGroupsAndAttendance['wallets'][number]) => {
     setEditWalletId(w.id)
+    setEditWalletName(w.name ?? '')
     setEditLessonsBalance(w.lessonsBalance)
     setEditTotalPayments(w.totalPayments)
     setEditTotalLessons(w.totalLessons)
     setActiveSheet('edit')
+  }
+
+  const openLinkSheetForWallet = (walletId: number) => {
+    setLinkWalletId(walletId.toString())
+    setLinkGroupId('')
+    setActiveSheet('link')
   }
 
   const handleCreate = () => {
@@ -209,12 +226,14 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
     const original = student.wallets.find((w) => w.id === editWalletId)
     if (!original) return
 
+    const nameChanged = (editWalletName || '') !== (original.name || '')
+
     const changes: Record<string, number> = {}
     if (editLessonsBalance !== original.lessonsBalance) changes.lessonsBalance = editLessonsBalance
     if (editTotalPayments !== original.totalPayments) changes.totalPayments = editTotalPayments
     if (editTotalLessons !== original.totalLessons) changes.totalLessons = editTotalLessons
 
-    if (Object.keys(changes).length === 0) {
+    if (Object.keys(changes).length === 0 && !nameChanged) {
       setActiveSheet(null)
       return
     }
@@ -246,15 +265,29 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
 
     startTransition(async () => {
       try {
-        await updateWalletBalance({
-          walletId: editWalletId,
-          data: changes,
-          audit,
-        })
-        toast.success('Баланс обновлён')
+        const promises: Promise<unknown>[] = []
+        if (Object.keys(changes).length > 0) {
+          promises.push(
+            updateWalletBalance({
+              walletId: editWalletId,
+              data: changes,
+              audit,
+            }),
+          )
+        }
+        if (nameChanged) {
+          promises.push(
+            renameWallet({
+              walletId: editWalletId,
+              name: editWalletName || undefined,
+            }),
+          )
+        }
+        await Promise.all(promises)
+        toast.success('Кошелёк обновлён')
         setActiveSheet(null)
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : 'Не удалось обновить баланс')
+        toast.error(e instanceof Error ? e.message : 'Не удалось обновить кошелёк')
       }
     })
   }
@@ -315,24 +348,19 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
           <Hint text="Кошельки хранят баланс уроков и привязаны к группам. Один кошелёк может обслуживать несколько групп. Оплаты зачисляются на конкретный кошелёк." />
         </h3>
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" onClick={() => setActiveSheet('create')}>
+          <Button variant="outline" onClick={() => setActiveSheet('create')}>
             <Plus className="size-4" />
             Создать
           </Button>
           {student.wallets.length >= 2 && (
             <>
-              <Button size="sm" variant="outline" onClick={() => setActiveSheet('merge')}>
+              <Button variant="outline" onClick={() => setActiveSheet('merge')}>
                 <Merge className="size-4" />
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setActiveSheet('transfer')}>
+              <Button variant="outline" onClick={() => setActiveSheet('transfer')}>
                 <ArrowLeftRight className="size-4" />
               </Button>
             </>
-          )}
-          {unlinkedGroups.length > 0 && student.wallets.length > 0 && (
-            <Button size="sm" variant="outline" onClick={() => setActiveSheet('link')}>
-              <Link2 className="size-4" />
-            </Button>
           )}
         </div>
       </div>
@@ -388,6 +416,18 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                     >
                       <Pen className="size-3" />
                     </Button>
+                    {unlinkedGroups.length > 0 && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-6"
+                        onClick={() => openLinkSheetForWallet(w.id)}
+                        disabled={isPending}
+                        title="Привязать группу"
+                      >
+                        <Link2 className="size-3" />
+                      </Button>
+                    )}
                     {w.studentGroups.length === 0 && (
                       <Button
                         size="icon"
@@ -600,115 +640,21 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
           )}
 
           {activeSheet === 'transfer' && (
-            <>
-              <SheetHeader>
-                <SheetTitle>Перевести баланс</SheetTitle>
-                <SheetDescription>
-                  Переведите часть баланса из одного кошелька в другой.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="space-y-4 px-4">
-                <Field>
-                  <FieldLabel>Из кошелька</FieldLabel>
-                  <Select
-                    value={transferSource}
-                    onValueChange={(value) => setTransferSource(value as string)}
-                    itemToStringLabel={(v) => {
-                      const w = student.wallets.find((w) => w.id.toString() === v)
-                      return w
-                        ? `${getWalletLabel(w)} — ${w.lessonsBalance} ур., ${w.totalPayments} ₽`
-                        : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {student.wallets.map((w) => (
-                          <SelectItem key={w.id} value={w.id.toString()}>
-                            {getWalletLabel(w)} — {w.lessonsBalance} ур., {w.totalPayments} ₽
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>В кошелёк</FieldLabel>
-                  <Select
-                    value={transferTarget}
-                    onValueChange={(value) => setTransferTarget(value as string)}
-                    itemToStringLabel={(v) => {
-                      const w = student.wallets.find((w) => w.id.toString() === v)
-                      return w ? getWalletLabel(w) : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {student.wallets
-                          .filter((w) => w.id.toString() !== transferSource)
-                          .map((w) => (
-                            <SelectItem key={w.id} value={w.id.toString()}>
-                              {getWalletLabel(w)}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel>Баланс уроков</FieldLabel>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={transferLessons}
-                      onChange={(e) => setTransferLessons(Number(e.target.value))}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Всего уроков</FieldLabel>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={transferTotalLessons}
-                      onChange={(e) => setTransferTotalLessons(Number(e.target.value))}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Сумма оплат</FieldLabel>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={transferTotalPayments}
-                      onChange={(e) => setTransferTotalPayments(Number(e.target.value))}
-                    />
-                  </Field>
-                </FieldGroup>
-              </div>
-              <SheetFooter>
-                <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
-                <Button
-                  onClick={handleTransfer}
-                  disabled={
-                    isPending ||
-                    !transferSource ||
-                    !transferTarget ||
-                    transferSource === transferTarget ||
-                    (transferLessons === 0 &&
-                      transferTotalLessons === 0 &&
-                      transferTotalPayments === 0)
-                  }
-                >
-                  {isPending && <Loader className="animate-spin" />}
-                  Перевести
-                </Button>
-              </SheetFooter>
-            </>
+            <TransferSheet
+              student={student}
+              transferSource={transferSource}
+              setTransferSource={setTransferSource}
+              transferTarget={transferTarget}
+              setTransferTarget={setTransferTarget}
+              transferLessons={transferLessons}
+              setTransferLessons={setTransferLessons}
+              transferTotalLessons={transferTotalLessons}
+              setTransferTotalLessons={setTransferTotalLessons}
+              transferTotalPayments={transferTotalPayments}
+              setTransferTotalPayments={setTransferTotalPayments}
+              isPending={isPending}
+              onTransfer={handleTransfer}
+            />
           )}
 
           {activeSheet === 'link' && (
@@ -720,6 +666,34 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-4 px-4">
+                <Field>
+                  <FieldLabel>Кошелёк</FieldLabel>
+                  {linkWalletId ? (
+                    <Input disabled value={walletLabelById(linkWalletId)} />
+                  ) : (
+                    <Select
+                      value={linkWalletId}
+                      onValueChange={(value) => setLinkWalletId(value as string)}
+                      itemToStringLabel={(v) => {
+                        const w = student.wallets.find((w) => w.id.toString() === v)
+                        return w ? getWalletLabel(w) : ''
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Выберите кошелёк" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {student.wallets.map((w) => (
+                            <SelectItem key={w.id} value={w.id.toString()}>
+                              {getWalletLabel(w)}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                </Field>
                 <Field>
                   <FieldLabel>Группа</FieldLabel>
                   <Select
@@ -744,30 +718,6 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field>
-                  <FieldLabel>Кошелёк</FieldLabel>
-                  <Select
-                    value={linkWalletId}
-                    onValueChange={(value) => setLinkWalletId(value as string)}
-                    itemToStringLabel={(v) => {
-                      const w = student.wallets.find((w) => w.id.toString() === v)
-                      return w ? getWalletLabel(w) : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите кошелёк" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {student.wallets.map((w) => (
-                          <SelectItem key={w.id} value={w.id.toString()}>
-                            {getWalletLabel(w)}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
               </div>
               <SheetFooter>
                 <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
@@ -782,10 +732,19 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
           {activeSheet === 'edit' && editWalletId !== null && (
             <>
               <SheetHeader>
-                <SheetTitle>Редактировать баланс</SheetTitle>
+                <SheetTitle>Редактировать кошелёк</SheetTitle>
                 <SheetDescription>{walletLabelById(editWalletId.toString())}</SheetDescription>
               </SheetHeader>
               <div className="space-y-4 px-4">
+                <Field>
+                  <FieldLabel htmlFor="edit-name">Название</FieldLabel>
+                  <Input
+                    id="edit-name"
+                    value={editWalletName}
+                    onChange={(e) => setEditWalletName(e.target.value)}
+                    placeholder="Например: Основной"
+                  />
+                </Field>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="edit-lb">Баланс уроков</FieldLabel>
@@ -891,6 +850,352 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
         </SheetContent>
       </Sheet>
     </div>
+  )
+}
+
+// ─── Wallet Attendance Stats ────────────────────────────────────────
+
+function WalletAttendanceStats({ stats }: { stats: GroupStats[] }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="bg-muted/30 h-px" />
+      <p className="text-muted-foreground text-[0.625rem] font-medium">Посещаемость:</p>
+      {stats.map((gs) => {
+        const rate =
+          gs.totalLessons > 0 ? Math.round(((gs.attended + gs.madeUp) / gs.totalLessons) * 100) : 0
+        return (
+          <div key={gs.groupId} className="flex items-center justify-between gap-2">
+            <span className="truncate text-[0.625rem]">{gs.groupName}</span>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <span className="flex items-center gap-0.5" title="Посещено">
+                <CheckCircle2 size={10} className="text-green-500" />
+                <span>{gs.attended}</span>
+              </span>
+              <span className="flex items-center gap-0.5" title="Отработано">
+                <RefreshCw size={10} className="text-blue-500" />
+                <span>{gs.madeUp}</span>
+              </span>
+              <span className="flex items-center gap-0.5" title="Пропущено">
+                <XCircle size={10} className="text-red-500" />
+                <span>{gs.missed}</span>
+              </span>
+              <Badge
+                variant={rate >= 80 ? 'default' : 'destructive'}
+                className="px-1 py-0 text-[0.5rem]"
+              >
+                {rate}%
+              </Badge>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ─── Transfer Sheet ─────────────────────────────────────────────────
+
+function TransferSheet({
+  student,
+  transferSource,
+  setTransferSource,
+  transferTarget,
+  setTransferTarget,
+  transferLessons,
+  setTransferLessons,
+  transferTotalLessons,
+  setTransferTotalLessons,
+  transferTotalPayments,
+  setTransferTotalPayments,
+  isPending,
+  onTransfer,
+}: {
+  student: StudentWithGroupsAndAttendance
+  transferSource: string
+  setTransferSource: (v: string) => void
+  transferTarget: string
+  setTransferTarget: (v: string) => void
+  transferLessons: number
+  setTransferLessons: (v: number) => void
+  transferTotalLessons: number
+  setTransferTotalLessons: (v: number) => void
+  transferTotalPayments: number
+  setTransferTotalPayments: (v: number) => void
+  isPending: boolean
+  onTransfer: () => void
+}) {
+  const sourceWallet = student.wallets.find((w) => w.id.toString() === transferSource)
+  const targetWallet = student.wallets.find((w) => w.id.toString() === transferTarget)
+
+  const bothSelected = !!sourceWallet && !!targetWallet
+
+  // Compute attendance stats for groups linked to each wallet
+  const allGroupStats = useMemo(() => computeGroupStats(student), [student])
+
+  const walletGroupStats = useMemo(() => {
+    const result = new Map<number, GroupStats[]>()
+    for (const w of student.wallets) {
+      const walletGroupIds = new Set(w.studentGroups.map((sg) => sg.groupId))
+      result.set(
+        w.id,
+        allGroupStats.filter((gs) => walletGroupIds.has(gs.groupId)),
+      )
+    }
+    return result
+  }, [student.wallets, allGroupStats])
+
+  const sourceStats = sourceWallet ? (walletGroupStats.get(sourceWallet.id) ?? []) : []
+  const targetStats = targetWallet ? (walletGroupStats.get(targetWallet.id) ?? []) : []
+
+  const hasOverflow = sourceWallet
+    ? transferLessons > sourceWallet.lessonsBalance ||
+      transferTotalLessons > sourceWallet.totalLessons ||
+      transferTotalPayments > sourceWallet.totalPayments
+    : false
+
+  const transferFields = [
+    {
+      label: 'Баланс уроков',
+      unit: 'ур.',
+      value: transferLessons,
+      setValue: setTransferLessons,
+      sourceKey: 'lessonsBalance' as const,
+      targetKey: 'lessonsBalance' as const,
+    },
+    {
+      label: 'Всего уроков',
+      unit: 'ур.',
+      value: transferTotalLessons,
+      setValue: setTransferTotalLessons,
+      sourceKey: 'totalLessons' as const,
+      targetKey: 'totalLessons' as const,
+    },
+    {
+      label: 'Сумма оплат',
+      unit: '₽',
+      value: transferTotalPayments,
+      setValue: setTransferTotalPayments,
+      sourceKey: 'totalPayments' as const,
+      targetKey: 'totalPayments' as const,
+      formatValue: (v: number) => v.toLocaleString('ru-RU'),
+    },
+  ]
+
+  return (
+    <>
+      <SheetHeader>
+        <SheetTitle>Перевести баланс</SheetTitle>
+        <SheetDescription>Переведите часть баланса из одного кошелька в другой.</SheetDescription>
+      </SheetHeader>
+      <div className="space-y-4 overflow-y-auto px-4">
+        {/* Wallet selectors */}
+        <div className="space-y-2">
+          <Field>
+            <FieldLabel>Из кошелька</FieldLabel>
+            <Select
+              value={transferSource}
+              onValueChange={(value) => setTransferSource(value as string)}
+              itemToStringLabel={(v) => {
+                const w = student.wallets.find((w) => w.id.toString() === v)
+                return w ? getWalletLabel(w) : ''
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Выберите" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {student.wallets.map((w) => (
+                    <SelectItem key={w.id} value={w.id.toString()}>
+                      {getWalletLabel(w)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          {/* Source wallet summary */}
+          {sourceWallet && (
+            <div className="bg-muted/50 space-y-2 rounded-md px-3 py-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Баланс:</span>
+                <span className="font-medium">{sourceWallet.lessonsBalance} ур.</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Всего уроков:</span>
+                <span className="font-medium">{sourceWallet.totalLessons}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Оплаты:</span>
+                <span className="font-medium">
+                  {sourceWallet.totalPayments.toLocaleString('ru-RU')} ₽
+                </span>
+              </div>
+              {sourceStats.length > 0 && <WalletAttendanceStats stats={sourceStats} />}
+            </div>
+          )}
+
+          <div className="flex justify-center">
+            <ArrowDown className="text-muted-foreground size-4" />
+          </div>
+
+          <Field>
+            <FieldLabel>В кошелёк</FieldLabel>
+            <Select
+              value={transferTarget}
+              onValueChange={(value) => setTransferTarget(value as string)}
+              itemToStringLabel={(v) => {
+                const w = student.wallets.find((w) => w.id.toString() === v)
+                return w ? getWalletLabel(w) : ''
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Выберите" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {student.wallets
+                    .filter((w) => w.id.toString() !== transferSource)
+                    .map((w) => (
+                      <SelectItem key={w.id} value={w.id.toString()}>
+                        {getWalletLabel(w)}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          {/* Target wallet summary */}
+          {targetWallet && targetStats.length > 0 && (
+            <div className="bg-muted/50 space-y-2 rounded-md px-3 py-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Баланс:</span>
+                <span className="font-medium">{targetWallet.lessonsBalance} ур.</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Всего уроков:</span>
+                <span className="font-medium">{targetWallet.totalLessons}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Оплаты:</span>
+                <span className="font-medium">
+                  {targetWallet.totalPayments.toLocaleString('ru-RU')} ₽
+                </span>
+              </div>
+              {targetStats.length > 0 && <WalletAttendanceStats stats={targetStats} />}
+            </div>
+          )}
+        </div>
+
+        {/* Transfer fields with max buttons */}
+        {bothSelected && (
+          <div className="space-y-3">
+            <div className="bg-muted/30 h-px" />
+
+            {transferFields.map((f) => {
+              const available = sourceWallet[f.sourceKey]
+              const format = f.formatValue ?? ((v: number) => v.toString())
+              const isOver = f.value > available
+
+              return (
+                <Field key={f.sourceKey}>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel>{f.label}</FieldLabel>
+                    <span className="text-muted-foreground text-[0.6875rem]">
+                      доступно: {format(available)} {f.unit}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={available}
+                      value={f.value}
+                      onChange={(e) => f.setValue(Math.max(0, Number(e.target.value)))}
+                      className={cn(isOver && 'border-destructive')}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0 text-xs"
+                      onClick={() => f.setValue(available)}
+                      disabled={available === 0}
+                    >
+                      Всё
+                    </Button>
+                  </div>
+                  {isOver && <p className="text-destructive text-xs">Превышает доступный баланс</p>}
+                </Field>
+              )
+            })}
+
+            {/* Result preview */}
+            {(transferLessons > 0 || transferTotalLessons > 0 || transferTotalPayments > 0) &&
+              !hasOverflow && (
+                <div className="space-y-2">
+                  <div className="bg-muted/30 h-px" />
+                  <p className="text-muted-foreground text-xs font-medium">После перевода:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-muted/50 space-y-1 rounded-md px-3 py-2 text-xs">
+                      <p className="text-muted-foreground truncate font-medium">
+                        {getWalletLabel(sourceWallet)}
+                      </p>
+                      {transferFields.map((f) => (
+                        <div key={f.sourceKey} className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {f.unit === '₽' ? '₽' : f.label.split(' ')[0]}
+                          </span>
+                          <span className={cn('font-medium', f.value > 0 && 'text-destructive')}>
+                            {(f.formatValue ?? ((v: number) => v.toString()))(
+                              sourceWallet[f.sourceKey] - f.value,
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-muted/50 space-y-1 rounded-md px-3 py-2 text-xs">
+                      <p className="text-muted-foreground truncate font-medium">
+                        {getWalletLabel(targetWallet)}
+                      </p>
+                      {transferFields.map((f) => (
+                        <div key={f.targetKey} className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {f.unit === '₽' ? '₽' : f.label.split(' ')[0]}
+                          </span>
+                          <span className={cn('font-medium', f.value > 0 && 'text-chart-2')}>
+                            {(f.formatValue ?? ((v: number) => v.toString()))(
+                              targetWallet[f.targetKey] + f.value,
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+          </div>
+        )}
+      </div>
+      <SheetFooter>
+        <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
+        <Button
+          onClick={onTransfer}
+          disabled={
+            isPending ||
+            !transferSource ||
+            !transferTarget ||
+            transferSource === transferTarget ||
+            hasOverflow ||
+            (transferLessons === 0 && transferTotalLessons === 0 && transferTotalPayments === 0)
+          }
+        >
+          {isPending && <Loader className="animate-spin" />}
+          Перевести
+        </Button>
+      </SheetFooter>
+    </>
   )
 }
 
@@ -1119,11 +1424,7 @@ function RedistributeInline({ student }: { student: StudentWithGroupsAndAttendan
           </div>
 
           <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={isPending || hasOverflow || !hasChanges}
-            >
+            <Button onClick={handleSubmit} disabled={isPending || hasOverflow || !hasChanges}>
               {isPending && <Loader className="mr-2 animate-spin" />}
               Распределить
             </Button>

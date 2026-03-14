@@ -28,6 +28,7 @@ import {
   FieldLabel,
   FieldTitle,
 } from '@/src/components/ui/field'
+import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import {
   Select,
@@ -41,7 +42,8 @@ import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { useStudentWalletsQuery } from '@/src/features/wallets/queries'
+import { createWallet as createWalletAction } from '@/src/features/wallets/actions'
+import { useStudentWalletsQuery, walletKeys } from '@/src/features/wallets/queries'
 import type { WalletWithGroups } from '@/src/features/wallets/types'
 import { getWalletLabel } from '@/src/features/wallets/utils'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
@@ -59,10 +61,11 @@ type GroupDTO = Prisma.GroupGetPayload<{
   }
 }>
 
-import { Plus } from 'lucide-react'
+import { Plus, Wallet } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import { AddStudentToGroupSchema, AddStudentToGroupSchemaType } from '@/src/schemas/student-group'
+import { useQueryClient } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -88,9 +91,12 @@ export default function AddStudentToGroupButton({
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
   const { data: hasPermission } = useOrganizationPermissionQuery({ studentGroup: ['create'] })
+  const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [lazyStudents, setLazyStudents] = useState<Student[] | null>(null)
+  const [isCreatingNewWallet, setIsCreatingNewWallet] = useState(false)
+  const [newWalletName, setNewWalletName] = useState('')
 
   const isAddToGroup = !!group && (!!studentsProp || !!excludeStudentIds)
   const isAddToStudent = !!student && !!groups
@@ -106,7 +112,7 @@ export default function AddStudentToGroupButton({
 
   const selectedTarget = form.watch('target')
   const selectedStudentId = isAddToGroup ? selectedTarget?.value : undefined
-  const { data: studentWallets } = useStudentWalletsQuery(selectedStudentId ?? 0, {
+  const { data: studentWallets } = useStudentWalletsQuery(selectedStudentId ?? -1, {
     enabled: isAddToGroup && !!selectedStudentId,
   })
 
@@ -116,8 +122,6 @@ export default function AddStudentToGroupButton({
   useEffect(() => {
     if (effectiveWallets?.length === 1) {
       form.setValue('walletId', effectiveWallets[0]!.id)
-    } else if (isAddToGroup) {
-      form.setValue('walletId', undefined)
     }
   }, [effectiveWallets, form, isAddToGroup])
 
@@ -162,39 +166,53 @@ export default function AddStudentToGroupButton({
   }, [isAddToGroup, isAddToStudent, students, groups])
 
   const handleSubmit = (data: AddStudentToGroupSchemaType) => {
-    if (effectiveWallets && effectiveWallets.length > 0 && !data.walletId) {
+    if (!isCreatingNewWallet && effectiveWallets && effectiveWallets.length > 0 && !data.walletId) {
       form.setError('walletId', { message: 'Выберите кошелёк' })
       return
     }
 
-    startTransition(() => {
-      const { isApplyToLesson, target, walletId } = data
+    const { isApplyToLesson, target } = data
+    const groupId = isAddToGroup ? group!.id : target.value
+    const studentId = isAddToGroup ? target.value : student!.id
+    const successMessage = isAddToGroup
+      ? 'Студент успешно добавлен в группу!'
+      : 'Группа успешно добавлена студенту!'
 
-      const groupId = isAddToGroup ? group!.id : target.value
-      const studentId = isAddToGroup ? target.value : student!.id
+    startTransition(async () => {
+      try {
+        let walletId = data.walletId
 
-      const ok = createStudentGroup(
-        {
-          data: {
-            organizationId: organizationId!,
-            groupId,
+        if (isCreatingNewWallet) {
+          const { data: newWallet, serverError } = await createWalletAction({
             studentId,
-            status: 'ACTIVE',
-            ...(walletId ? { walletId } : {}),
-          },
-        },
-        isApplyToLesson,
-      )
-      const successMessage = isAddToGroup
-        ? 'Студент успешно добавлен в группу!'
-        : 'Группа успешно добавлена студенту!'
+            name: newWalletName || undefined,
+          })
+          if (serverError || !newWallet) throw new Error('Не удалось создать кошелёк')
+          walletId = newWallet.id
+        }
 
-      toast.promise(ok, {
-        loading: 'Добавление...',
-        success: successMessage,
-        error: 'Не удалось добавить.',
-        finally: () => setDialogOpen(false),
-      })
+        await createStudentGroup(
+          {
+            data: {
+              organizationId: organizationId!,
+              groupId,
+              studentId,
+              status: 'ACTIVE',
+              ...(walletId ? { walletId } : {}),
+            },
+          },
+          isApplyToLesson,
+        )
+
+        toast.success(successMessage)
+        setDialogOpen(false)
+
+        if (isCreatingNewWallet) {
+          queryClient.invalidateQueries({ queryKey: walletKeys.byStudent(studentId) })
+        }
+      } catch {
+        toast.error('Не удалось добавить.')
+      }
     })
   }
 
@@ -204,6 +222,8 @@ export default function AddStudentToGroupButton({
       isApplyToLesson: true,
       walletId: wallets?.length === 1 ? wallets[0]!.id : undefined,
     })
+    setIsCreatingNewWallet(false)
+    setNewWalletName('')
   }, [dialogOpen, form, wallets])
 
   if ((!isAddToGroup && !isAddToStudent) || !hasPermission) return null
@@ -244,6 +264,10 @@ export default function AddStudentToGroupButton({
           onSubmit={handleSubmit}
           wallets={effectiveWallets}
           showWalletField
+          isCreatingNewWallet={isCreatingNewWallet}
+          onIsCreatingNewWalletChange={setIsCreatingNewWallet}
+          newWalletName={newWalletName}
+          onNewWalletNameChange={setNewWalletName}
         />
 
         <DialogFooter>
@@ -273,6 +297,10 @@ interface AddEntityFormProps {
   onSubmit: (data: AddStudentToGroupSchemaType) => void
   wallets?: WalletWithGroups[]
   showWalletField?: boolean
+  isCreatingNewWallet?: boolean
+  onIsCreatingNewWalletChange?: (value: boolean) => void
+  newWalletName?: string
+  onNewWalletNameChange?: (value: string) => void
 }
 
 function AddEntityForm({
@@ -283,6 +311,10 @@ function AddEntityForm({
   onSubmit,
   wallets,
   showWalletField,
+  isCreatingNewWallet,
+  onIsCreatingNewWalletChange,
+  newWalletName,
+  onNewWalletNameChange,
 }: AddEntityFormProps) {
   return (
     <form id="add-entity-form" onSubmit={form.handleSubmit(onSubmit)}>
@@ -343,41 +375,90 @@ function AddEntityForm({
             control={form.control}
             render={({ field, fieldState }) => {
               const hasWallets = wallets && wallets.length > 0
+              const isWalletListReady = wallets !== undefined
               return (
                 <Field>
                   <FieldContent>
-                    <FieldLabel htmlFor="form-rhf-select-wallet">Кошелёк</FieldLabel>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    <div className="flex items-center justify-between">
+                      <FieldLabel htmlFor="form-rhf-select-wallet">Кошелёк</FieldLabel>
+                      {isWalletListReady && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            const next = !isCreatingNewWallet
+                            onIsCreatingNewWalletChange?.(next)
+                            if (next) {
+                              field.onChange(undefined)
+                            } else if (wallets?.length === 1) {
+                              field.onChange(wallets[0]!.id)
+                            }
+                          }}
+                        >
+                          {isCreatingNewWallet ? (
+                            hasWallets ? (
+                              'Выбрать существующий'
+                            ) : (
+                              'Отмена'
+                            )
+                          ) : (
+                            <span className="inline-flex items-center gap-2">
+                              <Wallet />
+                              Создать новый
+                            </span>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    {fieldState.invalid && !isCreatingNewWallet && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </FieldContent>
-                  <Select
-                    name={field.name}
-                    disabled={!hasWallets}
-                    value={field.value?.toString() || ''}
-                    onValueChange={(value) => field.onChange(Number(value))}
-                    itemToStringLabel={(v) => {
-                      const w = wallets?.find((w) => w.id.toString() === v)
-                      return w ? getWalletLabel(w) : ''
-                    }}
-                  >
-                    <SelectTrigger
-                      id="form-rhf-select-wallet"
-                      className="w-full"
-                      aria-invalid={fieldState.invalid}
+
+                  {isCreatingNewWallet ? (
+                    <Input
+                      id="new-wallet-name"
+                      placeholder="Название нового кошелька (необязательно)"
+                      value={newWalletName ?? ''}
+                      onChange={(e) => onNewWalletNameChange?.(e.target.value)}
+                    />
+                  ) : (
+                    <Select
+                      name={field.name}
+                      disabled={!hasWallets}
+                      value={field.value?.toString() || ''}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      itemToStringLabel={(v) => {
+                        const w = wallets?.find((w) => w.id.toString() === v)
+                        return w ? getWalletLabel(w) : ''
+                      }}
                     >
-                      <SelectValue
-                        placeholder={hasWallets ? 'Выберите кошелёк' : 'Сначала выберите ученика'}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {wallets?.map((w) => (
-                          <SelectItem key={w.id} value={w.id.toString()}>
-                            {getWalletLabel(w)}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                      <SelectTrigger
+                        id="form-rhf-select-wallet"
+                        className="w-full"
+                        aria-invalid={fieldState.invalid}
+                      >
+                        <SelectValue
+                          placeholder={
+                            !isWalletListReady
+                              ? 'Сначала выберите ученика'
+                              : hasWallets
+                                ? 'Выберите кошелёк'
+                                : 'Нет кошельков'
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {wallets?.map((w) => (
+                            <SelectItem key={w.id} value={w.id.toString()}>
+                              {getWalletLabel(w)}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </Field>
               )
             }}

@@ -1,10 +1,10 @@
-import { Badge } from '@/src/components/ui/badge'
 import { Hint } from '@/src/components/hint'
+import { Badge } from '@/src/components/ui/badge'
 import { getGroupName } from '@/src/lib/utils'
 import { BarChart3, CheckCircle2, RefreshCw, XCircle } from 'lucide-react'
 import { StudentWithGroupsAndAttendance } from './types'
 
-interface GroupStats {
+export interface GroupStats {
   groupId: number
   groupName: string
   isInactive: boolean
@@ -14,7 +14,7 @@ interface GroupStats {
   missed: number
 }
 
-function computeGroupStats(student: StudentWithGroupsAndAttendance): GroupStats[] {
+export function computeGroupStats(student: StudentWithGroupsAndAttendance): GroupStats[] {
   const groupStats = new Map<number, GroupStats>()
   const currentGroupIds = new Set(student.groups.map((sg) => sg.group.id))
 
