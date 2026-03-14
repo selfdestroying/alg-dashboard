@@ -1,4 +1,3 @@
-import { getStudents } from '@/src/actions/students'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth/server'
 import prisma from '@/src/lib/db/prisma'
@@ -79,12 +78,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       },
     },
   })
-  const students = await getStudents({
-    where: {
-      id: { notIn: lesson?.attendance.map((a) => a.studentId) },
-      organizationId: session.organizationId!,
-    },
-  })
 
   if (!lesson) {
     return <div>Ошибка при получении урока</div>
@@ -129,7 +122,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <CardAction>
               <AddAttendanceButton
                 lessonId={lesson.id}
-                students={students}
                 isFull={lesson.attendance.length >= lesson.group.maxStudents}
               />
             </CardAction>

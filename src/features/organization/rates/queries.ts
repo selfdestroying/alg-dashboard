@@ -18,18 +18,6 @@ export const useRateListQuery = () => {
   })
 }
 
-export const useMappedRateListQuery = () => {
-  return useQuery({
-    queryKey: rateKeys.all,
-    queryFn: async () => {
-      const { data, serverError } = await getRates()
-      if (serverError) throw serverError
-      return data ?? []
-    },
-    select: (rates) => rates.map((rate) => ({ label: rate.name, value: rate.id.toString() })),
-  })
-}
-
 export const useRateCreateMutation = () => {
   const queryClient = useQueryClient()
   return useMutation({

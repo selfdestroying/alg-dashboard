@@ -2,6 +2,7 @@
 import { Group, Prisma, Student } from '@/prisma/generated/client'
 import { createStudentGroup } from '@/src/actions/groups'
 import { getStudents } from '@/src/actions/students'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
   Combobox,
@@ -30,14 +31,6 @@ import {
 } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
@@ -423,41 +416,39 @@ function AddEntityForm({
                       onChange={(e) => onNewWalletNameChange?.(e.target.value)}
                     />
                   ) : (
-                    <Select
-                      name={field.name}
+                    <CustomCombobox
+                      items={
+                        wallets?.map((w) => ({
+                          label: getWalletLabel(w),
+                          value: w.id.toString(),
+                        })) ?? []
+                      }
+                      value={
+                        field.value
+                          ? {
+                              label: (() => {
+                                const w = wallets?.find(
+                                  (w) => w.id.toString() === field.value?.toString(),
+                                )
+                                return w ? getWalletLabel(w) : ''
+                              })(),
+                              value: field.value.toString(),
+                            }
+                          : null
+                      }
+                      onValueChange={(item) =>
+                        field.onChange(item ? Number(item.value) : undefined)
+                      }
                       disabled={!hasWallets}
-                      value={field.value?.toString() || ''}
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      itemToStringLabel={(v) => {
-                        const w = wallets?.find((w) => w.id.toString() === v)
-                        return w ? getWalletLabel(w) : ''
-                      }}
-                    >
-                      <SelectTrigger
-                        id="form-rhf-select-wallet"
-                        className="w-full"
-                        aria-invalid={fieldState.invalid}
-                      >
-                        <SelectValue
-                          placeholder={
-                            !isWalletListReady
-                              ? 'Сначала выберите ученика'
-                              : hasWallets
-                                ? 'Выберите кошелёк'
-                                : 'Нет кошельков'
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {wallets?.map((w) => (
-                            <SelectItem key={w.id} value={w.id.toString()}>
-                              {getWalletLabel(w)}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      id="form-rhf-select-wallet"
+                      placeholder={
+                        !isWalletListReady
+                          ? 'Сначала выберите ученика'
+                          : hasWallets
+                            ? 'Выберите кошелёк'
+                            : 'Нет кошельков'
+                      }
+                    />
                   )}
                 </Field>
               )

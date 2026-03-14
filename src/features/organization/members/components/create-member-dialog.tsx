@@ -3,17 +3,10 @@
 import { Input } from '@/src/components/ui/input'
 import { Controller, useForm } from 'react-hook-form'
 
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import {
   Sheet,
   SheetClose,
@@ -140,22 +133,22 @@ export default function CreateMemberDialog() {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="roleId-field">Роль</FieldLabel>
-                  <Select
-                    {...field}
-                    value={field.value || ''}
-                    onValueChange={field.onChange}
-                    itemToStringLabel={(itemValue) => memberRoleLabels[itemValue]}
-                  >
-                    <SelectTrigger id="roleId-field" aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="Выберите роль" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value={'manager'}>Менеджер</SelectItem>
-                        <SelectItem value={'teacher'}>Учитель</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={[
+                      { label: 'Менеджер', value: 'manager' },
+                      { label: 'Учитель', value: 'teacher' },
+                    ]}
+                    value={
+                      field.value
+                        ? { label: memberRoleLabels[field.value], value: field.value }
+                        : null
+                    }
+                    onValueChange={(item) => field.onChange(item?.value ?? '')}
+                    id="roleId-field"
+                    placeholder="Выберите роль"
+                    emptyText="Не найдено ролей"
+                    disabled={isPending}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

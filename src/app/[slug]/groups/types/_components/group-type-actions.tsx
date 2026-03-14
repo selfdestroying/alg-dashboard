@@ -2,6 +2,7 @@
 
 import { Prisma, Rate } from '@/prisma/generated/client'
 import { deleteGroupTypeAction, updateGroupTypeAction } from '@/src/actions/group-types'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -29,14 +30,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { GroupTypeSchema, GroupTypeSchemaType } from '@/src/schemas/group-type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
@@ -227,31 +221,33 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
                 render={({ field, fieldState }) => (
                   <Field>
                     <FieldContent>
-                      <FieldLabel htmlFor="form-group-type-rate">Ставка</FieldLabel>
+                      <FieldLabel htmlFor="form-rhf-select-rate">Ставка</FieldLabel>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
-                    <Select
-                      name={field.name}
-                      value={field.value?.toString() || ''}
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      itemToStringLabel={(itemValue) =>
-                        rates.find((r) => r.id === Number(itemValue))?.name || ''
-                      }
-                    >
-                      <SelectTrigger id="form-group-type-rate" aria-invalid={fieldState.invalid}>
-                        <SelectValue placeholder="Выберите ставку" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {rates.map((rate) => (
-                            <SelectItem key={rate.id} value={rate.id.toString()}>
-                              {rate.name} ({rate.bid.toLocaleString()} ₽
-                              {rate.bonusPerStudent > 0 ? ` + ${rate.bonusPerStudent} ₽/уч.` : ''})
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <CustomCombobox
+                      id="form-rhf-select-rate"
+                      items={rates || []}
+                      getKey={(r) => r.id}
+                      getLabel={(r) => r.name}
+                      value={rates?.find((r) => r.id === field.value) || null}
+                      onValueChange={(r) => r && field.onChange(r.id)}
+                      placeholder="Выберите ставку"
+                      emptyText="Не найдены ставки"
+                      renderItem={(r) => (
+                        <Item size="xs" className="p-0">
+                          <ItemContent>
+                            <ItemTitle className="whitespace-nowrap tabular-nums">
+                              {r.name}
+                            </ItemTitle>
+                            <ItemDescription>
+                              <span className="tabular-nums">
+                                {r.bid} ₽ | {r.bonusPerStudent} ₽/ученик
+                              </span>
+                            </ItemDescription>
+                          </ItemContent>
+                        </Item>
+                      )}
+                    />
                   </Field>
                 )}
               />

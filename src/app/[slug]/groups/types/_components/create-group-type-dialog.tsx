@@ -2,6 +2,7 @@
 
 import { Rate } from '@/prisma/generated/client'
 import { createGroupTypeAction } from '@/src/actions/group-types'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -13,16 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/src/components/ui/dialog'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { GroupTypeSchema, GroupTypeSchemaType } from '@/src/schemas/group-type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
@@ -92,34 +86,36 @@ export default function CreateGroupTypeDialog({ rates }: CreateGroupTypeDialogPr
               )}
             />
             <Controller
-              control={form.control}
               name="rateId"
+              control={form.control}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel>Ставка</FieldLabel>
-                  <Select
-                    name={field.name}
-                    value={field.value?.toString() || ''}
-                    onValueChange={(value) => field.onChange(Number(value))}
-                    itemToStringLabel={(itemValue) =>
-                      rates.find((r) => r.id === Number(itemValue))?.name || ''
-                    }
-                  >
-                    <SelectTrigger aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="Выберите ставку" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {rates.map((rate) => (
-                          <SelectItem key={rate.id} value={rate.id.toString()}>
-                            {rate.name} ({rate.bid} ₽
-                            {rate.bonusPerStudent > 0 ? ` + ${rate.bonusPerStudent} ₽/уч.` : ''})
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  <FieldContent>
+                    <FieldLabel htmlFor="form-rhf-select-rate">Ставка</FieldLabel>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </FieldContent>
+                  <CustomCombobox
+                    id="form-rhf-select-rate"
+                    items={rates || []}
+                    getKey={(r) => r.id}
+                    getLabel={(r) => r.name}
+                    value={rates?.find((r) => r.id === field.value) || null}
+                    onValueChange={(r) => r && field.onChange(r.id)}
+                    placeholder="Выберите ставку"
+                    emptyText="Не найдены ставки"
+                    renderItem={(r) => (
+                      <Item size="xs" className="p-0">
+                        <ItemContent>
+                          <ItemTitle className="whitespace-nowrap tabular-nums">{r.name}</ItemTitle>
+                          <ItemDescription>
+                            <span className="tabular-nums">
+                              {r.bid} ₽ | {r.bonusPerStudent} ₽/ученик
+                            </span>
+                          </ItemDescription>
+                        </ItemContent>
+                      </Item>
+                    )}
+                  />
                 </Field>
               )}
             />

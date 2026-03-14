@@ -1,12 +1,12 @@
 import * as z from 'zod'
-import { combobox, DateOnlySchema } from './_primitives'
+import { DateOnlySchema } from './_primitives'
 
 export const CreateGroupSchema = z.object({
   name: z.string(),
-  teacher: combobox('Выберите преподавателя'),
-  rate: combobox('Выберите ставку'),
-  course: combobox('Выберите курс'),
-  location: combobox('Выберите локацию'),
+  teacherId: z.int('Выберите учителя').positive('Выберите учителя'),
+  rateId: z.int('Выберите ставку').positive('Выберите ставку'),
+  courseId: z.int('Выберите курс').positive('Выберите курс'),
+  locationId: z.int('Выберите локацию').positive('Выберите локацию'),
   startDate: DateOnlySchema,
   groupTypeId: z.number({ error: 'Выберите тип группы' }).int().positive(),
   schedule: z

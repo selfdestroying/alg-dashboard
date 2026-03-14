@@ -53,8 +53,8 @@ async function getDayStatuses(organizationId: number, date: Date) {
 
 export type LessonListData = Awaited<ReturnType<typeof getLessonList>>
 
-export const useLessonListQuery = (organizationId: number, date: Date) => {
-  const dateKey = normalizeDateOnly(date).toISOString().split('T')[0]!
+export const useLessonListQuery = (organizationId: number, date?: Date) => {
+  const dateKey = date ? normalizeDateOnly(date).toISOString().split('T')[0]! : ''
   return useQuery({
     queryKey: lessonKeys.byDate(organizationId, dateKey),
     queryFn: () => getLessonList(organizationId, date),

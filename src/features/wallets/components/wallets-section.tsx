@@ -6,6 +6,7 @@ import {
   type GroupStats,
 } from '@/src/app/[slug]/students/[id]/_components/course-attendance-stats'
 import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Hint } from '@/src/components/hint'
 import {
   AlertDialog,
@@ -27,14 +28,6 @@ import { Field, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Progress } from '@/src/components/ui/progress'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import {
   Sheet,
   SheetClose,
@@ -575,53 +568,40 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
               <div className="space-y-4 px-4">
                 <Field>
                   <FieldLabel>Исходный кошелёк (будет удалён)</FieldLabel>
-                  <Select
-                    value={mergeSource}
-                    onValueChange={(value) => setMergeSource(value as string)}
-                    itemToStringLabel={(v) => {
-                      const w = student.wallets.find((w) => w.id.toString() === v)
-                      return w ? getWalletLabel(w) : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {student.wallets.map((w) => (
-                          <SelectItem key={w.id} value={w.id.toString()}>
-                            {getWalletLabel(w)}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={student.wallets.map((w) => ({
+                      label: getWalletLabel(w),
+                      value: w.id.toString(),
+                    }))}
+                    value={
+                      mergeSource
+                        ? { label: walletLabelById(mergeSource), value: mergeSource }
+                        : null
+                    }
+                    onValueChange={(item) => setMergeSource(item?.value ?? '')}
+                    placeholder="Выберите"
+                  />
                 </Field>
                 <Field>
                   <FieldLabel>Целевой кошелёк</FieldLabel>
-                  <Select
-                    value={mergeTarget}
-                    onValueChange={(value) => setMergeTarget(value as string)}
-                    itemToStringLabel={(v) => {
-                      const w = student.wallets.find((w) => w.id.toString() === v)
-                      return w ? getWalletLabel(w) : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {student.wallets
-                          .filter((w) => w.id.toString() !== mergeSource)
-                          .map((w) => (
-                            <SelectItem key={w.id} value={w.id.toString()}>
-                              {getWalletLabel(w)}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={student.wallets
+                      .filter((w) => w.id.toString() !== mergeSource)
+                      .map((w) => ({ label: getWalletLabel(w), value: w.id.toString() }))}
+                    value={
+                      mergeTarget
+                        ? {
+                            label: (() => {
+                              const w = student.wallets.find((w) => w.id.toString() === mergeTarget)
+                              return w ? getWalletLabel(w) : ''
+                            })(),
+                            value: mergeTarget,
+                          }
+                        : null
+                    }
+                    onValueChange={(item) => setMergeTarget(item?.value ?? '')}
+                    placeholder="Выберите"
+                  />
                 </Field>
               </div>
               <SheetFooter>
@@ -671,52 +651,44 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                   {linkWalletId ? (
                     <Input disabled value={walletLabelById(linkWalletId)} />
                   ) : (
-                    <Select
-                      value={linkWalletId}
-                      onValueChange={(value) => setLinkWalletId(value as string)}
-                      itemToStringLabel={(v) => {
-                        const w = student.wallets.find((w) => w.id.toString() === v)
-                        return w ? getWalletLabel(w) : ''
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Выберите кошелёк" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {student.wallets.map((w) => (
-                            <SelectItem key={w.id} value={w.id.toString()}>
-                              {getWalletLabel(w)}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <CustomCombobox
+                      items={student.wallets.map((w) => ({
+                        label: getWalletLabel(w),
+                        value: w.id.toString(),
+                      }))}
+                      value={
+                        linkWalletId
+                          ? { label: walletLabelById(linkWalletId), value: linkWalletId }
+                          : null
+                      }
+                      onValueChange={(item) => setLinkWalletId(item?.value ?? '')}
+                      placeholder="Выберите кошелёк"
+                    />
                   )}
                 </Field>
                 <Field>
                   <FieldLabel>Группа</FieldLabel>
-                  <Select
-                    value={linkGroupId}
-                    onValueChange={(value) => setLinkGroupId(value as string)}
-                    itemToStringLabel={(v) => {
-                      const sg = unlinkedGroups.find((sg) => sg.groupId.toString() === v)
-                      return sg ? getGroupName(sg.group) : ''
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Выберите группу" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {unlinkedGroups.map((sg) => (
-                          <SelectItem key={sg.groupId} value={sg.groupId.toString()}>
-                            {getGroupName(sg.group)}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={unlinkedGroups.map((sg) => ({
+                      label: getGroupName(sg.group),
+                      value: sg.groupId.toString(),
+                    }))}
+                    value={
+                      linkGroupId
+                        ? {
+                            label: (() => {
+                              const sg = unlinkedGroups.find(
+                                (sg) => sg.groupId.toString() === linkGroupId,
+                              )
+                              return sg ? getGroupName(sg.group) : ''
+                            })(),
+                            value: linkGroupId,
+                          }
+                        : null
+                    }
+                    onValueChange={(item) => setLinkGroupId(item?.value ?? '')}
+                    placeholder="Выберите группу"
+                  />
                 </Field>
               </div>
               <SheetFooter>
@@ -813,29 +785,26 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                   </Field>
                   <Field>
                     <FieldLabel>Новый кошелёк</FieldLabel>
-                    <Select
-                      value={reassignToWalletId}
-                      onValueChange={(value) => setReassignToWalletId(value as string)}
-                      itemToStringLabel={(v) => {
-                        const w = student.wallets.find((w) => w.id.toString() === v)
-                        return w ? getWalletLabel(w) : ''
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Выберите кошелёк" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {student.wallets
-                            .filter((w) => w.id !== reassignFromWalletId)
-                            .map((w) => (
-                              <SelectItem key={w.id} value={w.id.toString()}>
-                                {getWalletLabel(w)}
-                              </SelectItem>
-                            ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <CustomCombobox
+                      items={student.wallets
+                        .filter((w) => w.id !== reassignFromWalletId)
+                        .map((w) => ({ label: getWalletLabel(w), value: w.id.toString() }))}
+                      value={
+                        reassignToWalletId
+                          ? {
+                              label: (() => {
+                                const w = student.wallets.find(
+                                  (w) => w.id.toString() === reassignToWalletId,
+                                )
+                                return w ? getWalletLabel(w) : ''
+                              })(),
+                              value: reassignToWalletId,
+                            }
+                          : null
+                      }
+                      onValueChange={(item) => setReassignToWalletId(item?.value ?? '')}
+                      placeholder="Выберите кошелёк"
+                    />
                   </Field>
                 </div>
                 <SheetFooter>
@@ -987,32 +956,30 @@ function TransferSheet({
         <SheetTitle>Перевести баланс</SheetTitle>
         <SheetDescription>Переведите часть баланса из одного кошелька в другой.</SheetDescription>
       </SheetHeader>
-      <div className="space-y-4 overflow-y-auto px-4">
+      <div className="h-full space-y-4 overflow-y-auto px-4">
         {/* Wallet selectors */}
         <div className="space-y-2">
           <Field>
             <FieldLabel>Из кошелька</FieldLabel>
-            <Select
-              value={transferSource}
-              onValueChange={(value) => setTransferSource(value as string)}
-              itemToStringLabel={(v) => {
-                const w = student.wallets.find((w) => w.id.toString() === v)
-                return w ? getWalletLabel(w) : ''
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Выберите" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {student.wallets.map((w) => (
-                    <SelectItem key={w.id} value={w.id.toString()}>
-                      {getWalletLabel(w)}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <CustomCombobox
+              items={student.wallets.map((w) => ({
+                label: getWalletLabel(w),
+                value: w.id.toString(),
+              }))}
+              value={
+                transferSource
+                  ? {
+                      label: (() => {
+                        const w = student.wallets.find((w) => w.id.toString() === transferSource)
+                        return w ? getWalletLabel(w) : ''
+                      })(),
+                      value: transferSource,
+                    }
+                  : null
+              }
+              onValueChange={(item) => setTransferSource(item?.value ?? '')}
+              placeholder="Выберите"
+            />
           </Field>
 
           {/* Source wallet summary */}
@@ -1042,29 +1009,24 @@ function TransferSheet({
 
           <Field>
             <FieldLabel>В кошелёк</FieldLabel>
-            <Select
-              value={transferTarget}
-              onValueChange={(value) => setTransferTarget(value as string)}
-              itemToStringLabel={(v) => {
-                const w = student.wallets.find((w) => w.id.toString() === v)
-                return w ? getWalletLabel(w) : ''
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Выберите" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {student.wallets
-                    .filter((w) => w.id.toString() !== transferSource)
-                    .map((w) => (
-                      <SelectItem key={w.id} value={w.id.toString()}>
-                        {getWalletLabel(w)}
-                      </SelectItem>
-                    ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <CustomCombobox
+              items={student.wallets
+                .filter((w) => w.id.toString() !== transferSource)
+                .map((w) => ({ label: getWalletLabel(w), value: w.id.toString() }))}
+              value={
+                transferTarget
+                  ? {
+                      label: (() => {
+                        const w = student.wallets.find((w) => w.id.toString() === transferTarget)
+                        return w ? getWalletLabel(w) : ''
+                      })(),
+                      value: transferTarget,
+                    }
+                  : null
+              }
+              onValueChange={(item) => setTransferTarget(item?.value ?? '')}
+              placeholder="Выберите"
+            />
           </Field>
 
           {/* Target wallet summary */}

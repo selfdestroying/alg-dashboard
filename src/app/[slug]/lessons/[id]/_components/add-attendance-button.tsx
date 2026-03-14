@@ -1,36 +1,21 @@
 'use client'
-import { Student } from '@/prisma/generated/client'
 import { createAttendance } from '@/src/actions/attendance'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useStudentListQuery } from '@/src/features/students/queries'
+import { getFullName } from '@/src/lib/utils'
 import { CreateAttendanceSchema, CreateAttendanceSchemaType } from '@/src/schemas/attendance'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, Plus } from 'lucide-react'
@@ -40,21 +25,20 @@ import { toast } from 'sonner'
 
 interface AddAttendanceButtonProps {
   lessonId: number
-  students: Student[]
   isFull?: boolean
 }
 
 const studentStatusMap = {
   ACTIVE: 'Активен',
   TRIAL: 'Пробный',
-  TRANSFERRED: 'Переведён',
 }
 
-export default function AddAttendanceButton({
-  lessonId,
-  students,
-  isFull,
-}: AddAttendanceButtonProps) {
+const studentStatusItems = Object.entries(studentStatusMap).map(([value, label]) => ({
+  label,
+  value,
+}))
+
+export default function AddAttendanceButton({ lessonId, isFull }: AddAttendanceButtonProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
   const [open, setOpen] = useState(false)
@@ -62,18 +46,18 @@ export default function AddAttendanceButton({
   const form = useForm<CreateAttendanceSchemaType>({
     resolver: zodResolver(CreateAttendanceSchema),
     defaultValues: {
-      target: undefined,
+      studentId: undefined,
       studentStatus: undefined,
     },
   })
 
   const handleSubmit = (data: CreateAttendanceSchemaType) => {
     startTransition(() => {
-      const { studentStatus, target } = data
+      const { studentStatus, studentId } = data
       const ok = createAttendance({
         organizationId: organizationId!,
         lessonId,
-        studentId: target.value,
+        studentId: Number(studentId),
         studentStatus: studentStatus,
         status: 'UNSPECIFIED',
         comment: '',
@@ -108,18 +92,8 @@ export default function AddAttendanceButton({
         <DialogHeader>
           <DialogTitle>Добавить ученика</DialogTitle>
         </DialogHeader>
-        <DialogDescription></DialogDescription>
 
-        <AddAttendanceForm
-          form={form}
-          items={students.map((student) => ({
-            label: `${student.firstName} ${student.lastName ?? ''}`.trim(),
-            value: student.id,
-          }))}
-          label="Ученик"
-          emptyMessage="Нет доступных учеников"
-          onSubmit={handleSubmit}
-        />
+        <AddAttendanceForm form={form} onSubmit={handleSubmit} />
         <DialogFooter>
           <DialogClose
             render={
@@ -140,43 +114,36 @@ export default function AddAttendanceButton({
 
 interface AddAttendanceFormProps {
   form: ReturnType<typeof useForm<CreateAttendanceSchemaType>>
-  items: { label: string; value: number }[]
-  label: string
-  emptyMessage: string
   onSubmit: (data: CreateAttendanceSchemaType) => void
 }
 
-function AddAttendanceForm({ form, items, label, emptyMessage, onSubmit }: AddAttendanceFormProps) {
+function AddAttendanceForm({ form, onSubmit }: AddAttendanceFormProps) {
+  const { data: students, isLoading: isStudentsLoading } = useStudentListQuery()
+
+  if (isStudentsLoading) {
+    return <Skeleton className="h-full w-full" />
+  }
+
   return (
     <form id="add-attendance-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
-          name="target"
+          name="studentId"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="form-rhf-select-target">{label}</FieldLabel>
+              <FieldLabel htmlFor="form-rhf-select-student">Ученик</FieldLabel>
 
-              <Combobox
-                items={items}
-                value={field.value || ''}
-                onValueChange={field.onChange}
-                isItemEqualToValue={(itemValue, selectedValue) =>
-                  itemValue.value === selectedValue.value
-                }
-              >
-                <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
-                <ComboboxContent>
-                  <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item.value} value={item}>
-                        {item.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+              <CustomCombobox
+                items={students || []}
+                getKey={(s) => s.id}
+                getLabel={(s) => getFullName(s.firstName, s.lastName)}
+                value={students?.find((s) => s.id === field.value) || null}
+                onValueChange={(s) => s && field.onChange(s.id)}
+                id="form-rhf-select-student"
+                placeholder="Выберите ученика"
+                emptyText="Нет доступных учеников"
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
@@ -188,25 +155,14 @@ function AddAttendanceForm({ form, items, label, emptyMessage, onSubmit }: AddAt
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor="form-rhf-select-student-status">Статус</FieldLabel>
-              <Select
+              <CustomCombobox
+                items={studentStatusItems}
+                value={studentStatusItems.find((i) => i.value === field.value) ?? null}
+                onValueChange={(item) => item && field.onChange(item.value)}
                 id="form-rhf-select-student-status"
-                value={field.value || ''}
-                onValueChange={field.onChange}
-                itemToStringLabel={(itemValue) => studentStatusMap[itemValue]}
-              >
-                <SelectTrigger aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите статус" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {Object.entries(studentStatusMap).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                placeholder="Выберите статус ученика"
+                emptyText="Нет доступных статусов"
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

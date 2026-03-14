@@ -1,9 +1,8 @@
 import * as z from 'zod'
-import { combobox } from './_primitives'
 
 export const AddTeacherToGroupSchema = z.object({
-  teacher: combobox('Преподаватель не выбран'),
-  rate: combobox('Ставка не выбрана'),
+  teacherId: z.int('Выберите преподавателя').positive('Выберите преподавателя'),
+  rateId: z.int('Выберите ставку').positive('Выберите ставку'),
   isApplyToLesson: z.boolean(),
 })
 

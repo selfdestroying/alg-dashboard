@@ -1,8 +1,7 @@
 import * as z from 'zod'
-import { comboboxNumber } from './_primitives'
 
 export const CreateAttendanceSchema = z.object({
-  target: comboboxNumber('Выберите значение'),
+  studentId: z.int('Выберите ученика').positive('Выберите ученика'),
   studentStatus: z.enum(['ACTIVE', 'TRIAL'], 'Выберите статус ученика'),
 })
 

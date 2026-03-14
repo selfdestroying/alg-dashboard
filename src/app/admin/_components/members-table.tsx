@@ -1,5 +1,6 @@
 'use client'
 
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import DataTable from '@/src/components/data-table'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -14,14 +15,6 @@ import {
   DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { authClient } from '@/src/lib/auth/client'
 import {
   type ColumnDef,
@@ -245,37 +238,47 @@ export default function MembersTable({ data, onRefresh }: MembersTableProps) {
               onChange={(e) => setSearch(e.target.value)}
             />
 
-            <Select value={orgFilter} onValueChange={setOrgFilter}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Организация" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">Все организации</SelectItem>
-                  {data.organizations.map((org) => (
-                    <SelectItem key={org.id} value={org.id.toString()}>
-                      {org.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <CustomCombobox
+              items={[
+                { label: 'Все организации', value: 'all' },
+                ...data.organizations.map((org) => ({ label: org.name, value: org.id.toString() })),
+              ]}
+              value={
+                orgFilter
+                  ? {
+                      label:
+                        orgFilter === 'all'
+                          ? 'Все организации'
+                          : (data.organizations.find((o) => o.id.toString() === orgFilter)?.name ??
+                            ''),
+                      value: orgFilter,
+                    }
+                  : null
+              }
+              onValueChange={(item) => setOrgFilter(item?.value ?? 'all')}
+              placeholder="Организация"
+              showTrigger={false}
+              className="w-44"
+            />
 
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-36">
-                <SelectValue placeholder="Роль" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">Все роли</SelectItem>
-                  {allRoles.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {role}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <CustomCombobox
+              items={[
+                { label: 'Все роли', value: 'all' },
+                ...allRoles.map((role) => ({ label: role, value: role })),
+              ]}
+              value={
+                roleFilter
+                  ? {
+                      label: roleFilter === 'all' ? 'Все роли' : roleFilter,
+                      value: roleFilter,
+                    }
+                  : null
+              }
+              onValueChange={(item) => setRoleFilter(item?.value ?? 'all')}
+              placeholder="Роль"
+              showTrigger={false}
+              className="w-36"
+            />
           </div>
         </CardTitle>
       </CardHeader>

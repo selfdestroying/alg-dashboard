@@ -3,17 +3,10 @@
 import { Input } from '@/src/components/ui/input'
 import { Controller, useForm } from 'react-hook-form'
 
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import {
   Sheet,
   SheetClose,
@@ -151,26 +144,15 @@ export default function EditMemberDialog({
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="roleId-field">Роль</FieldLabel>
-                  <Select
-                    {...field}
+                  <CustomCombobox
                     items={mappedRoles}
-                    value={field.value}
+                    value={field.value || null}
                     onValueChange={field.onChange}
-                    isItemEqualToValue={(itemValue, value) => itemValue.value == value.value}
-                  >
-                    <SelectTrigger id="roleId-field" aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="Выберите роль" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {mappedRoles.map((role) => (
-                          <SelectItem key={role.value} value={role}>
-                            {role.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                    isItemEqualToValue={(a, b) => a.value === b.value}
+                    id="roleId-field"
+                    placeholder="Выберите роль"
+                    disabled={isPending}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -183,26 +165,22 @@ export default function EditMemberDialog({
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="banned-field">Статус</FieldLabel>
-                  <Select
-                    {...field}
-                    value={field.value}
-                    itemToStringLabel={(itemValue) => (itemValue ? 'Неактивен' : 'Активен')}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger id="banned-field" aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="Выберите статус" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem key={1} value={false}>
-                          Активен
-                        </SelectItem>
-                        <SelectItem key={0} value={true}>
-                          Неактивен
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={[
+                      { label: 'Активен', value: false },
+                      { label: 'Неактивен', value: true },
+                    ]}
+                    value={
+                      field.value !== undefined
+                        ? { label: field.value ? 'Неактивен' : 'Активен', value: field.value }
+                        : null
+                    }
+                    onValueChange={(item) => item !== null && field.onChange(item.value)}
+                    getKey={(item) => String(item.value)}
+                    id="banned-field"
+                    placeholder="Выберите статус"
+                    disabled={isPending}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

@@ -1,6 +1,7 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import { deleteTeacherGroup, updateTeacherGroup } from '@/src/actions/groups'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -35,14 +36,7 @@ import {
   FieldLabel,
   FieldTitle,
 } from '@/src/components/ui/field'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useRateListQuery } from '@/src/features/organization/rates/queries'
@@ -261,29 +255,30 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
                     {isRatesLoading ? (
                       <Skeleton className="h-9 w-full" />
                     ) : (
-                      <Select
-                        name={field.name}
-                        value={field.value?.toString() || ''}
-                        onValueChange={(value) => field.onChange(Number(value))}
-                        itemToStringLabel={(itemValue) => {
-                          const rate = rates?.find((r) => r.id === Number(itemValue))
-                          return rate ? rate.name : 'Выберите ставку'
-                        }}
-                      >
-                        <SelectTrigger id="form-rhf-select-rate" aria-invalid={fieldState.invalid}>
-                          <SelectValue placeholder="Выберите ставку" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {rates?.map((rate) => (
-                              <SelectItem key={rate.id} value={rate.id.toString()}>
-                                {rate.name} — {rate.bid} ₽
-                                {rate.bonusPerStudent > 0 && ` + ${rate.bonusPerStudent} ₽/уч.`}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <CustomCombobox
+                        id="form-rhf-select-rate"
+                        items={rates || []}
+                        getKey={(r) => r.id}
+                        getLabel={(r) => r.name}
+                        value={rates?.find((r) => r.id === field.value) || null}
+                        onValueChange={(r) => r && field.onChange(r.id)}
+                        placeholder="Выберите ставку"
+                        emptyText="Не найдены ставки"
+                        renderItem={(r) => (
+                          <Item size="xs" className="p-0">
+                            <ItemContent>
+                              <ItemTitle className="whitespace-nowrap tabular-nums">
+                                {r.name}
+                              </ItemTitle>
+                              <ItemDescription>
+                                <span className="tabular-nums">
+                                  {r.bid} ₽ | {r.bonusPerStudent} ₽/ученик
+                                </span>
+                              </ItemDescription>
+                            </ItemContent>
+                          </Item>
+                        )}
+                      />
                     )}
                     {selectedRate && (
                       <p className="text-muted-foreground text-xs">

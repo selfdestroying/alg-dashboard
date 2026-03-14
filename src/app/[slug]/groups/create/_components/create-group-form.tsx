@@ -3,39 +3,34 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { createGroup } from '@/src/actions/groups'
+import { CustomCombobox } from '@/src/components/custom-combobox'
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Separator } from '@/src/components/ui/separator'
 import { Toggle } from '@/src/components/ui/toggle'
 import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { useMappedCourseListQuery } from '@/src/features/courses/queries'
-import { useMappedLocationListQuery } from '@/src/features/locations/queries'
-import {
-  useMappedMemberListQuery,
-  useMemberListQuery,
-} from '@/src/features/organization/members/queries'
+import { useCourseListQuery } from '@/src/features/courses/queries'
+import { useLocationListQuery } from '@/src/features/locations/queries'
+import { useMemberListQuery } from '@/src/features/organization/members/queries'
 import { useRateListQuery } from '@/src/features/organization/rates/queries'
 import { DaysOfWeek } from '@/src/lib/utils'
 import { CreateGroupSchema, CreateGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
+
+import { OrganizationRole } from '@/src/lib/auth/server'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Loader } from 'lucide-react'
@@ -83,11 +78,11 @@ export default function CreateGroupForm() {
   const router = useRouter()
   const { data: session } = useSessionQuery()
   const organizationId = session?.organizationId ?? undefined
-  const { data: mappedCourses, isLoading: isCoursesLoading } = useMappedCourseListQuery()
-  const { data: mappedLocations, isLoading: isLocationsLoading } = useMappedLocationListQuery()
-  const { data: mappedMembers, isLoading: isMappedMembersLoading } = useMappedMemberListQuery()
+  const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery()
+  const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery()
   const { data: members, isLoading: isMembersLoading } = useMemberListQuery()
   const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
+
   const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery(
     organizationId!,
   )
@@ -100,10 +95,10 @@ export default function CreateGroupForm() {
       url: undefined,
       groupTypeId: undefined,
       startDate: undefined,
-      course: undefined,
-      location: undefined,
-      teacher: undefined,
-      rate: undefined,
+      courseId: undefined,
+      locationId: undefined,
+      teacherId: undefined,
+      rateId: undefined,
       lessonCount: undefined,
       maxStudents: 10,
       schedule: [],
@@ -125,13 +120,7 @@ export default function CreateGroupForm() {
     if (!selectedType) return
 
     const rate = selectedType.rate
-    form.setValue('rate', {
-      value: rate.id.toString(),
-      label:
-        rate.bonusPerStudent > 0
-          ? `${rate.name} (${rate.bid} ₽ + ${rate.bonusPerStudent} ₽/уч.)`
-          : `${rate.name} (${rate.bid} ₽)`,
-    })
+    form.setValue('rateId', rate.id)
   }, [watchedGroupTypeId, groupTypes, form])
 
   const scheduleDays = fields.map((f) => f.dayOfWeek)
@@ -153,8 +142,9 @@ export default function CreateGroupForm() {
 
   const onSubmit = (values: CreateGroupSchemaType) => {
     startTransition(() => {
-      const { course, location, teacher, rate, startDate, lessonCount, url, schedule } = values
-      const member = members?.find((m) => m.userId === Number(teacher.value))
+      const { courseId, locationId, teacherId, rateId, startDate, lessonCount, url, schedule } =
+        values
+      const member = members?.find((m) => m.userId === Number(teacherId))
 
       const sortedSchedule = [...schedule].sort(
         (a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek),
@@ -184,15 +174,15 @@ export default function CreateGroupForm() {
             groupTypeId: values.groupTypeId,
             url,
             organizationId: organizationId!,
-            courseId: Number(course.value),
-            locationId: Number(location.value),
+            courseId: Number(courseId),
+            locationId: Number(locationId),
             maxStudents: values.maxStudents,
             teachers: {
               create: [
                 {
                   organizationId: organizationId!,
-                  teacherId: Number(member?.userId) as number,
-                  rateId: Number(rate.value),
+                  teacherId: Number(teacherId),
+                  rateId: Number(rateId),
                 },
               ],
             },
@@ -216,7 +206,7 @@ export default function CreateGroupForm() {
   }
 
   if (
-    isMappedMembersLoading ||
+    isMembersLoading ||
     isLocationsLoading ||
     isCoursesLoading ||
     isMembersLoading ||
@@ -237,62 +227,56 @@ export default function CreateGroupForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Controller
             control={form.control}
-            name="course"
+            name="courseId"
             disabled={isPending}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor="courseId-field">Курс</FieldLabel>
-                <Select
-                  items={mappedCourses}
-                  {...field}
-                  value={field.value || ''}
-                  onValueChange={field.onChange}
-                  isItemEqualToValue={(itemValue, value) => itemValue.value === value.value}
-                >
-                  <SelectTrigger id="courseId-field" aria-invalid={fieldState.invalid}>
-                    <SelectValue placeholder="Выберите курс" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {mappedCourses?.map((course) => (
-                        <SelectItem key={course.value} value={course}>
-                          {course.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <FieldLabel htmlFor="form-rhf-select-course">Курс</FieldLabel>
+                <CustomCombobox
+                  id="form-rhf-select-course"
+                  items={courses || []}
+                  getKey={(c) => c.id}
+                  getLabel={(c) => c.name}
+                  value={courses?.find((c) => c.id === field.value) || null}
+                  onValueChange={(c) => c && field.onChange(c.id)}
+                  placeholder="Выберите курс"
+                  emptyText="Не найдено курсов"
+                  renderItem={(c) => (
+                    <Item size="xs" className="p-0">
+                      <ItemContent>
+                        <ItemTitle className="whitespace-nowrap">{c.name}</ItemTitle>
+                      </ItemContent>
+                    </Item>
+                  )}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
           <Controller
             control={form.control}
-            name="location"
+            name="locationId"
             disabled={isPending}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor="locationId-field">Локация</FieldLabel>
-                <Select
-                  items={mappedLocations}
-                  {...field}
-                  value={field.value || ''}
-                  onValueChange={field.onChange}
-                  isItemEqualToValue={(itemValue, value) => itemValue.value === value.value}
-                >
-                  <SelectTrigger id="locationId-field" aria-invalid={fieldState.invalid}>
-                    <SelectValue placeholder="Выберите локацию" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {mappedLocations?.map((location) => (
-                        <SelectItem key={location.value} value={location}>
-                          {location.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <FieldLabel htmlFor="form-rhf-select-location">Локация</FieldLabel>
+                <CustomCombobox
+                  id="form-rhf-select-location"
+                  items={locations || []}
+                  value={locations?.find((l) => l.id === field.value) || null}
+                  getKey={(l) => l.id}
+                  getLabel={(l) => l.name}
+                  onValueChange={(l) => l && field.onChange(l.id)}
+                  placeholder="Выберите локацию"
+                  emptyText="Не найдено локаций"
+                  renderItem={(l) => (
+                    <Item size="xs" className="p-0">
+                      <ItemContent>
+                        <ItemTitle className="whitespace-nowrap">{l.name}</ItemTitle>
+                      </ItemContent>
+                    </Item>
+                  )}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -300,117 +284,102 @@ export default function CreateGroupForm() {
         </div>
         <Controller
           control={form.control}
-          name="teacher"
+          name="teacherId"
           disabled={isPending}
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor="teacherId-field">Преподаватель</FieldLabel>
-              <Select
-                items={mappedMembers}
-                {...field}
-                value={field.value || ''}
-                onValueChange={field.onChange}
-                isItemEqualToValue={(itemValue, value) => itemValue.value === value.value}
-              >
-                <SelectTrigger id="teacherId-field" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите преподавателя" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {mappedMembers?.map((teacher) => (
-                      <SelectItem key={teacher.value} value={teacher}>
-                        {teacher.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <CustomCombobox
+                id="form-rhf-select-teacher"
+                items={members || []}
+                getKey={(m) => m.user.id}
+                getLabel={(m) => m.user.name}
+                value={members?.find((m) => m.user.id === field.value) || null}
+                onValueChange={(m) => m && field.onChange(m.user.id)}
+                placeholder="Выберите преподавателя"
+                emptyText="Не найдены преподаватели"
+                renderItem={(m) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{m.user.name}</ItemTitle>
+                      <ItemDescription>
+                        <span>{memberRoleLabels[m.role as OrganizationRole]}</span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
         <Controller
-          control={form.control}
           name="groupTypeId"
-          disabled={isPending}
+          control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="groupType-field">Тип группы</FieldLabel>
-              <Select
-                name={field.name}
-                value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-                itemToStringLabel={(itemValue) =>
-                  groupTypes?.find((gt) => gt.id === Number(itemValue))?.name || ''
-                }
-              >
-                <SelectTrigger id="groupType-field" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите тип группы" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {groupTypes?.map((gt) => (
-                      <SelectItem key={gt.id} value={gt.id.toString()}>
-                        {gt.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              <FieldContent>
+                <FieldLabel htmlFor="form-rhf-select-groupType">Тип группы</FieldLabel>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <CustomCombobox
+                id="form-rhf-select-groupType"
+                items={groupTypes || []}
+                value={groupTypes?.find((gt) => gt.id === field.value) || null}
+                getKey={(gt) => gt.id}
+                getLabel={(gt) => gt.name}
+                onValueChange={(gt) => gt && field.onChange(gt.id)}
+                placeholder="Выберите тип группы"
+                emptyText="Не найдено типов групп"
+                renderItem={(gt) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{gt.name}</ItemTitle>
+                      <ItemDescription>
+                        <span>
+                          {gt.rate
+                            ? `${gt.rate.bid} ₽ | ${gt.rate.bonusPerStudent} ₽/ученик`
+                            : 'Без ставки'}
+                        </span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />
         <Controller
+          name="rateId"
           control={form.control}
-          name="rate"
-          disabled={isPending}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="rateId-field">Ставка</FieldLabel>
-              {isRatesLoading ? (
-                <div className="text-muted-foreground text-sm">Загрузка...</div>
-              ) : (
-                <Select
-                  items={
-                    rates?.map((r) => ({
-                      value: r.id.toString(),
-                      label:
-                        r.bonusPerStudent > 0
-                          ? `${r.name} (${r.bid} ₽ + ${r.bonusPerStudent} ₽/уч.)`
-                          : `${r.name} (${r.bid} ₽)`,
-                    })) ?? []
-                  }
-                  {...field}
-                  value={field.value || ''}
-                  onValueChange={field.onChange}
-                  isItemEqualToValue={(itemValue, value) => itemValue.value === value.value}
-                >
-                  <SelectTrigger id="rateId-field" aria-invalid={fieldState.invalid}>
-                    <SelectValue placeholder="Выберите ставку" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {rates?.map((r) => (
-                        <SelectItem
-                          key={r.id}
-                          value={{
-                            value: r.id.toString(),
-                            label:
-                              r.bonusPerStudent > 0
-                                ? `${r.name} (${r.bid} ₽ + ${r.bonusPerStudent} ₽/уч.)`
-                                : `${r.name} (${r.bid} ₽)`,
-                          }}
-                        >
-                          {r.name} — {r.bid} ₽
-                          {r.bonusPerStudent > 0 && ` + ${r.bonusPerStudent} ₽/уч.`}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              <FieldContent>
+                <FieldLabel htmlFor="form-rhf-select-rate">Ставка</FieldLabel>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <CustomCombobox
+                id="form-rhf-select-rate"
+                items={rates || []}
+                getKey={(r) => r.id}
+                getLabel={(r) => r.name}
+                value={rates?.find((r) => r.id === field.value) || null}
+                onValueChange={(r) => r && field.onChange(r.id)}
+                placeholder="Выберите ставку"
+                emptyText="Не найдены ставки"
+                renderItem={(r) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap tabular-nums">{r.name}</ItemTitle>
+                      <ItemDescription>
+                        <span className="tabular-nums">
+                          {r.bid} ₽ | {r.bonusPerStudent} ₽/ученик
+                        </span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />

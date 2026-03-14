@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Textarea } from '@/src/components/ui/textarea'
@@ -118,25 +111,16 @@ export default function ProductForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-category`}>Категория</FieldLabel>
-              <Combobox
+              <CustomCombobox
                 items={categories}
                 value={categories.find((c) => c.value === field.value?.toString()) ?? null}
                 onValueChange={(item: MappedCategory | null) => {
                   field.onChange(item ? Number(item.value) : undefined)
                 }}
-              >
-                <ComboboxInput id={`${formId}-category`} placeholder="Выберите категорию" />
-                <ComboboxContent>
-                  <ComboboxEmpty>Не найдены категории</ComboboxEmpty>
-                  <ComboboxList>
-                    {(category: MappedCategory) => (
-                      <ComboboxItem key={category.value} value={category}>
-                        {category.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+                id={`${formId}-category`}
+                placeholder="Выберите категорию"
+                emptyText="Не найдены категории"
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

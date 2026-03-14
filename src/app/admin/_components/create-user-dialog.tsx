@@ -1,5 +1,6 @@
 'use client'
 
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -12,14 +13,6 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { authClient } from '@/src/lib/auth/client'
 import { AdminCreateUserSchema, AdminCreateUserSchemaType } from '@/src/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -172,18 +165,17 @@ export default function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
               render={({ field }) => (
                 <Field>
                   <FieldLabel>Роль</FieldLabel>
-                  <Select value={field.value} onValueChange={(v) => v && field.onChange(v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите роль" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="user">user</SelectItem>
-                        <SelectItem value="admin">admin</SelectItem>
-                        <SelectItem value="owner">owner</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <CustomCombobox
+                    items={[
+                      { label: 'user', value: 'user' },
+                      { label: 'admin', value: 'admin' },
+                      { label: 'owner', value: 'owner' },
+                    ]}
+                    value={field.value ? { label: field.value, value: field.value } : null}
+                    onValueChange={(item) => item && field.onChange(item.value)}
+                    placeholder="Выберите роль"
+                    showTrigger={false}
+                  />
                   <FieldError>{errors.role?.message}</FieldError>
                 </Field>
               )}

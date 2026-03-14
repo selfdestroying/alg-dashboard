@@ -7,6 +7,7 @@ import {
   deleteAttendance,
   updateAttendance,
 } from '@/src/actions/attendance'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -34,14 +35,6 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { CalendarCog, CalendarPlus, Loader2, MoreVertical, Trash2, UserPen } from 'lucide-react'
@@ -201,21 +194,14 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
             <DialogTitle>Статус ученика</DialogTitle>
           </DialogHeader>
 
-          <Select
-            value={studentStatus}
-            onValueChange={(value) => setStudentStatus(value as StudentStatus)}
-            itemToStringLabel={(itemValue) => StudentStatusMap[itemValue as StudentStatus]}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={StudentStatus.ACTIVE}>Ученик</SelectItem>
-                <SelectItem value={StudentStatus.TRIAL}>Пробный</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <CustomCombobox
+            items={[
+              { label: StudentStatusMap[StudentStatus.ACTIVE], value: StudentStatus.ACTIVE },
+              { label: StudentStatusMap[StudentStatus.TRIAL], value: StudentStatus.TRIAL },
+            ]}
+            value={{ label: StudentStatusMap[studentStatus], value: studentStatus }}
+            onValueChange={(item) => item && setStudentStatus(item.value as StudentStatus)}
+          />
           <DialogFooter>
             <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
             <Button onClick={handleStudentStatusConfirm} disabled={isStudentStatusPending}>

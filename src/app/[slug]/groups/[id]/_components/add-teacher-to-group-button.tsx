@@ -1,15 +1,8 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import { createTeacherGroup } from '@/src/actions/groups'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogContent,
@@ -29,12 +22,15 @@ import {
 } from '@/src/components/ui/field'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
-import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
-import { useMappedRateListQuery } from '@/src/features/organization/rates/queries'
+import { useMemberListQuery } from '@/src/features/organization/members/queries'
+import { useRateListQuery } from '@/src/features/organization/rates/queries'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
+import { OrganizationRole } from '@/src/lib/auth/server'
 import { AddTeacherToGroupSchema, AddTeacherToGroupSchemaType } from '@/src/schemas/teacher-group'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -54,35 +50,27 @@ interface AddTeacherToGroupButtonProps {
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const defaultRate = group.groupType
-    ? {
-        value: group.groupType.rate.id.toString(),
-        label:
-          group.groupType.rate.bonusPerStudent > 0
-            ? `${group.groupType.rate.name} (${group.groupType.rate.bid} ₽ + ${group.groupType.rate.bonusPerStudent} ₽/уч.)`
-            : `${group.groupType.rate.name} (${group.groupType.rate.bid} ₽)`,
-      }
-    : undefined
+  const defaultRate = group.groupType ? group.groupType.rate.id : undefined
 
   const form = useForm<AddTeacherToGroupSchemaType>({
     resolver: zodResolver(AddTeacherToGroupSchema),
     defaultValues: {
-      teacher: undefined,
-      rate: defaultRate,
+      teacherId: undefined,
+      rateId: defaultRate,
       isApplyToLesson: true,
     },
   })
 
   const handleSubmit = (data: AddTeacherToGroupSchemaType) => {
     startTransition(() => {
-      const { isApplyToLesson, teacher, rate, ...payload } = data
+      const { isApplyToLesson, teacherId, rateId, ...payload } = data
       const ok = createTeacherGroup(
         {
           data: {
             organizationId: group.organizationId,
             groupId: group.id,
-            teacherId: Number(teacher.value),
-            rateId: Number(rate.value),
+            teacherId: Number(teacherId),
+            rateId: Number(rateId),
             ...payload,
           },
         },
@@ -132,26 +120,18 @@ interface GroupTeacherFormProps {
 }
 
 function GroupTeacherForm({ form, onSubmit }: GroupTeacherFormProps) {
-  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery()
-  const { data: rates, isLoading: isRatesLoading } = useMappedRateListQuery()
+  const { data: members, isLoading: isMembersLoading } = useMemberListQuery()
+  const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
 
   if (isMembersLoading || isRatesLoading) {
     return <Skeleton className="h-full w-full" />
-  }
-
-  if (!members || !rates) {
-    return (
-      <div className="h-full w-full">
-        <p>Не найдены преподаватели или ставки</p>
-      </div>
-    )
   }
 
   return (
     <form id="group-teacher-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
-          name="teacher"
+          name="teacherId"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
@@ -159,29 +139,32 @@ function GroupTeacherForm({ form, onSubmit }: GroupTeacherFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-teacher">Преподаватель</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Combobox items={members} onValueChange={field.onChange}>
-                <ComboboxInput
-                  id="form-rhf-select-teacher"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Выберите преподавателя"
-                />
-                <ComboboxContent>
-                  <ComboboxEmpty>Не найдены преподаватели</ComboboxEmpty>
-                  <ComboboxList>
-                    {(member: (typeof members)[number]) => (
-                      <ComboboxItem key={member.value} value={member}>
-                        {member.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+              <CustomCombobox
+                id="form-rhf-select-teacher"
+                items={members || []}
+                getKey={(m) => m.user.id}
+                getLabel={(m) => m.user.name}
+                value={members?.find((m) => m.user.id === field.value) || null}
+                onValueChange={(m) => m && field.onChange(m.user.id)}
+                placeholder="Выберите преподавателя"
+                emptyText="Не найдены преподаватели"
+                renderItem={(m) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{m.user.name}</ItemTitle>
+                      <ItemDescription>
+                        <span>{memberRoleLabels[m.role as OrganizationRole]}</span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />
 
         <Controller
-          name="rate"
+          name="rateId"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
@@ -189,28 +172,28 @@ function GroupTeacherForm({ form, onSubmit }: GroupTeacherFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-rate">Ставка</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Combobox
-                items={rates}
-                value={field.value}
-                onValueChange={field.onChange}
-                isItemEqualToValue={(a, b) => a?.value === b?.value}
-              >
-                <ComboboxInput
-                  id="form-rhf-select-rate"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Выберите ставку"
-                />
-                <ComboboxContent>
-                  <ComboboxEmpty>Не найдены ставки</ComboboxEmpty>
-                  <ComboboxList>
-                    {(rate: (typeof rates)[number]) => (
-                      <ComboboxItem key={rate.value} value={rate}>
-                        {rate.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+              <CustomCombobox
+                id="form-rhf-select-rate"
+                items={rates || []}
+                getKey={(r) => r.id}
+                getLabel={(r) => r.name}
+                value={rates?.find((r) => r.id === field.value) || null}
+                onValueChange={(r) => r && field.onChange(r.id)}
+                placeholder="Выберите ставку"
+                emptyText="Не найдены ставки"
+                renderItem={(r) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap tabular-nums">{r.name}</ItemTitle>
+                      <ItemDescription>
+                        <span className="tabular-nums">
+                          {r.bid} ₽ | {r.bonusPerStudent} ₽/ученик
+                        </span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />
