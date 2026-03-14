@@ -60,6 +60,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
       locationId: group.locationId!,
       url: group.url ?? '',
       groupTypeId: group.groupTypeId ?? undefined,
+      maxStudents: group.maxStudents ?? undefined,
     },
   })
 
@@ -215,6 +216,28 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+            </Field>
+          )}
+        />
+        <Controller
+          name="maxStudents"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldContent>
+                <FieldLabel htmlFor="form-rhf-input-maxStudents">Макс. учеников</FieldLabel>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <Input
+                id="form-rhf-input-maxStudents"
+                type="number"
+                placeholder="Макс. количество учеников"
+                {...field}
+                value={field.value ?? ''}
+                onChange={(e) =>
+                  field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                }
+              />
             </Field>
           )}
         />
