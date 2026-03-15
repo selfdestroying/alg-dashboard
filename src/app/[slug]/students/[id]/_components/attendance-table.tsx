@@ -20,7 +20,7 @@ import { useMemo } from 'react'
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
   include: {
-    missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+    makeupAttendance: { include: { lesson: true } }
   }
 }>
 
@@ -57,7 +57,7 @@ type LessonWithAttendance = Prisma.LessonGetPayload<{
   include: {
     attendance: {
       include: {
-        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+        makeupAttendance: { include: { lesson: true } }
       }
     }
   }
@@ -85,9 +85,8 @@ function AttendanceCell({
     attendance.studentStatus == 'TRIAL'
       ? statusClasses[`TRIAL_${attendance.status}`]
       : statusClasses[attendance.status]
-  const makeUpStatus = attendance.missedMakeup
-    ? (makeupStatusClasses[attendance.missedMakeup.makeUpAttendance.status] ??
-      makeupStatusClasses.UNSPECIFIED)
+  const makeUpStatus = attendance.makeupAttendance
+    ? (makeupStatusClasses[attendance.makeupAttendance.status] ?? makeupStatusClasses.UNSPECIFIED)
     : makeupStatusClasses.UNSPECIFIED
 
   return (
@@ -116,17 +115,17 @@ function AttendanceCell({
             </p>
             <p>
               Отработка –{' '}
-              {attendance.missedMakeup ? (
+              {attendance.makeupAttendance ? (
                 <>
                   <Link
-                    href={`/lessons/${attendance.missedMakeup.makeUpAttendance.lessonId}`}
+                    href={`/lessons/${attendance.makeupAttendance.lessonId}`}
                     className="text-primary hover:underline"
                   >
-                    {formatDate(attendance.missedMakeup.makeUpAttendance.lesson.date)}
+                    {formatDate(attendance.makeupAttendance.lesson.date)}
                   </Link>
-                  {attendance.missedMakeup.makeUpAttendance.status === 'PRESENT'
+                  {attendance.makeupAttendance.status === 'PRESENT'
                     ? ' – Пришел'
-                    : attendance.missedMakeup.makeUpAttendance.status === 'ABSENT'
+                    : attendance.makeupAttendance.status === 'ABSENT'
                       ? ' – Пропустил'
                       : ''}
                 </>

@@ -170,7 +170,7 @@ export async function getStudentGroupHistory(
       where: {
         studentId,
         organizationId,
-        asMakeupFor: null, // исключаем отработки в чужих группах
+        makeupForAttendanceId: null, // исключаем отработки в чужих группах
       },
       include: {
         lesson: {

@@ -117,14 +117,14 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
             <UserPen />
             Изменить статус ученика
           </DropdownMenuItem>
-          {!attendance.asMakeupFor && (
+          {!attendance.makeupForAttendanceId && (
             <DropdownMenuItem
               onClick={() => {
                 setMakeupOpen(true)
                 setOpen(false)
               }}
             >
-              {attendance.missedMakeup ? (
+              {attendance.makeupAttendance ? (
                 <>
                   <CalendarCog />
                   Изменить дату отработки

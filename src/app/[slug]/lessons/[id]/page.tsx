@@ -69,8 +69,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               },
             },
           },
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+          makeupForAttendance: { include: { lesson: true } },
+          makeupAttendance: { include: { lesson: true } },
         },
         orderBy: {
           id: 'asc',

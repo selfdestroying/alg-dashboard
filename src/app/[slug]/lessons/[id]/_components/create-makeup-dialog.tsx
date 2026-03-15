@@ -6,7 +6,6 @@ import {
   createAttendance,
   deleteAttendance,
 } from '@/src/actions/attendance'
-import { createMakeUp } from '@/src/actions/makeup'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -48,7 +47,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
   const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
   const { data: lessons, isLoading: isLessonsLoading } = useLessonListQuery(organizationId!, dayKey)
 
-  const isReschedule = !!attendance.missedMakeup
+  const isReschedule = !!attendance.makeupAttendance
 
   const [selectedLesson, setSelectedLesson] = useState<NonNullable<typeof lessons>[number] | null>(
     null,
@@ -79,12 +78,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
       lessonId: selectedLesson.id,
       comment: '',
       status: 'UNSPECIFIED',
-    })
-
-    await createMakeUp({
-      organizationId,
-      missedAttendanceId: attendance.id,
-      makeUpAttendanceId: newAttendance.id,
+      makeupForAttendanceId: attendance.id,
     })
 
     if (creditBalance) {
@@ -111,26 +105,21 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
   }
 
   const handleReschedule = async () => {
-    if (!selectedLesson || !organizationId || !attendance.missedMakeup) return
+    if (!selectedLesson || !organizationId || !attendance.makeupAttendance) return
 
-    // Удаляем старую attendance отработки — MakeUp удалится каскадно
+    // Удаляем старую attendance отработки — связь удалится вместе с записью
     await deleteAttendance({
-      where: { id: attendance.missedMakeup.makeUpAttendanceId },
+      where: { id: attendance.makeupAttendance.id },
     })
 
     // Создаём новую attendance + привязываем к пропуску
-    const newAttendance = await createAttendance({
+    await createAttendance({
       organizationId,
       studentId: attendance.studentId,
       lessonId: selectedLesson.id,
       comment: '',
       status: 'UNSPECIFIED',
-    })
-
-    await createMakeUp({
-      organizationId,
-      missedAttendanceId: attendance.id,
-      makeUpAttendanceId: newAttendance.id,
+      makeupForAttendanceId: attendance.id,
     })
   }
 

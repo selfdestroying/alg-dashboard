@@ -10,8 +10,8 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
               include: {
                 attendance: {
                   include: {
-                    missedMakeup: {
-                      include: { makeUpAttendance: { include: { lesson: true } } }
+                    makeupAttendance: {
+                      include: { lesson: true }
                     }
                   }
                 }
@@ -42,8 +42,8 @@ export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
             }
           }
         }
-        asMakeupFor: true
-        missedMakeup: { include: { makeUpAttendance: true } }
+        makeupForAttendance: true
+        makeupAttendance: { include: { makeupForAttendance: true } }
       }
     }
   }

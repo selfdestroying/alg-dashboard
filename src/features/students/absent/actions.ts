@@ -14,9 +14,9 @@ export const getAbsentAttendances = authAction
         status: 'ABSENT',
         OR: [
           {
-            AND: [{ missedMakeup: { is: null } }, { asMakeupFor: { is: null } }],
+            AND: [{ makeupAttendance: { is: null } }, { makeupForAttendanceId: null }],
           },
-          { asMakeupFor: { isNot: null } },
+          { makeupForAttendanceId: { not: null } },
         ],
         studentStatus: { in: ['ACTIVE', 'TRIAL'] },
       },
@@ -38,8 +38,8 @@ export const getAbsentAttendances = authAction
             },
           },
         },
-        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+        makeupForAttendance: { include: { lesson: true } },
+        makeupAttendance: { include: { lesson: true } },
       },
       orderBy: [{ lesson: { date: 'desc' } }],
     })

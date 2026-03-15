@@ -284,11 +284,7 @@ export const getAbsentStatistics = authAction
           },
         },
         lesson: true,
-        missedMakeup: {
-          include: {
-            makeUpAttendance: true,
-          },
-        },
+        makeupAttendance: true,
       },
       orderBy: {
         lesson: {
@@ -343,7 +339,7 @@ export const getAbsentStatistics = authAction
       const weekKey = monday.toISOString().split('T')[0]!
 
       let isSaved = false
-      if (att.missedMakeup?.makeUpAttendance?.status === 'PRESENT') {
+      if (att.makeupAttendance?.status === 'PRESENT') {
         isSaved = true
       }
 
@@ -415,13 +411,11 @@ export const getAbsentStatistics = authAction
       monthly,
       weekly,
       totalAbsences: absences.length,
-      totalSaved: absences.filter((a) => a.missedMakeup?.makeUpAttendance?.status === 'PRESENT')
-        .length,
+      totalSaved: absences.filter((a) => a.makeupAttendance?.status === 'PRESENT').length,
       makeupRate:
         absences.length > 0
           ? Math.round(
-              (absences.filter((a) => a.missedMakeup?.makeUpAttendance?.status === 'PRESENT')
-                .length /
+              (absences.filter((a) => a.makeupAttendance?.status === 'PRESENT').length /
                 absences.length) *
                 1000,
             ) / 10

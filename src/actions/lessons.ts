@@ -24,8 +24,8 @@ export type LessonWithGroupAndAttendance = Prisma.LessonGetPayload<{
     attendance: {
       include: {
         student: true
-        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
-        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+        makeupForAttendance: { include: { lesson: true } }
+        makeupAttendance: { include: { lesson: true } }
       }
     }
   }
