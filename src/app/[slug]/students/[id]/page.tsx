@@ -102,6 +102,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       where: {
         students: { none: { studentId } },
         organizationId: session.organizationId!,
+        isArchived: false,
       },
       include: {
         students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },

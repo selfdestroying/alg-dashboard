@@ -194,10 +194,7 @@ export default function AddGroupToStudentButton({
                     onValueChange={field.onChange}
                     isItemEqualToValue={(a, b) => a.value === b.value}
                   >
-                    <ComboboxInput
-                      id="form-rhf-select-target"
-                      aria-invalid={fieldState.invalid}
-                    />
+                    <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
                     <ComboboxContent>
                       <ComboboxEmpty>Нет доступных групп</ComboboxEmpty>
                       <ComboboxList>
@@ -306,9 +303,7 @@ export default function AddGroupToStudentButton({
                         }
                         disabled={!hasWallets}
                         id="form-rhf-select-wallet"
-                        placeholder={
-                          hasWallets ? 'Выберите кошелёк' : 'Нет кошельков'
-                        }
+                        placeholder={hasWallets ? 'Выберите кошелёк' : 'Нет кошельков'}
                       />
                     )}
                   </Field>

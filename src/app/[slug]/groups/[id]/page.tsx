@@ -69,6 +69,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     { success: canCreateLesson },
     { success: canCreateStudentGroup },
     { success: canCreateTeacherGroup },
+    { success: canArchive },
   ] = await Promise.all([
     auth.api.hasPermission({
       headers: requestHeaders,
@@ -82,23 +83,27 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       headers: requestHeaders,
       body: { permissions: { teacherGroup: ['create'] } },
     }),
+    auth.api.hasPermission({
+      headers: requestHeaders,
+      body: { permissions: { group: ['update'] } },
+    }),
   ])
 
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-        <InfoSection group={group} />
+        <InfoSection group={group} canArchive={canArchive} />
         <Card>
           <CardHeader>
             <CardTitle>Преподаватели</CardTitle>
-            {canCreateTeacherGroup && (
+            {canCreateTeacherGroup && !group.isArchived && (
               <CardAction>
                 <AddTeacherToGroupButton group={group} />
               </CardAction>
             )}
           </CardHeader>
           <CardContent>
-            <GroupTeachersTable data={group.teachers} />
+            <GroupTeachersTable data={group.teachers} isArchived={group.isArchived} />
           </CardContent>
         </Card>
       </div>
@@ -109,7 +114,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             Посещаемость
             <Hint text="Зелёный — присутствовал, красный — пропустил, градиент — пробный ученик. Контур ячейки показывает статус отработки." />
           </CardTitle>
-          {canCreateLesson && (
+          {canCreateLesson && !group.isArchived && (
             <CardAction>
               <AddLessonButton group={group} />
             </CardAction>
@@ -122,7 +127,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card>
         <CardHeader>
           <CardTitle>Список учеников</CardTitle>
-          {canCreateStudentGroup && (
+          {canCreateStudentGroup && !group.isArchived && (
             <CardAction>
               <AddStudentToGroupButton
                 group={group}
@@ -133,7 +138,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           )}
         </CardHeader>
         <CardContent>
-          <GroupStudentsTable data={group.students} />
+          <GroupStudentsTable data={group.students} isArchived={group.isArchived} />
         </CardContent>
       </Card>
     </div>

@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
@@ -33,20 +32,20 @@ type GroupDTO = Prisma.GroupGetPayload<{
   }
 }>
 
-import { Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-interface EditGroupButtonProps {
+interface EditGroupDialogProps {
   group: GroupDTO
+  isOpen: boolean
+  onClose: () => void
 }
 
-export default function EditGroupButton({ group }: EditGroupButtonProps) {
+export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDialogProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId
   const [isPending, startTransition] = useTransition()
-  const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
     resolver: zodResolver(EditGroupSchema),
     defaultValues: {
@@ -65,7 +64,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
         error: 'Ошибка при обновлении группы.',
-        finally: () => setDialogOpen(false),
+        finally: () => onClose(),
       })
     })
   }
@@ -74,17 +73,14 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
-        <Pen />
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Редактировать группу</DialogTitle>
         </DialogHeader>
         <EditGroupForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+          <Button variant="secondary" onClick={onClose} size={'sm'}>
             Отмена
           </Button>
           <Button form="edit-group-form" type="submit" disabled={isPending} size={'sm'}>
