@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader, Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
+import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMappedCategoryListQuery } from '../../categories/queries'
@@ -131,7 +131,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
               disabled={deleteMutation.isPending}
               onClick={handleDelete}
             >
-              {deleteMutation.isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
+              {deleteMutation.isPending ? <Loader className="animate-spin" /> : 'Удалить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

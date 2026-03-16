@@ -18,7 +18,7 @@ import { useStudentListQuery } from '@/src/features/students/queries'
 import { getFullName } from '@/src/lib/utils'
 import { CreateAttendanceSchema, CreateAttendanceSchemaType } from '@/src/schemas/attendance'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader, Plus } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -103,7 +103,7 @@ export default function AddAttendanceButton({ lessonId, isFull }: AddAttendanceB
             }
           />
           <Button form="add-attendance-form" type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="animate-spin" />}
+            {isPending && <Loader className="animate-spin" />}
             Подтвердить
           </Button>
         </DialogFooter>

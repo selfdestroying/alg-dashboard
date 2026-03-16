@@ -15,7 +15,7 @@ import { Switch } from '@/src/components/ui/switch'
 import { authClient } from '@/src/lib/auth/client'
 import { SignInSchema, SignInSchemaType } from '@/src/schemas/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, LogIn } from 'lucide-react'
+import { Loader, LogIn } from 'lucide-react'
 import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -135,7 +135,7 @@ export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInForm
         </FieldGroup>
         <Button type="submit" className="h-10 w-full gap-2 rounded-xl text-sm" disabled={loading}>
           {loading ? (
-            <Loader2 size={16} className="animate-spin" />
+            <Loader size={16} className="animate-spin" />
           ) : (
             <>
               Войти

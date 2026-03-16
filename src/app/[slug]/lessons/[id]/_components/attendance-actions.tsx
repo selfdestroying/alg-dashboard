@@ -37,7 +37,7 @@ import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { CalendarCog, CalendarPlus, Loader2, MoreVertical, Trash2, UserPen } from 'lucide-react'
+import { CalendarCog, CalendarPlus, Loader, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { StudentStatusMap } from './attendance-table'
@@ -182,7 +182,7 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
               disabled={confirmText !== studentFullName || isPending}
               onClick={handleDelete}
             >
-              {isPending ? <Loader2 className="animate-spin" /> : 'Удалить'}
+              {isPending ? <Loader className="animate-spin" /> : 'Удалить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

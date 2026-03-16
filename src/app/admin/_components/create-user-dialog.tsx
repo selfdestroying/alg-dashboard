@@ -16,7 +16,7 @@ import { Input } from '@/src/components/ui/input'
 import { authClient } from '@/src/lib/auth/client'
 import { AdminCreateUserSchema, AdminCreateUserSchemaType } from '@/src/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Dices, Loader2, UserPlus } from 'lucide-react'
+import { Dices, Loader, UserPlus } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -185,7 +185,7 @@ export default function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
           <div className="flex justify-end gap-2">
             <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {isPending && <Loader className="mr-2 size-4 animate-spin" />}
               Создать
             </Button>
           </div>

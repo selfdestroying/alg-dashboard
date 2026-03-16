@@ -28,11 +28,9 @@ import { updateStudentGroupBalance } from '@/src/features/students/actions'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 import { startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
-import { CalendarIcon, Loader2 } from 'lucide-react'
+import { CalendarIcon, Loader } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-
-type LessonOption = { label: string; value: number }
 
 interface MakeUpDialogProps {
   open: boolean
@@ -45,7 +43,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
   const organizationId = session?.organizationId
   const [selectedDay, setSelectedDay] = useState<Date | undefined>()
   const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
-  const { data: lessons, isLoading: isLessonsLoading } = useLessonListQuery(organizationId!, dayKey)
+  const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
 
   const isReschedule = !!attendance.makeupAttendance
 
@@ -221,7 +219,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
           <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
           <Button onClick={handleSubmit} disabled={isSubmitting || !selectedLesson}>
             {isSubmitting ? (
-              <Loader2 className="animate-spin" />
+              <Loader className="animate-spin" />
             ) : isReschedule ? (
               'Изменить'
             ) : (

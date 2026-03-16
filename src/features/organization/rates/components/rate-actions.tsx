@@ -38,7 +38,7 @@ import {
 import { Input } from '@/src/components/ui/input'
 import { Switch } from '@/src/components/ui/switch'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
+import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useRateDeleteMutation, useRateUpdateMutation } from '../queries'
@@ -182,7 +182,7 @@ export default function RateActions({ rate }: RateActionsProps) {
               disabled={isPending || isDeleteDisabled || rate._count.teacherGroups > 0}
             >
               {isPending ? (
-                <Loader2 className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : isDeleteDisabled && deleteCountdown > 0 ? (
                 `${deleteCountdown} с`
               ) : (

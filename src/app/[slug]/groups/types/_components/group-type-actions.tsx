@@ -33,7 +33,7 @@ import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { GroupTypeSchema, GroupTypeSchemaType } from '@/src/schemas/group-type'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
+import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useAction } from 'next-safe-action/hooks'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -181,7 +181,7 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
               disabled={isPending || isDeleteDisabled || groupType._count.groups > 0}
             >
               {isPending ? (
-                <Loader2 className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : isDeleteDisabled && deleteCountdown > 0 ? (
                 `Удалить (${deleteCountdown}с)`
               ) : (
