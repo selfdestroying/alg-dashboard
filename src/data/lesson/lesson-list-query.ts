@@ -61,20 +61,46 @@ export const useLessonListQuery = (organizationId: number, date?: Date) => {
   })
 }
 
-export const useDayStatusesQuery = (organizationId: number, date: Date) => {
+export interface DayStatusFilters {
+  teacherIds?: number[]
+  courseIds?: number[]
+  locationIds?: number[]
+}
+
+export const useDayStatusesQuery = (
+  organizationId: number,
+  date: Date,
+  filters?: DayStatusFilters,
+) => {
   const dateKey = normalizeDateOnly(date).toISOString().split('T')[0]!
   return useQuery({
     queryKey: lessonKeys.byMonth(organizationId, dateKey),
     queryFn: () => getDayStatuses(organizationId, date),
     enabled: !!organizationId && !!date,
     select: (lessons) => {
+      let filtered = lessons
+      if (filters?.teacherIds?.length) {
+        filtered = filtered.filter((l) =>
+          l.teachers.some((t) => filters.teacherIds!.includes(t.teacher.id)),
+        )
+      }
+      if (filters?.courseIds?.length) {
+        filtered = filtered.filter((l) => filters.courseIds!.includes(l.group.course.id))
+      }
+      if (filters?.locationIds?.length) {
+        filtered = filtered.filter(
+          (l) => l.group.location?.id != null && filters.locationIds!.includes(l.group.location.id),
+        )
+      }
       const statuses: Record<string, boolean[]> = {}
-      lessons.forEach((lesson) => {
+      filtered.forEach((lesson) => {
         const day = new Date(lesson.date).toISOString().split('T')[0]!
         if (!statuses[day]) {
           statuses[day] = []
         }
-        statuses[day]!.push(lesson.attendance.some((a) => a.status === 'UNSPECIFIED'))
+        statuses[day]!.push(
+          lesson.status === 'ACTIVE' && lesson.attendance.some((a) => a.status === 'UNSPECIFIED'),
+        )
       })
       return statuses
     },
