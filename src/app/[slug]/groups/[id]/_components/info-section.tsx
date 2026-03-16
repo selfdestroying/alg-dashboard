@@ -1,24 +1,26 @@
-import { Prisma } from '@/prisma/generated/client'
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/src/components/ui/card'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { DaysOfWeek } from '@/src/lib/utils'
 
-type GroupDTO = Prisma.GroupGetPayload<{
-  include: {
-    location: true
-    course: true
-    students: true
-    schedules: true
-    groupType: { include: { rate: true } }
-    teachers: { include: { teacher: true } }
-  }
-}>
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/src/components/ui/item'
+import { Archive, Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
+import InfoSectionAction from './info-section-action'
+import { GroupDTO } from './types'
 
-import { Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
-import EditGroupButton from './edit-group-button'
-import ManageScheduleButton from './manage-schedule-button'
-
-export default async function InfoSection({ group }: { group: GroupDTO }) {
+export default async function InfoSection({
+  group,
+  canArchive,
+}: {
+  group: GroupDTO
+  canArchive?: boolean
+}) {
   const sortedSchedules = [...group.schedules].sort(
     (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
   )
@@ -27,9 +29,25 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация о группе</CardTitle>
-        <CardAction>
-          <EditGroupButton group={group} />
-        </CardAction>
+        {!group.isArchived ? (
+          <CardAction>
+            <InfoSectionAction group={group} canArchive={canArchive} />
+          </CardAction>
+        ) : (
+          <CardDescription>
+            <Item variant="muted">
+              <ItemMedia variant="icon">
+                <Archive />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>
+                  Группа архивирована {group.archivedAt && formatDateOnly(group.archivedAt)}
+                </ItemTitle>
+                <ItemDescription>Комментарий: {group.archiveComment}</ItemDescription>
+              </ItemContent>
+            </Item>
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
@@ -121,10 +139,6 @@ export default async function InfoSection({ group }: { group: GroupDTO }) {
               )}
             </div>
           </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <ManageScheduleButton groupId={group.id} schedules={group.schedules} />
         </div>
       </CardContent>
     </Card>

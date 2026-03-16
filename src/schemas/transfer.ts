@@ -1,8 +1,7 @@
 import * as z from 'zod'
-import { comboboxNumber } from './_primitives'
 
 export const TransferStudentSchema = z.object({
-  group: comboboxNumber('Выберите группу'),
+  groupId: z.int('Выберите группу').positive('Выберите группу'),
 })
 
 export type TransferStudentSchemaType = z.infer<typeof TransferStudentSchema>

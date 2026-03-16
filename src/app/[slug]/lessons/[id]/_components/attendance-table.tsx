@@ -71,19 +71,19 @@ const getColumns = (
         </span>
       ),
       cell: ({ row }) =>
-        row.original.asMakeupFor ? (
+        row.original.makeupForAttendance ? (
           <Link
-            href={`/lessons/${row.original.asMakeupFor.missedAttendance.lessonId}`}
+            href={`/lessons/${row.original.makeupForAttendance.lessonId}`}
             className="text-primary hover:underline"
           >
-            Отработка за {formatDateOnly(row.original.asMakeupFor.missedAttendance.lesson!.date)}
+            Отработка за {formatDateOnly(row.original.makeupForAttendance.lesson!.date)}
           </Link>
-        ) : row.original.missedMakeup ? (
+        ) : row.original.makeupAttendance ? (
           <Link
-            href={`/lessons/${row.original.missedMakeup.makeUpAttendance.lessonId}`}
+            href={`/lessons/${row.original.makeupAttendance.lessonId}`}
             className="text-primary hover:underline"
           >
-            Отработка {formatDateOnly(row.original.missedMakeup.makeUpAttendance.lesson!.date)}
+            Отработка {formatDateOnly(row.original.makeupAttendance.lesson!.date)}
           </Link>
         ) : null,
     },

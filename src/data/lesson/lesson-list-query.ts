@@ -1,6 +1,5 @@
 import { getLessons } from '@/src/actions/lessons'
 import { normalizeDateOnly } from '@/src/lib/timezone'
-import { getGroupName } from '@/src/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { lessonKeys } from './keys'
@@ -53,46 +52,55 @@ async function getDayStatuses(organizationId: number, date: Date) {
 
 export type LessonListData = Awaited<ReturnType<typeof getLessonList>>
 
-export const useLessonListQuery = (organizationId: number, date: Date) => {
-  const dateKey = normalizeDateOnly(date).toISOString().split('T')[0]!
-  return useQuery({
-    queryKey: lessonKeys.byDate(organizationId, dateKey),
-    queryFn: () => getLessonList(organizationId, date),
-    enabled: !!organizationId && !!date,
-  })
-}
-
-export const useMappedLessonListQuery = (organizationId: number, date?: Date) => {
+export const useLessonListQuery = (organizationId: number, date?: Date) => {
   const dateKey = date ? normalizeDateOnly(date).toISOString().split('T')[0]! : ''
   return useQuery({
     queryKey: lessonKeys.byDate(organizationId, dateKey),
     queryFn: () => getLessonList(organizationId, date),
     enabled: !!organizationId && !!date,
-    select: (lessons) =>
-      lessons.map((lesson) => {
-        const groupName = getGroupName(lesson.group)
-        const location = lesson.group.location?.name
-        const teachers = lesson.teachers.map((t) => t.teacher.name).join(', ')
-        const parts = [groupName, location, teachers]
-        return { label: parts.join(' · '), value: lesson.id }
-      }),
   })
 }
 
-export const useDayStatusesQuery = (organizationId: number, date: Date) => {
+export interface DayStatusFilters {
+  teacherIds?: number[]
+  courseIds?: number[]
+  locationIds?: number[]
+}
+
+export const useDayStatusesQuery = (
+  organizationId: number,
+  date: Date,
+  filters?: DayStatusFilters,
+) => {
   const dateKey = normalizeDateOnly(date).toISOString().split('T')[0]!
   return useQuery({
     queryKey: lessonKeys.byMonth(organizationId, dateKey),
     queryFn: () => getDayStatuses(organizationId, date),
     enabled: !!organizationId && !!date,
     select: (lessons) => {
+      let filtered = lessons
+      if (filters?.teacherIds?.length) {
+        filtered = filtered.filter((l) =>
+          l.teachers.some((t) => filters.teacherIds!.includes(t.teacher.id)),
+        )
+      }
+      if (filters?.courseIds?.length) {
+        filtered = filtered.filter((l) => filters.courseIds!.includes(l.group.course.id))
+      }
+      if (filters?.locationIds?.length) {
+        filtered = filtered.filter(
+          (l) => l.group.location?.id != null && filters.locationIds!.includes(l.group.location.id),
+        )
+      }
       const statuses: Record<string, boolean[]> = {}
-      lessons.forEach((lesson) => {
+      filtered.forEach((lesson) => {
         const day = new Date(lesson.date).toISOString().split('T')[0]!
         if (!statuses[day]) {
           statuses[day] = []
         }
-        statuses[day]!.push(lesson.attendance.some((a) => a.status === 'UNSPECIFIED'))
+        statuses[day]!.push(
+          lesson.status === 'ACTIVE' && lesson.attendance.some((a) => a.status === 'UNSPECIFIED'),
+        )
       })
       return statuses
     },

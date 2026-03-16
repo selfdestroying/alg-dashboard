@@ -14,7 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
-import { useDayStatusesQuery, useLessonListQuery } from '@/src/data/lesson/lesson-list-query'
+import {
+  DayStatusFilters,
+  useDayStatusesQuery,
+  useLessonListQuery,
+} from '@/src/data/lesson/lesson-list-query'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
@@ -209,6 +213,7 @@ export default function Dashboard() {
             organizationId={organizationId!}
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
+            filters={effectiveFilters}
           />
         </CardContent>
         <CardFooter>
@@ -235,14 +240,27 @@ interface LessonCalendarProps {
   organizationId: number
   selectedDay: Date
   onSelectDay: (day: Date) => void
+  filters: ColumnFiltersState
 }
 
-function LessonCalendar({ organizationId, selectedDay, onSelectDay }: LessonCalendarProps) {
+function LessonCalendar({
+  organizationId,
+  selectedDay,
+  onSelectDay,
+  filters,
+}: LessonCalendarProps) {
   const [selectedMonth, setSelectedMonth] = useState<Date>(moscowNow())
   const dayKey = useMemo(() => startOfDay(selectedMonth), [selectedMonth])
+  const dayStatusFilters = useMemo<DayStatusFilters>(() => {
+    const teacherIds = filters.find((f) => f.id === 'teacher')?.value as number[] | undefined
+    const courseIds = filters.find((f) => f.id === 'course')?.value as number[] | undefined
+    const locationIds = filters.find((f) => f.id === 'location')?.value as number[] | undefined
+    return { teacherIds, courseIds, locationIds }
+  }, [filters])
   const { data: daysStatuses, isLoading: isDaysStatusesLoading } = useDayStatusesQuery(
     organizationId,
     dayKey,
+    dayStatusFilters,
   )
 
   return (

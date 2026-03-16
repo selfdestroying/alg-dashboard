@@ -2,6 +2,7 @@
 
 import { Lesson } from '@/prisma/generated/client'
 import { updateLesson } from '@/src/actions/lessons'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import {
@@ -16,14 +17,6 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { EditLessonSchema, EditLessonSchemaType } from '@/src/schemas/lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
@@ -136,22 +129,13 @@ export default function EditLessonButton({ lesson }: EditLessonButtonProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="lesson-status-field">Статус урока</FieldLabel>
-                  <Select
-                    {...field}
+                  <CustomCombobox
                     items={statusItems}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger id="lesson-status-field" aria-invalid={fieldState.invalid}>
-                      <SelectValue placeholder="Выберите статус" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="ACTIVE">Активен</SelectItem>
-                        <SelectItem value="CANCELLED">Отменен</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                    value={statusItems.find((i) => i.value === field.value) ?? null}
+                    onValueChange={(item) => item && field.onChange(item.value)}
+                    id="lesson-status-field"
+                    placeholder="Выберите статус"
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

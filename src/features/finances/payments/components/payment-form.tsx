@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { getFullName, getGroupName } from '@/src/lib/utils'
@@ -34,22 +27,13 @@ export default function PaymentForm<T extends FieldValues>({
 }: PaymentFormProps<T>) {
   const { data: students = [] } = useStudentForPaymentListQuery()
 
-  const mappedStudents = useMemo(
-    () =>
-      students.map((student) => ({
-        label: getFullName(student.firstName, student.lastName),
-        value: student.id,
-      })),
-    [students],
-  )
-
-  const selectedStudent = useWatch({ control: form.control, name: 'student' as Path<T> }) as
-    | { value: number; label: string }
+  const selectedStudent = useWatch({ control: form.control, name: 'studentId' as Path<T> }) as
+    | number
     | undefined
 
   const mappedWallets = useMemo(() => {
-    if (!selectedStudent?.value) return []
-    const student = students.find((s) => s.id === selectedStudent.value)
+    if (!selectedStudent) return []
+    const student = students.find((s) => s.id === selectedStudent)
     if (!student) return []
     return student.wallets.map((w) => {
       const groupNames = w.studentGroups.map((sg) => getGroupName(sg.group)).join(', ')
@@ -64,29 +48,21 @@ export default function PaymentForm<T extends FieldValues>({
     <form id={formId}>
       <FieldGroup className="gap-2">
         <Controller
-          name={'student' as Path<T>}
+          name={'studentId' as Path<T>}
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-student`}>Студент</FieldLabel>
-              <Combobox
-                items={mappedStudents}
-                value={(field.value || null) as { value: number; label: string } | null}
-                onValueChange={field.onChange}
-                isItemEqualToValue={(a, b) => a?.value === b?.value}
-              >
-                <ComboboxInput id={`${formId}-student`} aria-invalid={fieldState.invalid} />
-                <ComboboxContent>
-                  <ComboboxEmpty>Нет доступных студентов</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item.value} value={item}>
-                        {item.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+              <CustomCombobox
+                items={students}
+                getKey={(s) => s.id}
+                getLabel={(s) => getFullName(s.firstName, s.lastName)}
+                value={students.find((s) => s.id === field.value) || null}
+                onValueChange={(s) => s && field.onChange(s.id)}
+                id={`${formId}-student`}
+                placeholder="Выберите студента"
+                emptyText="Нет доступных студентов"
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
@@ -97,28 +73,15 @@ export default function PaymentForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-wallet`}>Кошелёк</FieldLabel>
-              <Combobox
+              <CustomCombobox
                 items={mappedWallets}
                 value={(field.value || null) as { value: number; label: string } | null}
                 onValueChange={field.onChange}
                 isItemEqualToValue={(a, b) => a?.value === b?.value}
-              >
-                <ComboboxInput
-                  id={`${formId}-wallet`}
-                  aria-invalid={fieldState.invalid}
-                  disabled={!selectedStudent?.value}
-                />
-                <ComboboxContent>
-                  <ComboboxEmpty>Нет доступных кошельков</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item.value} value={item}>
-                        {item.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+                id={`${formId}-wallet`}
+                disabled={!selectedStudent}
+                emptyText="Нет доступных кошельков"
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

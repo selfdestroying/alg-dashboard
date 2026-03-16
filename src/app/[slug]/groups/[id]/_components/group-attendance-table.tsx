@@ -4,7 +4,7 @@ import { AttendanceStatus } from '@/prisma/generated/enums'
 import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
-import { Toggle } from '@/src/components/ui/toggle'
+import { Tabs, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
 import {
@@ -14,15 +14,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, Users } from 'lucide-react'
+import { ArrowDown, ArrowUp, Loader, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState, useTransition } from 'react'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
   include: {
-    asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
-    missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+    makeupForAttendance: { include: { lesson: true } }
+    makeupAttendance: { include: { lesson: true } }
   }
 }>
 
@@ -60,8 +60,8 @@ type LessonWithAttendance = Prisma.LessonGetPayload<{
     attendance: {
       include: {
         student: true
-        asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
-        missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+        makeupForAttendance: { include: { lesson: true } }
+        makeupAttendance: { include: { lesson: true } }
       }
     }
   }
@@ -89,9 +89,8 @@ function AttendanceCell({
     attendance.studentStatus == 'TRIAL'
       ? statusClasses[`TRIAL_${attendance.status}`]
       : statusClasses[attendance.status]
-  const makeUpStatus = attendance.missedMakeup
-    ? (makeupStatusClasses[attendance.missedMakeup.makeUpAttendance.status] ??
-      makeupStatusClasses.UNSPECIFIED)
+  const makeUpStatus = attendance.makeupAttendance
+    ? (makeupStatusClasses[attendance.makeupAttendance.status] ?? makeupStatusClasses.UNSPECIFIED)
     : makeupStatusClasses.UNSPECIFIED
 
   return (
@@ -120,17 +119,17 @@ function AttendanceCell({
             </p>
             <p>
               Отработка –{' '}
-              {attendance.missedMakeup ? (
+              {attendance.makeupAttendance ? (
                 <>
                   <Link
-                    href={`/lessons/${attendance.missedMakeup.makeUpAttendance.lessonId}`}
+                    href={`/lessons/${attendance.makeupAttendance.lessonId}`}
                     className="text-primary hover:underline"
                   >
-                    {formatDate(attendance.missedMakeup.makeUpAttendance.lesson.date)}
+                    {formatDate(attendance.makeupAttendance.lesson.date)}
                   </Link>
-                  {attendance.missedMakeup.makeUpAttendance.status === 'PRESENT'
+                  {attendance.makeupAttendance.status === 'PRESENT'
                     ? ' – Пришел'
-                    : attendance.missedMakeup.makeUpAttendance.status === 'ABSENT'
+                    : attendance.makeupAttendance.status === 'ABSENT'
                       ? ' – Пропустил'
                       : ''}
                 </>
@@ -209,7 +208,7 @@ export function GroupAttendanceTable({
     const map = new Map<number, Student>()
     for (const lesson of lessons) {
       for (const att of lesson.attendance) {
-        if (!att.asMakeupFor) regularIds.add(att.studentId)
+        if (!att.makeupForAttendanceId) regularIds.add(att.studentId)
         if (!map.has(att.studentId)) map.set(att.studentId, att.student)
       }
     }
@@ -233,16 +232,24 @@ export function GroupAttendanceTable({
   return (
     <div className="space-y-2">
       {hasFormerStudents && (
-        <Toggle
-          pressed={showAll}
-          onPressedChange={(v) => startTransition(() => setShowAll(v))}
-          variant="outline"
-          disabled={isPending}
-          aria-label="Показать всех учеников"
-        >
-          <Users />
-          {isPending ? 'Загрузка...' : showAll ? 'Все ученики' : 'Текущие ученики'}
-        </Toggle>
+        <div className="flex items-center gap-2">
+          <Tabs
+            value={showAll ? 'all' : 'current'}
+            onValueChange={(val) => startTransition(() => setShowAll(val === 'all'))}
+            aria-label="Переключить отображение учеников"
+          >
+            <TabsList>
+              <TabsTrigger value="current" disabled={isPending}>
+                {isPending ? <Loader className="animate-spin" /> : <Users />}
+                Текущие ученики
+              </TabsTrigger>
+              <TabsTrigger value="all" disabled={isPending}>
+                {isPending ? <Loader className="animate-spin" /> : <Users />}
+                Все ученики
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       )}
       <DragScrollArea
         initialScroll={

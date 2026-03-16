@@ -1,6 +1,7 @@
 'use client'
 
 import { Order } from '@/prisma/generated/client'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -19,14 +20,6 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
 import { Loader, MoreVertical, Pen } from 'lucide-react'
 import { useState } from 'react'
 import { useChangeOrderStatusMutation } from '../queries'
@@ -41,6 +34,12 @@ export default function OrderActions({ order }: OrderActionsProps) {
   const [open, setOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [status, setStatus] = useState<Order['status']>(order.status)
+
+  const statusItems = [
+    { label: OrderStatusMap.PENDING, value: 'PENDING' as const },
+    { label: OrderStatusMap.COMPLETED, value: 'COMPLETED' as const },
+    { label: OrderStatusMap.CANCELLED, value: 'CANCELLED' as const },
+  ]
 
   const changeStatusMutation = useChangeOrderStatusMutation()
 
@@ -84,22 +83,13 @@ export default function OrderActions({ order }: OrderActionsProps) {
           <FieldGroup>
             <Field>
               <FieldLabel>Статус</FieldLabel>
-              <Select
-                value={status}
-                onValueChange={(value) => setStatus(value as Order['status'])}
-                itemToStringLabel={(itemValue) => OrderStatusMap[itemValue]}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите статус" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="PENDING">{OrderStatusMap.PENDING}</SelectItem>
-                    <SelectItem value="COMPLETED">{OrderStatusMap.COMPLETED}</SelectItem>
-                    <SelectItem value="CANCELLED">{OrderStatusMap.CANCELLED}</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <CustomCombobox
+                items={statusItems}
+                value={statusItems.find((i) => i.value === status) ?? null}
+                onValueChange={(item) => setStatus((item?.value ?? 'PENDING') as Order['status'])}
+                placeholder="Выберите статус"
+                showTrigger={false}
+              />
             </Field>
           </FieldGroup>
           <DialogFooter>

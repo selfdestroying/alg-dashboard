@@ -3,6 +3,7 @@
 import { Prisma } from '@/prisma/generated/client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
+import { Badge } from '@/src/components/ui/badge'
 import { Field, FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
@@ -38,9 +39,16 @@ const columns: ColumnDef<GroupDTO>[] = [
     header: 'Группа',
     accessorFn: (value) => value.id,
     cell: ({ row }) => (
-      <Link href={`/groups/${row.original.id}`} className="text-primary hover:underline">
-        {getGroupName(row.original)}
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link href={`/groups/${row.original.id}`} className="text-primary hover:underline">
+          {getGroupName(row.original)}
+        </Link>
+        {row.original.isArchived && (
+          <Badge variant="secondary" className="text-muted-foreground">
+            Архивная
+          </Badge>
+        )}
+      </div>
     ),
   },
   {

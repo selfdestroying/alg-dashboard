@@ -1,17 +1,10 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
-import { dismissStudentFromGroup, getGroups, transferStudentToGroup } from '@/src/actions/groups'
+import { dismissStudentFromGroup, transferStudentToGroup } from '@/src/actions/groups'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogClose,
@@ -33,6 +26,7 @@ import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useGroupListQuery } from '@/src/features/groups/queries'
 import { cn, getGroupName } from '@/src/lib/utils'
 import { DismissStudentSchema, DismissStudentSchemaType } from '@/src/schemas/dismissed'
 import { TransferStudentSchema, TransferStudentSchemaType } from '@/src/schemas/transfer'
@@ -53,57 +47,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const [groups, setGroups] = useState<
-    {
-      label: string
-      value: number
-      disabled?: boolean
-      itemType?: 'group'
-      teachers?: string
-      location?: string
-      students?: number
-      maxStudents?: number
-    }[]
-  >([])
-
-  useEffect(() => {
-    async function fetchGroups() {
-      const data = await getGroups({
-        where: {
-          organizationId: session?.organizationId ?? undefined,
-          NOT: {
-            id: sg.groupId,
-          },
-        },
-        include: {
-          location: true,
-          course: true,
-          schedules: true,
-          students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
-          teachers: {
-            include: {
-              teacher: true,
-            },
-          },
-        },
-      })
-      setGroups(
-        data.map((group) => {
-          return {
-            label: `${getGroupName(group)}`,
-            itemType: 'group' as const,
-            teachers: `${group.teachers.map((t) => t.teacher.name).join(', ')}`,
-            location: group.location.name,
-            students: group.students.length,
-            maxStudents: group.maxStudents,
-            value: group.id,
-            disabled: group.students.length >= group.maxStudents,
-          }
-        }),
-      )
-    }
-    fetchGroups()
-  }, [sg.groupId, isSessionLoading, session?.organizationId])
+  const { data: groups } = useGroupListQuery()
 
   const dismissForm = useForm<DismissStudentSchemaType>({
     resolver: zodResolver(DismissStudentSchema),
@@ -115,7 +59,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const transferForm = useForm<TransferStudentSchemaType>({
     resolver: zodResolver(TransferStudentSchema),
     defaultValues: {
-      group: undefined,
+      groupId: undefined,
     },
   })
 
@@ -144,7 +88,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       const ok = transferStudentToGroup({
         studentId: sg.student.id,
         oldGroupId: sg.groupId,
-        newGroupId: values.group.value,
+        newGroupId: values.groupId,
         organizationId: sg.organizationId,
         actorUserId: session?.user?.id ? Number(session.user.id) : 0,
       })
@@ -281,48 +225,38 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
             <FieldGroup>
               <Controller
                 control={transferForm.control}
-                name="group"
+                name="groupId"
                 render={({ field, fieldState }) => (
                   <Field>
-                    <Combobox
-                      items={groups}
-                      value={field.value || ''}
-                      onValueChange={field.onChange}
-                      isItemEqualToValue={(itemValue, selectedValue) =>
-                        itemValue.value === selectedValue.value
-                      }
-                    >
-                      <ComboboxInput
-                        id="form-rhf-select-group"
-                        placeholder="Выберите группу"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>Нет доступных групп</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item) => (
-                            <ComboboxItem key={item.value} value={item} disabled={item.disabled}>
-                              <Item size="xs" className="p-0">
-                                <ItemContent>
-                                  <ItemTitle className="whitespace-nowrap">{item.label}</ItemTitle>
-                                  <ItemDescription>
-                                    {item.teachers} | {item.location} |{' '}
-                                    <span
-                                      className={cn(
-                                        'tabular-nums',
-                                        item.disabled && 'text-destructive',
-                                      )}
-                                    >
-                                      {item.students}/{item.maxStudents}
-                                    </span>
-                                  </ItemDescription>
-                                </ItemContent>
-                              </Item>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                    <CustomCombobox
+                      items={groups || []}
+                      getKey={(g) => g.id}
+                      getLabel={(g) => getGroupName(g)}
+                      value={groups?.find((g) => g.id === field.value) || null}
+                      onValueChange={(g) => g && field.onChange(g.id)}
+                      placeholder="Выберите группу для перевода"
+                      emptyText="Не найдены группы"
+                      itemDisabled={(g) => g.students.length >= g.maxStudents}
+                      renderItem={(g) => (
+                        <Item size="xs" className="p-0">
+                          <ItemContent>
+                            <ItemTitle className="whitespace-nowrap">{getGroupName(g)}</ItemTitle>
+                            <ItemDescription>
+                              {g.teachers.map((t) => t.teacher.name).join(', ')} | {g.location.name}{' '}
+                              |{' '}
+                              <span
+                                className={cn(
+                                  'tabular-nums',
+                                  g.students.length >= g.maxStudents && 'text-destructive',
+                                )}
+                              >
+                                {g.students.length}/{g.maxStudents}
+                              </span>
+                            </ItemDescription>
+                          </ItemContent>
+                        </Item>
+                      )}
+                    />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}

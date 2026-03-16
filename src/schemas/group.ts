@@ -1,12 +1,12 @@
 import * as z from 'zod'
-import { combobox, DateOnlySchema } from './_primitives'
+import { DateOnlySchema } from './_primitives'
 
 export const CreateGroupSchema = z.object({
   name: z.string(),
-  teacher: combobox('Выберите преподавателя'),
-  rate: combobox('Выберите ставку'),
-  course: combobox('Выберите курс'),
-  location: combobox('Выберите локацию'),
+  teacherId: z.int('Выберите учителя').positive('Выберите учителя'),
+  rateId: z.int('Выберите ставку').positive('Выберите ставку'),
+  courseId: z.int('Выберите курс').positive('Выберите курс'),
+  locationId: z.int('Выберите локацию').positive('Выберите локацию'),
   startDate: DateOnlySchema,
   groupTypeId: z.number({ error: 'Выберите тип группы' }).int().positive(),
   schedule: z
@@ -48,10 +48,18 @@ export const UpdateScheduleAndLessonsSchema = z.object({
       }),
     )
     .min(1, 'Выберите хотя бы один день занятий'),
-  startDate: DateOnlySchema,
-  lessonCount: z.number().int().positive('Количество занятий должно быть положительным'),
+  startDate: DateOnlySchema.optional(),
+  lessonCount: z.number().int().positive('Количество занятий должно быть положительным').optional(),
+})
+
+export const ArchiveGroupSchema = z.object({
+  groupId: z.number().int().positive(),
+  archivedAt: z.string().optional(),
+  comment: z.string().optional(),
+  deleteFutureLessons: z.boolean(),
 })
 
 export type CreateGroupSchemaType = z.infer<typeof CreateGroupSchema>
 export type EditGroupSchemaType = z.infer<typeof EditGroupSchema>
 export type UpdateScheduleAndLessonsSchemaType = z.infer<typeof UpdateScheduleAndLessonsSchema>
+export type ArchiveGroupSchemaType = z.infer<typeof ArchiveGroupSchema>

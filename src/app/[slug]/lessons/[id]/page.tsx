@@ -1,4 +1,3 @@
-import { getStudents } from '@/src/actions/students'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth/server'
 import prisma from '@/src/lib/db/prisma'
@@ -70,19 +69,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               },
             },
           },
-          asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } },
-          missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } },
+          makeupForAttendance: { include: { lesson: true } },
+          makeupAttendance: { include: { lesson: true } },
         },
         orderBy: {
           id: 'asc',
         },
       },
-    },
-  })
-  const students = await getStudents({
-    where: {
-      id: { notIn: lesson?.attendance.map((a) => a.studentId) },
-      organizationId: session.organizationId!,
     },
   })
 
@@ -129,7 +122,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <CardAction>
               <AddAttendanceButton
                 lessonId={lesson.id}
-                students={students}
                 isFull={lesson.attendance.length >= lesson.group.maxStudents}
               />
             </CardAction>

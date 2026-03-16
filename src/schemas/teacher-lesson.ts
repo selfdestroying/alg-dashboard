@@ -1,8 +1,7 @@
 import * as z from 'zod'
-import { combobox } from './_primitives'
 
 export const AddTeacherToLessonSchema = z.object({
-  teacher: combobox('Преподаватель не выбран'),
+  teacherId: z.int('Выберите преподавателя').positive('Выберите преподавателя'),
   bid: z.number('Не указана ставка').int('Ставка должна быть числом'),
   bonusPerStudent: z
     .number('Не указан бонус за ученика')

@@ -14,7 +14,7 @@ import {
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { useSessionRevokeMutation } from '@/src/data/user/session-revoke-mutation'
-import { Laptop, Loader2, Smartphone } from 'lucide-react'
+import { Laptop, Loader, Smartphone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { UAParser } from 'ua-parser-js'
@@ -88,7 +88,7 @@ export default function UserCard() {
                       }}
                     >
                       {isTerminating ? (
-                        <Loader2 size={15} className="animate-spin" />
+                        <Loader size={15} className="animate-spin" />
                       ) : isCurrentSession ? (
                         'Выйти'
                       ) : (

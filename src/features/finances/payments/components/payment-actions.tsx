@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
-import { CircleX, Loader2, MoreVertical } from 'lucide-react'
+import { CircleX, Loader, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { usePaymentCancelMutation } from '../queries'
 
@@ -72,7 +72,7 @@ export default function PaymentActions({ payment }: PaymentActionsProps) {
               disabled={cancelMutation.isPending}
               onClick={handleDelete}
             >
-              {cancelMutation.isPending ? <Loader2 className="animate-spin" /> : 'Отменить'}
+              {cancelMutation.isPending ? <Loader className="animate-spin" /> : 'Отменить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

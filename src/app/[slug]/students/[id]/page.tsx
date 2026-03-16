@@ -55,8 +55,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                     attendance: {
                       where: { studentId },
                       include: {
-                        missedMakeup: {
-                          include: { makeUpAttendance: { include: { lesson: true } } },
+                        makeupAttendance: {
+                          include: { lesson: true },
                         },
                       },
                     },
@@ -92,8 +92,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 },
               },
             },
-            asMakeupFor: true,
-            missedMakeup: { include: { makeUpAttendance: true } },
+            makeupForAttendance: true,
+            makeupAttendance: { include: { makeupForAttendance: true } },
           },
         },
       },
@@ -102,6 +102,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       where: {
         students: { none: { studentId } },
         organizationId: session.organizationId!,
+        isArchived: false,
       },
       include: {
         students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },

@@ -500,7 +500,7 @@ export const getStudentGroupHistory = authAction
         where: {
           studentId,
           organizationId,
-          asMakeupFor: null,
+          makeupForAttendanceId: null,
         },
         include: {
           lesson: {

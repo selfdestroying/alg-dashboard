@@ -2,7 +2,7 @@ import { Prisma } from '@/prisma/generated/client'
 import { getGroupName } from '@/src/lib/utils'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
-import AddStudentToGroupButton from '../../../groups/[id]/_components/add-student-to-group-button'
+import AddGroupToStudentButton from './add-group-to-student-button'
 import { StudentAttendanceTable } from './attendance-table'
 import type { StudentWithGroupsAndAttendance } from './types'
 
@@ -34,7 +34,7 @@ export default function StudentGroupsSection({
           Группы
         </h3>
         {canCreateStudentGroup && (
-          <AddStudentToGroupButton groups={groups} student={student} wallets={student.wallets} />
+          <AddGroupToStudentButton groups={groups} student={student} wallets={student.wallets} />
         )}
       </div>
       {student.groups.length > 0 ? (

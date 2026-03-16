@@ -15,7 +15,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/f
 import { Input } from '@/src/components/ui/input'
 import { AdminEditUserSchema, AdminEditUserSchemaType } from '@/src/schemas/user'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Pencil } from 'lucide-react'
+import { Loader, Pencil } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -119,7 +119,7 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
           <div className="flex justify-end gap-2">
             <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
             <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {isPending && <Loader className="mr-2 size-4 animate-spin" />}
               Сохранить
             </Button>
           </div>

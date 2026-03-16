@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { useDismissedReturnMutation } from '@/src/features/students/dismissed/queries'
-import { Loader2, MoreVertical, Undo } from 'lucide-react'
+import { Loader, MoreVertical, Undo } from 'lucide-react'
 import { useState } from 'react'
 
 interface DismissedActionsProps {
@@ -38,7 +38,7 @@ export default function DismissedActions({ studentId, groupId }: DismissedAction
 
       <DropdownMenuContent className={'w-max'}>
         <DropdownMenuItem onClick={handleReturnToGroup} disabled={returnMutation.isPending}>
-          {returnMutation.isPending ? <Loader2 className="animate-spin" /> : <Undo />}
+          {returnMutation.isPending ? <Loader className="animate-spin" /> : <Undo />}
           Вернуть в группу
         </DropdownMenuItem>
       </DropdownMenuContent>

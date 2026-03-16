@@ -23,8 +23,10 @@ function GroupStudentActionsCell({
 
 export default function GroupStudentsTable({
   data,
+  isArchived,
 }: {
   data: Prisma.StudentGroupGetPayload<{ include: { student: true } }>[]
+  isArchived?: boolean
 }) {
   const columns: ColumnDef<Prisma.StudentGroupGetPayload<{ include: { student: true } }>>[] =
     useMemo(
@@ -81,10 +83,10 @@ export default function GroupStudentsTable({
         },
         {
           id: 'actions',
-          cell: ({ row }) => <GroupStudentActionsCell sg={row.original} />,
+          cell: ({ row }) => !isArchived && <GroupStudentActionsCell sg={row.original} />,
         },
       ],
-      [],
+      [isArchived],
     )
   const table = useReactTable({
     data,

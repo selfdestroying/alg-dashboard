@@ -35,7 +35,7 @@ export function computeGroupStats(student: StudentWithGroupsAndAttendance): Grou
   // Step 2: Derive dismissed/transferred groups from attendances
   for (const att of student.attendances) {
     const groupId = att.lesson.groupId
-    if (currentGroupIds.has(groupId) || att.asMakeupFor) continue
+    if (currentGroupIds.has(groupId) || att.makeupForAttendance) continue
 
     if (!groupStats.has(groupId)) {
       const group = att.lesson.group
@@ -56,15 +56,17 @@ export function computeGroupStats(student: StudentWithGroupsAndAttendance): Grou
     if (att.studentStatus === 'TRIAL') continue
 
     const groupId = att.lesson.groupId
-    const isMakeup = !!att.asMakeupFor
+    const isMakeup = !!att.makeupForAttendance
 
     // For makeup attendance, attribute it to the original missed group
-    const targetGroupId = isMakeup ? att.asMakeupFor!.missedAttendanceId : null
+    const targetGroupId = isMakeup ? att.makeupForAttendance!.id : null
     let statsGroupId = groupId
 
     if (isMakeup) {
       // Find the original missed attendance's group from all attendances
-      const missedAtt = student.attendances.find((a) => a.id === targetGroupId && a.missedMakeup)
+      const missedAtt = student.attendances.find(
+        (a) => a.id === targetGroupId && a.makeupAttendance,
+      )
       if (missedAtt) {
         statsGroupId = missedAtt.lesson.groupId
       } else if (!groupStats.has(groupId)) {
@@ -80,7 +82,7 @@ export function computeGroupStats(student: StudentWithGroupsAndAttendance): Grou
         stats.attended++
       } else if (att.status === 'ABSENT') {
         stats.missed++
-        if (att.missedMakeup?.makeUpAttendance.status === 'PRESENT') {
+        if (att.makeupAttendance?.status === 'PRESENT') {
           stats.madeUp++
         }
       }

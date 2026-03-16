@@ -30,7 +30,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/f
 import { Input } from '@/src/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
-import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
+import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { usePaycheckDeleteMutation, usePaycheckUpdateMutation } from '../queries'
@@ -159,7 +159,7 @@ export default function PayCheckActions({ paycheck, userName, userId }: PayCheck
               size={'sm'}
             >
               {isPending ? (
-                <Loader2 className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : isDeleteDisabled && deleteCountdown > 0 ? (
                 `Удалить (${deleteCountdown}с)`
               ) : (

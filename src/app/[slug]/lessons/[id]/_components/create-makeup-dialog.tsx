@@ -6,17 +6,9 @@ import {
   createAttendance,
   deleteAttendance,
 } from '@/src/actions/attendance'
-import { createMakeUp } from '@/src/actions/makeup'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogClose,
@@ -27,19 +19,18 @@ import {
   DialogTitle,
 } from '@/src/components/ui/dialog'
 import { Field, FieldContent, FieldLabel, FieldTitle } from '@/src/components/ui/field'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Switch } from '@/src/components/ui/switch'
-import { useMappedLessonListQuery } from '@/src/data/lesson/lesson-list-query'
+import { useLessonListQuery } from '@/src/data/lesson/lesson-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { updateStudentGroupBalance } from '@/src/features/students/actions'
-import { getFullName } from '@/src/lib/utils'
+import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 import { startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
-import { CalendarIcon, Loader2 } from 'lucide-react'
+import { CalendarIcon, Loader } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-
-type LessonOption = { label: string; value: number }
 
 interface MakeUpDialogProps {
   open: boolean
@@ -50,16 +41,17 @@ interface MakeUpDialogProps {
 export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpDialogProps) {
   const { data: session } = useSessionQuery()
   const organizationId = session?.organizationId
-
-  const isReschedule = !!attendance.missedMakeup
-
   const [selectedDay, setSelectedDay] = useState<Date | undefined>()
-  const [selectedLesson, setSelectedLesson] = useState<LessonOption | null>(null)
+  const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
+  const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
+
+  const isReschedule = !!attendance.makeupAttendance
+
+  const [selectedLesson, setSelectedLesson] = useState<NonNullable<typeof lessons>[number] | null>(
+    null,
+  )
   const [creditBalance, setCreditBalance] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
-  const { data: lessons = [] } = useMappedLessonListQuery(organizationId!, dayKey)
 
   const resetForm = useCallback(() => {
     setSelectedDay(undefined)
@@ -81,15 +73,10 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
     const newAttendance = await createAttendance({
       organizationId,
       studentId: attendance.studentId,
-      lessonId: selectedLesson.value,
+      lessonId: selectedLesson.id,
       comment: '',
       status: 'UNSPECIFIED',
-    })
-
-    await createMakeUp({
-      organizationId,
-      missedAttendanceId: attendance.id,
-      makeUpAttendanceId: newAttendance.id,
+      makeupForAttendanceId: attendance.id,
     })
 
     if (creditBalance) {
@@ -105,8 +92,8 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
             meta: {
               missedAttendanceId: attendance.id,
               makeUpAttendanceId: newAttendance.id,
-              makeUpLessonId: selectedLesson.value,
-              makeUpLessonName: selectedLesson.label,
+              makeUpLessonId: selectedLesson.id,
+              makeUpLessonName: getGroupName(selectedLesson.group),
               originalGroupId,
             },
           },
@@ -116,26 +103,21 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
   }
 
   const handleReschedule = async () => {
-    if (!selectedLesson || !organizationId || !attendance.missedMakeup) return
+    if (!selectedLesson || !organizationId || !attendance.makeupAttendance) return
 
-    // Удаляем старую attendance отработки — MakeUp удалится каскадно
+    // Удаляем старую attendance отработки — связь удалится вместе с записью
     await deleteAttendance({
-      where: { id: attendance.missedMakeup.makeUpAttendanceId },
+      where: { id: attendance.makeupAttendance.id },
     })
 
     // Создаём новую attendance + привязываем к пропуску
-    const newAttendance = await createAttendance({
+    await createAttendance({
       organizationId,
       studentId: attendance.studentId,
-      lessonId: selectedLesson.value,
+      lessonId: selectedLesson.id,
       comment: '',
       status: 'UNSPECIFIED',
-    })
-
-    await createMakeUp({
-      organizationId,
-      missedAttendanceId: attendance.id,
-      makeUpAttendanceId: newAttendance.id,
+      makeupForAttendanceId: attendance.id,
     })
   }
 
@@ -188,24 +170,34 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
             </PopoverContent>
           </Popover>
 
-          <Combobox
-            items={lessons}
+          <CustomCombobox
+            items={lessons || []}
+            getKey={(l) => l.id}
+            getLabel={(l) => getGroupName(l.group)}
             value={selectedLesson}
             onValueChange={setSelectedLesson}
-            isItemEqualToValue={(a, b) => a?.value === b?.value}
-          >
-            <ComboboxInput id="form-rhf-select-lesson" placeholder="Выберите урок для отработки" />
-            <ComboboxContent>
-              <ComboboxEmpty>Не найдены уроки</ComboboxEmpty>
-              <ComboboxList>
-                {(lesson: LessonOption) => (
-                  <ComboboxItem key={lesson.value} value={lesson}>
-                    {lesson.label}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+            placeholder="Выберите урок"
+            emptyText="Не найдено уроков на эту дату"
+            itemDisabled={(l) => l.attendance.length >= l.group.maxStudents}
+            renderItem={(l) => (
+              <Item size="xs" className="p-0">
+                <ItemContent>
+                  <ItemTitle className="whitespace-nowrap">{getGroupName(l.group)}</ItemTitle>
+                  <ItemDescription>
+                    {l.teachers.map((t) => t.teacher.name).join(', ')} | {l.group.location.name} |{' '}
+                    <span
+                      className={cn(
+                        'tabular-nums',
+                        l.attendance.length >= l.group.maxStudents && 'text-destructive',
+                      )}
+                    >
+                      {l.attendance.length}/{l.group.maxStudents}
+                    </span>
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+            )}
+          />
 
           {!isReschedule && (
             <FieldLabel htmlFor="switch-credit-balance">
@@ -227,7 +219,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
           <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
           <Button onClick={handleSubmit} disabled={isSubmitting || !selectedLesson}>
             {isSubmitting ? (
-              <Loader2 className="animate-spin" />
+              <Loader className="animate-spin" />
             ) : isReschedule ? (
               'Изменить'
             ) : (

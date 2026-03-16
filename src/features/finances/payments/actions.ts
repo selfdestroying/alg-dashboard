@@ -48,8 +48,14 @@ export const createPaymentWithBalance = authAction
   .metadata({ actionName: 'createPaymentWithBalance' })
   .inputSchema(CreatePaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { student, wallet: walletInput, lessonCount, price, leadName, productName } = parsedInput
-    const studentId = student.value
+    const {
+      studentId,
+      wallet: walletInput,
+      lessonCount,
+      price,
+      leadName,
+      productName,
+    } = parsedInput
     const walletId = walletInput.value
 
     const paymentMeta = { lessonCount, price, leadName, productName, walletId }
@@ -238,14 +244,13 @@ export const resolveUnprocessedPayment = authAction
   .action(async ({ ctx, parsedInput }) => {
     const {
       unprocessedPaymentId,
-      student,
+      studentId,
       wallet: walletInput,
       lessonCount,
       price,
       leadName,
       productName,
     } = parsedInput
-    const studentId = student.value
     const walletId = walletInput.value
 
     const paymentMeta = {

@@ -69,6 +69,10 @@ export const deleteGroup = async (payload: Prisma.GroupDeleteArgs) => {
   revalidatePath('dashboard/groups')
 }
 
+export type ArchiveGroupResult = {
+  deletedLessonsCount: number
+}
+
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 
 export type ScheduleAndLessonsResult = {
@@ -79,6 +83,11 @@ export type ScheduleAndLessonsResult = {
   assignedStudentsCount: number
   firstLessonDate: Date | null
   lastLessonDate: Date | null
+}
+
+export type ScheduleOnlyResult = {
+  scheduleUpdated: boolean
+  updatedLessonsCount: number
 }
 
 export const updateScheduleAndRegenerateLessons = async (
@@ -192,6 +201,55 @@ export const updateScheduleAndRegenerateLessons = async (
       firstLessonDate: createdLessons[0]?.date ?? null,
       lastLessonDate: createdLessons[createdLessons.length - 1]?.date ?? null,
     } satisfies ScheduleAndLessonsResult
+  })
+
+  revalidatePath(`/groups/${groupId}`)
+  return result
+}
+
+export const updateScheduleOnly = async (
+  groupId: number,
+  organizationId: number,
+  schedule: Array<{ dayOfWeek: number; time: string }>,
+): Promise<ScheduleOnlyResult> => {
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Update schedule records
+    await tx.groupSchedule.deleteMany({ where: { groupId } })
+    await tx.groupSchedule.createMany({
+      data: schedule.map((s) => ({
+        dayOfWeek: s.dayOfWeek,
+        time: s.time,
+        groupId,
+        organizationId,
+      })),
+    })
+
+    // 2. Build day → time map
+    const scheduleDaysMap = new Map(schedule.map((s) => [s.dayOfWeek, s.time]))
+
+    // 3. Update time on future lessons that match schedule days
+    const today = normalizeDateOnly(moscowNow())
+    const futureLessons = await tx.lesson.findMany({
+      where: { groupId, date: { gte: today } },
+      select: { id: true, date: true },
+    })
+
+    let updatedCount = 0
+    for (const lesson of futureLessons) {
+      const newTime = scheduleDaysMap.get(lesson.date.getUTCDay())
+      if (newTime) {
+        await tx.lesson.update({
+          where: { id: lesson.id },
+          data: { time: newTime },
+        })
+        updatedCount++
+      }
+    }
+
+    return {
+      scheduleUpdated: true,
+      updatedLessonsCount: updatedCount,
+    } satisfies ScheduleOnlyResult
   })
 
   revalidatePath(`/groups/${groupId}`)

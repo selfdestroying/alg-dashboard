@@ -109,7 +109,6 @@ model Organization {
   teacherLessons                 TeacherLesson[]
   lessons                        Lesson[]
   attendances                    Attendance[]
-  makeUps                        MakeUp[]
   payments                       Payment[]
   unprocessedPayments            UnprocessedPayment[]
   carts                          Cart[]
@@ -216,12 +215,15 @@ model Student {
 }
 
 model Group {
-  id          Int      @id @default(autoincrement())
-  startDate   DateTime @db.Date
-  maxStudents Int
-  url         String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int       @id @default(autoincrement())
+  startDate      DateTime  @db.Date
+  maxStudents    Int
+  url            String?
+  isArchived     Boolean   @default(false)
+  archivedAt     DateTime? @db.Date
+  archiveComment String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
   organizationId Int
@@ -244,6 +246,7 @@ model Group {
   @@index([courseId])
   @@index([locationId])
   @@index([groupTypeId])
+  @@index([isArchived])
 }
 
 model GroupSchedule {
@@ -345,35 +348,6 @@ model StudentLessonsBalanceHistory {
   @@index([walletId])
 }
 
-// 
-
-// Relation models
-
-model StudentGroup {
-  status          StudentStatus
-  dismissComment  String?
-  dismissedAt     DateTime?     @db.Date
-  transferComment String?
-  transferredAt   DateTime?     @db.Date
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  // Relations
-  organizationId Int
-  studentId      Int
-  groupId        Int
-  walletId       Int?
-  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  wallet         Wallet?      @relation(fields: [walletId], references: [id], onDelete: SetNull)
-
-  @@id([studentId, groupId])
-  @@index([groupId])
-  @@index([organizationId])
-  @@index([walletId])
-}
-
 model Wallet {
   id             Int      @id @default(autoincrement())
   name           String?
@@ -412,6 +386,35 @@ model Rate {
   groupTypes     GroupType[]
 
   @@index([organizationId])
+}
+
+// 
+
+// Relation models
+
+model StudentGroup {
+  status          StudentStatus
+  dismissComment  String?
+  dismissedAt     DateTime?     @db.Date
+  transferComment String?
+  transferredAt   DateTime?     @db.Date
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  organizationId Int
+  studentId      Int
+  groupId        Int
+  walletId       Int?
+  group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  wallet         Wallet?      @relation(fields: [walletId], references: [id], onDelete: SetNull)
+
+  @@id([studentId, groupId])
+  @@index([groupId])
+  @@index([organizationId])
+  @@index([walletId])
 }
 
 model GroupType {
@@ -488,8 +491,9 @@ model Attendance {
   lesson         Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  asMakeupFor  MakeUp? @relation("MakeUpAttendance")
-  missedMakeup MakeUp? @relation("MissedAttendance")
+  makeupForAttendanceId Int?        @unique
+  makeupForAttendance   Attendance? @relation("MakeupLink", fields: [makeupForAttendanceId], references: [id], onDelete: SetNull)
+  makeupAttendance      Attendance? @relation("MakeupLink")
 
   @@unique([studentId, lessonId])
   @@index([lessonId])
@@ -497,20 +501,6 @@ model Attendance {
 }
 
 // 
-
-// TODO: This model is a bit weird, consider refactoring it in the future. It currently serves the purpose of linking a missed attendance with its makeup attendance, but it might be better to have a more explicit relation or even merge it with Attendance model with some nullable fields.
-model MakeUp {
-  id                 Int @id @default(autoincrement())
-  organizationId     Int @default(1)
-  missedAttendanceId Int @unique
-  makeUpAttendanceId Int @unique @map("makeUpAttendaceId")
-
-  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  makeUpAttendance Attendance   @relation("MakeUpAttendance", fields: [makeUpAttendanceId], references: [id], onDelete: Cascade)
-  missedAttendance Attendance   @relation("MissedAttendance", fields: [missedAttendanceId], references: [id], onDelete: Cascade)
-
-  @@index([organizationId])
-}
 
 model Payment {
   id           Int      @id @default(autoincrement())

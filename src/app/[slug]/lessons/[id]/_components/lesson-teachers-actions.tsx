@@ -30,7 +30,7 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/c
 import { Input } from '@/src/components/ui/input'
 import { EditTeacherLessonSchema, EditTeacherLessonSchemaType } from '@/src/schemas/teacher-lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, MoreVertical, Pen, Trash } from 'lucide-react'
+import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -181,7 +181,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
               size={'sm'}
             >
               {isPending ? (
-                <Loader2 className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : isDeleteDisabled && deleteCountdown > 0 ? (
                 `Удалить (${deleteCountdown}с)`
               ) : (

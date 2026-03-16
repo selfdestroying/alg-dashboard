@@ -42,6 +42,7 @@ interface CustomComboboxProps<T> {
   placeholder?: string
   emptyText?: string
   disabled?: boolean
+  itemDisabled?: (item: T) => boolean
   className?: string
   id?: string
   showClear?: boolean
@@ -72,6 +73,7 @@ function CustomComboboxInner<T>(
     id,
     showClear = false,
     showTrigger = true,
+    itemDisabled,
   }: CustomComboboxProps<T>,
   ref: ForwardedRef<HTMLInputElement>,
 ) {
@@ -98,7 +100,7 @@ function CustomComboboxInner<T>(
         <ComboboxEmpty>{emptyText}</ComboboxEmpty>
         <ComboboxList>
           {(item: T) => (
-            <ComboboxItem key={String(getKey(item))} value={item}>
+            <ComboboxItem key={String(getKey(item))} value={item} disabled={itemDisabled?.(item)}>
               {renderItem ? renderItem(item) : getLabel(item)}
             </ComboboxItem>
           )}

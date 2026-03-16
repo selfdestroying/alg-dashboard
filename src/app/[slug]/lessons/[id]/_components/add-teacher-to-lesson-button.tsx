@@ -1,15 +1,8 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import { createTeacherLesson } from '@/src/actions/lessons'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/src/components/ui/combobox'
 import {
   Dialog,
   DialogContent,
@@ -22,11 +15,14 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/c
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
-import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'
+import { useMemberListQuery } from '@/src/features/organization/members/queries'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
+import { OrganizationRole } from '@/src/lib/auth/server'
 import {
   AddTeacherToLessonSchema,
   AddTeacherToLessonSchemaType,
@@ -59,7 +55,7 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
   const form = useForm<AddTeacherToLessonSchemaType>({
     resolver: zodResolver(AddTeacherToLessonSchema),
     defaultValues: {
-      teacher: undefined,
+      teacherId: undefined,
       bid: lesson.group.groupType?.rate?.bid ?? undefined,
       bonusPerStudent: lesson.group.groupType?.rate?.bonusPerStudent ?? undefined,
     },
@@ -67,12 +63,12 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
 
   const handleSubmit = (data: AddTeacherToLessonSchemaType) => {
     startTransition(() => {
-      const { teacher, bid, bonusPerStudent, ...payload } = data
+      const { teacherId, bid, bonusPerStudent, ...payload } = data
       const ok = createTeacherLesson({
         data: {
           organizationId: organizationId!,
           lessonId: lesson.id,
-          teacherId: Number(teacher.value),
+          teacherId: Number(teacherId),
           bid: Number(bid),
           bonusPerStudent: Number(bonusPerStudent),
           ...payload,
@@ -126,7 +122,7 @@ interface LessonTeacherFormProps {
 }
 
 function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
-  const { data: members, isLoading: isMembersLoading } = useMappedMemberListQuery()
+  const { data: members, isLoading: isMembersLoading } = useMemberListQuery()
 
   if (isMembersLoading) {
     return <Skeleton className="h-full w-full" />
@@ -142,7 +138,7 @@ function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
     <form id="lesson-teacher-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-2">
         <Controller
-          name="teacher"
+          name="teacherId"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
@@ -150,23 +146,26 @@ function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-teacher">Преподаватель</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Combobox items={members} onValueChange={field.onChange}>
-                <ComboboxInput
-                  id="form-rhf-select-teacher"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Выберите преподавателя"
-                />
-                <ComboboxContent>
-                  <ComboboxEmpty>Не найдены преподаватели</ComboboxEmpty>
-                  <ComboboxList>
-                    {(member: (typeof members)[number]) => (
-                      <ComboboxItem key={member.value} value={member}>
-                        {member.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
+              <CustomCombobox
+                id="form-rhf-select-teacher"
+                items={members || []}
+                getKey={(m) => m.user.id}
+                getLabel={(m) => m.user.name}
+                value={members?.find((m) => m.user.id === field.value) || null}
+                onValueChange={(m) => m && field.onChange(m.user.id)}
+                placeholder="Выберите преподавателя"
+                emptyText="Не найдены преподаватели"
+                renderItem={(m) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{m.user.name}</ItemTitle>
+                      <ItemDescription>
+                        <span>{memberRoleLabels[m.role as OrganizationRole]}</span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />

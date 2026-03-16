@@ -29,8 +29,8 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
         }
       }
     }
-    asMakeupFor: { include: { missedAttendance: { include: { lesson: true } } } }
-    missedMakeup: { include: { makeUpAttendance: { include: { lesson: true } } } }
+    makeupForAttendance: { include: { lesson: true } }
+    makeupAttendance: { include: { lesson: true } }
   }
 }>
 
@@ -113,13 +113,9 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
                 },
               },
             },
-            asMakeupFor: {
+            makeupForAttendance: {
               include: {
-                missedAttendance: {
-                  include: {
-                    lesson: true,
-                  },
-                },
+                lesson: true,
               },
             },
           },
@@ -143,8 +139,8 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
       )
 
       if (delta !== 0) {
-        const groupId = oldAttendance.asMakeupFor
-          ? oldAttendance.asMakeupFor.missedAttendance.lesson.groupId
+        const groupId = oldAttendance.makeupForAttendance
+          ? oldAttendance.makeupForAttendance.lesson.groupId
           : oldAttendance.lesson.groupId
         const studentGroup = await tx.studentGroup.findUnique({
           where: { studentId_groupId: { studentId: oldAttendance.studentId, groupId } },
@@ -170,7 +166,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
         })
 
         const balanceAfter = updated.lessonsBalance
-        const isMakeupAttendance = Boolean(oldAttendance.asMakeupFor)
+        const isMakeupAttendance = Boolean(oldAttendance.makeupForAttendanceId)
 
         const reason = (() => {
           if (delta >= 0) return StudentLessonsBalanceChangeReason.ATTENDANCE_REVERTED

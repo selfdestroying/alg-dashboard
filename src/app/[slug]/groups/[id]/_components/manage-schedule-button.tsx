@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  updateScheduleAndRegenerateLessons,
-  type ScheduleAndLessonsResult,
-} from '@/src/actions/groups'
+import { updateScheduleAndRegenerateLessons, updateScheduleOnly } from '@/src/actions/groups'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
@@ -24,8 +21,8 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/src/components/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Toggle } from '@/src/components/ui/toggle'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
@@ -37,7 +34,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { CalendarCog, CalendarIcon, Info, TriangleAlert } from 'lucide-react'
+import { CalendarIcon, Info, RefreshCw, Save, TriangleAlert } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -57,36 +54,25 @@ const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 interface ManageScheduleButtonProps {
   groupId: number
   schedules: Array<{ id: number; dayOfWeek: number; time: string }>
+  isOpen: boolean
+  onClose: () => void
 }
 
-function formatResult(result: ScheduleAndLessonsResult): string {
-  const parts: string[] = []
-  if (result.deletedLessonsCount > 0) {
-    parts.push(`удалено ${result.deletedLessonsCount}`)
-  }
-  parts.push(`создано ${result.createdLessonsCount} уроков`)
-  if (result.assignedTeachersCount > 0) {
-    parts.push(`${result.assignedTeachersCount} преп.`)
-  }
-  if (result.assignedStudentsCount > 0) {
-    parts.push(`${result.assignedStudentsCount} уч.`)
-  }
-  if (result.firstLessonDate && result.lastLessonDate) {
-    const from = format(result.firstLessonDate, 'dd.MM.yyyy', { locale: ru })
-    const to = format(result.lastLessonDate, 'dd.MM.yyyy', { locale: ru })
-    parts.push(`период: ${from} — ${to}`)
-  }
-  return parts.join(', ')
-}
+type ScheduleMode = 'schedule-only' | 'regenerate'
 
-export default function ManageScheduleButton({ groupId, schedules }: ManageScheduleButtonProps) {
+export default function ManageScheduleDialog({
+  groupId,
+  schedules,
+  isOpen,
+  onClose,
+}: ManageScheduleButtonProps) {
   const { data: session } = useSessionQuery()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     group: ['update'],
     lesson: ['create'],
   })
   const [isPending, startTransition] = useTransition()
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [mode, setMode] = useState<ScheduleMode>('schedule-only')
 
   const sortedInitial = [...schedules]
     .sort((a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek))
@@ -125,22 +111,38 @@ export default function ManageScheduleButton({ groupId, schedules }: ManageSched
 
   const handleSubmit = (data: UpdateScheduleAndLessonsSchemaType) => {
     if (!session?.organizationId) return
+
+    if (mode === 'regenerate') {
+      if (!data.startDate || !data.lessonCount) {
+        if (!data.startDate) form.setError('startDate', { message: 'Выберите дату начала' })
+        if (!data.lessonCount)
+          form.setError('lessonCount', { message: 'Введите количество занятий' })
+        return
+      }
+    }
+
     startTransition(async () => {
       try {
-        const result = await updateScheduleAndRegenerateLessons(
-          groupId,
-          session.organizationId!,
-          data.schedule,
-          data.startDate,
-          data.lessonCount,
-        )
-        toast.success('Расписание обновлено и уроки перегенерированы', {
-          description: formatResult(result),
-          duration: 6000,
-        })
-        setSheetOpen(false)
+        if (mode === 'schedule-only') {
+          await updateScheduleOnly(groupId, session.organizationId!, data.schedule)
+          toast.success('Расписание обновлено')
+        } else {
+          await updateScheduleAndRegenerateLessons(
+            groupId,
+            session.organizationId!,
+            data.schedule,
+            data.startDate!,
+            data.lessonCount!,
+          )
+          toast.success('Расписание обновлено и уроки перегенерированы')
+        }
+        onClose()
       } catch {
-        toast.error('Ошибка при обновлении расписания и перегенерации уроков')
+        toast.error(
+          mode === 'schedule-only'
+            ? 'Ошибка при обновлении расписания'
+            : 'Ошибка при обновлении расписания и перегенерации уроков',
+        )
       }
     })
   }
@@ -156,11 +158,7 @@ export default function ManageScheduleButton({ groupId, schedules }: ManageSched
   if (!hasPermission?.success) return null
 
   return (
-    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-      <SheetTrigger render={<Button variant="outline" />}>
-        <CalendarCog className="h-4 w-4" />
-        Расписание и уроки
-      </SheetTrigger>
+    <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Управление расписанием</SheetTitle>
@@ -234,121 +232,162 @@ export default function ManageScheduleButton({ groupId, schedules }: ManageSched
 
               <Separator />
 
-              {/* ── Section 2: Lesson generation ── */}
-              <div className="space-y-3">
-                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                  Генерация уроков
-                </p>
-                <FieldGroup className="gap-4">
-                  <Controller
-                    control={form.control}
-                    name="startDate"
+              {/* ── Mode selector ── */}
+              <Tabs value={mode} onValueChange={(value) => setMode(value as ScheduleMode)}>
+                <TabsList className="h-auto w-full">
+                  <TabsTrigger
+                    value="schedule-only"
                     disabled={isPending}
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldContent>
-                          <FieldLabel htmlFor="manage-startDate">Начиная с даты</FieldLabel>
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </FieldContent>
-                        <Popover modal>
-                          <PopoverTrigger
-                            render={<Button variant="outline" />}
-                            aria-invalid={fieldState.invalid}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value
-                              ? format(field.value, 'dd.MM.yyyy (EEEE)', { locale: ru })
-                              : 'Выберите дату'}
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              id="manage-startDate"
-                              mode="single"
-                              disabled={{ before: new Date() }}
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              locale={ru}
-                              components={{
-                                DayButton: (props) => (
-                                  <CalendarDayButton
-                                    {...props}
-                                    data-day={props.day.date.toLocaleDateString('ru-RU')}
-                                  />
-                                ),
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        {watchedStartDate && (
-                          <FieldDescription>
-                            День недели: {DaysOfWeek.full[watchedStartDate.getDay()]}
-                          </FieldDescription>
-                        )}
-                      </Field>
-                    )}
-                  />
-                  <Controller
-                    control={form.control}
-                    name="lessonCount"
+                    className="whitespace-normal"
+                  >
+                    <Save />
+                    Сохранить
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="regenerate"
                     disabled={isPending}
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldContent>
-                          <FieldLabel htmlFor="manage-lessonCount">Количество занятий</FieldLabel>
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </FieldContent>
-                        <Input
-                          id="manage-lessonCount"
-                          type="number"
-                          min={1}
-                          value={field.value ?? ''}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                          aria-invalid={fieldState.invalid}
+                    className="whitespace-normal"
+                  >
+                    <RefreshCw />
+                    Перегенерировать
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="schedule-only">
+                  <p className="text-muted-foreground text-xs">
+                    Обновится только расписание группы. Время в существующих будущих уроках будет
+                    синхронизировано.
+                  </p>
+                </TabsContent>
+                <TabsContent value="regenerate">
+                  <div className="space-y-5">
+                    <p className="text-muted-foreground text-xs">
+                      Расписание будет обновлено, все уроки начиная с выбранной даты — удалены и
+                      созданы заново.
+                    </p>
+
+                    <div className="space-y-3">
+                      <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                        Генерация уроков
+                      </p>
+                      <FieldGroup className="gap-2">
+                        <Controller
+                          control={form.control}
+                          name="startDate"
                           disabled={isPending}
+                          render={({ field, fieldState }) => (
+                            <Field>
+                              <FieldContent>
+                                <FieldLabel htmlFor="manage-startDate">Начиная с даты</FieldLabel>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </FieldContent>
+                              <Popover modal>
+                                <PopoverTrigger
+                                  render={<Button variant="outline" />}
+                                  aria-invalid={fieldState.invalid}
+                                >
+                                  <CalendarIcon />
+                                  {field.value
+                                    ? format(field.value, 'dd.MM.yyyy (EEEE)', { locale: ru })
+                                    : 'Выберите дату'}
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                  <Calendar
+                                    id="manage-startDate"
+                                    mode="single"
+                                    disabled={{ before: new Date() }}
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    locale={ru}
+                                    components={{
+                                      DayButton: (props) => (
+                                        <CalendarDayButton
+                                          {...props}
+                                          data-day={props.day.date.toLocaleDateString('ru-RU')}
+                                        />
+                                      ),
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              {watchedStartDate && (
+                                <FieldDescription>
+                                  День недели: {DaysOfWeek.full[watchedStartDate.getDay()]}
+                                </FieldDescription>
+                              )}
+                            </Field>
+                          )}
                         />
-                      </Field>
+                        <Controller
+                          control={form.control}
+                          name="lessonCount"
+                          disabled={isPending}
+                          render={({ field, fieldState }) => (
+                            <Field>
+                              <FieldContent>
+                                <FieldLabel htmlFor="manage-lessonCount">
+                                  Количество занятий
+                                </FieldLabel>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </FieldContent>
+                              <Input
+                                id="manage-lessonCount"
+                                type="number"
+                                min={1}
+                                value={field.value ?? ''}
+                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                aria-invalid={fieldState.invalid}
+                                disabled={isPending}
+                              />
+                            </Field>
+                          )}
+                        />
+                      </FieldGroup>
+                    </div>
+
+                    {/* ── Preview ── */}
+                    {schedulePreview && watchedStartDate && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription className="text-muted-foreground text-xs">
+                          <span className="font-medium">Предварительный расчёт:</span>{' '}
+                          {watchedLessonCount} уроков за ~{schedulePreview.weeksNeeded} нед. (
+                          {fields
+                            .map((f) => WEEKDAYS.find((d) => d.dayOfWeek === f.dayOfWeek)?.label)
+                            .join(', ')}
+                          )
+                        </AlertDescription>
+                      </Alert>
                     )}
-                  />
-                </FieldGroup>
-              </div>
 
-              {/* ── Preview ── */}
-              {schedulePreview && watchedStartDate && (
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription className="text-muted-foreground text-xs">
-                    <span className="font-medium">Предварительный расчёт:</span>{' '}
-                    {watchedLessonCount} уроков за ~{schedulePreview.weeksNeeded} нед. (
-                    {fields
-                      .map((f) => WEEKDAYS.find((d) => d.dayOfWeek === f.dayOfWeek)?.label)
-                      .join(', ')}
-                    )
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {/* ── Warning ── */}
-              <Alert variant="destructive">
-                <TriangleAlert className="h-4 w-4" />
-                <AlertDescription>
-                  Расписание будет обновлено, а все уроки начиная с выбранной даты — удалены и
-                  созданы заново. Данные посещаемости удалённых уроков будут потеряны.
-                </AlertDescription>
-              </Alert>
+                    {/* ── Warning ── */}
+                    <Alert variant="destructive">
+                      <TriangleAlert className="h-4 w-4" />
+                      <AlertDescription>
+                        Расписание будет обновлено, а все уроки начиная с выбранной даты — удалены и
+                        созданы заново. Данные посещаемости удалённых уроков будут потеряны.
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           </form>
         </div>
         <SheetFooter>
-          <Button variant="secondary" onClick={() => setSheetOpen(false)}>
+          <Button variant="secondary" onClick={onClose}>
             Отмена
           </Button>
           <Button
             form="manage-schedule-form"
             type="submit"
             disabled={isPending}
-            variant="destructive"
+            variant={mode === 'regenerate' ? 'destructive' : 'default'}
           >
-            {isPending ? 'Сохранение...' : 'Сохранить и перегенерировать'}
+            {isPending
+              ? 'Сохранение...'
+              : mode === 'schedule-only'
+                ? 'Сохранить расписание'
+                : 'Сохранить и перегенерировать'}
           </Button>
         </SheetFooter>
       </SheetContent>

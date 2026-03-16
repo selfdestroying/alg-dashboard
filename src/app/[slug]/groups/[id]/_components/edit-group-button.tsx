@@ -1,6 +1,7 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import { updateGroup } from '@/src/actions/groups'
+import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -8,18 +9,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
 import { useSessionQuery } from '@/src/data/user/session-query'
@@ -39,20 +32,20 @@ type GroupDTO = Prisma.GroupGetPayload<{
   }
 }>
 
-import { Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-interface EditGroupButtonProps {
+interface EditGroupDialogProps {
   group: GroupDTO
+  isOpen: boolean
+  onClose: () => void
 }
 
-export default function EditGroupButton({ group }: EditGroupButtonProps) {
+export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDialogProps) {
   const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const organizationId = session?.organizationId
   const [isPending, startTransition] = useTransition()
-  const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditGroupSchemaType>({
     resolver: zodResolver(EditGroupSchema),
     defaultValues: {
@@ -71,7 +64,7 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
         loading: 'Сохранение изменений...',
         success: 'Группа успешно обновлена!',
         error: 'Ошибка при обновлении группы.',
-        finally: () => setDialogOpen(false),
+        finally: () => onClose(),
       })
     })
   }
@@ -80,17 +73,14 @@ export default function EditGroupButton({ group }: EditGroupButtonProps) {
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
-        <Pen />
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Редактировать группу</DialogTitle>
         </DialogHeader>
         <EditGroupForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+          <Button variant="secondary" onClick={onClose} size={'sm'}>
             Отмена
           </Button>
           <Button form="edit-group-form" type="submit" disabled={isPending} size={'sm'}>
@@ -129,27 +119,23 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-course">Курс</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Select
-                name={field.name}
-                value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-                itemToStringLabel={(itemValue) =>
-                  courses?.find((course) => course.id === Number(itemValue))?.name || ''
-                }
-              >
-                <SelectTrigger id="form-rhf-select-course" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите курс" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {courses?.map((course) => (
-                      <SelectItem key={course.id} value={course.id.toString()}>
-                        {course.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <CustomCombobox
+                id="form-rhf-select-course"
+                items={courses || []}
+                getKey={(c) => c.id}
+                getLabel={(c) => c.name}
+                value={courses?.find((c) => c.id === field.value) || null}
+                onValueChange={(c) => c && field.onChange(c.id)}
+                placeholder="Выберите курс"
+                emptyText="Не найдено курсов"
+                renderItem={(c) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{c.name}</ItemTitle>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />
@@ -162,27 +148,23 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-location">Локация</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Select
-                name={field.name}
-                value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-                itemToStringLabel={(itemValue) =>
-                  locations?.find((location) => location.id === Number(itemValue))?.name || ''
-                }
-              >
-                <SelectTrigger id="form-rhf-select-location" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите локацию" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {locations?.map((location) => (
-                      <SelectItem key={location.id} value={location.id.toString()}>
-                        {location.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <CustomCombobox
+                id="form-rhf-select-location"
+                items={locations || []}
+                value={locations?.find((l) => l.id === field.value) || null}
+                getKey={(l) => l.id}
+                getLabel={(l) => l.name}
+                onValueChange={(l) => l && field.onChange(l.id)}
+                placeholder="Выберите локацию"
+                emptyText="Не найдено локаций"
+                renderItem={(l) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{l.name}</ItemTitle>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />
@@ -195,27 +177,30 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                 <FieldLabel htmlFor="form-rhf-select-groupType">Тип группы</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Select
-                name={field.name}
-                value={field.value?.toString() || ''}
-                onValueChange={(value) => field.onChange(Number(value))}
-                itemToStringLabel={(itemValue) =>
-                  groupTypes?.find((gt) => gt.id === Number(itemValue))?.name || ''
-                }
-              >
-                <SelectTrigger id="form-rhf-select-groupType" aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Выберите тип группы" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {groupTypes?.map((gt) => (
-                      <SelectItem key={gt.id} value={gt.id.toString()}>
-                        {gt.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <CustomCombobox
+                id="form-rhf-select-groupType"
+                items={groupTypes || []}
+                value={groupTypes?.find((gt) => gt.id === field.value) || null}
+                getKey={(gt) => gt.id}
+                getLabel={(gt) => gt.name}
+                onValueChange={(gt) => gt && field.onChange(gt.id)}
+                placeholder="Выберите тип группы"
+                emptyText="Не найдено типов групп"
+                renderItem={(gt) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{gt.name}</ItemTitle>
+                      <ItemDescription>
+                        <span>
+                          {gt.rate
+                            ? `${gt.rate.bid} ₽ | ${gt.rate.bonusPerStudent} ₽/ученик`
+                            : 'Без ставки'}
+                        </span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
+              />
             </Field>
           )}
         />

@@ -14,7 +14,7 @@ import { Switch } from '@/src/components/ui/switch'
 import { useChangePasswordMutation } from '@/src/data/user/user-change-password-mutation'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import * as z from 'zod'
 
@@ -156,7 +156,7 @@ export function ChangePasswordForm({ onSuccess, onError }: ChangePasswordFormPro
 
         <Button type="submit" disabled={changePasswordMutation.isPending}>
           {changePasswordMutation.isPending ? (
-            <Loader2 size={15} className="animate-spin" />
+            <Loader size={15} className="animate-spin" />
           ) : (
             'Сменить пароль'
           )}
