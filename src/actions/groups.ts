@@ -505,6 +505,28 @@ export const transferStudentToGroup = async (payload: {
   revalidatePath(`/groups/${newGroupId}`)
 }
 
+export const deleteStudentGroup = async (studentId: number, groupId: number) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.studentGroup.delete({
+      where: {
+        studentId_groupId: {
+          studentId,
+          groupId,
+        },
+      },
+    })
+    await tx.attendance.deleteMany({
+      where: {
+        studentId,
+        lesson: {
+          groupId,
+        },
+      },
+    })
+  })
+  revalidatePath(`/groups/${groupId}`)
+}
+
 export const updateTeacherGroup = async (
   payload: Prisma.TeacherGroupUpdateArgs,
   isApplyToLessons: boolean,

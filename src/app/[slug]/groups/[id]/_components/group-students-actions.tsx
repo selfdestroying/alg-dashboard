@@ -1,8 +1,20 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
-import { dismissStudentFromGroup, transferStudentToGroup } from '@/src/actions/groups'
+import {
+  deleteStudentGroup,
+  dismissStudentFromGroup,
+  transferStudentToGroup,
+} from '@/src/actions/groups'
 import { CustomCombobox } from '@/src/components/custom-combobox'
-import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/src/components/ui/alert-dialog'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import {
@@ -32,7 +44,15 @@ import { DismissStudentSchema, DismissStudentSchemaType } from '@/src/schemas/di
 import { TransferStudentSchema, TransferStudentSchemaType } from '@/src/schemas/transfer'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
-import { CalendarIcon, DoorOpen, GitCompare, MoreVertical, TriangleAlert } from 'lucide-react'
+import {
+  CalendarIcon,
+  CircleAlert,
+  DoorOpen,
+  GitCompare,
+  MoreVertical,
+  Trash,
+  TriangleAlert,
+} from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -46,6 +66,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const [open, setOpen] = useState(false)
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { data: groups } = useGroupListQuery()
 
@@ -104,6 +125,20 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
     })
   }
 
+  const handleDelete = () => {
+    startTransition(() => {
+      const ok = deleteStudentGroup(sg.studentId, sg.groupId)
+      toast.promise(ok, {
+        loading: 'Удаление...',
+        success: 'Ученик успешно удален',
+        error: 'Ошбка при удалении ученика',
+        finally: () => {
+          setDeleteDialogOpen(false)
+        },
+      })
+    })
+  }
+
   useEffect(() => {
     dismissForm.reset()
   }, [dismissForm, dismissDialogOpen])
@@ -138,8 +173,46 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
             <GitCompare />
             Перевести в группу
           </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              setDeleteDialogOpen(true)
+              setOpen(false)
+            }}
+            variant="destructive"
+          >
+            <Trash />
+            Удалить
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить ученика из группы</AlertDialogTitle>
+
+            <Alert variant={'destructive'}>
+              <CircleAlert />
+              <AlertTitle>Осторожно</AlertTitle>
+              <AlertDescription>
+                При удалении ученика будет так же удалены записи посещаемости. Соответствующий
+                кошелёк будет отвязан.
+              </AlertDescription>
+            </Alert>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              render={<Button variant={'outline'}>Отмена</Button>}
+              disabled={isPending}
+            />
+            <Button variant={'destructive'} onClick={handleDelete} disabled={isPending}>
+              Удалить
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={dismissDialogOpen} onOpenChange={setDismissDialogOpen}>
         <DialogContent>
@@ -165,9 +238,9 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                         <CalendarIcon />
                         {field.value
                           ? field.value.toLocaleDateString('ru-RU', {
-                              day: 'numeric',
-                              month: 'long',
-                            })
+                            day: 'numeric',
+                            month: 'long',
+                          })
                           : 'Выберите день'}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
