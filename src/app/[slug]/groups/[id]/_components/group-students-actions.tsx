@@ -47,7 +47,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const { data: groups, isLoading: isGroupsLoading } = useGroupListQuery()
+  const { data: groups } = useGroupListQuery()
 
   const dismissForm = useForm<DismissStudentSchemaType>({
     resolver: zodResolver(DismissStudentSchema),

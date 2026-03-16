@@ -144,7 +144,6 @@ export default function CreateGroupForm() {
     startTransition(() => {
       const { courseId, locationId, teacherId, rateId, startDate, lessonCount, url, schedule } =
         values
-      const member = members?.find((m) => m.userId === Number(teacherId))
 
       const sortedSchedule = [...schedule].sort(
         (a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek),

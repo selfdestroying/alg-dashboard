@@ -178,11 +178,7 @@ export default function AddStudentToGroupButton({
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger
         render={
-          <Button
-            size={'icon'}
-            disabled={isFull}
-            title={isFull ? 'Группа заполнена' : undefined}
-          />
+          <Button size={'icon'} disabled={isFull} title={isFull ? 'Группа заполнена' : undefined} />
         }
       >
         <Plus />
@@ -207,10 +203,7 @@ export default function AddStudentToGroupButton({
                     onValueChange={field.onChange}
                     isItemEqualToValue={(a, b) => a.value === b.value}
                   >
-                    <ComboboxInput
-                      id="form-rhf-select-target"
-                      aria-invalid={fieldState.invalid}
-                    />
+                    <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
                     <ComboboxContent>
                       <ComboboxEmpty>Нет доступных студентов</ComboboxEmpty>
                       <ComboboxList>
