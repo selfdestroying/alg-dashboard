@@ -215,12 +215,15 @@ model Student {
 }
 
 model Group {
-  id          Int      @id @default(autoincrement())
-  startDate   DateTime @db.Date
-  maxStudents Int
-  url         String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int       @id @default(autoincrement())
+  startDate      DateTime  @db.Date
+  maxStudents    Int
+  url            String?
+  isArchived     Boolean   @default(false)
+  archivedAt     DateTime? @db.Date
+  archiveComment String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
   organizationId Int
@@ -243,6 +246,7 @@ model Group {
   @@index([courseId])
   @@index([locationId])
   @@index([groupTypeId])
+  @@index([isArchived])
 }
 
 model GroupSchedule {
