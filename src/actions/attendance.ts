@@ -47,13 +47,13 @@ const updateCoins = async (
   studentId: number,
 ) => {
   if (newStatus === AttendanceStatus.PRESENT && oldStatus !== AttendanceStatus.PRESENT) {
-    await tx.student.update({
-      where: { id: studentId },
+    await tx.studentAccount.updateMany({
+      where: { studentId },
       data: { coins: { increment: 10 } },
     })
   } else if (newStatus !== AttendanceStatus.PRESENT && oldStatus === AttendanceStatus.PRESENT) {
-    await tx.student.update({
-      where: { id: studentId },
+    await tx.studentAccount.updateMany({
+      where: { studentId },
       data: { coins: { decrement: 10 } },
     })
   }

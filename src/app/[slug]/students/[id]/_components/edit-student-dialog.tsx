@@ -2,7 +2,14 @@
 
 import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import {
   Sheet,
@@ -24,6 +31,14 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { StudentWithGroupsAndAttendance } from './types'
 
+function RequiredMark() {
+  return <span className="text-destructive">*</span>
+}
+
+function OptionalMark() {
+  return <span className="text-muted-foreground text-xs font-normal">(необязательно)</span>
+}
+
 export default function EditStudentDialog({
   student,
 }: {
@@ -39,12 +54,7 @@ export default function EditStudentDialog({
       firstName: student.firstName,
       lastName: student.lastName || '',
       birthDate: student.birthDate || undefined,
-      parentsName: student.parentsName || undefined,
-      parentsPhone: student.parentsPhone || undefined,
-      url: student.url || undefined,
-      login: student.login,
-      password: student.password,
-      coins: student.coins,
+      url: student.url || '',
     },
   })
 
@@ -66,12 +76,7 @@ export default function EditStudentDialog({
               lastName: values.lastName,
               age,
               birthDate: values.birthDate ?? null,
-              parentsName: values.parentsName ?? null,
-              parentsPhone: values.parentsPhone ?? null,
-              url: values.url ?? null,
-              login: values.login,
-              password: values.password,
-              coins: values.coins,
+              url: values.url || null,
             },
           },
           {},
@@ -102,7 +107,7 @@ export default function EditStudentDialog({
         </SheetHeader>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          id="create-student-form"
+          id="edit-student-form"
           className="no-scrollbar overflow-y-auto px-4"
         >
           <FieldGroup>
@@ -112,8 +117,15 @@ export default function EditStudentDialog({
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="firstName-field">Имя</FieldLabel>
-                  <Input id="firstName-field" {...field} aria-invalid={fieldState.invalid} />
+                  <FieldLabel htmlFor="edit-firstName-field">
+                    Имя <RequiredMark />
+                  </FieldLabel>
+                  <Input
+                    id="edit-firstName-field"
+                    placeholder="Введите имя"
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -124,21 +136,33 @@ export default function EditStudentDialog({
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="lastName-field">Фамилия</FieldLabel>
-                  <Input id="lastName-field" {...field} aria-invalid={fieldState.invalid} />
+                  <FieldLabel htmlFor="edit-lastName-field">
+                    Фамилия <RequiredMark />
+                  </FieldLabel>
+                  <Input
+                    id="edit-lastName-field"
+                    placeholder="Введите фамилию"
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                  />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
             />
+
+            <FieldSeparator>Дополнительно</FieldSeparator>
+
             <Controller
               control={form.control}
               name="birthDate"
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="birthDate-field">Дата рождения</FieldLabel>
+                  <FieldLabel htmlFor="edit-birthDate-field">
+                    Дата рождения <OptionalMark />
+                  </FieldLabel>
                   <Input
-                    id="birthDate-field"
+                    id="edit-birthDate-field"
                     type="date"
                     {...field}
                     value={
@@ -151,43 +175,11 @@ export default function EditStudentDialog({
                     }
                     aria-invalid={fieldState.invalid}
                   />
-                  <p className="text-muted-foreground text-sm">Возраст: {calculatedAge ?? '—'}</p>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="parentsName"
-              disabled={isPending}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="parentsName-field">ФИО Родителя</FieldLabel>
-                  <Input
-                    id="parentsName-field"
-                    {...field}
-                    value={field.value ?? ''}
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="parentsPhone"
-              disabled={isPending}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="parentsPhone-field">Телефон родителя</FieldLabel>
-                  <Input
-                    id="parentsPhone-field"
-                    type="tel"
-                    {...field}
-                    aria-invalid={fieldState.invalid}
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value || undefined)}
-                  />
+                  <FieldDescription>
+                    {calculatedAge !== null
+                      ? `Возраст: ${calculatedAge}`
+                      : 'Допустимый возраст: 6–17 лет'}
+                  </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -198,56 +190,18 @@ export default function EditStudentDialog({
               disabled={isPending}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="url-field">Ссылка</FieldLabel>
+                  <FieldLabel htmlFor="edit-url-field">
+                    Ссылка <OptionalMark />
+                  </FieldLabel>
                   <Input
-                    id="url-field"
+                    id="edit-url-field"
+                    placeholder="https://"
                     {...field}
                     aria-invalid={fieldState.invalid}
                     value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value || undefined)}
+                    onChange={(e) => field.onChange(e.target.value)}
                   />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="login"
-              disabled={isPending}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="login-field">Логин</FieldLabel>
-                  <Input id="login-field" {...field} aria-invalid={fieldState.invalid} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="password"
-              disabled={isPending}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="password-field">Пароль</FieldLabel>
-                  <Input id="password-field" {...field} aria-invalid={fieldState.invalid} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="coins"
-              disabled={isPending}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="coins-field">Коины</FieldLabel>
-                  <Input
-                    id="coins-field"
-                    {...field}
-                    type="number"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                  />
+                  <FieldDescription>Профиль в соцсетях или мессенджере</FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -256,7 +210,7 @@ export default function EditStudentDialog({
         </form>
         <SheetFooter>
           <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
-          <Button type="submit" form="create-student-form" disabled={isPending}>
+          <Button type="submit" form="edit-student-form" disabled={isPending}>
             {isPending && <Loader className="animate-spin" />}
             Сохранить
           </Button>

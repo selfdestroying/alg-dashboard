@@ -2,6 +2,8 @@ import { Prisma } from '@/prisma/generated/client'
 
 export type StudentWithGroupsAndAttendance = Prisma.StudentGetPayload<{
   include: {
+    account: true
+    parents: { include: { parent: true } }
     groups: {
       include: {
         group: {

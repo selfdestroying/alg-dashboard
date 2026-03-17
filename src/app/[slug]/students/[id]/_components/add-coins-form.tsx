@@ -21,7 +21,11 @@ export default function AddCoinsForm({ studentId }: AddCoinsFormProps) {
         updateStudent({
           where: { id: studentId },
           data: {
-            coins: { increment: inc },
+            account: {
+              update: {
+                coins: { increment: inc },
+              },
+            },
           },
         })
         setInc(undefined)

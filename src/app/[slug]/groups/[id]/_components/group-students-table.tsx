@@ -70,18 +70,6 @@ export default function GroupStudentsTable({
           cell: ({ row }) => row.original.student.age,
         },
         {
-          header: 'Логин',
-          cell: ({ row }) => row.original.student.login,
-        },
-        {
-          header: 'Пароль',
-          cell: ({ row }) => row.original.student.password,
-        },
-        {
-          header: 'Коины',
-          cell: ({ row }) => row.original.student.coins,
-        },
-        {
           id: 'actions',
           cell: ({ row }) => !isArchived && <GroupStudentActionsCell sg={row.original} />,
         },

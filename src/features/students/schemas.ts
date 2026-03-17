@@ -1,55 +1,39 @@
 import { normalizeDateOnly } from '@/src/lib/timezone'
-import { getAgeFromBirthDate } from '@/src/lib/utils'
 import * as z from 'zod'
-
-const MIN_STUDENT_AGE = 6
-const MAX_STUDENT_AGE = 17
-
-const validateAge = (values: { birthDate?: Date | null }, ctx: z.RefinementCtx) => {
-  if (!values.birthDate) return
-  const age = getAgeFromBirthDate(values.birthDate)
-
-  if (age < MIN_STUDENT_AGE) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['birthDate'],
-      message: `Возраст не менее ${MIN_STUDENT_AGE} лет`,
-    })
-  }
-
-  if (age > MAX_STUDENT_AGE) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['birthDate'],
-      message: `Возраст не более ${MAX_STUDENT_AGE} лет`,
-    })
-  }
-}
+import { CreateParentSchema } from '../parents/schemas'
 
 const StudentBaseFields = {
   firstName: z.string({ error: 'Укажите имя' }).min(2, 'Имя должно содержать минимум 2 символа'),
   lastName: z
     .string({ error: 'Укажите фамилию' })
     .min(2, 'Фамилия должна содержать минимум 2 символа'),
-  login: z.string({ error: 'Укажите логин' }).min(2, 'Логин должен содержать минимум 2 символа'),
-  password: z
-    .string({ error: 'Укажите пароль' })
-    .min(2, 'Пароль должен содержать минимум 2 символа'),
   birthDate: z.date().transform(normalizeDateOnly).nullish(),
-  parentsPhone: z
-    .string()
-    .regex(/^\+?[0-9\s\-()]{7,15}$/, 'Укажите корректный номер телефона')
-    .optional(),
-  url: z.string().url('Укажите корректный URL').optional(),
-  coins: z.number({ error: 'Укажите количество монет' }).int().nonnegative().optional(),
+  url: z.url('Укажите корректный URL').optional(),
 }
 
 export const CreateStudentSchema = z
   .object({
     ...StudentBaseFields,
-    parentsName: z.string().optional(),
+    parentMode: z.enum(['none', 'new', 'existing']),
+    newParent: CreateParentSchema.optional(),
+    existingParentId: z.number().int().positive().optional(),
   })
-  .superRefine(validateAge)
+  .superRefine((data, ctx) => {
+    if (data.parentMode === 'new' && !data.newParent) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Заполните данные нового родителя',
+        path: ['newParent'],
+      })
+    }
+    if (data.parentMode === 'existing' && !data.existingParentId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Выберите родителя',
+        path: ['existingParentId'],
+      })
+    }
+  })
 
 export const DeleteStudentSchema = z.object({
   id: z.number().int().positive(),
