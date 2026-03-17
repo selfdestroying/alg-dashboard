@@ -48,17 +48,10 @@ export const createPaymentWithBalance = authAction
   .metadata({ actionName: 'createPaymentWithBalance' })
   .inputSchema(CreatePaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const {
-      studentId,
-      wallet: walletInput,
-      lessonCount,
-      price,
-      leadName,
-      productName,
-    } = parsedInput
+    const { studentId, wallet: walletInput, lessonCount, price } = parsedInput
     const walletId = walletInput.value
 
-    const paymentMeta = { lessonCount, price, leadName, productName, walletId }
+    const paymentMeta = { lessonCount, price, walletId }
 
     await prisma.$transaction(async (tx) => {
       const wallet = await tx.wallet.findUnique({
@@ -82,8 +75,6 @@ export const createPaymentWithBalance = authAction
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
-          leadName,
-          productName,
         },
       })
 
@@ -242,22 +233,12 @@ export const resolveUnprocessedPayment = authAction
   .metadata({ actionName: 'resolveUnprocessedPayment' })
   .inputSchema(ResolveUnprocessedPaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const {
-      unprocessedPaymentId,
-      studentId,
-      wallet: walletInput,
-      lessonCount,
-      price,
-      leadName,
-      productName,
-    } = parsedInput
+    const { unprocessedPaymentId, studentId, wallet: walletInput, lessonCount, price } = parsedInput
     const walletId = walletInput.value
 
     const paymentMeta = {
       lessonCount,
       price,
-      leadName,
-      productName,
       walletId,
       unprocessedPaymentId,
     }
@@ -284,8 +265,6 @@ export const resolveUnprocessedPayment = authAction
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
-          leadName,
-          productName,
         },
       })
 

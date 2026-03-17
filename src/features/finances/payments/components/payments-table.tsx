@@ -40,14 +40,6 @@ export default function PaymentsTable() {
         ),
       },
       {
-        header: 'Имя сделки',
-        accessorKey: 'leadName',
-      },
-      {
-        header: 'Название товара',
-        accessorKey: 'productName',
-      },
-      {
         header: () => (
           <span className="flex items-center gap-0.5">
             Занятий оплачено

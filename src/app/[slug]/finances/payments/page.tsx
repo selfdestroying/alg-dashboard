@@ -1,8 +1,6 @@
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { Hint } from '@/src/components/hint'
 import AddPaymentButton from '@/src/features/finances/payments/components/add-payment-button'
 import PaymentsTable from '@/src/features/finances/payments/components/payments-table'
-import UnprocessedPaymentTable from '@/src/features/finances/payments/components/unprocessed-payment-table'
 
 export const metadata = { title: 'Оплаты' }
 
@@ -18,21 +16,6 @@ export default function Page() {
         </CardHeader>
         <CardContent>
           <PaymentsTable />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Неразобранное
-            <Hint
-              text="Оплаты, которые поступили из CRM, но не были автоматически привязаны к ученику. Требуют ручной обработки."
-              variant="warning"
-            />
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <UnprocessedPaymentTable />
         </CardContent>
       </Card>
     </div>

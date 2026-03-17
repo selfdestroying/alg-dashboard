@@ -6,8 +6,6 @@ export const CreatePaymentSchema = z.object({
   wallet: comboboxNumber('Выберите кошелёк'),
   lessonCount: z.number('Укажите количество занятий').int().positive(),
   price: z.number('Укажите сумму').int().positive(),
-  leadName: z.string('Укажите имя лида'),
-  productName: z.string('Укажите название товара'),
 })
 
 export const CancelPaymentSchema = z.object({
@@ -20,8 +18,6 @@ export const ResolveUnprocessedPaymentSchema = z.object({
   wallet: comboboxNumber('Выберите кошелёк'),
   lessonCount: z.number('Укажите количество занятий').int().positive(),
   price: z.number('Укажите сумму').int().positive(),
-  leadName: z.string('Укажите имя лида'),
-  productName: z.string('Укажите название товара'),
 })
 
 export const DeleteUnprocessedPaymentSchema = z.object({

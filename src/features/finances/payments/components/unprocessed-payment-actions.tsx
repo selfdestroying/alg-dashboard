@@ -54,8 +54,6 @@ export default function UnprocessedPaymentActions({
     defaultValues: {
       price: undefined,
       lessonCount: undefined,
-      leadName: undefined,
-      productName: undefined,
     },
   })
 

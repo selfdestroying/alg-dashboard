@@ -124,44 +124,6 @@ export default function PaymentForm<T extends FieldValues>({
             </Field>
           )}
         />
-        <Controller
-          control={form.control}
-          name={'leadName' as Path<T>}
-          disabled={disabled}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={`${formId}-leadName`}>Имя лида</FieldLabel>
-              <Input
-                id={`${formId}-leadName`}
-                {...field}
-                type="text"
-                onChange={(e) => field.onChange(e.target.value)}
-                value={field.value ?? ''}
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          control={form.control}
-          name={'productName' as Path<T>}
-          disabled={disabled}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={`${formId}-productName`}>Название продукта</FieldLabel>
-              <Input
-                id={`${formId}-productName`}
-                {...field}
-                type="text"
-                onChange={(e) => field.onChange(e.target.value)}
-                value={field.value ?? ''}
-                aria-invalid={fieldState.invalid}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
       </FieldGroup>
     </form>
   )
