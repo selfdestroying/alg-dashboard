@@ -120,9 +120,23 @@ model Organization {
   studentLessonsBalanceHistories StudentLessonsBalanceHistory[]
   groupSchedules                 GroupSchedule[]
   wallets                        Wallet[]
+  parents                        Parent[]
+  features                       OrganizationFeature[]
 
   @@unique([slug])
   @@map("Organization")
+}
+
+model OrganizationFeature {
+  id             Int          @id @default(autoincrement())
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  featureKey     String
+  enabled        Boolean      @default(true)
+
+  @@unique([organizationId, featureKey])
+  @@index([organizationId])
+  @@map("OrganizationFeature")
 }
 
 model Member {
@@ -184,14 +198,9 @@ model Student {
   id             Int       @id @default(autoincrement())
   firstName      String
   lastName       String
-  login          String
-  password       String
   age            Int?
   birthDate      DateTime? @db.Date
-  parentsName    String?
-  parentsPhone   String?
   url            String?
-  coins          Int       @default(0)
   lessonsBalance Int       @default(0)
   totalLessons   Int       @default(0)
   totalPayments  Int       @default(0)
@@ -202,6 +211,8 @@ model Student {
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  account StudentAccount?
+
   cart                  Cart?
   attendances           Attendance[]
   orders                Order[]
@@ -210,8 +221,49 @@ model Student {
   unprocessedPayments   UnprocessedPayment[]
   lessonsBalanceHistory StudentLessonsBalanceHistory[]
   wallets               Wallet[]
+  parents               StudentParent[]
 
   @@index([organizationId])
+}
+
+model Parent {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  students       StudentParent[]
+
+  @@index([organizationId])
+}
+
+model StudentParent {
+  createdAt DateTime @default(now())
+
+  // Relations
+  studentId Int
+  parentId  Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parent    Parent  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, parentId])
+  @@index([parentId])
+}
+
+model StudentAccount {
+  id       Int    @id @default(autoincrement())
+  login    String
+  password String
+  coins    Int    @default(0)
+
+  studentId Int     @unique
+  student   Student @relation(fields: [studentId], references: [id])
 }
 
 model Group {
