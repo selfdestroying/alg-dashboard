@@ -341,17 +341,16 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
           <Hint text="Кошельки хранят баланс уроков и привязаны к группам. Один кошелёк может обслуживать несколько групп. Оплаты зачисляются на конкретный кошелёк." />
         </h3>
         <div className="flex gap-1">
-          <Button variant="outline" onClick={() => setActiveSheet('create')}>
-            <Plus className="size-4" />
-            Создать
+          <Button size={'icon'} variant="outline" onClick={() => setActiveSheet('create')}>
+            <Plus />
           </Button>
           {student.wallets.length >= 2 && (
             <>
-              <Button variant="outline" onClick={() => setActiveSheet('merge')}>
-                <Merge className="size-4" />
+              <Button size={'icon'} variant="outline" onClick={() => setActiveSheet('merge')}>
+                <Merge />
               </Button>
-              <Button variant="outline" onClick={() => setActiveSheet('transfer')}>
-                <ArrowLeftRight className="size-4" />
+              <Button size={'icon'} variant="outline" onClick={() => setActiveSheet('transfer')}>
+                <ArrowLeftRight />
               </Button>
             </>
           )}

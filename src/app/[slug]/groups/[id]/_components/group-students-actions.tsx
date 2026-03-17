@@ -238,9 +238,9 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                         <CalendarIcon />
                         {field.value
                           ? field.value.toLocaleDateString('ru-RU', {
-                            day: 'numeric',
-                            month: 'long',
-                          })
+                              day: 'numeric',
+                              month: 'long',
+                            })
                           : 'Выберите день'}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
