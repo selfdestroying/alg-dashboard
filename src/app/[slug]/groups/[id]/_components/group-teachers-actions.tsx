@@ -213,14 +213,13 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           </FieldLabel>
 
           <AlertDialogFooter>
-            <Button variant={'secondary'} size={'sm'} onClick={() => setDeleteDialogOpen(false)}>
+            <Button variant={'secondary'} onClick={() => setDeleteDialogOpen(false)}>
               Отмена
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isPending || isDeleteDisabled}
-              size={'sm'}
             >
               {isPending ? (
                 <Loader className="animate-spin" />
@@ -321,8 +320,8 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
           </form>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Отмена</DialogClose>
-            <Button type="submit" size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
+            <Button type="submit" form="teacher-group-edit-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>

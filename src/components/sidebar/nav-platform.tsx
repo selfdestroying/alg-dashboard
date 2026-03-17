@@ -13,6 +13,7 @@ import { Building, Folder, LayoutDashboard, Users, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
+import { filterNavByFeatures } from './lib/filter-nav-by-features'
 import { filterNavByRole } from './lib/filter-nav-by-role'
 import type { NavGroup } from './lib/types'
 import NavGroupList from './nav-group-list'
@@ -32,16 +33,19 @@ const navLists: NavGroup[] = [
         title: 'Ставки',
         url: '/organization/rates',
         roles: ['owner', 'manager'],
+        featureKey: 'organization.rates',
       },
       {
         title: 'Курсы',
         url: '/organization/courses',
         roles: ['owner', 'manager'],
+        featureKey: 'organization.courses',
       },
       {
         title: 'Локации',
         url: '/organization/locations',
         roles: ['owner', 'manager'],
+        featureKey: 'organization.locations',
       },
     ],
   },
@@ -49,6 +53,7 @@ const navLists: NavGroup[] = [
     title: 'Ученики',
     icon: Users,
     roles: ['owner', 'manager', 'teacher'],
+    featureKey: 'students',
     items: [
       {
         title: 'Все',
@@ -59,16 +64,19 @@ const navLists: NavGroup[] = [
         title: 'Активные',
         url: '/students/active',
         roles: ['owner', 'manager'],
+        featureKey: 'students.active',
       },
       {
         title: 'Пропустившие',
         url: '/students/absent',
         roles: ['owner', 'manager'],
+        featureKey: 'students.absent',
       },
       {
         title: 'Отчисленные',
         url: '/students/dismissed',
         roles: ['owner', 'manager'],
+        featureKey: 'students.dismissed',
       },
     ],
   },
@@ -76,9 +84,10 @@ const navLists: NavGroup[] = [
     title: 'Группы',
     icon: Folder,
     roles: ['owner', 'manager', 'teacher'],
+    featureKey: 'groups',
     items: [
       {
-        title: 'Группы',
+        title: 'Все',
         url: '/groups',
         roles: ['owner', 'manager', 'teacher'],
       },
@@ -86,6 +95,7 @@ const navLists: NavGroup[] = [
         title: 'Типы',
         url: '/groups/types',
         roles: ['owner', 'manager'],
+        featureKey: 'groups.types',
       },
     ],
   },
@@ -93,22 +103,32 @@ const navLists: NavGroup[] = [
     title: 'Финансы',
     icon: Wallet,
     roles: ['owner', 'manager', 'teacher'],
+    featureKey: 'finances',
     items: [
       {
         title: 'Оплаты',
         url: '/finances/payments',
         roles: ['owner', 'manager'],
+        featureKey: 'finances.payments',
+      },
+      {
+        title: 'Неразобранное',
+        url: '/finances/unprocessed',
+        roles: ['owner', 'manager'],
+        featureKey: 'finances.unprocessedPayments',
       },
       {
         title: 'Выручка',
         url: '/finances/revenue',
         roles: ['owner'],
         disabled: true,
+        featureKey: 'finances.revenue',
       },
       {
         title: 'Зарплаты',
         url: '/finances/salaries',
         roles: ['owner', 'manager', 'teacher'],
+        featureKey: 'finances.salaries',
       },
     ],
   },
@@ -119,7 +139,10 @@ export default function NavPlatform() {
   const pathname = usePathname()
   const role = session?.memberRole as OrganizationRole | undefined
 
-  const filteredNavList = useMemo(() => (role ? filterNavByRole(navLists, role) : []), [role])
+  const filteredNavList = useMemo(() => {
+    const disabledFeatures = (session?.disabledFeatures as string[] | undefined) ?? []
+    return role ? filterNavByFeatures(filterNavByRole(navLists, role), disabledFeatures) : []
+  }, [role, session?.disabledFeatures])
 
   return (
     <>

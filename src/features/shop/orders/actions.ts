@@ -33,16 +33,16 @@ export const changeOrderStatus = authAction
     })
 
     if ((order.status === 'PENDING' || order.status === 'COMPLETED') && newStatus === 'CANCELLED') {
-      await prisma.student.update({
-        where: { id: order.studentId },
+      await prisma.studentAccount.update({
+        where: { studentId: order.studentId },
         data: { coins: { increment: order.product.price } },
       })
     } else if (
       order.status === 'CANCELLED' &&
       (newStatus === 'COMPLETED' || newStatus === 'PENDING')
     ) {
-      await prisma.student.update({
-        where: { id: order.studentId },
+      await prisma.studentAccount.update({
+        where: { studentId: order.studentId },
         data: { coins: { decrement: order.product.price } },
       })
     }

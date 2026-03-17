@@ -104,10 +104,10 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
         <LessonTeacherForm form={form} onSubmit={handleSubmit} />
 
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="lesson-teacher-form" size={'sm'}>
+          <Button disabled={isPending} type="submit" form="lesson-teacher-form">
             Добавить
           </Button>
         </DialogFooter>

@@ -80,10 +80,10 @@ export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDia
         </DialogHeader>
         <EditGroupForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
         <DialogFooter>
-          <Button variant="secondary" onClick={onClose} size={'sm'}>
+          <Button variant="secondary" onClick={onClose}>
             Отмена
           </Button>
-          <Button form="edit-group-form" type="submit" disabled={isPending} size={'sm'}>
+          <Button form="edit-group-form" type="submit" disabled={isPending}>
             Сохранить
           </Button>
         </DialogFooter>

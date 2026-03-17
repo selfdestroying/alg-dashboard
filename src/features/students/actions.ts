@@ -10,8 +10,63 @@ import {
   writeFinancialHistoryTx,
 } from '@/src/lib/lessons-balance'
 import { authAction } from '@/src/lib/safe-action'
+import { randomInt } from 'crypto'
 import * as z from 'zod'
 import { CreateStudentSchema, DeleteStudentSchema } from './schemas'
+
+const transliterateToLatin = (value: string) => {
+  const map: Record<string, string> = {
+    а: 'a',
+    б: 'b',
+    в: 'v',
+    г: 'g',
+    д: 'd',
+    е: 'e',
+    ё: 'e',
+    ж: 'zh',
+    з: 'z',
+    и: 'i',
+    й: 'y',
+    к: 'k',
+    л: 'l',
+    м: 'm',
+    н: 'n',
+    о: 'o',
+    п: 'p',
+    р: 'r',
+    с: 's',
+    т: 't',
+    у: 'u',
+    ф: 'f',
+    х: 'h',
+    ц: 'ts',
+    ч: 'ch',
+    ш: 'sh',
+    щ: 'sch',
+    ъ: '',
+    ы: 'y',
+    ь: '',
+    э: 'e',
+    ю: 'yu',
+    я: 'ya',
+  }
+  return value
+    .toLowerCase()
+    .split('')
+    .map((char) => map[char] ?? char)
+    .join('')
+}
+
+function generateLogin(firstName: string, lastName: string) {
+  const first = transliterateToLatin(firstName).replace(/[^a-z]/g, '')
+  const last = transliterateToLatin(lastName).replace(/[^a-z]/g, '')
+  return `${first}${last}${randomInt(10, 99)}`
+}
+
+function generatePassword() {
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789'
+  return Array.from({ length: 6 }, () => chars[randomInt(chars.length)]).join('')
+}
 
 // ─── READ ────────────────────────────────────────────────────────────────────
 
@@ -23,6 +78,7 @@ export const getStudents = authAction
       include: {
         groups: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } },
         wallets: true,
+        parents: { include: { parent: true } },
       },
       orderBy: { id: 'asc' },
     })
@@ -49,7 +105,8 @@ export const createStudent = authAction
   .metadata({ actionName: 'createStudent' })
   .inputSchema(CreateStudentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { birthDate, ...rest } = parsedInput
+    const { firstName, lastName, birthDate, url, parentMode, newParent, existingParentId } =
+      parsedInput
     const age = birthDate
       ? new Date().getFullYear() -
         birthDate.getFullYear() -
@@ -58,14 +115,36 @@ export const createStudent = authAction
           : 0)
       : null
 
-    await prisma.student.create({
-      data: {
-        ...rest,
-        birthDate,
-        age,
-        organizationId: ctx.session.organizationId!,
-        cart: { create: {} },
-      },
+    const login = generateLogin(firstName, lastName)
+    const password = generatePassword()
+    const organizationId = ctx.session.organizationId!
+
+    await prisma.$transaction(async (tx) => {
+      const student = await tx.student.create({
+        data: {
+          firstName,
+          lastName,
+          birthDate,
+          age,
+          url,
+          organizationId,
+          cart: { create: {} },
+          account: { create: { login, password } },
+        },
+      })
+
+      if (parentMode === 'new' && newParent) {
+        const parent = await tx.parent.create({
+          data: { ...newParent, organizationId },
+        })
+        await tx.studentParent.create({
+          data: { studentId: student.id, parentId: parent.id },
+        })
+      } else if (parentMode === 'existing' && existingParentId) {
+        await tx.studentParent.create({
+          data: { studentId: student.id, parentId: existingParentId },
+        })
+      }
     })
   })
 

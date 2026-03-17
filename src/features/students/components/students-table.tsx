@@ -55,20 +55,11 @@ const columns: ColumnDef<StudentWithGroups>[] = [
     },
   },
   {
-    header: 'Имя родителя',
-    accessorKey: 'parentsName',
-  },
-  {
-    header: 'Логин',
-    accessorKey: 'login',
-  },
-  {
-    header: 'Пароль',
-    accessorKey: 'password',
-  },
-  {
-    header: 'Коины',
-    accessorKey: 'coins',
+    header: 'Родитель',
+    accessorFn: (row) =>
+      row.parents
+        .map((sp) => [sp.parent.firstName, sp.parent.lastName].filter(Boolean).join(' '))
+        .join(', ') || '—',
   },
 ]
 

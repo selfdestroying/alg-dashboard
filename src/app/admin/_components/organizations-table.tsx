@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import OrganizationFeatures from './organization-features'
 import type { AdminDashboardData, AdminOrganization } from './types'
 
 interface OrganizationsTableProps {
@@ -78,6 +79,7 @@ export default function OrganizationsTable({ data }: OrganizationsTableProps) {
                           <Users className="size-3" />
                           {org.members.length}
                         </Badge>
+                        <OrganizationFeatures organizationId={org.id} />
                       </div>
                     </div>
                   </CardHeader>
