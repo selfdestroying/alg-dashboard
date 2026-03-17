@@ -6,6 +6,7 @@ export type NavItem = {
   url: string
   roles: OrganizationRole[]
   disabled?: boolean
+  featureKey?: string
 }
 
 export type NavGroup = {
@@ -13,4 +14,5 @@ export type NavGroup = {
   icon: LucideIcon
   roles: OrganizationRole[]
   items: NavItem[]
+  featureKey?: string
 }

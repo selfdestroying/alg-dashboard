@@ -107,6 +107,15 @@ export const auth = betterAuth({
         include: { organization: true },
       })
 
+      const disabledFeatures = member?.organizationId
+        ? (
+            await prisma.organizationFeature.findMany({
+              where: { organizationId: member.organizationId, enabled: false },
+              select: { featureKey: true },
+            })
+          ).map((f) => f.featureKey)
+        : []
+
       return {
         user,
         session,
@@ -114,6 +123,7 @@ export const auth = betterAuth({
         organizationId: member?.organizationId ?? null,
         memberRole: member?.role ?? null,
         userRole: user.role,
+        disabledFeatures,
       }
     }, options),
     nextCookies(), // должен быть последним плагином

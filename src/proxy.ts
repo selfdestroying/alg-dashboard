@@ -1,4 +1,5 @@
 import { auth } from '@/src/lib/auth/server'
+import { isRouteDisabled } from '@/src/lib/features/route-feature-map'
 import { NextRequest, NextResponse } from 'next/server'
 import { protocol, rootDomain } from './lib/utils'
 
@@ -121,6 +122,12 @@ function handleOrgSubdomain(
 
   if (!isMember) {
     return NextResponse.redirect(ROOT_URL)
+  }
+
+  // Feature guard: block access to disabled features
+  const disabledFeatures = (session.disabledFeatures as string[] | undefined) ?? []
+  if (isRouteDisabled(pathname, disabledFeatures)) {
+    return NextResponse.redirect(new URL(`${protocol}://${subdomain}.${rootDomain}`))
   }
 
   const response = NextResponse.rewrite(new URL(`/${subdomain}${pathname}${search}`, request.url))
