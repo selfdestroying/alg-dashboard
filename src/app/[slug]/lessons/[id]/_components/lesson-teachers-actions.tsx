@@ -171,14 +171,13 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <Button variant={'secondary'} size={'sm'} onClick={() => setDeleteDialogOpen(false)}>
+            <Button variant={'secondary'} onClick={() => setDeleteDialogOpen(false)}>
               Отмена
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={isPending || isDeleteDisabled}
-              size={'sm'}
             >
               {isPending ? (
                 <Loader className="animate-spin" />
@@ -241,8 +240,8 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
           </form>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Cancel</DialogClose>
-            <Button type="submit" size={'sm'} form="teacher-group-edit-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Cancel</DialogClose>
+            <Button type="submit" form="teacher-group-edit-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>

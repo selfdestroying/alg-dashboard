@@ -102,10 +102,10 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
         <GroupTeacherForm form={form} onSubmit={handleSubmit} />
 
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="group-teacher-form" size={'sm'}>
+          <Button disabled={isPending} type="submit" form="group-teacher-form">
             Добавить
           </Button>
         </DialogFooter>

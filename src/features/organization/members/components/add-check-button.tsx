@@ -134,10 +134,10 @@ export default function AddCheckButton({ userId, userName }: AddCheckButtonProps
         </form>
 
         <DialogFooter>
-          <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+          <Button variant="secondary" onClick={() => setDialogOpen(false)}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="add-paycheck-form" size={'sm'}>
+          <Button disabled={isPending} type="submit" form="add-paycheck-form">
             Добавить
           </Button>
         </DialogFooter>

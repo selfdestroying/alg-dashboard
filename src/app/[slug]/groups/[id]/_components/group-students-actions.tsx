@@ -277,8 +277,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           </Alert>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Отмена</DialogClose>
-            <Button type="submit" size={'sm'} form="dismiss-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
+            <Button type="submit" form="dismiss-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>
@@ -345,8 +345,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
           </Alert>
 
           <DialogFooter>
-            <DialogClose render={<Button variant="secondary" size={'sm'} />}>Отмена</DialogClose>
-            <Button type="submit" size={'sm'} form="transfer-form" disabled={isPending}>
+            <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
+            <Button type="submit" form="transfer-form" disabled={isPending}>
               Подтвердить
             </Button>
           </DialogFooter>

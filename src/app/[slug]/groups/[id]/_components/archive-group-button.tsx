@@ -152,9 +152,8 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
         </FieldGroup>
 
         <DialogFooter>
-          <DialogClose render={<Button variant="secondary" size="sm" />}>Отмена</DialogClose>
+          <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
           <Button
-            size="sm"
             variant="destructive"
             onClick={handleArchive}
             disabled={archiveMutation.isPending}

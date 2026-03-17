@@ -143,14 +143,10 @@ export default function UnprocessedPaymentActions({
             disabled={resolveMutation.isPending}
           />
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setDialogOpen(false)} size={'sm'}>
+            <Button variant="secondary" onClick={() => setDialogOpen(false)}>
               Отмена
             </Button>
-            <Button
-              disabled={resolveMutation.isPending}
-              onClick={form.handleSubmit(onSubmit)}
-              size={'sm'}
-            >
+            <Button disabled={resolveMutation.isPending} onClick={form.handleSubmit(onSubmit)}>
               {resolveMutation.isPending && <Loader className="animate-spin" />}
               Добавить
             </Button>
