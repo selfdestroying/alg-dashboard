@@ -1,9 +1,9 @@
 'use client'
 
+import { Hint } from '@/src/components/hint'
+import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldLabel } from '@/src/components/ui/field'
-import { Hint } from '@/src/components/hint'
-import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { redistributeBalance } from '@/src/features/students/actions'
 import { getGroupName } from '@/src/lib/utils'
@@ -149,11 +149,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                 {unallocatedLessons > 0 && (
                   <Field>
                     <FieldLabel className="text-xs">Баланс ур.</FieldLabel>
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
                       value={alloc?.lessons ?? 0}
-                      onChange={(e) => updateField(w.id, 'lessons', Number(e.target.value))}
+                      onChange={(v) => updateField(w.id, 'lessons', v === '' ? 0 : v)}
                       disabled={isPending}
                     />
                     <span className="text-muted-foreground text-xs">
@@ -164,11 +163,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                 {unallocatedTotalLessons > 0 && (
                   <Field>
                     <FieldLabel className="text-xs">Всего ур.</FieldLabel>
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
                       value={alloc?.totalLessons ?? 0}
-                      onChange={(e) => updateField(w.id, 'totalLessons', Number(e.target.value))}
+                      onChange={(v) => updateField(w.id, 'totalLessons', v === '' ? 0 : v)}
                       disabled={isPending}
                     />
                     <span className="text-muted-foreground text-xs">сейчас: {w.totalLessons}</span>
@@ -177,11 +175,10 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                 {unallocatedTotalPayments > 0 && (
                   <Field>
                     <FieldLabel className="text-xs">Оплаты ₽</FieldLabel>
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
                       value={alloc?.totalPayments ?? 0}
-                      onChange={(e) => updateField(w.id, 'totalPayments', Number(e.target.value))}
+                      onChange={(v) => updateField(w.id, 'totalPayments', v === '' ? 0 : v)}
                       disabled={isPending}
                     />
                     <span className="text-muted-foreground text-xs">сейчас: {w.totalPayments}</span>

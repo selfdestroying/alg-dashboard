@@ -1,5 +1,6 @@
 'use client'
 
+import { NumberInput } from '@/src/components/number-input'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -225,12 +226,7 @@ export default function RateActions({ rate }: RateActionsProps) {
                       <FieldLabel htmlFor="form-rate-bid">Ставка за урок (₽)</FieldLabel>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
-                    <Input
-                      id="form-rate-bid"
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
+                    <NumberInput id="form-rate-bid" {...field} onChange={field.onChange} />
                   </Field>
                 )}
               />
@@ -244,12 +240,7 @@ export default function RateActions({ rate }: RateActionsProps) {
                       <FieldLabel htmlFor="form-rate-bonus">Бонус за ученика (₽)</FieldLabel>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
-                    <Input
-                      id="form-rate-bonus"
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
+                    <NumberInput id="form-rate-bonus" {...field} onChange={field.onChange} />
                   </Field>
                 )}
               />

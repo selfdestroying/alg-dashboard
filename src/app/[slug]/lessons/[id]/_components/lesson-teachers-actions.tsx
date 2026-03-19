@@ -1,6 +1,7 @@
 'use client'
 import { Prisma } from '@/prisma/generated/client'
 import { deleteTeacherLesson, updateTeacherLesson } from '@/src/actions/lessons'
+import { NumberInput } from '@/src/components/number-input'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -27,7 +28,6 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
 import { EditTeacherLessonSchema, EditTeacherLessonSchemaType } from '@/src/schemas/teacher-lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
@@ -209,12 +209,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
                       <FieldLabel htmlFor="form-rhf-input-bid">Ставка</FieldLabel>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
-                    <Input
-                      id="form-rhf-input-bid"
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
+                    <NumberInput id="form-rhf-input-bid" {...field} onChange={field.onChange} />
                   </Field>
                 )}
               />
@@ -227,12 +222,7 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
                       <FieldLabel htmlFor="form-rhf-input-bonus">Бонус за ученика</FieldLabel>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
-                    <Input
-                      id="form-rhf-input-bonus"
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
+                    <NumberInput id="form-rhf-input-bonus" {...field} onChange={field.onChange} />
                   </Field>
                 )}
               />

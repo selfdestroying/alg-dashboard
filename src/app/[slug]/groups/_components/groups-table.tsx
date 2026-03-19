@@ -3,6 +3,7 @@
 import { Prisma } from '@/prisma/generated/client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
+import { NumberInput } from '@/src/components/number-input'
 import { Badge } from '@/src/components/ui/badge'
 import { Field, FieldGroup } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
@@ -229,25 +230,17 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
             placeholder="Поиск..."
           />
           <Field>
-            <Input
+            <NumberInput
               placeholder="От..."
-              type="number"
               value={scMin ?? ''}
-              onChange={(e) => {
-                const val = e.target.value
-                setScMin(val ? Number(val) : null)
-              }}
+              onChange={(v) => setScMin(v === '' ? null : v)}
             />
           </Field>
           <Field>
-            <Input
+            <NumberInput
               placeholder="До..."
-              type="number"
               value={scMax ?? ''}
-              onChange={(e) => {
-                const val = e.target.value
-                setScMax(val ? Number(val) : null)
-              }}
+              onChange={(v) => setScMax(v === '' ? null : v)}
             />
           </Field>
           <CourseLocationTeacherFilters

@@ -1,6 +1,7 @@
 'use client'
 
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { NumberInput } from '@/src/components/number-input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Textarea } from '@/src/components/ui/textarea'
@@ -73,14 +74,13 @@ export default function ProductForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-price`}>Цена</FieldLabel>
-              <Input
+              <NumberInput
                 id={`${formId}-price`}
-                type="number"
                 placeholder="Введите цену продукта"
                 aria-invalid={fieldState.invalid}
                 {...field}
                 value={field.value ?? ''}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -92,14 +92,13 @@ export default function ProductForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-quantity`}>Количество</FieldLabel>
-              <Input
+              <NumberInput
                 id={`${formId}-quantity`}
-                type="number"
                 placeholder="Введите количество продукта"
                 aria-invalid={fieldState.invalid}
                 {...field}
                 value={field.value ?? ''}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

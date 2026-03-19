@@ -8,6 +8,7 @@ import {
 import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Hint } from '@/src/components/hint'
+import { NumberInput } from '@/src/components/number-input'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -364,7 +365,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
           <span className="text-muted-foreground">
             Нераспределённый остаток:{' '}
             <span className="text-foreground font-medium">{student.lessonsBalance} ур.</span>
-            {' — '}не привязан ни к одному кошельку
+            {' - '}не привязан ни к одному кошельку
           </span>
           <Hint
             text="Этот баланс остался от старой системы учёта и не привязан ни к одному кошельку. Используйте «Распределение баланса» чтобы перенести его."
@@ -719,29 +720,26 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="edit-lb">Баланс уроков</FieldLabel>
-                    <Input
+                    <NumberInput
                       id="edit-lb"
-                      type="number"
                       value={editLessonsBalance}
-                      onChange={(e) => setEditLessonsBalance(Number(e.target.value))}
+                      onChange={(v) => setEditLessonsBalance(v === '' ? 0 : v)}
                     />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="edit-tp">Сумма оплат</FieldLabel>
-                    <Input
+                    <NumberInput
                       id="edit-tp"
-                      type="number"
                       value={editTotalPayments}
-                      onChange={(e) => setEditTotalPayments(Number(e.target.value))}
+                      onChange={(v) => setEditTotalPayments(v === '' ? 0 : v)}
                     />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="edit-tl">Всего уроков</FieldLabel>
-                    <Input
+                    <NumberInput
                       id="edit-tl"
-                      type="number"
                       value={editTotalLessons}
-                      onChange={(e) => setEditTotalLessons(Number(e.target.value))}
+                      onChange={(v) => setEditTotalLessons(v === '' ? 0 : v)}
                     />
                   </Field>
                 </FieldGroup>
@@ -1069,12 +1067,11 @@ function TransferSheet({
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
+                    <NumberInput
                       min={0}
                       max={available}
                       value={f.value}
-                      onChange={(e) => f.setValue(Math.max(0, Number(e.target.value)))}
+                      onChange={(v) => f.setValue(v === '' ? 0 : Math.max(0, v))}
                       className={cn(isOver && 'border-destructive')}
                     />
                     <Button
@@ -1294,11 +1291,10 @@ function RedistributeInline({ student }: { student: StudentWithGroupsAndAttendan
                     {unallocatedLessons > 0 && (
                       <Field>
                         <FieldLabel className="text-[0.625rem]">Баланс ур.</FieldLabel>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={0}
                           value={alloc?.lessons ?? 0}
-                          onChange={(e) => updateField(w.id, 'lessons', Number(e.target.value))}
+                          onChange={(v) => updateField(w.id, 'lessons', v === '' ? 0 : v)}
                           disabled={isPending}
                         />
                         <span className="text-muted-foreground text-[0.625rem]">
@@ -1309,13 +1305,10 @@ function RedistributeInline({ student }: { student: StudentWithGroupsAndAttendan
                     {unallocatedTotalLessons > 0 && (
                       <Field>
                         <FieldLabel className="text-[0.625rem]">Всего ур.</FieldLabel>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={0}
                           value={alloc?.totalLessons ?? 0}
-                          onChange={(e) =>
-                            updateField(w.id, 'totalLessons', Number(e.target.value))
-                          }
+                          onChange={(v) => updateField(w.id, 'totalLessons', v === '' ? 0 : v)}
                           disabled={isPending}
                         />
                         <span className="text-muted-foreground text-[0.625rem]">
@@ -1326,13 +1319,10 @@ function RedistributeInline({ student }: { student: StudentWithGroupsAndAttendan
                     {unallocatedTotalPayments > 0 && (
                       <Field>
                         <FieldLabel className="text-[0.625rem]">Оплаты ₽</FieldLabel>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={0}
                           value={alloc?.totalPayments ?? 0}
-                          onChange={(e) =>
-                            updateField(w.id, 'totalPayments', Number(e.target.value))
-                          }
+                          onChange={(v) => updateField(w.id, 'totalPayments', v === '' ? 0 : v)}
                           disabled={isPending}
                         />
                         <span className="text-muted-foreground text-[0.625rem]">
