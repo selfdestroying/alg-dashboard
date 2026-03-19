@@ -1,7 +1,7 @@
 'use client'
 
 import { StudentAccount } from '@/prisma/generated/client'
-import { StatCard } from '@/src/components/ui/stat-card'
+import { StatCard } from '@/src/components/stat-card'
 import { KeyRound, Lock, User } from 'lucide-react'
 
 interface StudentAccountSectionProps {

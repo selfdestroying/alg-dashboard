@@ -1,4 +1,4 @@
-import { StatCard } from '@/src/components/ui/stat-card'
+import { StatCard } from '@/src/components/stat-card'
 import { getBalanceLabel, getBalanceVariant } from '@/src/features/wallets/utils'
 import { BookOpen, Calculator, ReceiptRussianRuble, Wallet } from 'lucide-react'
 import { StudentWithGroupsAndAttendance } from './types'
@@ -16,7 +16,7 @@ export default function PaymentSection({ student }: PaymentSectionProps) {
     student.wallets.reduce((sum, w) => sum + w.lessonsBalance, 0) + student.lessonsBalance
 
   const avgCost =
-    totalLessonsAggregate > 0 ? (totalPaymentsAggregate / totalLessonsAggregate).toFixed(0) : '—'
+    totalLessonsAggregate > 0 ? (totalPaymentsAggregate / totalLessonsAggregate).toFixed(0) : '-'
 
   const balanceVariant = getBalanceVariant(totalLessonsBalance)
 
@@ -40,8 +40,8 @@ export default function PaymentSection({ student }: PaymentSectionProps) {
         />
         <StatCard
           label="Средняя стоимость"
-          value={avgCost === '—' ? avgCost : `${Number(avgCost).toLocaleString('ru-RU')} ₽`}
-          description={avgCost !== '—' ? 'за урок' : undefined}
+          value={avgCost === '-' ? avgCost : `${Number(avgCost).toLocaleString('ru-RU')} ₽`}
+          description={avgCost !== '-' ? 'за урок' : undefined}
           icon={Calculator}
           hint="Средняя цена одного урока = общая сумма оплат / общее количество оплаченных уроков."
         />
