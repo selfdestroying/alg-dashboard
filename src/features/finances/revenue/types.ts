@@ -1,59 +1,67 @@
-import { AttendanceStatus, LessonStatus, Prisma } from '@/prisma/generated/client'
-
-export type LessonWithAttendance = Prisma.LessonGetPayload<{
-  include: {
-    attendance: {
-      include: {
-        student: {
-          include: {
-            groups: { include: { wallet: true } }
-          }
-        }
-      }
-    }
-    group: { include: { course: true; location: true; groupType: true; schedules: true } }
-    teachers: { include: { teacher: true } }
-  }
-}>
-
-export interface StudentRevenue {
-  id: number
-  name: string
-  revenue: number
-  isTrial: boolean
-  status: AttendanceStatus
-}
-
-export interface LessonRevenue {
-  id: number
-  time: string | null
-  groupId: number
-  groupName: string
-  groupTypeName: string | null
-  locationName: string | null
-  lessonStatus: LessonStatus
-  revenue: number
-  students: StudentRevenue[]
-  studentCount: number
-  paidCount: number
+export interface RevenueStats {
+  totalLessons: number
+  doneLessons: number
   presentCount: number
-  absentCount: number
-  trialCount: number
+  totalStudentVisits: number
+  attendanceRate: number
+  totalRevenue: number
+  chargedVisits: number
+  avgPerVisit: number
+  avgPerLesson: number
 }
 
-export interface DayRevenue {
+export interface AttendanceWithCost {
+  status: string
+  isWarned: boolean | null
+  studentStatus: string | null
+  visitCost: number
+  costReason: string
+  student: {
+    id: number
+    firstName: string
+    lastName: string
+  }
+  wallet: {
+    id: number
+    name: string | null
+    lessonsBalance: number
+    totalLessons: number
+    totalPayments: number
+  } | null
+  makeupAttendance: {
+    status: string
+    lesson: {
+      date: Date
+      group: { course: { name: string } }
+    }
+  } | null
+}
+
+export interface LessonWithCost {
+  id: number
   date: Date
-  dateKey: string
-  revenue: number
-  lessons: LessonRevenue[]
-  totalStudents: number
-  paidStudents: number
+  time: string
+  status: string
+  dayOfWeek: string
+  group: {
+    id: number
+    course: { name: string }
+    location: { name: string } | null
+    groupType: { name: string } | null
+    schedules: { dayOfWeek: number; time: string }[]
+    teachers: { teacher: { name: string } }[]
+  }
+  attendance: AttendanceWithCost[]
 }
 
-export interface RevenueFilters {
-  startDate: string
-  endDate: string
-  courseIds?: number[]
-  locationIds?: number[]
-  teacherIds?: number[]
+export interface DayGroup {
+  date: Date
+  dayOfWeek: string
+  dayRevenue: number
+  lessons: LessonWithCost[]
+}
+
+export interface RevenueData {
+  stats: RevenueStats
+  days: DayGroup[]
 }

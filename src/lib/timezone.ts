@@ -1,5 +1,6 @@
-import { endOfDay, startOfDay } from 'date-fns'
+import { endOfDay, format, startOfDay } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
+import { ru } from 'date-fns/locale'
 
 /**
  * Бизнес-часовой пояс приложения.
@@ -19,7 +20,7 @@ export function moscowNow(): Date {
  * Начало московского дня (00:00 MSK), возвращённое как UTC Date.
  * Использовать для запросов к БД: "уроки начиная с сегодня по Москве".
  *
- * @param date - дата в московском времени (по умолчанию — moscowNow())
+ * @param date - дата в московском времени (по умолчанию - moscowNow())
  * @returns UTC Date, соответствующий 00:00 MSK указанного дня
  *
  * @example
@@ -35,7 +36,7 @@ export function moscowStartOfDay(date?: Date): Date {
 /**
  * Конец московского дня (23:59:59.999 MSK), возвращённый как UTC Date.
  *
- * @param date - дата в московском времени (по умолчанию — moscowNow())
+ * @param date - дата в московском времени (по умолчанию - moscowNow())
  * @returns UTC Date, соответствующий 23:59:59.999 MSK указанного дня
  */
 export function moscowEndOfDay(date?: Date): Date {
@@ -131,4 +132,14 @@ export function formatDateOnly(
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date
   return d.toLocaleDateString('ru-RU', { timeZone: 'UTC', ...options })
+}
+
+/**
+ * Форматировать дату для отображения в формате "d MMMM" (например, "15 февраля").
+ *
+ * @example
+ * formatDate(new Date()) // "15 февраля"
+ */
+export function formatDate(date: Date) {
+  return format(dateOnlyToLocal(date), 'd MMMM', { locale: ru })
 }

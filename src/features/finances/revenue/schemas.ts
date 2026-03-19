@@ -1,4 +1,4 @@
-import z from 'zod'
+import { z } from 'zod'
 
 export const RevenueFiltersSchema = z.object({
   startDate: z.string(),
@@ -7,3 +7,5 @@ export const RevenueFiltersSchema = z.object({
   locationIds: z.array(z.number()).optional(),
   teacherIds: z.array(z.number()).optional(),
 })
+
+export type RevenueFilters = z.infer<typeof RevenueFiltersSchema>

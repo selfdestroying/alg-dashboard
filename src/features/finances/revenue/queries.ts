@@ -1,21 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRevenueLessons } from './actions'
-import type { RevenueFilters } from './types'
+import { getRevenueData } from './actions'
+import type { RevenueFilters } from './schemas'
 
 export const revenueKeys = {
   all: ['revenue'] as const,
-  lessons: (filters: RevenueFilters) => ['revenue', 'lessons', filters] as const,
+  data: (filters: RevenueFilters) => ['revenue', 'data', filters] as const,
 }
 
-export const useRevenueLessonsQuery = (filters: RevenueFilters | null) => {
+export const useRevenueDataQuery = (filters: RevenueFilters | null) => {
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: filters ? revenueKeys.lessons(filters) : revenueKeys.all,
+    queryKey: filters ? revenueKeys.data(filters) : revenueKeys.all,
     queryFn: async () => {
-      if (!filters) return []
-      const { data, serverError } = await getRevenueLessons(filters)
+      if (!filters) return null
+      const { data, serverError } = await getRevenueData(filters)
       if (serverError) throw serverError
-      return data ?? []
+      return data ?? null
     },
     enabled: !!filters,
   })
