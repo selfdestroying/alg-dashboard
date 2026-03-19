@@ -13,6 +13,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/src/components/ui/collapsible'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/src/components/ui/empty'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
@@ -38,6 +45,7 @@ import {
   Banknote,
   BookOpen,
   Calendar as CalendarIcon,
+  CalendarSearch,
   ChevronDown,
   Clock,
   FileText,
@@ -157,7 +165,7 @@ export default function Salaries() {
   }
 
   return (
-    <div className="space-y-2">
+    <>
       {/* Панель управления */}
       <Card>
         <CardContent>
@@ -214,7 +222,7 @@ export default function Salaries() {
               )}
             </div>
 
-            {/* Фильтры — shown only when user has readAll */}
+            {/* Фильтры - shown only when user has readAll */}
             {hasPermission?.success && (
               <Filters
                 onCoursesChange={setSelectedCourses}
@@ -260,22 +268,24 @@ export default function Salaries() {
             icon={<Receipt className="h-4 w-4" />}
             description="по чекам"
             loading={isPending}
-            hint="Выплаты по чекам — дополнительные начисления преподавателям, не связанные напрямую с уроками (бонусы, компенсации и т.д.)."
+            hint="Выплаты по чекам - дополнительные начисления преподавателям, не связанные напрямую с уроками (бонусы, компенсации и т.д.)."
           />
         </div>
       )}
 
       {/* Контент */}
       {!dateRange?.from || !dateRange?.to ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <CalendarIcon className="text-muted-foreground mb-4 h-12 w-12" />
-            <h3 className="mb-2 text-lg font-medium">Выберите период</h3>
-            <p className="text-muted-foreground text-center text-sm">
-              Используйте календарь или быстрые пресеты для выбора периода отображения зарплат
-            </p>
-          </CardContent>
-        </Card>
+        <Empty className="bg-card ring-foreground/10 h-full ring-1">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CalendarSearch />
+            </EmptyMedia>
+            <EmptyTitle>Период не выбран</EmptyTitle>
+            <EmptyDescription>
+              Укажите диапазон дат, чтобы увидеть расписание и статистику
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : isPending ? (
         <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
@@ -312,7 +322,7 @@ export default function Salaries() {
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }
 
