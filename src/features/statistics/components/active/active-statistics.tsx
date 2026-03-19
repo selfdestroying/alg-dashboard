@@ -1,5 +1,6 @@
 'use client'
 
+import { Hint } from '@/src/components/hint'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import {
   ChartContainer,
@@ -7,7 +8,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
-import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useActiveStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Layers, TrendingDown, TrendingUp, Users } from 'lucide-react'
@@ -153,7 +153,7 @@ export default function ActiveStatistics() {
         />
         <KpiCard
           title="Топ курс"
-          value={courses[0]?.name ?? '—'}
+          value={courses[0]?.name ?? '-'}
           icon={GraduationCap}
           subtitle={courses[0] ? `${courses[0].count} учеников` : undefined}
         />

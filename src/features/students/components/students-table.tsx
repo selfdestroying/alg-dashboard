@@ -59,7 +59,7 @@ const columns: ColumnDef<StudentWithGroups>[] = [
     accessorFn: (row) =>
       row.parents
         .map((sp) => [sp.parent.firstName, sp.parent.lastName].filter(Boolean).join(' '))
-        .join(', ') || '—',
+        .join(', ') || '-',
   },
 ]
 

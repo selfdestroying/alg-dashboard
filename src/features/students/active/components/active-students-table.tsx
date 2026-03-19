@@ -108,7 +108,7 @@ const columns: ColumnDef<ActiveStudent>[] = [
     header: () => (
       <span className="flex items-center gap-0.5">
         Баланс уроков
-        <Hint text="Оставшееся количество оплаченных уроков. Красным выделяются ученики с балансом менее 2 — им скоро потребуется оплата." />
+        <Hint text="Оставшееся количество оплаченных уроков. Красным выделяются ученики с балансом менее 2 - им скоро потребуется оплата." />
       </span>
     ),
     accessorFn: (row) => row.wallet?.lessonsBalance ?? 0,

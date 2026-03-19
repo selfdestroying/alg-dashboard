@@ -27,7 +27,7 @@ CREATE INDEX "GroupType_rateId_idx" ON "GroupType"("rateId");
 ALTER TABLE "Group" ADD COLUMN "groupTypeId" INTEGER;
 CREATE INDEX "Group_groupTypeId_idx" ON "Group"("groupTypeId");
 
--- Step 5: Data migration — create GroupType records from backed-up enum values
+-- Step 5: Data migration - create GroupType records from backed-up enum values
 INSERT INTO "GroupType" ("name", "organizationId", "rateId", "updatedAt")
 SELECT
     CASE b."type"

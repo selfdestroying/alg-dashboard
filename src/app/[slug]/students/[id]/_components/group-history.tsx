@@ -50,7 +50,7 @@ const columns: ColumnDef<StudentGroupHistoryEntry>[] = [
     accessorFn: (row) => row.status,
     cell: ({ row }) => (
       <span className="text-muted-foreground">
-        {row.original.status ? (statusLabels[row.original.status] ?? row.original.status) : '—'}
+        {row.original.status ? (statusLabels[row.original.status] ?? row.original.status) : '-'}
       </span>
     ),
   },

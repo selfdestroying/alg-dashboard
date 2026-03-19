@@ -120,7 +120,7 @@ export default function CourseAttendanceStats({
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
         <BarChart3 size={20} />
         Статистика посещаемости
-        <Hint text="Процент посещаемости = (посещения + отработки) / всего уроков. Зелёная галочка — посещено, синяя стрелка — отработано, красный крестик — пропущено." />
+        <Hint text="Процент посещаемости = (посещения + отработки) / всего уроков. Зелёная галочка - посещено, синяя стрелка - отработано, красный крестик - пропущено." />
       </h3>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((group) => {

@@ -105,7 +105,7 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
   const handleReschedule = async () => {
     if (!selectedLesson || !organizationId || !attendance.makeupAttendance) return
 
-    // Удаляем старую attendance отработки — связь удалится вместе с записью
+    // Удаляем старую attendance отработки - связь удалится вместе с записью
     await deleteAttendance({
       where: { id: attendance.makeupAttendance.id },
     })

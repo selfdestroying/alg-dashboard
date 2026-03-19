@@ -129,7 +129,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
     header: () => (
       <span className="flex items-center gap-0.5">
         Отметки
-        <Hint text="Показывает, все ли ученики отмечены на уроке. Зелёная галочка — все отмечены, красный крестик — есть неотмеченные." />
+        <Hint text="Показывает, все ли ученики отмечены на уроке. Зелёная галочка - все отмечены, красный крестик - есть неотмеченные." />
       </span>
     ),
     accessorFn: (lesson) =>

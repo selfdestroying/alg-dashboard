@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
+import { Hint } from '@/src/components/hint'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import {
   ChartConfig,
@@ -12,7 +13,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/src/components/ui/chart'
-import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { useAbsentStatisticsQuery } from '@/src/features/statistics/queries'
@@ -106,7 +106,7 @@ export default function AbsentStatistics() {
           icon={Ban}
           subtitle={`средняя ставка: ${averagePrice.toLocaleString('ru-RU')} ₽`}
           variant="destructive"
-          hint="Общее количество пропусков за всё время. Средняя ставка — средняя стоимость урока для расчёта потерь."
+          hint="Общее количество пропусков за всё время. Средняя ставка - средняя стоимость урока для расчёта потерь."
         />
         <KpiCard
           title="Отработано"
@@ -114,7 +114,7 @@ export default function AbsentStatistics() {
           icon={ShieldCheck}
           subtitle={`${makeupRate}% от пропусков`}
           variant="success"
-          hint="Количество пропущенных уроков, которые были отработаны — ученик посетил занятие в другой группе или в другой день."
+          hint="Количество пропущенных уроков, которые были отработаны - ученик посетил занятие в другой группе или в другой день."
         />
         <KpiCard
           title="Потери"

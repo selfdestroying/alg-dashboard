@@ -1,5 +1,5 @@
 /**
- * Feature registry — source of truth for all toggleable features.
+ * Feature registry - source of truth for all toggleable features.
  * DB stores only overrides (disabled features). By default everything is enabled.
  */
 
@@ -33,30 +33,30 @@ type FeatureEntry = {
 }
 
 export const FEATURE_REGISTRY: Record<FeatureKey, FeatureEntry> = {
-  // — Ученики —
+  // - Ученики -
   students: { label: 'Ученики' },
   'students.active': { label: 'Активные', parent: 'students' },
   'students.absent': { label: 'Пропустившие', parent: 'students' },
   'students.dismissed': { label: 'Отчисленные', parent: 'students' },
 
-  // — Группы —
+  // - Группы -
   groups: { label: 'Группы' },
   'groups.types': { label: 'Типы групп', parent: 'groups' },
 
-  // — Финансы —
+  // - Финансы -
   finances: { label: 'Финансы' },
   'finances.payments': { label: 'Оплаты', parent: 'finances' },
   'finances.revenue': { label: 'Выручка', parent: 'finances' },
   'finances.salaries': { label: 'Зарплаты', parent: 'finances' },
   'finances.unprocessedPayments': { label: 'Неразобранное', parent: 'finances' },
 
-  // — Магазин —
+  // - Магазин -
   shop: { label: 'Магазин' },
   'shop.products': { label: 'Товары', parent: 'shop' },
   'shop.categories': { label: 'Категории', parent: 'shop' },
   'shop.orders': { label: 'Заказы', parent: 'shop' },
 
-  // — Школа (подстраницы) —
+  // - Школа (подстраницы) -
   'organization.rates': { label: 'Ставки' },
   'organization.courses': { label: 'Курсы' },
   'organization.locations': { label: 'Локации' },

@@ -29,7 +29,7 @@ const baseClient = createSafeActionClient({
 })
 
 /**
- * Публичный action — без проверки auth.
+ * Публичный action - без проверки auth.
  * Использовать только для действий, доступных без авторизации.
  */
 export const publicAction = baseClient

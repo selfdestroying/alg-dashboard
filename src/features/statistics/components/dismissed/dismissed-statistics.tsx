@@ -1,5 +1,6 @@
 'use client'
 
+import { Hint } from '@/src/components/hint'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import {
   ChartContainer,
@@ -7,7 +8,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/src/components/ui/chart'
-import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useDismissedStatisticsQuery } from '@/src/features/statistics/queries'
 import { GraduationCap, Percent, TrendingDown, TrendingUp, UserMinus } from 'lucide-react'
@@ -154,7 +154,7 @@ export default function DismissedStatistics() {
           icon={Percent}
           variant="destructive"
           subtitle="от всех учеников"
-          hint="Процент оттока — доля отчисленных учеников от общего числа всех учеников (активных + отчисленных). Чем ниже, тем лучше."
+          hint="Процент оттока - доля отчисленных учеников от общего числа всех учеников (активных + отчисленных). Чем ниже, тем лучше."
         />
         <KpiCard
           title="В этом месяце"

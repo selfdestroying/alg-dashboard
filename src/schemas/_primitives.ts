@@ -2,7 +2,7 @@ import * as z from 'zod'
 import { normalizeDateOnly } from '../lib/timezone'
 
 // ─── Combobox ───────────────────────────────────────────────────────
-// Единый тип для combobox-полей в формах. value — всегда string,
+// Единый тип для combobox-полей в формах. value - всегда string,
 // при необходимости парсить в number через Number() на месте.
 
 export const ComboboxItemSchema = z.object({
@@ -12,13 +12,13 @@ export const ComboboxItemSchema = z.object({
 
 /**
  * Создаёт combobox-схему с кастомным error message.
- * value — string (для SelectItem и combobox, где ID передаётся строкой).
+ * value - string (для SelectItem и combobox, где ID передаётся строкой).
  */
 export const combobox = (error: string) => z.object({ label: z.string(), value: z.string() }, error)
 
 /**
  * Создаёт combobox-схему с числовым value и кастомным error message.
- * value — number (для случаев, где ID передаётся числом).
+ * value - number (для случаев, где ID передаётся числом).
  */
 export const comboboxNumber = (error: string) =>
   z.object({ label: z.string(), value: z.number() }, error)
