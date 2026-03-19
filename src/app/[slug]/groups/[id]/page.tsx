@@ -112,7 +112,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <CardHeader>
           <CardTitle>
             Посещаемость
-            <Hint text="Зелёный — присутствовал, красный — пропустил, градиент — пробный ученик. Контур ячейки показывает статус отработки." />
+            <Hint text="Зелёный - присутствовал, красный - пропустил, градиент - пробный ученик. Контур ячейки показывает статус отработки." />
           </CardTitle>
           {canCreateLesson && !group.isArchived && (
             <CardAction>

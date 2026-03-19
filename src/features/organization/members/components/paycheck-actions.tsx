@@ -1,6 +1,7 @@
 'use client'
 
 import { PayCheck } from '@/prisma/generated/client'
+import { NumberInput } from '@/src/components/number-input'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -184,12 +185,11 @@ export default function PayCheckActions({ paycheck, userName, userId }: PayCheck
                 render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Сумма</FieldLabel>
-                    <Input
-                      type="number"
+                    <NumberInput
                       placeholder="Сумма"
                       {...field}
                       value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={field.onChange}
                       aria-invalid={fieldState.invalid}
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

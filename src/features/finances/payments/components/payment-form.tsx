@@ -1,8 +1,8 @@
 'use client'
 
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { NumberInput } from '@/src/components/number-input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
 import { getFullName, getGroupName } from '@/src/lib/utils'
 import { useMemo } from 'react'
 import {
@@ -93,11 +93,10 @@ export default function PaymentForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-lessonCount`}>Количество занятий</FieldLabel>
-              <Input
+              <NumberInput
                 id={`${formId}-lessonCount`}
                 {...field}
-                type="number"
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
                 value={field.value ?? ''}
                 aria-invalid={fieldState.invalid}
               />
@@ -112,11 +111,10 @@ export default function PaymentForm<T extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor={`${formId}-price`}>Сумма</FieldLabel>
-              <Input
+              <NumberInput
                 id={`${formId}-price`}
                 {...field}
-                type="number"
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
                 value={field.value ?? ''}
                 aria-invalid={fieldState.invalid}
               />

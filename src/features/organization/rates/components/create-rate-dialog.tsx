@@ -1,5 +1,6 @@
 'use client'
 
+import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -94,10 +95,9 @@ export default function CreateRateDialog() {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Бонус за ученика (₽)</FieldLabel>
-                  <Input
-                    type="number"
+                  <NumberInput
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={field.onChange}
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

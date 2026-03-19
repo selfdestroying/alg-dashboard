@@ -52,7 +52,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         account: true,
         parents: { include: { parent: true } },
         groups: {
-          where: { status: { in: ['ACTIVE', 'TRIAL'] } },
           include: {
             group: {
               include: {

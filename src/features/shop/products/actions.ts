@@ -30,7 +30,7 @@ async function deleteImageFile(imageUrl: string) {
     const fileName = path.basename(url.pathname)
     await fs.unlink(path.join(IMAGE_PATH, fileName))
   } catch {
-    // Ignore — file may not exist
+    // Ignore - file may not exist
   }
 }
 

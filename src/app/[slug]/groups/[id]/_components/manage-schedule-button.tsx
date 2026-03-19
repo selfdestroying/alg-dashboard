@@ -1,6 +1,7 @@
 'use client'
 
 import { updateScheduleAndRegenerateLessons, updateScheduleOnly } from '@/src/actions/groups'
+import { NumberInput } from '@/src/components/number-input'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
@@ -261,7 +262,7 @@ export default function ManageScheduleDialog({
                 <TabsContent value="regenerate">
                   <div className="space-y-5">
                     <p className="text-muted-foreground text-xs">
-                      Расписание будет обновлено, все уроки начиная с выбранной даты — удалены и
+                      Расписание будет обновлено, все уроки начиная с выбранной даты - удалены и
                       созданы заново.
                     </p>
 
@@ -329,12 +330,11 @@ export default function ManageScheduleDialog({
                                 </FieldLabel>
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </FieldContent>
-                              <Input
+                              <NumberInput
                                 id="manage-lessonCount"
-                                type="number"
                                 min={1}
                                 value={field.value ?? ''}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                onChange={field.onChange}
                                 aria-invalid={fieldState.invalid}
                                 disabled={isPending}
                               />
@@ -363,7 +363,7 @@ export default function ManageScheduleDialog({
                     <Alert variant="destructive">
                       <TriangleAlert className="h-4 w-4" />
                       <AlertDescription>
-                        Расписание будет обновлено, а все уроки начиная с выбранной даты — удалены и
+                        Расписание будет обновлено, а все уроки начиная с выбранной даты - удалены и
                         созданы заново. Данные посещаемости удалённых уроков будут потеряны.
                       </AlertDescription>
                     </Alert>

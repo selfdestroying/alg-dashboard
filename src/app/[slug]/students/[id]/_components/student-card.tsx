@@ -1,5 +1,5 @@
+import { StatCard } from '@/src/components/stat-card'
 import { Separator } from '@/src/components/ui/separator'
-import { StatCard } from '@/src/components/ui/stat-card'
 import { Cake, ExternalLink, Link as LinkIcon, LucideIcon, User, UserRound } from 'lucide-react'
 import { StudentWithGroupsAndAttendance } from './types'
 

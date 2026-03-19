@@ -1,4 +1,5 @@
 import { Prisma } from '@/prisma/generated/client'
+import { Badge } from '@/src/components/ui/badge'
 import { getGroupName } from '@/src/lib/utils'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
@@ -48,6 +49,11 @@ export default function StudentGroupsSection({
                 >
                   {getGroupName(groupData.group)}
                 </Link>
+                {groupData.status === 'DISMISSED' ? (
+                  <Badge variant="destructive">Отчислен</Badge>
+                ) : (
+                  groupData.status === 'TRANSFERRED' && <Badge variant="outline">Переведён</Badge>
+                )}
               </div>
               <StudentAttendanceTable lessons={groupData.group.lessons} students={[student]} />
             </div>

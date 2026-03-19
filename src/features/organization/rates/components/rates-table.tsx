@@ -46,7 +46,7 @@ const columns: ColumnDef<RateWithCount>[] = [
     header: () => (
       <span className="flex items-center gap-0.5">
         Привязано групп
-        <Hint text="Количество связей «преподаватель — группа», использующих эту ставку." />
+        <Hint text="Количество связей «преподаватель - группа», использующих эту ставку." />
       </span>
     ),
     cell: ({ row }) => (

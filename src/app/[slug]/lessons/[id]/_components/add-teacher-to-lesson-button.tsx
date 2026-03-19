@@ -2,6 +2,7 @@
 import { Prisma } from '@/prisma/generated/client'
 import { createTeacherLesson } from '@/src/actions/lessons'
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
   DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
 import { useMemberListQuery } from '@/src/features/organization/members/queries'
@@ -179,12 +179,11 @@ function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
                 <FieldLabel htmlFor="form-rhf-input-bid">Ставка</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Input
+              <NumberInput
                 id="form-rhf-input-bid"
-                type="number"
                 {...field}
                 value={field.value ?? ''}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
               />
             </Field>
           )}
@@ -198,12 +197,11 @@ function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {
                 <FieldLabel htmlFor="form-rhf-input-bonusPerStudent">Бонус за ученика</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Input
+              <NumberInput
                 id="form-rhf-input-bonusPerStudent"
-                type="number"
                 {...field}
                 value={field.value ?? ''}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
               />
             </Field>
           )}

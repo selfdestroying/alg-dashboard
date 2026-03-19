@@ -2,7 +2,7 @@ import { isFeatureDisabled } from './registry'
 
 /**
  * Maps URL pathname patterns to feature keys.
- * Order matters — first match wins. More specific patterns go first.
+ * Order matters - first match wins. More specific patterns go first.
  */
 const ROUTE_FEATURE_MAP: [RegExp, string][] = [
   // Students

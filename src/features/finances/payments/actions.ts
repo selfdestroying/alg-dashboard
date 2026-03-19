@@ -134,7 +134,7 @@ export const cancelPayment = authAction
       const resolvedWalletId: number | null = payment.walletId
 
       if (payment.walletId) {
-        // Wallet-based payment — decrement the wallet
+        // Wallet-based payment - decrement the wallet
         const wallet = await tx.wallet.findUnique({
           where: { id: payment.walletId },
           select: { lessonsBalance: true, totalPayments: true, totalLessons: true },
@@ -155,7 +155,7 @@ export const cancelPayment = authAction
 
         balancesAfter = updatedWallet
       } else {
-        // Legacy payments without groupId — decrement global student balance
+        // Legacy payments without groupId - decrement global student balance
         const student = await tx.student.findUnique({
           where: { id: payment.studentId },
           select: { lessonsBalance: true, totalPayments: true, totalLessons: true },

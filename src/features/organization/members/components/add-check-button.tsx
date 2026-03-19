@@ -1,5 +1,6 @@
 'use client'
 
+import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import {
@@ -72,12 +73,11 @@ export default function AddCheckButton({ userId, userName }: AddCheckButtonProps
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>Сумма</FieldLabel>
-                  <Input
-                    type="number"
+                  <NumberInput
                     placeholder="Сумма"
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={field.onChange}
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

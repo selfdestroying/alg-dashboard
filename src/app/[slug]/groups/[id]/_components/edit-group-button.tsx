@@ -2,6 +2,7 @@
 import { Prisma } from '@/prisma/generated/client'
 import { updateGroup } from '@/src/actions/groups'
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -213,15 +214,12 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
                 <FieldLabel htmlFor="form-rhf-input-maxStudents">Макс. учеников</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Input
+              <NumberInput
                 id="form-rhf-input-maxStudents"
-                type="number"
                 placeholder="Макс. количество учеников"
                 {...field}
                 value={field.value ?? ''}
-                onChange={(e) =>
-                  field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                }
+                onChange={(v) => field.onChange(v === '' ? undefined : v)}
               />
             </Field>
           )}

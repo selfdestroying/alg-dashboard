@@ -195,7 +195,7 @@ const columns: ColumnDef<HistoryRow>[] = [
     header: 'Группа',
     cell: ({ row }) => {
       const group = row.original.group
-      if (!group) return <span className="text-muted-foreground">—</span>
+      if (!group) return <span className="text-muted-foreground">-</span>
       const name = group.course.name + (group.location ? ` (${group.location.name})` : '')
       return (
         <Link href={`/groups/${group.id}`} className="text-primary hover:underline">
@@ -248,7 +248,7 @@ const columns: ColumnDef<HistoryRow>[] = [
     header: () => (
       <span className="flex items-center gap-0.5">
         Δ
-        <Hint text="Изменение значения: положительное число — начисление, отрицательное — списание." />
+        <Hint text="Изменение значения: положительное число - начисление, отрицательное - списание." />
       </span>
     ),
     accessorFn: (row) => row.delta,

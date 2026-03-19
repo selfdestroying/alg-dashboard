@@ -4,6 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { createGroup } from '@/src/actions/groups'
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { NumberInput } from '@/src/components/number-input'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
@@ -390,13 +391,12 @@ export default function CreateGroupForm() {
           render={({ field, fieldState }) => (
             <Field>
               <FieldLabel htmlFor="maxStudents-field">Макс. учеников</FieldLabel>
-              <Input
+              <NumberInput
                 id="maxStudents-field"
                 {...field}
-                type="number"
                 min={1}
                 value={field.value ?? ''}
-                onChange={(e) => field.onChange(Number(e.target.value))}
+                onChange={field.onChange}
                 aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -524,13 +524,12 @@ export default function CreateGroupForm() {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldLabel htmlFor="lessonCount-field">Количество занятий</FieldLabel>
-                <Input
+                <NumberInput
                   id="lessonCount-field"
                   {...field}
-                  type="number"
                   min={1}
                   value={field.value ?? ''}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={field.onChange}
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

@@ -435,7 +435,7 @@ export const transferStudentToGroup = async (payload: {
       },
     })
 
-    // 4. Handle new group enrollment — always link to the same wallet
+    // 4. Handle new group enrollment - always link to the same wallet
     const existingSg = await tx.studentGroup.findUnique({
       where: { studentId_groupId: { studentId, groupId: newGroupId } },
     })
