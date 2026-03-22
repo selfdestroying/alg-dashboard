@@ -238,9 +238,9 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                         <CalendarIcon />
                         {field.value
                           ? field.value.toLocaleDateString('ru-RU', {
-                              day: 'numeric',
-                              month: 'long',
-                            })
+                            day: 'numeric',
+                            month: 'long',
+                          })
                           : 'Выберите день'}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -309,7 +309,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                       onValueChange={(g) => g && field.onChange(g.id)}
                       placeholder="Выберите группу для перевода"
                       emptyText="Не найдены группы"
-                      itemDisabled={(g) => g.students.length >= g.maxStudents}
+                      itemDisabled={(g) => g.students.filter(sg => sg.status === 'ACTIVE').length >= g.maxStudents}
                       renderItem={(g) => (
                         <Item size="xs" className="p-0">
                           <ItemContent>
@@ -323,7 +323,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                                   g.students.length >= g.maxStudents && 'text-destructive',
                                 )}
                               >
-                                {g.students.length}/{g.maxStudents}
+                                {g.students.filter(sg => sg.status === 'ACTIVE').length}/{g.maxStudents}
                               </span>
                             </ItemDescription>
                           </ItemContent>
