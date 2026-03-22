@@ -320,7 +320,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
                               <span
                                 className={cn(
                                   'tabular-nums',
-                                  g.students.length >= g.maxStudents && 'text-destructive',
+                                  g.students.filter(sg => sg.status === 'ACTIVE').length >= g.maxStudents && 'text-destructive',
                                 )}
                               >
                                 {g.students.filter(sg => sg.status === 'ACTIVE').length}/{g.maxStudents}
