@@ -19,8 +19,10 @@ const ROUTE_FEATURE_MAP: [RegExp, string][] = [
   [/^\/finances\/payments/, 'finances.payments'],
   [/^\/finances\/unprocessed/, 'finances.unprocessedPayments'],
   [/^\/finances\/revenue/, 'finances.revenue'],
+  [/^\/finances\/advances/, 'finances.advances'],
   [/^\/finances\/salaries/, 'finances.salaries'],
   [/^\/finances/, 'finances'],
+  [/^\/finances\/payment-methods/, 'finances.paymentMethods'],
 
   // Shop
   [/^\/shop\/products/, 'shop.products'],

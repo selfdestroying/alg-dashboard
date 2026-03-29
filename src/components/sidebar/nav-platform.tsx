@@ -135,6 +135,12 @@ const navLists: NavGroup[] = [
         roles: ['owner', 'manager', 'teacher'],
         featureKey: 'finances.salaries',
       },
+      {
+        title: 'Методы оплаты',
+        url: '/finances/payment-methods',
+        roles: ['owner'],
+        featureKey: 'finances.paymentMethods',
+      },
     ],
   },
 ]
