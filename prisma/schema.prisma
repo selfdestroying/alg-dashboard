@@ -122,6 +122,7 @@ model Organization {
   wallets                        Wallet[]
   parents                        Parent[]
   features                       OrganizationFeature[]
+  paymentMethods                 PaymentMethod[]
 
   @@unique([slug])
   @@map("Organization")
@@ -566,20 +567,23 @@ model Payment {
   updatedAt    DateTime @updatedAt
 
   // Relations
-  organizationId Int
-  studentId      Int
-  groupId        Int?
-  walletId       Int?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  student        Student      @relation(fields: [studentId], references: [id])
-  group          Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  wallet         Wallet?      @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  organizationId  Int
+  studentId       Int
+  groupId         Int?
+  walletId        Int?
+  paymentMethodId Int?
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  student         Student        @relation(fields: [studentId], references: [id])
+  group           Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  wallet          Wallet?        @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
 
   @@index([studentId])
   @@index([organizationId])
   @@index([createdAt])
   @@index([groupId])
   @@index([walletId])
+  @@index([paymentMethodId])
 }
 
 model UnprocessedPayment {
@@ -610,6 +614,23 @@ model PaymentProduct {
   // Relations
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model PaymentMethod {
+  id          Int      @id @default(autoincrement())
+  name        String
+  commission  Float    @default(0)
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  payments       Payment[]
 
   @@index([organizationId])
 }
