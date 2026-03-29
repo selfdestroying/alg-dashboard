@@ -124,6 +124,12 @@ const navLists: NavGroup[] = [
         featureKey: 'finances.revenue',
       },
       {
+        title: 'Авансы',
+        url: '/finances/advances',
+        roles: ['owner'],
+        featureKey: 'finances.advances',
+      },
+      {
         title: 'Зарплаты',
         url: '/finances/salaries',
         roles: ['owner', 'manager', 'teacher'],
