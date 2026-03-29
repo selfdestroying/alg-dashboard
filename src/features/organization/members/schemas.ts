@@ -29,7 +29,7 @@ export type UpdateMemberSchemaType = z.infer<typeof UpdateMemberSchema>
 // ─── Paycheck schemas ───────────────────────────────────────────────
 
 export const CreatePaycheckSchema = z.object({
-  amount: z.number('Укажите корректную сумму').min(0, 'Сумма должна быть неотрицательной'),
+  amount: z.number('Укажите корректную сумму'),
   date: DateOnlySchema,
   comment: z.string('Укажите комментарий').max(255),
 })
