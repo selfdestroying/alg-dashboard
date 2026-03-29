@@ -6,20 +6,20 @@ export const CreatePaymentSchema = z.object({
   wallet: comboboxNumber('Выберите кошелёк'),
   lessonCount: z.number('Укажите количество занятий').int().positive(),
   price: z.number('Укажите сумму').int().positive(),
-  date: z.string('Выберите дату').refine((val) => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+  date: z.string('Выберите дату').refine(
+    (val) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false
 
-    const [year, month, day] = val.split("-").map(Number);
-    const date = new Date(val);
+      const [year, month, day] = val.split('-').map(Number)
+      const date = new Date(val)
 
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() + 1 === month &&
-      date.getDate() === day
-    );
-  }, {
-    message: "Некорректная дата",
-  })
+      return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day
+    },
+    {
+      message: 'Некорректная дата',
+    },
+  ),
+  paymentMethodId: z.number().int().positive().nullable().optional(),
 })
 
 export const CancelPaymentSchema = z.object({
@@ -32,20 +32,20 @@ export const ResolveUnprocessedPaymentSchema = z.object({
   wallet: comboboxNumber('Выберите кошелёк'),
   lessonCount: z.number('Укажите количество занятий').int().positive(),
   price: z.number('Укажите сумму').int().positive(),
-  date: z.string('Выберите дату').refine((val) => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+  date: z.string('Выберите дату').refine(
+    (val) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false
 
-    const [year, month, day] = val.split("-").map(Number);
-    const date = new Date(val);
+      const [year, month, day] = val.split('-').map(Number)
+      const date = new Date(val)
 
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() + 1 === month &&
-      date.getDate() === day
-    );
-  }, {
-    message: "Некорректная дата",
-  })
+      return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day
+    },
+    {
+      message: 'Некорректная дата',
+    },
+  ),
+  paymentMethodId: z.number().int().positive().nullable().optional(),
 })
 
 export const DeleteUnprocessedPaymentSchema = z.object({

@@ -19,6 +19,7 @@ export const getPayments = authAction
       include: {
         student: true,
         group: { include: { course: true, location: true } },
+        paymentMethod: true,
       },
       orderBy: { createdAt: 'desc' },
     })
@@ -48,7 +49,14 @@ export const createPaymentWithBalance = authAction
   .metadata({ actionName: 'createPaymentWithBalance' })
   .inputSchema(CreatePaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { studentId, wallet: walletInput, lessonCount, price, date } = parsedInput
+    const {
+      studentId,
+      wallet: walletInput,
+      lessonCount,
+      price,
+      date,
+      paymentMethodId,
+    } = parsedInput
     const walletId = walletInput.value
 
     const paymentMeta = { lessonCount, price, walletId }
@@ -75,7 +83,8 @@ export const createPaymentWithBalance = authAction
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
-          date: new Date(date)
+          date: new Date(date),
+          paymentMethodId: paymentMethodId ?? null,
         },
       })
 
@@ -234,7 +243,15 @@ export const resolveUnprocessedPayment = authAction
   .metadata({ actionName: 'resolveUnprocessedPayment' })
   .inputSchema(ResolveUnprocessedPaymentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { unprocessedPaymentId, studentId, wallet: walletInput, lessonCount, price, date } = parsedInput
+    const {
+      unprocessedPaymentId,
+      studentId,
+      wallet: walletInput,
+      lessonCount,
+      price,
+      date,
+      paymentMethodId,
+    } = parsedInput
     const walletId = walletInput.value
 
     const paymentMeta = {
@@ -266,7 +283,8 @@ export const resolveUnprocessedPayment = authAction
           lessonCount,
           price,
           bidForLesson: Math.floor(price / lessonCount),
-          date: new Date(date)
+          date: new Date(date),
+          paymentMethodId: paymentMethodId ?? null,
         },
       })
 

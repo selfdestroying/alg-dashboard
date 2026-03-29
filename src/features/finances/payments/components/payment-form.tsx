@@ -1,9 +1,17 @@
 'use client'
 
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { Hint } from '@/src/components/hint'
 import { NumberInput } from '@/src/components/number-input'
+import { Button } from '@/src/components/ui/button'
+import { Calendar } from '@/src/components/ui/calendar'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { normalizeDateOnly } from '@/src/lib/timezone'
 import { getFullName, getGroupName } from '@/src/lib/utils'
+import { ru } from 'date-fns/locale'
+import { CalendarIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import {
   Controller,
@@ -12,13 +20,8 @@ import {
   type UseFormReturn,
   useWatch,
 } from 'react-hook-form'
+import { useActivePaymentMethodListQuery } from '../../payment-methods/queries'
 import { useStudentForPaymentListQuery } from '../queries'
-import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
-import { ru } from 'date-fns/locale'
-import { CalendarIcon } from 'lucide-react'
-import { Button } from '@/src/components/ui/button'
-import { Calendar } from '@/src/components/ui/calendar'
-import { normalizeDateOnly } from '@/src/lib/timezone'
 
 interface PaymentFormProps<T extends FieldValues> {
   form: UseFormReturn<T>
@@ -32,6 +35,7 @@ export default function PaymentForm<T extends FieldValues>({
   disabled,
 }: PaymentFormProps<T>) {
   const { data: students = [] } = useStudentForPaymentListQuery()
+  const { data: paymentMethods = [] } = useActivePaymentMethodListQuery()
 
   const selectedStudent = useWatch({ control: form.control, name: 'studentId' as Path<T> }) as
     | number
@@ -49,6 +53,19 @@ export default function PaymentForm<T extends FieldValues>({
       return { label, value: w.id }
     })
   }, [selectedStudent, students])
+
+  interface PaymentMethodOption {
+    id: number
+    name: string
+    commission: number
+  }
+
+  const mappedPaymentMethods = useMemo<PaymentMethodOption[]>(() => {
+    return [
+      { id: 0, name: 'Неизвестно', commission: 0 },
+      ...paymentMethods.map((m) => ({ id: m.id, name: m.name, commission: m.commission })),
+    ]
+  }, [paymentMethods])
 
   return (
     <form id={formId}>
@@ -139,19 +156,57 @@ export default function PaymentForm<T extends FieldValues>({
                   render={<Button variant="outline" className="w-full font-normal" />}
                 >
                   <CalendarIcon />
-                  {field.value
-                    ? field.value
-                    : 'Выберите день'}
+                  {field.value ? field.value : 'Выберите день'}
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    onSelect={(value) => value && field.onChange(normalizeDateOnly(value).toISOString().split('T')[0])}
+                    onSelect={(value) =>
+                      value && field.onChange(normalizeDateOnly(value).toISOString().split('T')[0])
+                    }
                     locale={ru}
                     selected={field.value}
                   />
                 </PopoverContent>
               </Popover>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name={'paymentMethodId' as Path<T>}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor={`${formId}-paymentMethod`}>
+                Метод оплаты (необязательно)
+                <Hint text="Если нужного метода нет в списке, обратитесь к владельцу для создания нового метода оплаты" />
+              </FieldLabel>
+              <CustomCombobox
+                items={mappedPaymentMethods}
+                value={
+                  mappedPaymentMethods.find((m) => m.id === (field.value ?? 0)) ??
+                  mappedPaymentMethods[0]
+                }
+                getKey={(item) => item!.id}
+                getLabel={(item) => item!.name}
+                onValueChange={(item) => field.onChange(item && item.id !== 0 ? item.id : null)}
+                id={`${formId}-paymentMethod`}
+                placeholder="Выберите метод оплаты"
+                emptyText="Нет доступных методов оплаты"
+                renderItem={(item) => (
+                  <Item size="xs" className="p-0">
+                    <ItemContent>
+                      <ItemTitle className="whitespace-nowrap">{item!.name}</ItemTitle>
+                      {item!.commission > 0 && (
+                        <ItemDescription>
+                          <span className="tabular-nums">{item!.commission} %</span>
+                        </ItemDescription>
+                      )}
+                    </ItemContent>
+                  </Item>
+                )}
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
