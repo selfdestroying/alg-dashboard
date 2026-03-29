@@ -63,8 +63,8 @@ export default function PaymentsTable() {
       },
       {
         header: 'Дата оплаты',
-        accessorKey: 'createdAt',
-        cell: ({ row }) => toMoscow(row.original.createdAt).toLocaleDateString('ru-RU'),
+        accessorKey: 'date',
+        cell: ({ row }) => toMoscow(row.original.date).toLocaleDateString('ru-RU'),
       },
       {
         id: 'actions',

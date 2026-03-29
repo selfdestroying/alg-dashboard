@@ -13,6 +13,12 @@ import {
   useWatch,
 } from 'react-hook-form'
 import { useStudentForPaymentListQuery } from '../queries'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { ru } from 'date-fns/locale'
+import { CalendarIcon } from 'lucide-react'
+import { Button } from '@/src/components/ui/button'
+import { Calendar } from '@/src/components/ui/calendar'
+import { normalizeDateOnly } from '@/src/lib/timezone'
 
 interface PaymentFormProps<T extends FieldValues> {
   form: UseFormReturn<T>
@@ -118,6 +124,34 @@ export default function PaymentForm<T extends FieldValues>({
                 value={field.value ?? ''}
                 aria-invalid={fieldState.invalid}
               />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name={'date' as Path<T>}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel>Дата</FieldLabel>
+              <Popover>
+                <PopoverTrigger
+                  render={<Button variant="outline" className="w-full font-normal" />}
+                >
+                  <CalendarIcon />
+                  {field.value
+                    ? field.value
+                    : 'Выберите день'}
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    onSelect={(value) => value && field.onChange(normalizeDateOnly(value).toISOString().split('T')[0])}
+                    locale={ru}
+                    selected={field.value}
+                  />
+                </PopoverContent>
+              </Popover>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

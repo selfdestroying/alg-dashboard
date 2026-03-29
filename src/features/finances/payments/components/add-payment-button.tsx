@@ -27,6 +27,7 @@ export default function AddPaymentButton() {
     defaultValues: {
       price: undefined,
       lessonCount: undefined,
+      date: undefined
     },
   })
 
