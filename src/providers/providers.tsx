@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react'
 import { Toaster } from '../components/toaster'
-import { TooltipProvider } from '../components/ui/tooltip'
 import { QueryProvider } from './query-provider'
 import { ThemeProvider } from './theme-provider'
 
@@ -14,10 +13,8 @@ const Providers = ({ children }: Props) => {
   return (
     <ThemeProvider>
       <QueryProvider>
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+        {children}
+        <Toaster />
       </QueryProvider>
     </ThemeProvider>
   )
