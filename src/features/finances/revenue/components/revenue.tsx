@@ -58,7 +58,7 @@ export default function Revenue() {
     <>
       <RevenueFiltersBar filterState={filterState} setFilterState={setFilterState} />
 
-      {/* Empty state — no date range selected */}
+      {/* Empty state - no date range selected */}
       {!filters && (
         <Empty className="bg-card ring-foreground/10 h-full ring-1">
           <EmptyHeader>
