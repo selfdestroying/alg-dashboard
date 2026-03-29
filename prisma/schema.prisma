@@ -561,7 +561,7 @@ model Payment {
   bidForLesson Int      @default(0)
   leadName     String   @default("")
   productName  String   @default("")
-  date         DateTime @db.Date
+  date         DateTime @default(now()) @db.Date
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
