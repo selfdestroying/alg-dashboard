@@ -55,6 +55,7 @@ export type LessonListData = Awaited<ReturnType<typeof getLessonList>>
 export const useLessonListQuery = (organizationId: number, date?: Date) => {
   const dateKey = date ? normalizeDateOnly(date).toISOString().split('T')[0]! : ''
   return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: lessonKeys.byDate(organizationId, dateKey),
     queryFn: () => getLessonList(organizationId, date),
     enabled: !!organizationId && !!date,
@@ -74,6 +75,7 @@ export const useDayStatusesQuery = (
 ) => {
   const dateKey = normalizeDateOnly(date).toISOString().split('T')[0]!
   return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: lessonKeys.byMonth(organizationId, dateKey),
     queryFn: () => getDayStatuses(organizationId, date),
     enabled: !!organizationId && !!date,

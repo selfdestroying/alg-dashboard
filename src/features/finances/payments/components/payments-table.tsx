@@ -67,6 +67,10 @@ export default function PaymentsTable() {
         cell: ({ row }) => toMoscow(row.original.date).toLocaleDateString('ru-RU'),
       },
       {
+        header: 'Метод оплаты',
+        cell: ({ row }) => row.original.paymentMethod?.name ?? 'Неизвестно',
+      },
+      {
         id: 'actions',
         cell: ({ row }) => <PaymentActions payment={row.original} />,
       },

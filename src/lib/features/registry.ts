@@ -15,6 +15,8 @@ export const FEATURE_KEYS = [
   'finances.unprocessedPayments',
   'finances.revenue',
   'finances.salaries',
+  'finances.advances',
+  'finances.paymentMethods',
   'shop',
   'shop.products',
   'shop.categories',
@@ -47,8 +49,10 @@ export const FEATURE_REGISTRY: Record<FeatureKey, FeatureEntry> = {
   finances: { label: 'Финансы' },
   'finances.payments': { label: 'Оплаты', parent: 'finances' },
   'finances.revenue': { label: 'Выручка', parent: 'finances' },
+  'finances.advances': { label: 'Авансы', parent: 'finances' },
   'finances.salaries': { label: 'Зарплаты', parent: 'finances' },
   'finances.unprocessedPayments': { label: 'Неразобранное', parent: 'finances' },
+  'finances.paymentMethods': { label: 'Методы оплаты', parent: 'finances' },
 
   // - Магазин -
   shop: { label: 'Магазин' },

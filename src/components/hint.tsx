@@ -39,6 +39,7 @@ function Hint({ text, variant = 'default', side, className }: HintProps) {
   return (
     <Tooltip>
       <TooltipTrigger
+        delay={300}
         render={
           <Button
             type="button"

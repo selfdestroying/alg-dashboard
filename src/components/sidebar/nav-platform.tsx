@@ -47,6 +47,11 @@ const navLists: NavGroup[] = [
         roles: ['owner', 'manager'],
         featureKey: 'organization.locations',
       },
+      {
+        title: 'Налоги',
+        url: '/organization/tax-systems',
+        roles: ['owner'],
+      },
     ],
   },
   {
@@ -124,10 +129,22 @@ const navLists: NavGroup[] = [
         featureKey: 'finances.revenue',
       },
       {
+        title: 'Авансы',
+        url: '/finances/advances',
+        roles: ['owner'],
+        featureKey: 'finances.advances',
+      },
+      {
         title: 'Зарплаты',
         url: '/finances/salaries',
         roles: ['owner', 'manager', 'teacher'],
         featureKey: 'finances.salaries',
+      },
+      {
+        title: 'Методы оплаты',
+        url: '/finances/payment-methods',
+        roles: ['owner'],
+        featureKey: 'finances.paymentMethods',
       },
     ],
   },

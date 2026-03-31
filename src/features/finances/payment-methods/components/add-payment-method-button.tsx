@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -14,25 +15,29 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { usePaymentCreateMutation } from '../queries'
-import { CreatePaymentSchema, type CreatePaymentSchemaType } from '../schemas'
-import PaymentForm from './payment-form'
+import { usePaymentMethodCreateMutation } from '../queries'
+import {
+  CreatePaymentMethodSchema,
+  type CreatePaymentMethodInput,
+  type CreatePaymentMethodSchemaType,
+} from '../schemas'
+import PaymentMethodForm from './payment-method-form'
 
-export default function AddPaymentButton() {
+export default function AddPaymentMethodButton() {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const createMutation = usePaymentCreateMutation()
+  const createMutation = usePaymentMethodCreateMutation()
 
-  const form = useForm<CreatePaymentSchemaType>({
-    resolver: zodResolver(CreatePaymentSchema),
+  const form = useForm<CreatePaymentMethodInput, unknown, CreatePaymentMethodSchemaType>({
+    resolver: zodResolver(CreatePaymentMethodSchema),
     defaultValues: {
-      price: undefined,
-      lessonCount: undefined,
-      date: undefined,
-      paymentMethodId: null,
+      name: '',
+      commission: 0,
+      description: '',
+      isActive: true,
     },
   })
 
-  const onSubmit = (values: CreatePaymentSchemaType) => {
+  const onSubmit = (values: CreatePaymentMethodSchemaType) => {
     createMutation.mutate(values, {
       onSuccess: () => {
         form.reset()
@@ -48,9 +53,10 @@ export default function AddPaymentButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Добавить оплату</DialogTitle>
+          <DialogTitle>Добавить метод оплаты</DialogTitle>
+          <DialogDescription>Создайте новый метод оплаты для организации</DialogDescription>
         </DialogHeader>
-        <PaymentForm form={form} formId="create-payment-form" disabled={createMutation.isPending} />
+        <PaymentMethodForm form={form} formId="create-payment-method-form" />
         <DialogFooter>
           <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
           <Button
@@ -59,7 +65,7 @@ export default function AddPaymentButton() {
             onClick={form.handleSubmit(onSubmit)}
           >
             {createMutation.isPending && <Loader className="animate-spin" />}
-            Добавить
+            Создать
           </Button>
         </DialogFooter>
       </DialogContent>

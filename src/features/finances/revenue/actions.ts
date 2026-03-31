@@ -125,11 +125,11 @@ export const getRevenueData = authAction
         let visitCost = 0
 
         if (lesson.status === 'CANCELLED') {
-          costReason = 'Урок отменён — стоимость не списывается'
+          costReason = 'Урок отменён - стоимость не списывается'
         } else if (!wallet) {
           costReason = 'Кошелёк не привязан к этой группе'
         } else if (wallet.totalLessons <= 0) {
-          costReason = 'В кошельке 0 уроков — невозможно рассчитать стоимость'
+          costReason = 'В кошельке 0 уроков - невозможно рассчитать стоимость'
         } else if (att.status === 'PRESENT') {
           visitCost = wallet.totalPayments / wallet.totalLessons
           costReason = `Присутствовал → списано\n${formatCurrency(wallet.totalPayments)} / ${wallet.totalLessons} ур. = ${formatCurrency(visitCost)}`
