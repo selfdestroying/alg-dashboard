@@ -39,7 +39,7 @@ export default function CreateGroupTypeDialog({ rates }: CreateGroupTypeDialogPr
       form.reset()
     },
     onError: ({ error }) => {
-      toast.error(error.serverError?.message ?? 'Не удалось создать тип группы.')
+      toast.error(error.serverError ?? 'Не удалось создать тип группы.')
     },
   })
 
