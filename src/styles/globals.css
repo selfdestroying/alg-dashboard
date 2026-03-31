@@ -131,6 +131,24 @@
   }
 }
 
+@utility thin-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+  }
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
 /* Landing page animations */
 @keyframes landing-enter {
   from {
