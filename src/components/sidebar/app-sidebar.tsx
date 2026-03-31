@@ -9,7 +9,9 @@ import {
   SidebarProvider,
   useSidebar,
 } from '@/src/components/ui/sidebar'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { SmartFeedBar } from '@/src/features/smart-feed/components/smart-feed'
+import type { OrganizationRole } from '@/src/lib/auth/server'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { Item } from '../ui/item'
@@ -42,6 +44,10 @@ export function AppSidebar({
   children: React.ReactNode
   defaultOpen?: boolean
 }) {
+  const { data: session } = useSessionQuery()
+  const role = session?.memberRole as OrganizationRole | undefined
+  const canSeeFeed = role === 'owner' || role === 'manager'
+
   return (
     <SidebarProvider defaultOpen={defaultOpen ?? false}>
       <CloseSidebarOnNavigate />
@@ -64,9 +70,11 @@ export function AppSidebar({
       <SidebarInset className="min-w-0 bg-transparent">
         <div className="min-w-0 space-y-2 p-2">
           <MobileHeader />
-          <Item className="bg-card ring-foreground/10 hidden ring-1 md:block" variant={'muted'}>
-            <SmartFeedBar />
-          </Item>
+          {canSeeFeed && (
+            <Item className="bg-card ring-foreground/10 hidden ring-1 md:block" variant={'muted'}>
+              <SmartFeedBar />
+            </Item>
+          )}
           {children}
         </div>
       </SidebarInset>

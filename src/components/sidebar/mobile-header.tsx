@@ -2,7 +2,9 @@
 
 import { Button } from '@/src/components/ui/button'
 import { useSidebar } from '@/src/components/ui/sidebar'
+import { useSessionQuery } from '@/src/data/user/session-query'
 import { SmartFeed } from '@/src/features/smart-feed/components/smart-feed'
+import type { OrganizationRole } from '@/src/lib/auth/server'
 import { Menu } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
@@ -42,6 +44,9 @@ function getPageTitle(pathname: string): string {
 export default function MobileHeader() {
   const pathname = usePathname()
   const { isMobile, toggleSidebar } = useSidebar()
+  const { data: session } = useSessionQuery()
+  const role = session?.memberRole as OrganizationRole | undefined
+  const canSeeFeed = role === 'owner' || role === 'manager'
 
   if (!isMobile) return null
 
@@ -51,7 +56,7 @@ export default function MobileHeader() {
         <ItemTitle>{getPageTitle(pathname)}</ItemTitle>
       </ItemContent>
       <ItemActions>
-        <SmartFeed />
+        {canSeeFeed && <SmartFeed />}
         <Button variant="ghost" size="icon-xs" onClick={toggleSidebar}>
           <Menu />
           <span className="sr-only">Открыть меню</span>
