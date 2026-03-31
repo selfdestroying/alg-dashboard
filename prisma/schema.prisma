@@ -124,6 +124,7 @@ model Organization {
   features                       OrganizationFeature[]
   paymentMethods                 PaymentMethod[]
   taxConfig                      TaxConfig?
+  snoozedAlerts                  SnoozedAlert[]
 
   @@unique([slug])
   @@map("Organization")
@@ -727,6 +728,22 @@ model Order {
   @@index([productId])
   @@index([studentId])
   @@index([organizationId])
+}
+
+model SnoozedAlert {
+  id           Int      @id @default(autoincrement())
+  alertType    String
+  entityKey    String
+  snoozedUntil DateTime
+  createdAt    DateTime @default(now())
+
+  // Relations
+  organizationId  Int
+  snoozedByUserId Int
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, alertType, entityKey])
+  @@index([organizationId, snoozedUntil])
 }
 
 // 
