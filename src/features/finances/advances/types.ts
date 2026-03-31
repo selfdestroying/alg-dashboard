@@ -30,11 +30,23 @@ export interface StudentAdvanceRow {
 export interface AdvanceTotals {
   totalPaid: number
   advanceAtStart: number
+  /** Оплачено до начала периода */
+  paidBefore: number
+  /** Выручка до начала периода */
+  revenueBefore: number
   paidInPeriod: number
   revenueInPeriod: number
   advanceAtEnd: number
   chargedInPeriod: number
   totalAttendances: number
+  /** Количество активных студентов (с оплатами/посещениями/авансом) */
+  activeStudents: number
+  /** Количество студентов с отрицательным балансом */
+  negativeBalanceStudents: number
+  /** Средняя стоимость за списанное посещение */
+  avgCostPerVisit: number
+  /** Процент списания (chargedInPeriod / totalAttendances) */
+  chargeRate: number
 }
 
 export interface AdvancesData {

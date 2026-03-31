@@ -2,41 +2,26 @@
 
 import prisma from '@/src/lib/db/prisma'
 import { authAction } from '@/src/lib/safe-action'
+import { aggregateRevenueByStudent } from '../chargeable'
+import { computeAttendanceRevenue } from '../chargeable.server'
 import { AdvancesFiltersSchema } from './schemas'
 import type { AdvancesData, AdvanceTotals, StudentAdvanceRow } from './types'
-
-/** Определяет, списывается ли занятие (логика из revenue) */
-function isChargeable(att: {
-  status: string
-  isWarned: boolean | null
-  makeupAttendance?: { status: string } | null
-}): boolean {
-  if (att.status === 'PRESENT') return true
-  if (att.status === 'ABSENT' && !att.isWarned) return true
-  if (att.status === 'ABSENT' && att.isWarned) {
-    return att.makeupAttendance?.status === 'PRESENT'
-  }
-  return false
-}
 
 export const getAdvancesData = authAction
   .metadata({ actionName: 'getAdvancesData' })
   .inputSchema(AdvancesFiltersSchema)
   .action(async ({ ctx, parsedInput }): Promise<AdvancesData> => {
-    const { startDate, endDate } = parsedInput
+    const { startDate, endDate, chargeableStatuses } = parsedInput
     const organizationId = ctx.session.organizationId!
 
     const periodStart = new Date(startDate)
     const periodEnd = new Date(endDate)
-    // Сдвигаем конец на +1 день чтобы включить последний день
-    const periodEndExclusive = new Date(periodEnd)
-    periodEndExclusive.setDate(periodEndExclusive.getDate() + 1)
 
     // ====================================================================
-    // 1. ВСЕ оплаты организации ДО конца периода
+    // 1. Оплаты ДО конца периода
     // ====================================================================
     const allPayments = await prisma.payment.findMany({
-      where: { organizationId, createdAt: { lt: periodEndExclusive } },
+      where: { organizationId, createdAt: { lte: periodEnd } },
       select: {
         id: true,
         studentId: true,
@@ -49,77 +34,118 @@ export const getAdvancesData = authAction
     })
 
     // ====================================================================
-    // 2. ВСЕ посещения организации ДО конца периода
+    // 2. Выручка: единый расчёт через shared-функцию (wallet-based)
+    //    Запрашиваем ВСЕ посещения до конца периода
     // ====================================================================
-    const allAttendances = await prisma.attendance.findMany({
+    const allRevenueEntries = await computeAttendanceRevenue({
+      organizationId,
+      startDate: new Date(0), // с начала времён
+      endDate: periodEnd,
+      chargeableStatuses,
+    })
+
+    // Разбиваем на «до периода» и «в периоде»
+    const entriesBefore = allRevenueEntries.filter((e) => e.lessonDate < periodStart)
+    const entriesInPeriod = allRevenueEntries.filter(
+      (e) => e.lessonDate >= periodStart && e.lessonDate <= periodEnd,
+    )
+
+    const revenueBeforeByStudent = aggregateRevenueByStudent(entriesBefore)
+    const revenueInPeriodByStudent = aggregateRevenueByStudent(entriesInPeriod)
+
+    // Считаем кол-во списаний по студенту
+    const chargedBeforeByStudent = new Map<number, number>()
+    for (const e of entriesBefore) {
+      chargedBeforeByStudent.set(e.studentId, (chargedBeforeByStudent.get(e.studentId) ?? 0) + 1)
+    }
+    const chargedInPeriodByStudent = new Map<number, number>()
+    for (const e of entriesInPeriod) {
+      chargedInPeriodByStudent.set(
+        e.studentId,
+        (chargedInPeriodByStudent.get(e.studentId) ?? 0) + 1,
+      )
+    }
+
+    // ====================================================================
+    // 3. Общее кол-во посещений в периоде (включая не списанные)
+    // ====================================================================
+    const totalAttendancesInPeriod = await prisma.attendance.groupBy({
+      by: ['studentId'],
       where: {
         organizationId,
         makeupForAttendanceId: null,
-        lesson: { date: { lt: periodEndExclusive }, status: 'ACTIVE' },
+        lesson: { date: { gte: periodStart, lte: periodEnd }, status: 'ACTIVE' },
       },
-      select: {
-        id: true,
-        studentId: true,
-        student: true,
-        status: true,
-        isWarned: true,
-        lesson: { select: { date: true } },
-        makeupAttendance: { select: { status: true } },
-      },
-      orderBy: { lesson: { date: 'asc' } },
+      _count: true,
     })
+    const attendanceCountByStudent = new Map(
+      totalAttendancesInPeriod.map((r) => [r.studentId, r._count]),
+    )
 
     // ====================================================================
-    // 3. Группируем по студенту
+    // 4. Собираем по студентам
     // ====================================================================
     const paymentsByStudent = Map.groupBy(allPayments, (p) => p.studentId)
-    const attendancesByStudent = Map.groupBy(allAttendances, (a) => a.studentId)
 
-    // Собираем уникальных студентов
+    // Уникальные студенты
     const studentMap = new Map<number, { id: number; firstName: string; lastName: string }>()
     for (const p of allPayments) {
       if (!studentMap.has(p.studentId)) studentMap.set(p.studentId, p.student)
     }
-    for (const a of allAttendances) {
-      if (!studentMap.has(a.studentId))
-        studentMap.set(a.studentId, {
-          id: a.studentId,
-          firstName: a.student.firstName,
-          lastName: a.student.lastName,
-        })
+    // Студенты, которые есть в выручке, но не в оплатах
+    for (const e of allRevenueEntries) {
+      if (!studentMap.has(e.studentId)) {
+        // Нужно имя — запросим позже или пропустим (они должны быть в оплатах)
+      }
+    }
+    // Студенты из посещений
+    for (const r of totalAttendancesInPeriod) {
+      if (!studentMap.has(r.studentId)) {
+        // Эти студенты без оплат — загрузим имена
+      }
     }
 
-    // ====================================================================
-    // 4. Считаем по каждому студенту
-    // ====================================================================
+    // Загружаем имена студентов, которых нет в оплатах
+    const missingIds = [
+      ...new Set([
+        ...allRevenueEntries.map((e) => e.studentId),
+        ...totalAttendancesInPeriod.map((r) => r.studentId),
+      ]),
+    ].filter((id) => !studentMap.has(id))
+
+    if (missingIds.length > 0) {
+      const missingStudents = await prisma.student.findMany({
+        where: { id: { in: missingIds } },
+        select: { id: true, firstName: true, lastName: true },
+      })
+      for (const s of missingStudents) {
+        studentMap.set(s.id, s)
+      }
+    }
+
     const studentRows: StudentAdvanceRow[] = []
 
     for (const [studentId, student] of studentMap) {
       const payments = paymentsByStudent.get(studentId) ?? []
-      const attendances = attendancesByStudent.get(studentId) ?? []
 
       const totalPaid = payments.reduce((s, p) => s + p.price, 0)
       const totalLessonsPaid = payments.reduce((s, p) => s + p.lessonCount, 0)
       const avgCost = totalLessonsPaid > 0 ? totalPaid / totalLessonsPaid : 0
 
       const pmtBefore = payments.filter((p) => p.createdAt < periodStart)
-      const pmtIn = payments.filter(
-        (p) => p.createdAt >= periodStart && p.createdAt < periodEndExclusive,
-      )
+      const pmtIn = payments.filter((p) => p.createdAt >= periodStart && p.createdAt <= periodEnd)
       const paidBefore = pmtBefore.reduce((s, p) => s + p.price, 0)
       const paidInPeriod = pmtIn.reduce((s, p) => s + p.price, 0)
 
-      const attBefore = attendances.filter((a) => a.lesson.date < periodStart)
-      const chargedBeforeCount = attBefore.filter((a) => isChargeable(a)).length
-      const revenueBefore = chargedBeforeCount * avgCost
+      const chargedBeforeCount = chargedBeforeByStudent.get(studentId) ?? 0
+      const revenueBefore = revenueBeforeByStudent.get(studentId) ?? 0
       const advanceAtStart = paidBefore - revenueBefore
 
-      const attIn = attendances.filter(
-        (a) => a.lesson.date >= periodStart && a.lesson.date < periodEndExclusive,
-      )
-      const chargedInPeriodCount = attIn.filter((a) => isChargeable(a)).length
-      const revenueInPeriod = chargedInPeriodCount * avgCost
+      const chargedInPeriodCount = chargedInPeriodByStudent.get(studentId) ?? 0
+      const revenueInPeriod = revenueInPeriodByStudent.get(studentId) ?? 0
       const advanceAtEnd = advanceAtStart + paidInPeriod - revenueInPeriod
+
+      const attCount = attendanceCountByStudent.get(studentId) ?? 0
 
       studentRows.push({
         id: studentId,
@@ -135,7 +161,7 @@ export const getAdvancesData = authAction
         chargedInPeriodCount,
         revenueInPeriod,
         advanceAtEnd,
-        totalAttendancesInPeriod: attIn.length,
+        totalAttendancesInPeriod: attCount,
       })
     }
 
@@ -152,28 +178,49 @@ export const getAdvancesData = authAction
     )
 
     // ====================================================================
-    // 5. Итоги по всей школе
+    // 5. Итоги
     // ====================================================================
     const totals: AdvanceTotals = activeRows.reduce(
       (acc, r) => ({
         totalPaid: acc.totalPaid + r.totalPaid,
         advanceAtStart: acc.advanceAtStart + r.advanceAtStart,
+        paidBefore: acc.paidBefore + r.paidBefore,
+        revenueBefore: acc.revenueBefore + r.revenueBefore,
         paidInPeriod: acc.paidInPeriod + r.paidInPeriod,
         revenueInPeriod: acc.revenueInPeriod + r.revenueInPeriod,
         advanceAtEnd: acc.advanceAtEnd + r.advanceAtEnd,
         chargedInPeriod: acc.chargedInPeriod + r.chargedInPeriodCount,
         totalAttendances: acc.totalAttendances + r.totalAttendancesInPeriod,
+        activeStudents: 0,
+        negativeBalanceStudents: 0,
+        avgCostPerVisit: 0,
+        chargeRate: 0,
       }),
       {
         totalPaid: 0,
         advanceAtStart: 0,
+        paidBefore: 0,
+        revenueBefore: 0,
         paidInPeriod: 0,
         revenueInPeriod: 0,
         advanceAtEnd: 0,
         chargedInPeriod: 0,
         totalAttendances: 0,
+        activeStudents: 0,
+        negativeBalanceStudents: 0,
+        avgCostPerVisit: 0,
+        chargeRate: 0,
       },
     )
+
+    totals.activeStudents = activeRows.length
+    totals.negativeBalanceStudents = activeRows.filter((r) => r.advanceAtEnd < 0).length
+    totals.avgCostPerVisit =
+      totals.chargedInPeriod > 0 ? totals.revenueInPeriod / totals.chargedInPeriod : 0
+    totals.chargeRate =
+      totals.totalAttendances > 0
+        ? Math.round((totals.chargedInPeriod / totals.totalAttendances) * 100)
+        : 0
 
     return {
       students: activeRows,

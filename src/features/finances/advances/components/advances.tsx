@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/src/components/ui/table'
+import { DEFAULT_CHARGEABLE_STATUSES } from '@/src/features/finances/chargeable'
 import { normalizeDateOnly } from '@/src/lib/timezone'
 import {
   Banknote,
@@ -49,15 +50,27 @@ function formatRub(value: number) {
 function AdvancesSkeleton() {
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i}>
-            <CardContent>
-              <Skeleton className="mb-2 h-3 w-20" />
-              <Skeleton className="h-8 w-24" />
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent>
+                <Skeleton className="mb-2 h-3 w-20" />
+                <Skeleton className="h-8 w-24" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent>
+                <Skeleton className="mb-2 h-3 w-20" />
+                <Skeleton className="h-8 w-24" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
       <Card>
         <CardHeader>
@@ -80,67 +93,140 @@ function AdvancesSkeleton() {
 // Summary cards
 // ---------------------------------------------------------------------------
 function SummaryCards({ totals }: { totals: AdvanceTotals }) {
-  const cards = [
-    {
-      label: 'Аванс на начало периода',
-      value: formatRub(Math.floor(totals.advanceAtStart)),
-      hint: 'Оплачено до периода минус выручка до периода',
-      icon: TrendingUp,
-      color: 'text-blue-600',
-    },
-    {
-      label: 'Оплачено',
-      value: formatRub(totals.paidInPeriod),
-      hint: 'Сумма всех оплат внутри периода',
-      icon: DollarSign,
-      color: '',
-    },
-    {
-      label: 'Выручка',
-      value: formatRub(Math.floor(totals.revenueInPeriod)),
-      hint: 'Количество списанных занятий × средняя стоимость за занятие',
-      icon: Banknote,
-      color: 'text-green-600',
-    },
-    {
-      label: 'Аванс на конец периода',
-      value: formatRub(Math.floor(totals.advanceAtEnd)),
-      hint: 'Входящий аванс + оплачено в периоде − выручка в периоде',
-      icon: TrendingDown,
-      color: totals.advanceAtEnd < 0 ? 'text-red-600' : 'text-blue-600',
-    },
-    {
-      label: 'Посещений',
-      value: String(totals.totalAttendances),
-      hint: 'Общее количество посещений в периоде',
-      icon: Users,
-      color: '',
-    },
-    {
-      label: 'Списано',
-      value: String(totals.chargedInPeriod),
-      hint: 'Количество занятий, по которым была начислена выручка',
-      icon: CheckCircle2,
-      color: '',
-    },
-  ]
+  const advanceChange = totals.advanceAtEnd - totals.advanceAtStart
+  const advanceChangeSign = advanceChange > 0 ? '+' : ''
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-      {cards.map((c) => (
-        <Card key={c.label}>
+    <div className="space-y-2">
+      {/* Main financial flow */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Card>
           <CardContent>
             <div className="flex items-center gap-1">
-              <c.icon className="text-muted-foreground size-3" />
+              <TrendingUp className="text-muted-foreground size-3" />
               <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
-                {c.label}
+                Аванс на начало
               </p>
-              <Hint text={c.hint} />
+              <Hint text="Оплачено до периода минус выручка до периода" />
             </div>
-            <p className={`text-2xl font-semibold tabular-nums ${c.color}`}>{c.value}</p>
+            <p className="text-2xl font-semibold text-blue-600 tabular-nums">
+              {formatRub(Math.floor(totals.advanceAtStart))}
+            </p>
+            <p className="text-muted-foreground text-[0.5625rem] tabular-nums">
+              {formatRub(Math.floor(totals.paidBefore))} опл. −{' '}
+              {formatRub(Math.floor(totals.revenueBefore))} выр.
+            </p>
           </CardContent>
         </Card>
-      ))}
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <DollarSign className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Оплачено
+              </p>
+              <Hint text="Сумма всех оплат внутри периода" />
+            </div>
+            <p className="text-2xl font-semibold tabular-nums">{formatRub(totals.paidInPeriod)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <Banknote className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Выручка
+              </p>
+              <Hint text="Сумма стоимости всех списанных посещений за период" />
+            </div>
+            <p className="text-2xl font-semibold text-green-600 tabular-nums">
+              {formatRub(Math.floor(totals.revenueInPeriod))}
+            </p>
+            <p className="text-muted-foreground text-[0.5625rem] tabular-nums">
+              ≈ {formatRub(Math.floor(totals.avgCostPerVisit))} / посещение
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <TrendingDown className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Аванс на конец
+              </p>
+              <Hint text="Входящий аванс + оплачено − выручка" />
+            </div>
+            <p
+              className={`text-2xl font-semibold tabular-nums ${totals.advanceAtEnd < 0 ? 'text-red-600' : 'text-blue-600'}`}
+            >
+              {formatRub(Math.floor(totals.advanceAtEnd))}
+            </p>
+            <p className="text-muted-foreground text-[0.5625rem] tabular-nums">
+              {advanceChangeSign}
+              {formatRub(Math.floor(advanceChange))} за период
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Attendance & students breakdown */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <Users className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Посещений
+              </p>
+              <Hint text="Общее количество записей посещений за период" />
+            </div>
+            <p className="text-2xl font-semibold tabular-nums">{totals.totalAttendances}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <CheckCircle2 className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Списано
+              </p>
+              <Hint text="Количество посещений, по которым была начислена выручка" />
+            </div>
+            <p className="text-2xl font-semibold tabular-nums">{totals.chargedInPeriod}</p>
+            <p className="text-muted-foreground text-[0.5625rem] tabular-nums">
+              {totals.chargeRate}% от посещений
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <CalendarSearch className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Студентов
+              </p>
+              <Hint text="Количество активных студентов с оплатами или посещениями" />
+            </div>
+            <p className="text-2xl font-semibold tabular-nums">{totals.activeStudents}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex items-center gap-1">
+              <TrendingDown className="text-muted-foreground size-3" />
+              <p className="text-muted-foreground text-[0.625rem] tracking-wider uppercase">
+                Должников
+              </p>
+              <Hint text="Студенты с отрицательным авансом на конец периода" />
+            </div>
+            <p
+              className={`text-2xl font-semibold tabular-nums ${totals.negativeBalanceStudents > 0 ? 'text-red-600' : ''}`}
+            >
+              {totals.negativeBalanceStudents}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
@@ -241,17 +327,20 @@ function StudentsTable({
 // ---------------------------------------------------------------------------
 const initialFilterState: AdvancesFilterState = {
   dateRange: undefined,
+  selectedStatuses: [...DEFAULT_CHARGEABLE_STATUSES],
 }
 
 export default function Advances() {
   const [filterState, setFilterState] = useState<AdvancesFilterState>(initialFilterState)
 
   const filters: AdvancesFilters | null = useMemo(() => {
-    const { dateRange } = filterState
+    const { dateRange, selectedStatuses } = filterState
     if (!dateRange?.from || !dateRange?.to) return null
+    if (selectedStatuses.length === 0) return null
     return {
       startDate: normalizeDateOnly(dateRange.from).toISOString(),
       endDate: normalizeDateOnly(dateRange.to).toISOString(),
+      chargeableStatuses: selectedStatuses,
     }
   }, [filterState])
 
