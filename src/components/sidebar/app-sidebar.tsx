@@ -9,8 +9,10 @@ import {
   SidebarProvider,
   useSidebar,
 } from '@/src/components/ui/sidebar'
+import { SmartFeedBar } from '@/src/features/smart-feed/components/smart-feed'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
+import { Item } from '../ui/item'
 import MobileHeader from './mobile-header'
 import NavCollapse from './nav-collapse'
 import NavOrganization from './nav-organization'
@@ -62,6 +64,9 @@ export function AppSidebar({
       <SidebarInset className="min-w-0 bg-transparent">
         <div className="min-w-0 space-y-2 p-2">
           <MobileHeader />
+          <Item className="bg-card ring-foreground/10 hidden ring-1 md:block" variant={'muted'}>
+            <SmartFeedBar />
+          </Item>
           {children}
         </div>
       </SidebarInset>

@@ -2,6 +2,7 @@
 
 import { Button } from '@/src/components/ui/button'
 import { useSidebar } from '@/src/components/ui/sidebar'
+import { SmartFeed } from '@/src/features/smart-feed/components/smart-feed'
 import { Menu } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { Item, ItemActions, ItemContent, ItemTitle } from '../ui/item'
@@ -50,6 +51,7 @@ export default function MobileHeader() {
         <ItemTitle>{getPageTitle(pathname)}</ItemTitle>
       </ItemContent>
       <ItemActions>
+        <SmartFeed />
         <Button variant="ghost" size="icon-xs" onClick={toggleSidebar}>
           <Menu />
           <span className="sr-only">Открыть меню</span>
