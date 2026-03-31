@@ -21,10 +21,10 @@ const baseClient = createSafeActionClient({
   defineMetadataSchema: () => metadataSchema,
   handleServerError(error) {
     if (error instanceof ActionError) {
-      return error
+      return error.message
     }
 
-    return new Error(error.message || DEFAULT_SERVER_ERROR_MESSAGE)
+    return error.message || DEFAULT_SERVER_ERROR_MESSAGE
   },
 })
 
