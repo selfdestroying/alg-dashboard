@@ -15,9 +15,11 @@ export const useSalaryDataQuery = (filters: SalaryFilters | null) => {
     queryKey: filters ? salaryKeys.data(filters) : salaryKeys.all,
     queryFn: async () => {
       if (!filters) return null
-      const { data, serverError } = await getSalaryData(filters)
-      if (serverError) throw serverError
-      return data ?? null
+      const result = await getSalaryData(filters)
+      if (result.serverError) throw new Error(String(result.serverError))
+      if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
+      if (!result.data) throw new Error('Сервер не вернул данные')
+      return result.data
     },
     enabled: !!filters,
   })
@@ -29,9 +31,11 @@ export const useSalaryPaychecksQuery = (startDate: string | null, endDate: strin
     queryKey: startDate && endDate ? salaryKeys.paychecks(startDate, endDate) : salaryKeys.all,
     queryFn: async () => {
       if (!startDate || !endDate) return []
-      const { data, serverError } = await getSalaryPaychecks({ startDate, endDate })
-      if (serverError) throw serverError
-      return data ?? []
+      const result = await getSalaryPaychecks({ startDate, endDate })
+      if (result.serverError) throw new Error(String(result.serverError))
+      if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
+      if (!result.data) throw new Error('Сервер не вернул данные')
+      return result.data
     },
     enabled: !!startDate && !!endDate,
   })

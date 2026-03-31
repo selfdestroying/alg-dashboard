@@ -13,9 +13,11 @@ export const useRevenueDataQuery = (filters: RevenueFilters | null) => {
     queryKey: filters ? revenueKeys.data(filters) : revenueKeys.all,
     queryFn: async () => {
       if (!filters) return null
-      const { data, serverError } = await getRevenueData(filters)
-      if (serverError) throw serverError
-      return data ?? null
+      const result = await getRevenueData(filters)
+      if (result.serverError) throw new Error(String(result.serverError))
+      if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
+      if (!result.data) throw new Error('Сервер не вернул данные')
+      return result.data
     },
     enabled: !!filters,
   })

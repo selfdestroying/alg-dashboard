@@ -255,7 +255,7 @@ export default function Advances() {
     }
   }, [filterState])
 
-  const { data, isPending } = useAdvancesDataQuery(filters)
+  const { data, isPending, isError, error } = useAdvancesDataQuery(filters)
   const isLoading = isPending && !!filters
 
   return (
@@ -272,6 +272,18 @@ export default function Advances() {
             <EmptyTitle>Период не выбран</EmptyTitle>
             <EmptyDescription>
               Укажите диапазон дат, чтобы увидеть авансы и выручку по студентам
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
+
+      {/* Error state */}
+      {isError && !isLoading && (
+        <Empty className="bg-card ring-destructive/20 h-full ring-1">
+          <EmptyHeader>
+            <EmptyTitle>Ошибка загрузки</EmptyTitle>
+            <EmptyDescription>
+              {error instanceof Error ? error.message : 'Не удалось загрузить данные'}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

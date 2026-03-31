@@ -45,7 +45,7 @@ export default function Revenue() {
     }
   }, [filterState])
 
-  const { data, isPending } = useRevenueDataQuery(filters)
+  const { data, isPending, isError, error } = useRevenueDataQuery(filters)
   const isLoading = isPending && !!filters
 
   const handleExport = useCallback(() => {
@@ -68,6 +68,18 @@ export default function Revenue() {
             <EmptyTitle>Период не выбран</EmptyTitle>
             <EmptyDescription>
               Укажите диапазон дат, чтобы увидеть расписание и статистику
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
+
+      {/* Error state */}
+      {isError && !isLoading && (
+        <Empty className="bg-card ring-destructive/20 h-full ring-1">
+          <EmptyHeader>
+            <EmptyTitle>Ошибка загрузки</EmptyTitle>
+            <EmptyDescription>
+              {error instanceof Error ? error.message : 'Не удалось загрузить данные'}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

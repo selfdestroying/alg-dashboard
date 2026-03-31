@@ -115,7 +115,7 @@ export default function Salaries() {
     }
   }, [dateRange, selectedCourses, selectedLocations, selectedTeachers])
 
-  const { data: salaryData, isPending } = useSalaryDataQuery(filters)
+  const { data: salaryData, isPending, isError, error: salaryError } = useSalaryDataQuery(filters)
   const { data: paychecks = [] } = useSalaryPaychecksQuery(
     filters?.startDate ?? null,
     filters?.endDate ?? null,
@@ -283,6 +283,15 @@ export default function Salaries() {
             <EmptyTitle>Период не выбран</EmptyTitle>
             <EmptyDescription>
               Укажите диапазон дат, чтобы увидеть расписание и статистику
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : isError ? (
+        <Empty className="bg-card ring-destructive/20 h-full ring-1">
+          <EmptyHeader>
+            <EmptyTitle>Ошибка загрузки</EmptyTitle>
+            <EmptyDescription>
+              {salaryError instanceof Error ? salaryError.message : 'Не удалось загрузить данные'}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
