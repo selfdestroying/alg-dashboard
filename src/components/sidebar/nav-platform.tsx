@@ -47,6 +47,11 @@ const navLists: NavGroup[] = [
         roles: ['owner', 'manager'],
         featureKey: 'organization.locations',
       },
+      {
+        title: 'Налоги',
+        url: '/organization/tax-systems',
+        roles: ['owner'],
+      },
     ],
   },
   {

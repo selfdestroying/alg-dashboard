@@ -123,6 +123,7 @@ model Organization {
   parents                        Parent[]
   features                       OrganizationFeature[]
   paymentMethods                 PaymentMethod[]
+  taxConfig                      TaxConfig?
 
   @@unique([slug])
   @@map("Organization")
@@ -631,6 +632,19 @@ model PaymentMethod {
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   payments       Payment[]
+
+  @@index([organizationId])
+}
+
+model TaxConfig {
+  id        Int      @id @default(autoincrement())
+  taxSystem String // "USN_INCOME", "OSNO", etc.
+  config    Json // System-specific parameters, validated by Zod at app level
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId Int          @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
 }
