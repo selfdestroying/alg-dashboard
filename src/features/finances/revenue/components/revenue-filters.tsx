@@ -4,6 +4,7 @@ import TableFilter, { type TableFilterItem } from '@/src/components/table-filter
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import { Card, CardContent } from '@/src/components/ui/card'
+import { Checkbox } from '@/src/components/ui/checkbox'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { useMappedCourseListQuery } from '@/src/features/courses/queries'
 import { useMappedLocationListQuery } from '@/src/features/locations/queries'
@@ -22,6 +23,7 @@ import { ru } from 'date-fns/locale'
 import { Calendar as CalendarIcon, ChevronDown, X } from 'lucide-react'
 import { Dispatch, SetStateAction, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
+import { type ChargeableStatus, CHARGEABLE_STATUS_OPTIONS } from '../../chargeable'
 
 const datePresets = [
   {
@@ -59,6 +61,7 @@ export interface RevenueFilterState {
   selectedCourses: TableFilterItem[]
   selectedLocations: TableFilterItem[]
   selectedTeachers: TableFilterItem[]
+  selectedStatuses: ChargeableStatus[]
 }
 
 interface RevenueFiltersBarProps {
@@ -86,9 +89,19 @@ export default function RevenueFiltersBar({ filterState, setFilterState }: Reven
     return `${format(dateRange.from, 'd MMM', { locale: ru })} – ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
   }
 
+  const toggleStatus = (value: ChargeableStatus, checked: boolean) => {
+    setFilterState((prev) => ({
+      ...prev,
+      selectedStatuses: checked
+        ? [...prev.selectedStatuses, value]
+        : prev.selectedStatuses.filter((s) => s !== value),
+    }))
+  }
+
   return (
     <Card>
-      <CardContent>
+      <CardContent className="space-y-3">
+        {/* Row 1: Date + entity filters */}
         <div className="flex flex-col items-end gap-2 lg:flex-row lg:justify-between">
           {/* Date range picker */}
           <div className="flex items-center gap-2">
@@ -165,6 +178,44 @@ export default function RevenueFiltersBar({ filterState, setFilterState }: Reven
             value={selectedTeachers}
             onChange={(v) => setFilterState((prev) => ({ ...prev, selectedTeachers: v }))}
           />
+        </div>
+
+        {/* Row 2: Chargeable statuses — inline checkboxes */}
+        <div className="border-t pt-3">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="text-muted-foreground mt-1.5 text-xs font-medium whitespace-nowrap">
+              Считать посещением:
+            </span>
+
+            {/* Посетил — standalone */}
+            <label className="mt-1 flex cursor-pointer items-center gap-1.5 text-sm">
+              <Checkbox
+                checked={filterState.selectedStatuses.includes('present')}
+                onCheckedChange={(val) => toggleStatus('present', Boolean(val))}
+              />
+              Посетил
+            </label>
+
+            {/* Пропустил — bordered group */}
+            <fieldset className="border-border flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-md border px-3 py-1.5">
+              <legend className="text-muted-foreground px-1 text-xs">Пропустил</legend>
+              {CHARGEABLE_STATUS_OPTIONS.filter((o) => o.value !== 'present').map((option) => {
+                const checked = filterState.selectedStatuses.includes(option.value)
+                return (
+                  <label
+                    key={option.value}
+                    className="flex cursor-pointer items-center gap-1.5 text-sm"
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(val) => toggleStatus(option.value, Boolean(val))}
+                    />
+                    {option.label}
+                  </label>
+                )
+              })}
+            </fieldset>
+          </div>
         </div>
       </CardContent>
     </Card>

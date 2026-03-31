@@ -14,6 +14,7 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarSearch, FileSpreadsheet } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
+import { DEFAULT_CHARGEABLE_STATUSES } from '../../chargeable'
 import { exportRevenueToXlsx } from '../export-xlsx'
 import { useRevenueDataQuery } from '../queries'
 import type { RevenueFilters } from '../schemas'
@@ -27,14 +28,17 @@ const initialFilterState: RevenueFilterState = {
   selectedCourses: [],
   selectedLocations: [],
   selectedTeachers: [],
+  selectedStatuses: [...DEFAULT_CHARGEABLE_STATUSES],
 }
 
 export default function Revenue() {
   const [filterState, setFilterState] = useState<RevenueFilterState>(initialFilterState)
 
   const filters: RevenueFilters | null = useMemo(() => {
-    const { dateRange, selectedCourses, selectedLocations, selectedTeachers } = filterState
+    const { dateRange, selectedCourses, selectedLocations, selectedTeachers, selectedStatuses } =
+      filterState
     if (!dateRange?.from || !dateRange?.to) return null
+    if (selectedStatuses.length === 0) return null
     return {
       startDate: normalizeDateOnly(dateRange.from).toISOString(),
       endDate: normalizeDateOnly(dateRange.to).toISOString(),
@@ -42,6 +46,7 @@ export default function Revenue() {
       locationIds:
         selectedLocations.length > 0 ? selectedLocations.map((l) => +l.value) : undefined,
       teacherIds: selectedTeachers.length > 0 ? selectedTeachers.map((t) => +t.value) : undefined,
+      chargeableStatuses: selectedStatuses,
     }
   }, [filterState])
 

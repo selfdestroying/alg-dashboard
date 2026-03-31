@@ -2,6 +2,7 @@
 
 import prisma from '@/src/lib/db/prisma'
 import { authAction } from '@/src/lib/safe-action'
+import { CLASSIFICATION_LABELS, classifyAttendance, isChargeable } from '../chargeable'
 import { RevenueFiltersSchema } from './schemas'
 import type {
   AttendanceWithCost,
@@ -23,7 +24,8 @@ export const getRevenueData = authAction
   .metadata({ actionName: 'getRevenueData' })
   .inputSchema(RevenueFiltersSchema)
   .action(async ({ ctx, parsedInput }): Promise<RevenueData> => {
-    const { startDate, endDate, courseIds, locationIds, teacherIds } = parsedInput
+    const { startDate, endDate, courseIds, locationIds, teacherIds, chargeableStatuses } =
+      parsedInput
     const organizationId = ctx.session.organizationId!
 
     // Build dynamic group filter
@@ -130,32 +132,24 @@ export const getRevenueData = authAction
           costReason = 'Кошелёк не привязан к этой группе'
         } else if (wallet.totalLessons <= 0) {
           costReason = 'В кошельке 0 уроков - невозможно рассчитать стоимость'
-        } else if (att.status === 'PRESENT') {
+        } else if (isChargeable(att, chargeableStatuses)) {
           visitCost = wallet.totalPayments / wallet.totalLessons
-          costReason = `Присутствовал → списано\n${formatCurrency(wallet.totalPayments)} / ${wallet.totalLessons} ур. = ${formatCurrency(visitCost)}`
-        } else if (att.status === 'ABSENT' && !att.isWarned) {
-          visitCost = wallet.totalPayments / wallet.totalLessons
-          costReason = `Отсутствовал без предупреждения → списано\n${formatCurrency(wallet.totalPayments)} / ${wallet.totalLessons} ур. = ${formatCurrency(visitCost)}`
-        } else if (att.status === 'ABSENT' && att.isWarned) {
-          if (att.makeupAttendance && att.makeupAttendance.status === 'PRESENT') {
-            visitCost = wallet.totalPayments / wallet.totalLessons
-            costReason = `Предупредил, но отработка засчитана → списано\n${formatCurrency(wallet.totalPayments)} / ${wallet.totalLessons} ур. = ${formatCurrency(visitCost)}`
-          } else if (att.makeupAttendance && att.makeupAttendance.status !== 'PRESENT') {
-            costReason = 'Предупредил, отработка не засчитана → не списано'
-          } else {
-            costReason = 'Предупредил об отсутствии → не списано'
-          }
-        } else if (att.status === 'UNSPECIFIED') {
-          costReason = 'Статус посещения не указан → не списано'
+          const classification = classifyAttendance(att)
+          const label = classification ? CLASSIFICATION_LABELS[classification] : 'Списано'
+          costReason = `${label} → списано\n${formatCurrency(wallet.totalPayments)} / ${wallet.totalLessons} ур. = ${formatCurrency(visitCost)}`
         } else {
-          costReason = 'Не подлежит списанию'
+          const classification = classifyAttendance(att)
+          const label = classification
+            ? CLASSIFICATION_LABELS[classification]
+            : 'Статус не определён'
+          costReason = `${label} → не списано`
         }
 
         // Stats accumulation (only for active lessons)
         if (isActive) {
           totalStudentVisits++
-          if (att.status === 'PRESENT') presentCount++
           if (visitCost > 0) {
+            presentCount++
             totalRevenue += visitCost
             chargedVisits++
           }
