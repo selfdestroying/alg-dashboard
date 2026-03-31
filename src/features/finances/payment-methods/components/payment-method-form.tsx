@@ -26,7 +26,7 @@ export default function PaymentMethodForm<T extends FieldValues>({
               <FieldLabel htmlFor={`${formId}-name`}>Название</FieldLabel>
               <Input
                 id={`${formId}-name`}
-                placeholder="Например: Наличные, Перевод, Kaspi"
+                placeholder="Например: Наличные, Перевод"
                 {...field}
                 value={field.value ?? ''}
               />
