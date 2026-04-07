@@ -1,9 +1,15 @@
 'use client'
 import { Prisma, Student } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
+import { updateAttendance } from '@/src/actions/attendance'
+import { Button } from '@/src/components/ui/button'
 import DragScrollArea from '@/src/components/drag-scroll-area'
+import { Badge } from '@/src/components/ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import { Separator } from '@/src/components/ui/separator'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
+import { Toggle } from '@/src/components/ui/toggle'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
 import {
@@ -13,9 +19,22 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowRightLeft,
+  ArrowUp,
+  Check,
+  CheckCircle2,
+  Loader,
+  MessageSquareText,
+  Minus,
+  X,
+  XCircle,
+} from 'lucide-react'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { useMemo, useState, useTransition } from 'react'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
@@ -63,6 +82,37 @@ type LessonWithAttendance = Prisma.LessonGetPayload<{
   }
 }>
 
+// -------------------- Attendance Config --------------------
+const ATTENDANCE_LABELS = {
+  PRESENT: { label: 'Присутствовал', icon: CheckCircle2, class: 'text-success' },
+  ABSENT: { label: 'Отсутствовал', icon: XCircle, class: 'text-destructive' },
+  UNSPECIFIED: { label: 'Не отмечен', icon: Minus, class: 'text-muted-foreground' },
+} as const
+
+const STUDENT_STATUS_LABELS: Record<string, string> = {
+  TRIAL: 'Пробный',
+  ACTIVE: 'Активный',
+  DISMISSED: 'Отчислен',
+  TRANSFERRED: 'Переведён',
+}
+
+const toggleVariant = {
+  present: {
+    active:
+      'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
+    inactive: '',
+  },
+  absent: {
+    active:
+      'border-destructive aria-pressed:bg-destructive/20 text-destructive aria-pressed:opacity-100',
+    inactive: '',
+  },
+  unspecified: {
+    active: '',
+    inactive: '',
+  },
+} as const
+
 // -------------------- Attendance Cell --------------------
 function AttendanceCell({
   lesson,
@@ -71,6 +121,14 @@ function AttendanceCell({
   lesson: LessonWithAttendance
   attendance?: AttendanceWithRelations
 }) {
+  const router = useRouter()
+  const { data: hasPermission } = useOrganizationPermissionQuery({
+    studentLesson: ['selectWarned'],
+  })
+  const [isPending, startTransition] = useTransition()
+  const [optimisticStatus, setOptimisticStatus] = useState<AttendanceStatus | null>(null)
+  const [showWarnedChoice, setShowWarnedChoice] = useState(false)
+
   if (!attendance) {
     return (
       <div className="inline-block">
@@ -81,59 +139,221 @@ function AttendanceCell({
     )
   }
 
+  const currentStatus = optimisticStatus ?? attendance.status
+
+  const handleStatusChange = (newStatus: AttendanceStatus, isWarned?: boolean) => {
+    if (newStatus === attendance.status && isWarned === undefined) return
+
+    setOptimisticStatus(newStatus)
+    setShowWarnedChoice(false)
+
+    startTransition(async () => {
+      try {
+        await updateAttendance({
+          where: {
+            studentId_lessonId: {
+              studentId: attendance.studentId,
+              lessonId: attendance.lessonId,
+            },
+          },
+          data: {
+            status: newStatus,
+            isWarned: isWarned ?? null,
+          },
+        })
+        router.refresh()
+      } catch {
+        setOptimisticStatus(null)
+      }
+    })
+  }
+
+  const handleAbsentClick = () => {
+    if (currentStatus === 'ABSENT') return
+    if (hasPermission?.success) {
+      setShowWarnedChoice(true)
+    } else {
+      handleStatusChange('ABSENT', false)
+    }
+  }
+
   const attendanceStatus =
-    attendance.studentStatus == 'TRIAL'
-      ? statusClasses[`TRIAL_${attendance.status}`]
-      : statusClasses[attendance.status]
+    (optimisticStatus ?? attendance.studentStatus) == 'TRIAL'
+      ? statusClasses[`TRIAL_${currentStatus}`]
+      : statusClasses[currentStatus]
   const makeUpStatus = attendance.makeupAttendance
     ? (makeupStatusClasses[attendance.makeupAttendance.status] ?? makeupStatusClasses.UNSPECIFIED)
     : makeupStatusClasses.UNSPECIFIED
 
+  const config = ATTENDANCE_LABELS[currentStatus] ?? ATTENDANCE_LABELS.UNSPECIFIED
+  const StatusIcon = config.icon
+
   return (
     <div className="inline-block">
-      <Popover modal>
+      <Popover
+        onOpenChange={(open) => {
+          if (!open) setShowWarnedChoice(false)
+        }}
+      >
         <PopoverTrigger
           className={cn('cursor-pointer rounded-lg px-2', attendanceStatus, makeUpStatus)}
         >
           {formatDate(lesson.date)}
         </PopoverTrigger>
-        <PopoverContent className="text-xs">
-          <div className="space-y-1">
-            <p>
-              Урок –{' '}
+        <PopoverContent className="text-xs" align="center">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {isPending ? (
+                <Loader className="text-muted-foreground size-3 animate-spin" />
+              ) : (
+                <StatusIcon className={cn('size-3', config.class)} />
+              )}
+              <span className={cn('font-medium', config.class)}>{config.label}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {attendance.studentStatus && attendance.studentStatus !== 'ACTIVE' && (
+                <Badge variant="secondary" className="text-[0.5625rem]">
+                  {STUDENT_STATUS_LABELS[attendance.studentStatus] ?? attendance.studentStatus}
+                </Badge>
+              )}
+              {attendance.isWarned && (
+                <Badge
+                  variant="outline"
+                  className="border-amber-200 bg-amber-500/10 text-[0.5625rem] text-amber-600 dark:border-amber-800 dark:text-amber-400"
+                >
+                  <AlertTriangle data-icon="inline-start" />
+                  Предупредил
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Lesson info */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Урок</span>
               <Link
                 href={`/lessons/${attendance.lessonId}`}
                 className="text-primary hover:underline"
               >
                 {formatDate(lesson.date)}
-              </Link>{' '}
-              {attendance.status === 'PRESENT'
-                ? '– Пришел'
-                : attendance.status === 'ABSENT'
-                  ? '– Пропустил'
-                  : ''}
-            </p>
-            <p>
-              Отработка –{' '}
-              {attendance.makeupAttendance ? (
-                <>
-                  <Link
-                    href={`/lessons/${attendance.makeupAttendance.lessonId}`}
-                    className="text-primary hover:underline"
-                  >
-                    {formatDate(attendance.makeupAttendance.lesson.date)}
-                  </Link>
-                  {attendance.makeupAttendance.status === 'PRESENT'
-                    ? ' – Пришел'
-                    : attendance.makeupAttendance.status === 'ABSENT'
-                      ? ' – Пропустил'
-                      : ''}
-                </>
-              ) : (
-                ' Не нужна'
-              )}
-            </p>
+                {lesson.time ? `, ${lesson.time}` : ''}
+              </Link>
+            </div>
+
+            {/* Makeup info */}
+            {currentStatus === 'ABSENT' && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <ArrowRightLeft className="size-3" />
+                  Отработка
+                </span>
+                {attendance.makeupAttendance ? (
+                  <span className="flex items-center gap-2">
+                    {attendance.makeupAttendance.status === 'PRESENT' ? (
+                      <CheckCircle2 className="text-success size-3" />
+                    ) : attendance.makeupAttendance.status === 'ABSENT' ? (
+                      <XCircle className="text-destructive size-3" />
+                    ) : null}
+                    <Link
+                      href={`/lessons/${attendance.makeupAttendance.lessonId}`}
+                      className="text-primary hover:underline"
+                    >
+                      {formatDate(attendance.makeupAttendance.lesson.date)}
+                    </Link>
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground italic">Не назначена</span>
+                )}
+              </div>
+            )}
+
+            {/* Comment */}
+            {attendance.comment && (
+              <>
+                <Separator />
+                <div className="flex items-center gap-2">
+                  <MessageSquareText className="text-muted-foreground size-3 shrink-0" />
+                  <span className="text-muted-foreground">{attendance.comment}</span>
+                </div>
+              </>
+            )}
           </div>
+
+          <Separator />
+
+          {/* Quick status toggle */}
+          {showWarnedChoice ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-7 flex-1 text-xs"
+                disabled={isPending}
+                onClick={() => handleStatusChange('ABSENT', false)}
+              >
+                Не предупредил (−1)
+              </Button>
+              <Button
+                size="sm"
+                className="bg-success/10 text-success hover:bg-success/20 h-7 flex-1 text-xs"
+                disabled={isPending}
+                onClick={() => handleStatusChange('ABSENT', true)}
+              >
+                Предупредил (0)
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Изменить</span>
+              <div className="flex gap-1">
+                <Toggle
+                  size="sm"
+                  variant="outline"
+                  className={cn(
+                    'cursor-pointer',
+                    toggleVariant.present[currentStatus === 'PRESENT' ? 'active' : 'inactive'],
+                  )}
+                  pressed={currentStatus === 'PRESENT'}
+                  disabled={isPending || currentStatus === 'PRESENT'}
+                  onClick={() => handleStatusChange('PRESENT')}
+                >
+                  <Check />
+                </Toggle>
+                <Toggle
+                  size="sm"
+                  variant="outline"
+                  className={cn(
+                    'cursor-pointer',
+                    toggleVariant.absent[currentStatus === 'ABSENT' ? 'active' : 'inactive'],
+                  )}
+                  pressed={currentStatus === 'ABSENT'}
+                  disabled={isPending || currentStatus === 'ABSENT'}
+                  onClick={handleAbsentClick}
+                >
+                  <X />
+                </Toggle>
+                <Toggle
+                  size="sm"
+                  variant="outline"
+                  className={cn(
+                    'cursor-pointer',
+                    toggleVariant.unspecified[
+                      currentStatus === 'UNSPECIFIED' ? 'active' : 'inactive'
+                    ],
+                  )}
+                  pressed={currentStatus === 'UNSPECIFIED'}
+                  disabled={isPending || currentStatus === 'UNSPECIFIED'}
+                  onClick={() => handleStatusChange('UNSPECIFIED')}
+                >
+                  <Minus />
+                </Toggle>
+              </div>
+            </div>
+          )}
         </PopoverContent>
       </Popover>
     </div>
@@ -214,10 +434,7 @@ export function StudentAttendanceTable({
           (lessons.reduce((prev, curr) => prev + (curr.date < new Date() ? 1 : 0), 0) - 1) * 100
         }
       >
-        <table
-          data-slot="table"
-          className="w-full border-separate border-spacing-0 [&_tr:not(:last-child)_td]:border-b"
-        >
+        <table data-slot="table" className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -227,7 +444,7 @@ export function StudentAttendanceTable({
                       key={header.id}
                       style={{ width: `${header.getSize()}px` }}
                       className={cn(
-                        'bg-sidebar border-border relative h-9 border-y select-none first:rounded-l-lg first:border-l last:rounded-r-lg last:border-r',
+                        'bg-sidebar relative h-9 select-none first:rounded-l-lg last:rounded-r-lg',
                         stickyColumnClasses[header.id + '_header'],
                       )}
                     >
@@ -283,7 +500,7 @@ export function StudentAttendanceTable({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="h-px border-0 [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                  className="h-px [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
