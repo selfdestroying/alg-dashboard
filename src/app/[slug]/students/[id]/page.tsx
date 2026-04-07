@@ -12,7 +12,6 @@ import { auth } from '@/src/lib/auth/server'
 import { getFullName, protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import CourseAttendanceStats from './_components/course-attendance-stats'
 import EditStudentDialog from './_components/edit-student-dialog'
 import GroupHistory from './_components/group-history'
 import LessonsBalanceHistory from './_components/lessons-balance-history'
@@ -82,23 +81,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 group: { include: { course: true, location: true, schedules: true } },
               },
             },
-          },
-        },
-        attendances: {
-          include: {
-            lesson: {
-              include: {
-                group: {
-                  include: {
-                    course: true,
-                    schedules: true,
-                    _count: { select: { lessons: true } },
-                  },
-                },
-              },
-            },
-            makeupForAttendance: true,
-            makeupAttendance: { include: { makeupForAttendance: true } },
           },
         },
       },
@@ -180,8 +162,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             groups={groups}
             canCreateStudentGroup={canCreateStudentGroup}
           />
-          <CourseAttendanceStats student={student} />
-
           <GroupHistory history={groupHistory} />
           <FeatureGate feature="finances">
             {canEditLessonsHistory && <LessonsBalanceHistory history={lessonsBalanceHistory} />}

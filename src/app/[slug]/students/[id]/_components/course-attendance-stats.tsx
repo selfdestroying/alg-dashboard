@@ -1,99 +1,90 @@
-import { Hint } from '@/src/components/hint'
+import { Prisma } from '@/prisma/generated/client'
+import { StatCard } from '@/src/components/stat-card'
 import { Badge } from '@/src/components/ui/badge'
-import { getGroupName } from '@/src/lib/utils'
-import { BarChart3, CheckCircle2, RefreshCw, XCircle } from 'lucide-react'
+import { Separator } from '@/src/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import { formatDateOnly } from '@/src/lib/timezone'
+import { cn, getGroupName } from '@/src/lib/utils'
+import { BarChart3, CheckCircle2, Info, RefreshCw, XCircle } from 'lucide-react'
 import { StudentWithGroupsAndAttendance } from './types'
 
-export interface GroupStats {
-  groupId: number
-  groupName: string
-  isInactive: boolean
+interface StudentGroupStats {
   totalLessons: number
-  attended: number
+  absent: number
+  present: number
+  unspecified: number
   madeUp: number
-  missed: number
 }
 
-export function computeGroupStats(student: StudentWithGroupsAndAttendance): GroupStats[] {
-  const groupStats = new Map<number, GroupStats>()
-  const currentGroupIds = new Set(student.groups.map((sg) => sg.group.id))
+export interface StudentGroupWithStats extends Prisma.StudentGroupGetPayload<{
+  include: {
+    group: {
+      include: {
+        location: true
+        course: true
+        schedules: true
+      }
+    }
+  }
+}> {
+  stats: StudentGroupStats
+}
 
-  // Step 1: Register current groups with their full lesson counts
-  for (const sg of student.groups) {
-    const { group } = sg
-    groupStats.set(group.id, {
-      groupId: group.id,
-      groupName: getGroupName(group),
-      isInactive: false,
-      totalLessons: group.lessons.length,
-      attended: 0,
-      madeUp: 0,
-      missed: 0,
+const StudentStatusMap = {
+  ACTIVE: 'Активен',
+  TRIAL: 'Пробный',
+  DISMISSED: 'Отчислен',
+  TRANSFERRED: 'Переведён',
+} as const
+
+export function computeGroupStats(student: StudentWithGroupsAndAttendance) {
+  const stats: StudentGroupWithStats[] = []
+  const attendanceByGroup = Map.groupBy(student.groups, (g) => g.groupId)
+
+  attendanceByGroup.forEach((value) => {
+    const studentGroup = value[0]!
+    const {
+      group: { lessons },
+    } = studentGroup
+
+    const totalLessons = lessons.length
+
+    const absent = lessons.reduce(
+      (prev, curr) => prev + curr.attendance.filter((a) => a.status === 'ABSENT').length,
+      0,
+    )
+    const present = lessons.reduce(
+      (prev, curr) => prev + curr.attendance.filter((a) => a.status === 'PRESENT').length,
+      0,
+    )
+    const unspecified = lessons.reduce(
+      (prev, curr) => prev + curr.attendance.filter((a) => a.status === 'UNSPECIFIED').length,
+      0,
+    )
+
+    const madeUp = lessons.reduce(
+      (prev, curr) =>
+        prev +
+        curr.attendance.filter(
+          (a) =>
+            a.status === 'ABSENT' && a.makeupAttendance && a.makeupAttendance.status === 'PRESENT',
+        ).length,
+      0,
+    )
+
+    stats.push({
+      stats: {
+        absent,
+        madeUp,
+        present,
+        unspecified,
+        totalLessons,
+      },
+      ...studentGroup,
     })
-  }
-
-  // Step 2: Derive dismissed/transferred groups from attendances
-  for (const att of student.attendances) {
-    const groupId = att.lesson.groupId
-    if (currentGroupIds.has(groupId) || att.makeupForAttendance) continue
-
-    if (!groupStats.has(groupId)) {
-      const group = att.lesson.group
-      groupStats.set(groupId, {
-        groupId,
-        groupName: getGroupName(group),
-        isInactive: true,
-        totalLessons: group._count.lessons,
-        attended: 0,
-        madeUp: 0,
-        missed: 0,
-      })
-    }
-  }
-
-  // Step 3: Count attendance statuses per group
-  for (const att of student.attendances) {
-    if (att.studentStatus === 'TRIAL') continue
-
-    const groupId = att.lesson.groupId
-    const isMakeup = !!att.makeupForAttendance
-
-    // For makeup attendance, attribute it to the original missed group
-    const targetGroupId = isMakeup ? att.makeupForAttendance!.id : null
-    let statsGroupId = groupId
-
-    if (isMakeup) {
-      // Find the original missed attendance's group from all attendances
-      const missedAtt = student.attendances.find(
-        (a) => a.id === targetGroupId && a.makeupAttendance,
-      )
-      if (missedAtt) {
-        statsGroupId = missedAtt.lesson.groupId
-      } else if (!groupStats.has(groupId)) {
-        continue
-      }
-    }
-
-    const stats = groupStats.get(statsGroupId)
-    if (!stats) continue
-
-    if (!isMakeup) {
-      if (att.status === 'PRESENT') {
-        stats.attended++
-      } else if (att.status === 'ABSENT') {
-        stats.missed++
-        if (att.makeupAttendance?.status === 'PRESENT') {
-          stats.madeUp++
-        }
-      }
-    }
-  }
-
-  // Sort: current groups first, then inactive
-  return Array.from(groupStats.values()).sort((a, b) => {
-    if (a.isInactive !== b.isInactive) return a.isInactive ? 1 : -1
-    return a.groupName.localeCompare(b.groupName)
   })
+
+  return stats
 }
 
 export default function CourseAttendanceStats({
@@ -103,72 +94,139 @@ export default function CourseAttendanceStats({
 }) {
   const stats = computeGroupStats(student)
 
-  if (stats.length === 0) {
-    return (
-      <div className="space-y-4">
-        <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
-          <BarChart3 size={20} />
-          Статистика посещаемости
-        </h3>
-        <p className="text-muted-foreground">Нет данных о посещаемости.</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
         <BarChart3 size={20} />
-        Статистика посещаемости
-        <Hint text="Процент посещаемости = (посещения + отработки) / всего уроков. Зелёная галочка - посещено, синяя стрелка - отработано, красный крестик - пропущено." />
+        Посещаемость по группам
       </h3>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-        {stats.map((group) => {
-          const attendanceRate =
-            group.totalLessons > 0
-              ? Math.round(((group.attended + group.madeUp) / group.totalLessons) * 100)
-              : 0
 
-          return (
-            <div
-              key={group.groupId}
-              className="bg-muted/50 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-            >
-              <div className="flex items-center gap-2 overflow-hidden">
-                <span className="truncate text-sm font-medium">{group.groupName}</span>
-                {group.isInactive && (
-                  <Badge variant="outline" className="shrink-0 px-1.5 py-0 text-[10px]">
-                    не активна
-                  </Badge>
-                )}
-                <Badge
-                  variant={attendanceRate >= 80 ? 'default' : 'destructive'}
-                  className="shrink-0 px-1.5 py-0 text-[10px]"
-                >
-                  {attendanceRate}%
-                </Badge>
-              </div>
-              <div className="text-muted-foreground flex shrink-0 items-center gap-2.5 text-xs">
-                <span className="flex items-center gap-0.5" title="Посещено">
-                  <CheckCircle2 size={12} className="text-green-500" />
-                  {group.attended}
-                </span>
-                <span className="flex items-center gap-0.5" title="Отработано">
-                  <RefreshCw size={12} className="text-blue-500" />
-                  {group.madeUp}
-                </span>
-                <span className="flex items-center gap-0.5" title="Пропущено">
-                  <XCircle size={12} className="text-red-500" />
-                  {group.missed}
-                </span>
-                <span className="text-foreground font-medium" title="Всего занятий">
-                  {group.totalLessons}
-                </span>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {stats.length > 0 ? (
+        <div className="space-y-4">
+          {stats.map((sg, i) => (
+            <AttendanceGroupRow key={sg.groupId} sg={sg} showSeparator={i < stats.length - 1} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground">Нет данных о посещаемости.</p>
+      )}
     </div>
   )
+}
+
+function AttendanceGroupRow({
+  sg,
+  showSeparator,
+}: {
+  sg: StudentGroupWithStats
+  showSeparator: boolean
+}) {
+  const attendanceRate = getAttendanceRate(sg.stats)
+  const statusBadge = getStatusBadge(sg)
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="text-sm font-medium">{getGroupName(sg.group)}</p>
+        {statusBadge}
+        <span className="text-muted-foreground text-xs">
+          {sg.stats.totalLessons} {getLessonsLabel(sg.stats.totalLessons)}
+        </span>
+        <span
+          className={cn('ml-auto text-sm font-semibold tabular-nums', getRateColor(attendanceRate))}
+        >
+          {attendanceRate}%
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Посещено" value={sg.stats.present} icon={CheckCircle2} variant="success" />
+        <StatCard label="Отработано" value={sg.stats.madeUp} icon={RefreshCw} variant="warning" />
+        <StatCard label="Пропущено" value={sg.stats.absent} icon={XCircle} variant="danger" />
+        <StatCard label="Без отметки" value={sg.stats.unspecified} />
+      </div>
+
+      {showSeparator && <Separator />}
+    </div>
+  )
+}
+
+function getStatusBadge(sg: StudentGroupWithStats) {
+  switch (sg.status) {
+    case 'DISMISSED': {
+      const date = sg.dismissedAt
+        ? formatDateOnly(sg.dismissedAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : null
+
+      return (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Badge variant="destructive" className="cursor-help gap-2">
+                {StudentStatusMap.DISMISSED}
+                <Info />
+              </Badge>
+            }
+          />
+          <TooltipContent>
+            <p>Дата: {date ?? 'Не указана'}</p>
+            <p>Комментарий: {sg.dismissComment?.trim() || 'Не указан'}</p>
+          </TooltipContent>
+        </Tooltip>
+      )
+    }
+    case 'TRANSFERRED': {
+      const date = sg.transferredAt
+        ? formatDateOnly(sg.transferredAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : null
+
+      return (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Badge variant="outline" className="cursor-help gap-2">
+                {StudentStatusMap.TRANSFERRED}
+                <Info />
+              </Badge>
+            }
+          />
+          <TooltipContent>
+            <p>Дата: {date ?? 'Не указана'}</p>
+            <p>Комментарий: {sg.transferComment?.trim() || 'Не указан'}</p>
+          </TooltipContent>
+        </Tooltip>
+      )
+    }
+    case 'TRIAL':
+      return <Badge variant="secondary">{StudentStatusMap.TRIAL}</Badge>
+    default:
+      return null
+  }
+}
+
+function getLessonsLabel(value: number) {
+  const remainder10 = value % 10
+  const remainder100 = value % 100
+
+  if (remainder10 === 1 && remainder100 !== 11) return 'урок'
+  if (remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 12 || remainder100 > 14)) {
+    return 'урока'
+  }
+
+  return 'уроков'
+}
+
+function getAttendanceRate(stats: StudentGroupStats) {
+  const denominator = stats.totalLessons - stats.unspecified
+
+  if (denominator <= 0) return 0
+
+  return Math.round(((stats.present + stats.madeUp) / denominator) * 100)
+}
+
+function getRateColor(rate: number) {
+  if (rate >= 80) return 'text-emerald-600 dark:text-emerald-400'
+  if (rate >= 60) return 'text-amber-600 dark:text-amber-400'
+
+  return 'text-rose-600 dark:text-rose-400'
 }

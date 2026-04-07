@@ -3,8 +3,8 @@
 import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
 import {
   computeGroupStats,
-  type GroupStats,
-} from '@/src/app/[slug]/students/[id]/_components/course-attendance-stats'
+  type StudentGroupWithStats,
+} from '@/src/app/[slug]/students/[id]/_components/student-groups-section'
 import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Hint } from '@/src/components/hint'
@@ -821,29 +821,35 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
 
 // ─── Wallet Attendance Stats ────────────────────────────────────────
 
-function WalletAttendanceStats({ stats }: { stats: GroupStats[] }) {
+function WalletAttendanceStats({ stats }: { stats: StudentGroupWithStats[] }) {
   return (
     <div className="space-y-1.5">
       <div className="bg-muted/30 h-px" />
       <p className="text-muted-foreground text-[0.625rem] font-medium">Посещаемость:</p>
       {stats.map((gs) => {
         const rate =
-          gs.totalLessons > 0 ? Math.round(((gs.attended + gs.madeUp) / gs.totalLessons) * 100) : 0
+          gs.stats.totalLessons > 0
+            ? Math.round(
+                ((gs.stats.present + gs.stats.madeUp) /
+                  (gs.stats.totalLessons - gs.stats.unspecified)) *
+                  100,
+              )
+            : 0
         return (
           <div key={gs.groupId} className="flex items-center justify-between gap-2">
-            <span className="truncate text-[0.625rem]">{gs.groupName}</span>
+            <span className="truncate text-[0.625rem]">{getGroupName(gs.group)}</span>
             <div className="flex shrink-0 items-center gap-1.5">
               <span className="flex items-center gap-0.5" title="Посещено">
                 <CheckCircle2 size={10} className="text-green-500" />
-                <span>{gs.attended}</span>
+                <span>{gs.stats.present}</span>
               </span>
               <span className="flex items-center gap-0.5" title="Отработано">
                 <RefreshCw size={10} className="text-blue-500" />
-                <span>{gs.madeUp}</span>
+                <span>{gs.stats.madeUp}</span>
               </span>
               <span className="flex items-center gap-0.5" title="Пропущено">
                 <XCircle size={10} className="text-red-500" />
-                <span>{gs.missed}</span>
+                <span>{gs.stats.absent}</span>
               </span>
               <Badge
                 variant={rate >= 80 ? 'default' : 'destructive'}
@@ -899,7 +905,7 @@ function TransferSheet({
   const allGroupStats = useMemo(() => computeGroupStats(student), [student])
 
   const walletGroupStats = useMemo(() => {
-    const result = new Map<number, GroupStats[]>()
+    const result = new Map<number, StudentGroupWithStats[]>()
     for (const w of student.wallets) {
       const walletGroupIds = new Set(w.studentGroups.map((sg) => sg.groupId))
       result.set(
