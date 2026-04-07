@@ -97,6 +97,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     },
   })
 
+  const isCancelled = lesson.status === 'CANCELLED'
+
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -104,7 +106,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <Card className="shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">Преподаватели</CardTitle>
-            {canCreateTeacherLesson && (
+            {canCreateTeacherLesson && !isCancelled && (
               <CardAction>
                 <AddTeacherToLessonButton lesson={lesson} />
               </CardAction>
@@ -118,7 +120,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <Card className="shadow-none">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Список учеников</CardTitle>
-          {canCreateStudentLesson && (
+          {canCreateStudentLesson && !isCancelled && (
             <CardAction>
               <AddAttendanceButton
                 lessonId={lesson.id}
@@ -128,7 +130,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           )}
         </CardHeader>
         <CardContent>
-          <AttendanceTable data={lesson.attendance} />
+          <AttendanceTable data={lesson.attendance} isCancelled={isCancelled} />
         </CardContent>
       </Card>
     </div>

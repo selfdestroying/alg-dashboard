@@ -132,10 +132,16 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
         <Hint text="Показывает, все ли ученики отмечены на уроке. Зелёная галочка - все отмечены, красный крестик - есть неотмеченные." />
       </span>
     ),
-    accessorFn: (lesson) =>
-      lesson.attendance.some((a) => a.status === 'UNSPECIFIED') ? 'unmarked' : 'marked',
-    cell: (info) =>
-      info.getValue() === 'marked' ? (
+    accessorFn: (lesson) => {
+      if (lesson.status === 'CANCELLED') return 'cancelled'
+      return lesson.attendance.some((a) => a.status === 'UNSPECIFIED') ? 'unmarked' : 'marked'
+    },
+    cell: (info) => {
+      const value = info.getValue()
+      if (value === 'cancelled') {
+        return <span className="text-muted-foreground">—</span>
+      }
+      return value === 'marked' ? (
         <div className="text-success flex items-center gap-2">
           <Check className="size-4" />
         </div>
@@ -143,14 +149,15 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
         <div className="text-destructive flex items-center gap-2">
           <X className="size-4" />
         </div>
-      ),
+      )
+    },
   },
   {
     header: 'Статус',
     accessorKey: 'status',
     cell: (info) => (
       <span className={info.getValue() === 'ACTIVE' ? 'text-success' : 'text-muted-foreground'}>
-        {info.getValue() === 'ACTIVE' ? 'Активен' : 'Неактивен'}
+        {info.getValue() === 'ACTIVE' ? 'Активен' : 'Отменён'}
       </span>
     ),
   },
@@ -382,7 +389,14 @@ function DataTable<T>({ data, columns, filters }: DataTableProps<T>) {
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                className={
+                  (row.original as { status?: string })?.status === 'CANCELLED'
+                    ? 'opacity-60'
+                    : undefined
+                }
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

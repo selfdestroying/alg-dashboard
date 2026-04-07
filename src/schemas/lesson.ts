@@ -9,7 +9,6 @@ export const CreateLessonSchema = z.object({
 export const EditLessonSchema = z.object({
   date: DateOnlySchema,
   time: z.string('Выберите время урока'),
-  status: z.enum(['ACTIVE', 'CANCELLED'], 'Выберите статус урока'),
 })
 
 export type CreateLessonSchemaType = z.infer<typeof CreateLessonSchema>

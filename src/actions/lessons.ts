@@ -3,7 +3,11 @@
 import prisma from '@/src/lib/db/prisma'
 
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { Prisma } from '../../prisma/generated/client'
+import { auth } from '../lib/auth/server'
+import { protocol, rootDomain } from '../lib/utils'
 
 export type LessonWithCountUnspecified = Prisma.LessonGetPayload<{
   include: { _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } } }
@@ -66,6 +70,34 @@ export const getLesson = async <T extends Prisma.LessonFindFirstArgs>(
 export const updateLesson = async (payload: Prisma.LessonUpdateArgs) => {
   await prisma.lesson.update(payload)
   revalidatePath(`/lessons/${payload.where.id}`)
+}
+
+/**
+ * Cancel a lesson. Keeps attendance as-is but locks editing.
+ */
+export async function cancelLesson(args: { lessonId: number }) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session || !session.organizationId) {
+    redirect(`${protocol}://auth.${rootDomain}/sign-in`)
+  }
+
+  const { lessonId } = args
+  const organizationId = session.organizationId!
+
+  const lesson = await prisma.lesson.findFirst({
+    where: { id: lessonId, organizationId },
+    select: { status: true },
+  })
+
+  if (!lesson) throw new Error('Урок не найден')
+  if (lesson.status === 'CANCELLED') throw new Error('Урок уже отменён')
+
+  await prisma.lesson.update({
+    where: { id: lessonId },
+    data: { status: 'CANCELLED' },
+  })
+
+  revalidatePath(`/lessons/${lessonId}`)
 }
 
 export const createLesson = async (payload: Prisma.LessonCreateArgs) => {

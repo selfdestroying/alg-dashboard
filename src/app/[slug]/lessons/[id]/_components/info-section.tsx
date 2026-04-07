@@ -1,13 +1,14 @@
 import { LessonStatus, Prisma } from '@/prisma/generated/client'
+import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { auth } from '@/src/lib/auth/server'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { getGroupName } from '@/src/lib/utils'
 import { cva } from 'class-variance-authority'
-import { Book, Clock, MapPin, Users } from 'lucide-react'
+import { Ban, Book, Clock, MapPin, Users } from 'lucide-react'
 import { headers } from 'next/headers'
 import Link from 'next/link'
-import EditLessonButton from './edit-lesson-button'
+import InfoSectionAction from './info-section-action'
 
 interface InfoSectionsProps {
   lesson: Prisma.LessonGetPayload<{
@@ -51,17 +52,29 @@ export default async function InfoSection({ lesson }: InfoSectionsProps) {
     },
   })
 
+  const isCancelled = lesson.status === 'CANCELLED'
+
   return (
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация об уроке</CardTitle>
         {canEditLesson && (
           <CardAction>
-            <EditLessonButton lesson={lesson} />
+            <InfoSectionAction lesson={lesson} />
           </CardAction>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
+        {isCancelled && (
+          <Alert variant="destructive">
+            <Ban className="size-4" />
+            <AlertTitle>Урок отменён</AlertTitle>
+            <AlertDescription>
+              Посещаемость заблокирована. Нажмите кнопку восстановления, чтобы вернуть урок в
+              активный статус.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="grid gap-2 truncate sm:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col">
             <div className="text-muted-foreground/60 flex items-center gap-2 text-xs font-medium">

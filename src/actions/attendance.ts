@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/src/lib/db/prisma'
-import { writeLessonsBalanceHistoryTx } from '@/src/lib/lessons-balance'
+import { isLessonCharged, writeLessonsBalanceHistoryTx } from '@/src/lib/lessons-balance'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { getGroupName, protocol, rootDomain } from '@/src/lib/utils'
 import { revalidatePath } from 'next/cache'
@@ -35,6 +35,15 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
 }>
 
 export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInput) => {
+  // Guard: cannot add attendance to a cancelled lesson
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: data.lessonId },
+    select: { status: true },
+  })
+  if (lesson?.status === 'CANCELLED') {
+    throw new Error('Нельзя добавить ученика в отменённый урок')
+  }
+
   const attendance = await prisma.attendance.create({ data })
   revalidatePath(`dashboard/lessons/${data.lessonId}`)
   return attendance
@@ -59,12 +68,6 @@ const updateCoins = async (
   }
 }
 
-const isLessonCharged = (status: AttendanceStatus, isWarned: boolean): boolean => {
-  if (status === AttendanceStatus.PRESENT) return true
-  if (status === AttendanceStatus.ABSENT && !isWarned) return true
-  return false
-}
-
 const getLessonsBalanceDelta = (
   oldStatus: AttendanceStatus,
   newStatus: AttendanceStatus,
@@ -72,7 +75,6 @@ const getLessonsBalanceDelta = (
   newIsWarned: boolean | null,
 ): number => {
   const wasCharged = isLessonCharged(oldStatus, oldIsWarned === true)
-
   const isCharged = isLessonCharged(newStatus, newIsWarned === true)
 
   if (wasCharged === isCharged) return 0
@@ -86,6 +88,19 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
   if (!session) {
     redirect(`${protocol}://auth.${rootDomain}/sign-in`)
   }
+
+  // Guard: cannot modify attendance on a cancelled lesson
+  const guardLessonId = payload.where.studentId_lessonId?.lessonId
+  if (guardLessonId) {
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: guardLessonId },
+      select: { status: true },
+    })
+    if (lesson?.status === 'CANCELLED') {
+      throw new Error('Нельзя изменить посещаемость отменённого урока')
+    }
+  }
+
   const status = payload.data.status
   const isWarned = payload.data.isWarned
   const studentId = payload.where.studentId_lessonId?.studentId
@@ -226,7 +241,18 @@ export const updateDataMock = async (time: number) => {
 }
 
 export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
-  await prisma.attendance.delete(data)
+  // Guard: cannot delete attendance from a cancelled lesson
+  const lessonId = data.where.studentId_lessonId?.lessonId
+  if (typeof lessonId === 'number') {
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: { status: true },
+    })
+    if (lesson?.status === 'CANCELLED') {
+      throw new Error('Нельзя удалить ученика из отменённого урока')
+    }
+  }
 
+  await prisma.attendance.delete(data)
   revalidatePath(`/lessons/${data.where.lessonId}`)
 }

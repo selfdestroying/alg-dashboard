@@ -786,6 +786,7 @@ enum StudentLessonsBalanceChangeReason {
   BALANCE_REDISTRIBUTED
   WALLET_MERGED
   WALLET_TRANSFER
+  LESSON_CANCELLED
 }
 
 enum StudentFinancialField {

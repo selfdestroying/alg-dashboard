@@ -18,6 +18,7 @@ import { useEffect, useState, useTransition } from 'react'
 
 interface AttendanceStatusSwitcherProps {
   attendance: Attendance
+  disabled?: boolean
 }
 
 const switcherVariant = cva(['cursor-pointer'], {
@@ -67,7 +68,7 @@ const switcherVariant = cva(['cursor-pointer'], {
   ],
 })
 
-export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitcherProps) {
+export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceStatusSwitcherProps) {
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
@@ -77,6 +78,7 @@ export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitche
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
 
   useEffect(() => {
+    if (disabled) return
     if (status === attendance.status) return
 
     startTransition(async () => {
@@ -93,7 +95,25 @@ export function AttendanceStatusSwitcher({ attendance }: AttendanceStatusSwitche
         },
       })
     })
-  }, [status, isWarned, attendance.lessonId, attendance.studentId, attendance.status])
+  }, [status, isWarned, attendance.lessonId, attendance.studentId, attendance.status, disabled])
+
+  if (disabled) {
+    const statusLabel = {
+      [AttendanceStatus.PRESENT]: 'Присутствует',
+      [AttendanceStatus.ABSENT]: isWarned ? 'Отсутствует (пред.)' : 'Отсутствует',
+      [AttendanceStatus.UNSPECIFIED]: 'Не отмечен',
+    }
+    const statusColor = {
+      [AttendanceStatus.PRESENT]: 'text-success',
+      [AttendanceStatus.ABSENT]: 'text-destructive',
+      [AttendanceStatus.UNSPECIFIED]: 'text-muted-foreground',
+    }
+    return (
+      <span className={`text-sm ${statusColor[attendance.status]}`}>
+        {statusLabel[attendance.status]}
+      </span>
+    )
+  }
 
   return (
     <TooltipProvider delay={300}>

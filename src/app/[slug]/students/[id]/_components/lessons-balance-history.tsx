@@ -74,6 +74,7 @@ const reasonLabel: Record<StudentLessonsBalanceChangeReason, string> = {
   BALANCE_REDISTRIBUTED: 'Перераспределение баланса',
   WALLET_MERGED: 'Объединение кошельков',
   WALLET_TRANSFER: 'Перевод между кошельками',
+  LESSON_CANCELLED: 'Отмена урока',
 }
 
 const fieldLabel: Record<StudentFinancialField, string> = {

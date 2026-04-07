@@ -2,7 +2,6 @@
 
 import { Lesson } from '@/prisma/generated/client'
 import { updateLesson } from '@/src/actions/lessons'
-import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import {
@@ -13,36 +12,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { EditLessonSchema, EditLessonSchemaType } from '@/src/schemas/lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
-import { Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-interface EditLessonButtonProps {
+interface EditLessonDialogProps {
   lesson: Lesson
+  isOpen: boolean
+  onClose: () => void
 }
 
-const statusItems = [
-  { label: 'Активен', value: 'ACTIVE' },
-  { label: 'Отменен', value: 'CANCELLED' },
-]
-
-export default function EditLessonButton({ lesson }: EditLessonButtonProps) {
+export default function EditLessonDialog({ lesson, isOpen, onClose }: EditLessonDialogProps) {
   const [isPending, startTransition] = useTransition()
-  const [dialogOpen, setDialogOpen] = useState(false)
   const form = useForm<EditLessonSchemaType>({
     resolver: zodResolver(EditLessonSchema),
     defaultValues: {
       date: lesson.date,
       time: lesson.time || undefined,
-      status: lesson.status,
     },
   })
 
@@ -56,23 +48,13 @@ export default function EditLessonButton({ lesson }: EditLessonButtonProps) {
         loading: 'Сохранение изменений...',
         success: 'Изменения успешно сохранены!',
         error: 'Ошибка при сохранении изменений.',
-        finally: () => {
-          setDialogOpen(false)
-        },
+        finally: () => onClose(),
       })
     })
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger
-        render={
-          <Button size={'icon'}>
-            <Pen />
-          </Button>
-        }
-      />
-
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Редактировать урок</DialogTitle>
@@ -118,23 +100,6 @@ export default function EditLessonButton({ lesson }: EditLessonButtonProps) {
                     value={field.value || ''}
                     onChange={(e) => field.onChange(e.target.value)}
                     aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="status"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="lesson-status-field">Статус урока</FieldLabel>
-                  <CustomCombobox
-                    items={statusItems}
-                    value={statusItems.find((i) => i.value === field.value) ?? null}
-                    onValueChange={(item) => item && field.onChange(item.value)}
-                    id="lesson-status-field"
-                    placeholder="Выберите статус"
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

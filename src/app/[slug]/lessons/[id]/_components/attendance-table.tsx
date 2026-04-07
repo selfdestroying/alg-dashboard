@@ -23,9 +23,15 @@ export const StudentStatusMap: { [key in StudentStatus]: string } = {
   TRANSFERRED: 'Переведён',
 }
 
-function AttendanceActionsCell({ attendance }: { attendance: AttendanceWithStudents }) {
+function AttendanceActionsCell({
+  attendance,
+  isCancelled,
+}: {
+  attendance: AttendanceWithStudents
+  isCancelled?: boolean
+}) {
   const { data: hasPermission } = useOrganizationPermissionQuery({ studentLesson: ['update'] })
-  if (!hasPermission?.success) return null
+  if (!hasPermission?.success || isCancelled) return null
   return (
     <div className="flex justify-end">
       <AttendanceActions attendance={attendance} />
@@ -37,6 +43,7 @@ const getColumns = (
   handleUpdate: DebouncedFunction<
     (studentId: number, lessonId: number, comment?: string, status?: AttendanceStatus) => void
   >,
+  isCancelled?: boolean,
 ): ColumnDef<AttendanceWithStudents>[] => {
   return [
     {
@@ -60,7 +67,9 @@ const getColumns = (
     },
     {
       header: 'Статус',
-      cell: ({ row }) => <AttendanceStatusSwitcher attendance={row.original} />,
+      cell: ({ row }) => (
+        <AttendanceStatusSwitcher attendance={row.original} disabled={isCancelled} />
+      ),
     },
     {
       id: 'makeup',
@@ -90,19 +99,28 @@ const getColumns = (
     {
       header: 'Комментарий',
       accessorKey: 'comment',
-      cell: ({ row }) => (
-        <Input
-          defaultValue={row.original.comment}
-          onChange={(e) =>
-            handleUpdate(row.original.studentId, row.original.lessonId, e.target.value)
-          }
-        />
-      ),
+      cell: ({ row }) =>
+        isCancelled ? (
+          <span className="text-muted-foreground text-sm">{row.original.comment || '—'}</span>
+        ) : (
+          <Input
+            defaultValue={row.original.comment}
+            onChange={(e) =>
+              handleUpdate(row.original.studentId, row.original.lessonId, e.target.value)
+            }
+          />
+        ),
     },
   ]
 }
 
-export default function AttendanceTable({ data }: { data: AttendanceWithStudents[] }) {
+export default function AttendanceTable({
+  data,
+  isCancelled,
+}: {
+  data: AttendanceWithStudents[]
+  isCancelled?: boolean
+}) {
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
   const handleUpdate = useMemo(
     () =>
@@ -127,13 +145,17 @@ export default function AttendanceTable({ data }: { data: AttendanceWithStudents
       }, 500),
     [skipAutoResetPageIndex],
   )
-  const columns = getColumns(handleUpdate)
+  const columns = getColumns(handleUpdate, isCancelled)
 
-  columns.push({
-    id: 'actions',
-    cell: ({ row }) => <AttendanceActionsCell attendance={row.original} />,
-    size: 50,
-  })
+  if (!isCancelled) {
+    columns.push({
+      id: 'actions',
+      cell: ({ row }) => (
+        <AttendanceActionsCell attendance={row.original} isCancelled={isCancelled} />
+      ),
+      size: 50,
+    })
+  }
 
   const table = useReactTable({
     data,
@@ -142,5 +164,9 @@ export default function AttendanceTable({ data }: { data: AttendanceWithStudents
     autoResetPageIndex,
   })
 
-  return <DataTable table={table} emptyMessage="Нет учеников." />
+  return (
+    <div className={isCancelled ? 'opacity-60' : undefined}>
+      <DataTable table={table} emptyMessage="Нет учеников." />
+    </div>
+  )
 }
