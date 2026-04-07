@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { getSmartFeed, snoozeAlert } from './actions'
-import { SnoozeAlertSchemaType } from './schemas'
+import { getSmartFeed, getSmartFeedPageData, restoreSnoozedAlert, snoozeAlert } from './actions'
+import { RestoreSnoozedAlertSchemaType, SnoozeAlertSchemaType } from './schemas'
 
 export const smartFeedKeys = {
   all: ['smart-feed'] as const,
+  page: ['smart-feed', 'page'] as const,
 }
 
 export const useSmartFeedQuery = () => {
@@ -16,6 +17,18 @@ export const useSmartFeedQuery = () => {
       return data ?? []
     },
     refetchInterval: 5 * 60 * 1000, // refetch every 5 minutes
+  })
+}
+
+export const useSmartFeedPageQuery = () => {
+  return useQuery({
+    queryKey: smartFeedKeys.page,
+    queryFn: async () => {
+      const { data, serverError } = await getSmartFeedPageData()
+      if (serverError) throw serverError
+      return data ?? { active: [], snoozed: [] }
+    },
+    refetchInterval: 5 * 60 * 1000,
   })
 }
 
@@ -34,6 +47,26 @@ export const useSnoozeAlertMutation = () => {
     },
     onError: () => {
       toast.error('Не удалось отложить уведомление')
+    },
+  })
+}
+
+export const useRestoreSnoozedAlertMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (input: RestoreSnoozedAlertSchemaType) => {
+      const { data, serverError } = await restoreSnoozedAlert(input)
+      if (serverError) throw serverError
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: smartFeedKeys.all })
+      queryClient.invalidateQueries({ queryKey: smartFeedKeys.page })
+      toast.success('Уведомление возвращено в активные')
+    },
+    onError: () => {
+      toast.error('Не удалось вернуть уведомление')
     },
   })
 }

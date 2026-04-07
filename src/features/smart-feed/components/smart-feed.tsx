@@ -15,31 +15,43 @@ import { moscowNow } from '@/src/lib/timezone'
 import { cn } from '@/src/lib/utils'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Bell, CheckCircle2, Clock, CreditCard, TrendingDown, UserX } from 'lucide-react'
+import {
+  Bell,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  SquareArrowOutUpRight,
+  TrendingDown,
+  UserX,
+} from 'lucide-react'
+import Link from 'next/link'
 import { useMemo } from 'react'
 import { useSmartFeedQuery } from '../queries'
-import { ALERT_TYPE, type SmartFeedAlert } from '../types'
+import { ALERT_TYPE, getSmartFeedAlertId, type SmartFeedAlert } from '../types'
 import { FeedCard } from './feed-card'
 
 // ─── Popover-only trigger (mobile) ─────────────────────────────────────
 
 export function SmartFeed() {
-  const { data: alerts, isLoading } = useSmartFeedQuery()
+  const { data: alerts } = useSmartFeedQuery()
   const count = alerts?.length ?? 0
   const hasAlerts = count > 0
 
   return (
-    <Popover>
-      <PopoverTrigger render={<Button variant="ghost" size="icon" className="relative" />}>
-        <Bell className="size-3.5" />
-        {hasAlerts && (
-          <span className="bg-destructive text-destructive-foreground absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full text-[0.5rem] font-bold">
-            {count > 99 ? '99+' : count}
-          </span>
-        )}
-      </PopoverTrigger>
-      <FeedPopoverContent alerts={alerts} isLoading={isLoading} hasAlerts={hasAlerts} />
-    </Popover>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="relative"
+      render={<Link href={'/smart-feed'} />}
+      nativeButton={false}
+    >
+      <Bell className="size-3.5" />
+      {hasAlerts && (
+        <span className="bg-destructive text-destructive-foreground absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full text-[0.5rem] font-bold">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </Button>
   )
 }
 
@@ -74,14 +86,19 @@ export function SmartFeedBar() {
       </div>
 
       {/* Alert chip-popovers */}
-      <div className="flex items-center gap-1.5">
+      <div className="grid auto-cols-max grid-flow-col items-center gap-2">
         {isLoading ? (
-          <Skeleton className="h-5 w-32" />
+          <>
+            <Skeleton className="h-full w-20" />
+            <Skeleton className="h-full w-20" />
+            <Skeleton className="h-full w-20" />
+            <Skeleton className="h-full w-20" />
+          </>
         ) : !hasAlerts ? (
-          <div className="text-success flex items-center gap-1 text-[0.625rem]">
+          <Badge className={cn('h-full rounded-md select-none', chipVariants.green)}>
             <CheckCircle2 className="size-3" />
             <span>Всё ок</span>
-          </div>
+          </Badge>
         ) : (
           <>
             {groups!.unmarked.length > 0 && (
@@ -126,45 +143,16 @@ export function SmartFeedBar() {
             )}
           </>
         )}
+        <Button
+          variant={'outline'}
+          size={'icon'}
+          render={<Link href={'/smart-feed'} />}
+          nativeButton={false}
+        >
+          <SquareArrowOutUpRight />
+        </Button>
       </div>
     </div>
-  )
-}
-
-// ─── Shared popover content (used by mobile SmartFeed) ─────────────────
-
-function FeedPopoverContent({
-  alerts,
-  isLoading,
-  hasAlerts,
-}: {
-  alerts: SmartFeedAlert[] | undefined
-  isLoading: boolean
-  hasAlerts: boolean
-}) {
-  return (
-    <PopoverContent align="end">
-      <PopoverHeader>
-        <PopoverTitle>Центр внимания</PopoverTitle>
-      </PopoverHeader>
-      <Separator />
-      <div className="thin-scrollbar max-h-80 overflow-y-auto">
-        {isLoading ? (
-          <div className="space-y-2 p-3">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-          </div>
-        ) : !hasAlerts ? (
-          <div className="flex items-center gap-2 px-3 py-4">
-            <CheckCircle2 className="text-success size-4 shrink-0" />
-            <p className="text-muted-foreground text-xs">Нет задач, требующих внимания</p>
-          </div>
-        ) : (
-          <AlertGroups alerts={alerts!} />
-        )}
-      </div>
-    </PopoverContent>
   )
 }
 
@@ -174,6 +162,7 @@ const chipVariants = {
   red: 'bg-destructive/10 text-destructive hover:bg-destructive/15',
   orange: 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/15',
   yellow: 'bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/15',
+  green: 'bg-green-500/10 text-green-600 hover:bg-green-500/15',
 } as const
 
 function ChipPopover({
@@ -194,7 +183,11 @@ function ChipPopover({
   return (
     <Popover>
       <PopoverTrigger
-        render={<Badge className={cn('cursor-pointer select-none', chipVariants[variant])} />}
+        render={
+          <Badge
+            className={cn('h-full cursor-pointer rounded-md select-none', chipVariants[variant])}
+          />
+        }
         nativeButton={false}
       >
         {icon}
@@ -207,59 +200,12 @@ function ChipPopover({
         <Separator />
         <div className="thin-scrollbar max-h-64 space-y-2 overflow-y-auto">
           {alerts.map((alert) => (
-            <FeedCard key={getAlertKey(alert)} alert={alert} />
+            <FeedCard key={getSmartFeedAlertId(alert)} alert={alert} />
           ))}
         </div>
       </PopoverContent>
     </Popover>
   )
-}
-
-// ─── Alert groups (popover body) ───────────────────────────────────────
-
-function AlertGroups({ alerts }: { alerts: SmartFeedAlert[] }) {
-  const unmarked = alerts.filter((a) => a.type === ALERT_TYPE.UNMARKED_ATTENDANCE)
-  const debts = alerts.filter((a) => a.type === ALERT_TYPE.NEGATIVE_BALANCE)
-  const low = alerts.filter((a) => a.type === ALERT_TYPE.LOW_BALANCE)
-  const absences = alerts.filter((a) => a.type === ALERT_TYPE.CONSECUTIVE_ABSENCES)
-
-  return (
-    <>
-      {unmarked.length > 0 && <AlertSection label="Посещаемость" alerts={unmarked} />}
-      {debts.length > 0 && <AlertSection label="Долги" alerts={debts} />}
-      {low.length > 0 && <AlertSection label="Заканчивается баланс" alerts={low} />}
-      {absences.length > 0 && <AlertSection label="Зона риска" alerts={absences} />}
-    </>
-  )
-}
-
-function AlertSection({ label, alerts }: { label: string; alerts: SmartFeedAlert[] }) {
-  return (
-    <div>
-      <p className="text-muted-foreground px-3 pt-2 pb-1 text-[0.625rem] font-medium tracking-wider uppercase">
-        {label}
-        <span className="ml-1 opacity-60">({alerts.length})</span>
-      </p>
-      {alerts.map((alert) => (
-        <FeedCard key={getAlertKey(alert)} alert={alert} />
-      ))}
-    </div>
-  )
-}
-
-function getAlertKey(alert: SmartFeedAlert): string {
-  switch (alert.type) {
-    case 'UNMARKED_ATTENDANCE':
-      return `att-${alert.lessonId}`
-    case 'LOW_BALANCE':
-      return `low-${alert.walletId}`
-    case 'NEGATIVE_BALANCE':
-      return `neg-${alert.walletId}`
-    case 'CONSECUTIVE_ABSENCES':
-      return `abs-${alert.studentId}-${alert.groupId}`
-    default:
-      return `unknown-${Math.random()}`
-  }
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────

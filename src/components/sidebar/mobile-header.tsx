@@ -17,6 +17,7 @@ const pageTitles: Record<string, string> = {
   '/students/absent': 'Пропустившие',
   '/students/dismissed': 'Отчисленные',
   '/groups': 'Группы',
+  '/smart-feed': 'Smart Feed',
   '/finances/payments': 'Оплаты',
   '/finances/revenue': 'Выручка',
   '/finances/salaries': 'Зарплаты',

@@ -15,7 +15,7 @@ import { ru } from 'date-fns/locale'
 import { ArrowRight, Clock, CreditCard, TrendingDown, UserX } from 'lucide-react'
 import Link from 'next/link'
 import { useSnoozeAlertMutation } from '../queries'
-import { ALERT_TYPE, type SmartFeedAlert } from '../types'
+import { ALERT_TYPE, getSmartFeedEntityKey, type SmartFeedAlert } from '../types'
 
 interface FeedCardProps {
   alert: SmartFeedAlert
@@ -53,11 +53,14 @@ function UnmarkedAttendanceCard({
         </ItemDescription>
       </ItemContent>
       <ItemActions>
-        <Link href={`/lessons/${alert.lessonId}`}>
-          <Button variant="outline" size={'icon'}>
-            <ArrowRight />
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          size={'icon'}
+          render={<Link href={`/lessons/${alert.lessonId}`} />}
+          nativeButton={false}
+        >
+          <ArrowRight />
+        </Button>
       </ItemActions>
     </Item>
   )
@@ -72,7 +75,7 @@ function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGAT
         <TrendingDown className="text-destructive" />
       </ItemMedia>
       <ItemContent>
-        <ItemTitle>{alert.groupName}</ItemTitle>
+        <ItemTitle>{alert.studentName}</ItemTitle>
         <ItemDescription>
           {alert.groupName} ·{' '}
           <span className="text-destructive">
@@ -87,7 +90,7 @@ function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGAT
           onClick={() =>
             snoozeMutation.mutate({
               alertType: alert.type,
-              entityKey: `wallet:${alert.walletId}`,
+              entityKey: getSmartFeedEntityKey(alert),
               snoozeDays: 2,
             })
           }
@@ -96,11 +99,14 @@ function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGAT
         >
           <Clock />
         </Button>
-        <Link href={`/students/${alert.studentId}`}>
-          <Button variant="outline" size={'icon'}>
-            <ArrowRight />
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          size={'icon'}
+          render={<Link href={`/students/${alert.studentId}`} />}
+          nativeButton={false}
+        >
+          <ArrowRight />
+        </Button>
       </ItemActions>
     </Item>
   )
@@ -127,7 +133,7 @@ function LowBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'LOW_BALANC
           onClick={() =>
             snoozeMutation.mutate({
               alertType: alert.type,
-              entityKey: `wallet:${alert.walletId}`,
+              entityKey: getSmartFeedEntityKey(alert),
               snoozeDays: 2,
             })
           }
@@ -136,11 +142,14 @@ function LowBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'LOW_BALANC
         >
           <Clock />
         </Button>
-        <Link href={`/students/${alert.studentId}`}>
-          <Button variant="outline" size={'icon'}>
-            <ArrowRight />
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          size={'icon'}
+          render={<Link href={`/students/${alert.studentId}`} />}
+          nativeButton={false}
+        >
+          <ArrowRight />
+        </Button>
       </ItemActions>
     </Item>
   )
@@ -152,7 +161,7 @@ function ConsecutiveAbsencesCard({
   alert: SmartFeedAlert & { type: 'CONSECUTIVE_ABSENCES' }
 }) {
   return (
-    <Item size={'xs'} render={<Link href={`/students/${alert.studentId}`} />}>
+    <Item size={'xs'}>
       <ItemMedia variant="icon">
         <UserX className="text-orange-500" />
       </ItemMedia>
@@ -162,6 +171,16 @@ function ConsecutiveAbsencesCard({
           {alert.groupName} · {alert.absenceCount} пропуска подряд
         </ItemDescription>
       </ItemContent>
+      <ItemActions>
+        <Button
+          render={<Link href={`/students/${alert.studentId}`} />}
+          nativeButton={false}
+          size={'icon'}
+          variant={'outline'}
+        >
+          <ArrowRight />
+        </Button>
+      </ItemActions>
     </Item>
   )
 }
