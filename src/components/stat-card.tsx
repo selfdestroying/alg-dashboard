@@ -1,9 +1,9 @@
 import * as React from 'react'
 
+import { Hint } from '@/src/components/hint'
 import { cn } from '@/src/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { LucideIcon } from 'lucide-react'
-import { Hint } from '@/src/components/hint'
 
 const statCardVariants = cva('relative overflow-hidden rounded-lg p-3 transition-colors', {
   variants: {
@@ -26,6 +26,7 @@ const statIconVariants = cva('size-4 shrink-0', {
       success: 'text-emerald-600 dark:text-emerald-400',
       warning: 'text-amber-600 dark:text-amber-400',
       danger: 'text-red-600 dark:text-red-400',
+      info: 'text-blue-600 dark:text-blue-400',
     },
   },
   defaultVariants: {

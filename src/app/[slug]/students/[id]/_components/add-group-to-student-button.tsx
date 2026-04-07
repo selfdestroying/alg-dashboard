@@ -171,7 +171,7 @@ export default function AddGroupToStudentButton({
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
+      <DialogTrigger render={<Button size={'icon'} variant={'outline'} />}>
         <Plus />
       </DialogTrigger>
       <DialogContent>

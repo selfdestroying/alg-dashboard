@@ -73,8 +73,7 @@ export const usePaymentCreateMutation = () => {
       queryClient.invalidateQueries({ queryKey: paymentKeys.all })
       toast.success('Оплата успешно создана!')
     },
-    onError: (err) => {
-      console.log(err)
+    onError: () => {
       toast.error('Не удалось создать оплату.')
     },
   })
