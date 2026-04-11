@@ -140,5 +140,5 @@ function handleOrgSubdomain(
  * из обработки proxy для оптимизации производительности.
  */
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|api/auth).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|api/).*)'],
 }

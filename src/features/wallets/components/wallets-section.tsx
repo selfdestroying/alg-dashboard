@@ -1,11 +1,6 @@
 'use client'
 
 import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
-import {
-  computeGroupStats,
-  type StudentGroupWithStats,
-} from '@/src/app/[slug]/students/[id]/_components/student-groups-section'
-import type { StudentWithGroupsAndAttendance } from '@/src/app/[slug]/students/[id]/_components/types'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Hint } from '@/src/components/hint'
 import { NumberInput } from '@/src/components/number-input'
@@ -40,6 +35,11 @@ import {
 } from '@/src/components/ui/sheet'
 import { redistributeBalance } from '@/src/features/students/actions'
 import {
+  computeGroupStats,
+  type StudentGroupWithStats,
+} from '@/src/features/students/components/detail/student-groups-section'
+import type { StudentDetail } from '@/src/features/students/types'
+import {
   createWallet,
   deleteWallet,
   linkGroupToWallet,
@@ -73,7 +73,7 @@ import { toast } from 'sonner'
 type SheetType = 'create' | 'merge' | 'transfer' | 'link' | 'edit' | 'reassign' | null
 
 interface WalletsSectionProps {
-  student: StudentWithGroupsAndAttendance
+  student: StudentDetail
 }
 
 export default function WalletsSection({ student }: WalletsSectionProps) {
@@ -123,7 +123,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
   const walletLabelById = (id: string) =>
     getWalletLabel(student.wallets.find((w) => w.id.toString() === id)!)
 
-  const openEditSheet = (w: StudentWithGroupsAndAttendance['wallets'][number]) => {
+  const openEditSheet = (w: StudentDetail['wallets'][number]) => {
     setEditWalletId(w.id)
     setEditWalletName(w.name ?? '')
     setEditLessonsBalance(w.lessonsBalance)
@@ -882,7 +882,7 @@ function TransferSheet({
   isPending,
   onTransfer,
 }: {
-  student: StudentWithGroupsAndAttendance
+  student: StudentDetail
   transferSource: string
   setTransferSource: (v: string) => void
   transferTarget: string
@@ -1171,7 +1171,7 @@ type WalletAllocation = {
   totalPayments: number
 }
 
-function RedistributeInline({ student }: { student: StudentWithGroupsAndAttendance }) {
+function RedistributeInline({ student }: { student: StudentDetail }) {
   const [isPending, startTransition] = useTransition()
 
   const unallocatedLessons = student.lessonsBalance
