@@ -8,7 +8,11 @@ const StudentBaseFields = {
     .string({ error: 'Укажите фамилию' })
     .min(2, 'Фамилия должна содержать минимум 2 символа'),
   birthDate: z.date().transform(normalizeDateOnly).nullish(),
-  url: z.url('Укажите корректный URL').optional(),
+  url: z
+    .string()
+    .optional()
+    .transform((v) => (v === '' || v === undefined ? undefined : v))
+    .pipe(z.url('Укажите корректный URL').optional()),
 }
 
 export const CreateStudentSchema = z
@@ -35,9 +39,20 @@ export const CreateStudentSchema = z
     }
   })
 
+export const EditStudentSchema = z.object({
+  ...StudentBaseFields,
+})
+
+export const UpdateStudentCoinsSchema = z.object({
+  studentId: z.number().int().positive(),
+  coins: z.number().int().positive('Укажите количество монет'),
+})
+
 export const DeleteStudentSchema = z.object({
   id: z.number().int().positive(),
 })
 
 export type CreateStudentSchemaType = z.infer<typeof CreateStudentSchema>
+export type EditStudentSchemaType = z.infer<typeof EditStudentSchema>
+export type UpdateStudentCoinsSchemaType = z.infer<typeof UpdateStudentCoinsSchema>
 export type DeleteStudentSchemaType = z.infer<typeof DeleteStudentSchema>

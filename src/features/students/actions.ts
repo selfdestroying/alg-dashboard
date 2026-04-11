@@ -12,7 +12,7 @@ import {
 import { authAction } from '@/src/lib/safe-action'
 import { randomInt } from 'crypto'
 import * as z from 'zod'
-import { CreateStudentSchema, DeleteStudentSchema } from './schemas'
+import { CreateStudentSchema, DeleteStudentSchema, UpdateStudentCoinsSchema } from './schemas'
 
 const transliterateToLatin = (value: string) => {
   const map: Record<string, string> = {
@@ -96,6 +96,50 @@ export const getStudent = authAction
     return await prisma.student.findFirst({
       where: { id: parsedInput.id, organizationId: ctx.session.organizationId! },
       include: parsedInput.include,
+    })
+  })
+
+export const getStudentDetail = authAction
+  .metadata({ actionName: 'getStudentDetail' })
+  .inputSchema(z.object({ id: z.number().int().positive() }))
+  .action(async ({ ctx, parsedInput }) => {
+    return await prisma.student.findFirst({
+      where: { id: parsedInput.id, organizationId: ctx.session.organizationId! },
+      include: {
+        account: true,
+        parents: { include: { parent: true } },
+        groups: {
+          include: {
+            group: {
+              include: {
+                lessons: {
+                  include: {
+                    attendance: {
+                      where: { studentId: parsedInput.id },
+                      include: {
+                        makeupAttendance: { include: { lesson: true } },
+                      },
+                    },
+                  },
+                  orderBy: { date: 'asc' },
+                },
+                course: true,
+                location: true,
+                schedules: true,
+              },
+            },
+          },
+        },
+        wallets: {
+          include: {
+            studentGroups: {
+              include: {
+                group: { include: { course: true, location: true, schedules: true } },
+              },
+            },
+          },
+        },
+      },
     })
   })
 
@@ -242,6 +286,24 @@ export const deleteStudent = authAction
   .action(async ({ ctx, parsedInput }) => {
     await prisma.student.delete({
       where: { id: parsedInput.id, organizationId: ctx.session.organizationId! },
+    })
+  })
+
+// ─── UPDATE COINS ────────────────────────────────────────────────────────────
+
+export const updateStudentCoins = authAction
+  .metadata({ actionName: 'updateStudentCoins' })
+  .inputSchema(UpdateStudentCoinsSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    await prisma.student.update({
+      where: { id: parsedInput.studentId, organizationId: ctx.session.organizationId! },
+      data: {
+        account: {
+          update: {
+            coins: { increment: parsedInput.coins },
+          },
+        },
+      },
     })
   })
 

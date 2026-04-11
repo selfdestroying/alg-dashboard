@@ -1,10 +1,12 @@
+'use client'
+
 import { StatCard } from '@/src/components/stat-card'
 import { getBalanceLabel, getBalanceVariant } from '@/src/features/wallets/utils'
 import { BookOpen, Calculator, ReceiptRussianRuble, Wallet } from 'lucide-react'
-import { StudentWithGroupsAndAttendance } from './types'
+import type { StudentDetail } from '../../types'
 
 interface PaymentSectionProps {
-  student: StudentWithGroupsAndAttendance
+  student: StudentDetail
 }
 
 export default function PaymentSection({ student }: PaymentSectionProps) {

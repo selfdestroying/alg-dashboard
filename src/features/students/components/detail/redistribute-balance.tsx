@@ -5,15 +5,14 @@ import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import { Field, FieldLabel } from '@/src/components/ui/field'
 import { Label } from '@/src/components/ui/label'
-import { redistributeBalance } from '@/src/features/students/actions'
 import { getGroupName } from '@/src/lib/utils'
 import { ArrowRightLeft, Loader } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
-import { StudentWithGroupsAndAttendance } from './types'
+import { useState } from 'react'
+import { useRedistributeBalanceMutation } from '../../queries'
+import type { StudentDetail } from '../../types'
 
 interface RedistributeBalanceProps {
-  student: StudentWithGroupsAndAttendance
+  student: StudentDetail
 }
 
 type WalletAllocation = {
@@ -23,7 +22,7 @@ type WalletAllocation = {
 }
 
 export default function RedistributeBalance({ student }: RedistributeBalanceProps) {
-  const [isPending, startTransition] = useTransition()
+  const mutation = useRedistributeBalanceMutation(student.id)
 
   const unallocatedLessons = student.lessonsBalance
   const unallocatedTotalLessons = student.totalLessons
@@ -63,10 +62,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
   }
 
   const handleSubmit = () => {
-    if (hasOverflow) {
-      toast.error('Сумма распределений превышает нераспределённый баланс')
-      return
-    }
+    if (hasOverflow) return
 
     const entries = Object.entries(allocations)
       .filter(([, a]) => a.lessons > 0 || a.totalLessons > 0 || a.totalPayments > 0)
@@ -77,29 +73,22 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
         totalPayments: a.totalPayments || undefined,
       }))
 
-    if (entries.length === 0) {
-      toast.error('Укажите хотя бы один кошелёк для распределения')
-      return
-    }
+    if (entries.length === 0) return
 
-    startTransition(async () => {
-      try {
-        await redistributeBalance({
-          studentId: student.id,
-          allocations: entries,
-        })
-        toast.success('Баланс успешно перераспределён!')
-        setAllocations((prev) => {
-          const reset: Record<number, WalletAllocation> = {}
-          for (const k of Object.keys(prev)) {
-            reset[Number(k)] = { lessons: 0, totalLessons: 0, totalPayments: 0 }
-          }
-          return reset
-        })
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Ошибка при перераспределении баланса')
-      }
-    })
+    mutation.mutate(
+      { studentId: student.id, allocations: entries },
+      {
+        onSuccess: () => {
+          setAllocations((prev) => {
+            const reset: Record<number, WalletAllocation> = {}
+            for (const k of Object.keys(prev)) {
+              reset[Number(k)] = { lessons: 0, totalLessons: 0, totalPayments: 0 }
+            }
+            return reset
+          })
+        },
+      },
+    )
   }
 
   if (!hasAnythingToRedistribute || student.wallets.length === 0) {
@@ -153,7 +142,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       min={0}
                       value={alloc?.lessons ?? 0}
                       onChange={(v) => updateField(w.id, 'lessons', v === '' ? 0 : v)}
-                      disabled={isPending}
+                      disabled={mutation.isPending}
                     />
                     <span className="text-muted-foreground text-xs">
                       сейчас: {w.lessonsBalance}
@@ -167,7 +156,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       min={0}
                       value={alloc?.totalLessons ?? 0}
                       onChange={(v) => updateField(w.id, 'totalLessons', v === '' ? 0 : v)}
-                      disabled={isPending}
+                      disabled={mutation.isPending}
                     />
                     <span className="text-muted-foreground text-xs">сейчас: {w.totalLessons}</span>
                   </Field>
@@ -179,7 +168,7 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
                       min={0}
                       value={alloc?.totalPayments ?? 0}
                       onChange={(v) => updateField(w.id, 'totalPayments', v === '' ? 0 : v)}
-                      disabled={isPending}
+                      disabled={mutation.isPending}
                     />
                     <span className="text-muted-foreground text-xs">сейчас: {w.totalPayments}</span>
                   </Field>
@@ -224,8 +213,8 @@ export default function RedistributeBalance({ student }: RedistributeBalanceProp
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleSubmit} disabled={isPending || hasOverflow || !hasChanges}>
-          {isPending && <Loader className="mr-2 animate-spin" />}
+        <Button onClick={handleSubmit} disabled={mutation.isPending || hasOverflow || !hasChanges}>
+          {mutation.isPending && <Loader className="mr-2 animate-spin" />}
           Распределить
         </Button>
       </div>

@@ -1,3 +1,5 @@
+'use client'
+
 import { Hint } from '@/src/components/hint'
 import { Coins, ShoppingCart } from 'lucide-react'
 import AddCoinsForm from './add-coins-form'
@@ -7,7 +9,7 @@ interface ShopSectionProps {
   coins: number
 }
 
-export default async function ShopSection({ coins, studentId }: ShopSectionProps) {
+export default function ShopSection({ coins, studentId }: ShopSectionProps) {
   return (
     <div className="space-y-3">
       <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">

@@ -1,11 +1,11 @@
 'use client'
 
-import { updateStudent } from '@/src/actions/students'
 import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
 import { Field } from '@/src/components/ui/field'
 import { Loader, Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
+import { useStudentCoinsMutation } from '../../queries'
 
 interface AddCoinsFormProps {
   studentId: number
@@ -13,24 +13,17 @@ interface AddCoinsFormProps {
 
 export default function AddCoinsForm({ studentId }: AddCoinsFormProps) {
   const [inc, setInc] = useState<number | undefined>()
-  const [isPending, startTransition] = useTransition()
+  const mutation = useStudentCoinsMutation(studentId)
 
   const handleAddCoins = () => {
-    startTransition(() => {
-      if (inc) {
-        updateStudent({
-          where: { id: studentId },
-          data: {
-            account: {
-              update: {
-                coins: { increment: inc },
-              },
-            },
-          },
-        })
-        setInc(undefined)
-      }
-    })
+    if (inc) {
+      mutation.mutate(
+        { studentId, coins: inc },
+        {
+          onSuccess: () => setInc(undefined),
+        },
+      )
+    }
   }
 
   return (
@@ -39,10 +32,10 @@ export default function AddCoinsForm({ studentId }: AddCoinsFormProps) {
         className="w-24"
         value={inc ?? ''}
         onChange={(v) => setInc(v === '' ? undefined : v)}
-        disabled={isPending}
+        disabled={mutation.isPending}
       />
-      <Button size="icon" onClick={handleAddCoins} disabled={isPending || !inc}>
-        {isPending ? <Loader className="animate-spin" /> : <Plus />}
+      <Button size="icon" onClick={handleAddCoins} disabled={mutation.isPending || !inc}>
+        {mutation.isPending ? <Loader className="animate-spin" /> : <Plus />}
       </Button>
     </Field>
   )

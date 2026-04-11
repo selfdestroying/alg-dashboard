@@ -1,13 +1,15 @@
+'use client'
+
 import { StatCard } from '@/src/components/stat-card'
 import { Separator } from '@/src/components/ui/separator'
 import { Cake, ExternalLink, Link as LinkIcon, LucideIcon, User, UserRound } from 'lucide-react'
-import { StudentWithGroupsAndAttendance } from './types'
+import type { StudentDetail } from '../../types'
 
 interface StudentCardProps {
-  student: StudentWithGroupsAndAttendance
+  student: StudentDetail
 }
 
-export default async function StudentCard({ student }: StudentCardProps) {
+export default function StudentCard({ student }: StudentCardProps) {
   const birthFormatted = student.birthDate
     ? new Date(student.birthDate).toLocaleDateString('ru-RU', {
         day: 'numeric',

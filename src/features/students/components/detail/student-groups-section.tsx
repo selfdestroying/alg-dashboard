@@ -1,14 +1,27 @@
+'use client'
+
 import { Prisma } from '@/prisma/generated/client'
 import { StatCard } from '@/src/components/stat-card'
 import { Badge } from '@/src/components/ui/badge'
 import { Separator } from '@/src/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import { useGroupListQuery } from '@/src/features/groups/queries'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getGroupName } from '@/src/lib/utils'
-import { BarChart3, CheckCircle2, Info, RefreshCw, XCircle } from 'lucide-react'
-import { StudentWithGroupsAndAttendance } from './types'
+import { CheckCircle2, Info, RefreshCw, Users, XCircle } from 'lucide-react'
+import Link from 'next/link'
+import type { StudentDetail } from '../../types'
+import AddGroupToStudentButton from './add-group-to-student-button'
+import { StudentAttendanceTable } from './attendance-table'
 
-interface StudentGroupStats {
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+interface StudentGroupsSectionProps {
+  student: StudentDetail
+  canCreateStudentGroup: boolean
+}
+
+interface GroupStats {
   totalLessons: number
   absent: number
   present: number
@@ -27,7 +40,7 @@ export interface StudentGroupWithStats extends Prisma.StudentGroupGetPayload<{
     }
   }
 }> {
-  stats: StudentGroupStats
+  stats: GroupStats
 }
 
 const StudentStatusMap = {
@@ -37,8 +50,10 @@ const StudentStatusMap = {
   TRANSFERRED: 'Переведён',
 } as const
 
-export function computeGroupStats(student: StudentWithGroupsAndAttendance) {
-  const stats: StudentGroupWithStats[] = []
+// ─── Stats helpers ──────────────────────────────────────────────────────────
+
+export function computeGroupStats(student: StudentDetail) {
+  const result: StudentGroupWithStats[] = []
   const attendanceByGroup = Map.groupBy(student.groups, (g) => g.groupId)
 
   attendanceByGroup.forEach((value) => {
@@ -72,53 +87,97 @@ export function computeGroupStats(student: StudentWithGroupsAndAttendance) {
       0,
     )
 
-    stats.push({
-      stats: {
-        absent,
-        madeUp,
-        present,
-        unspecified,
-        totalLessons,
-      },
+    result.push({
+      stats: { absent, madeUp, present, unspecified, totalLessons },
       ...studentGroup,
     })
   })
 
-  return stats
+  return result
 }
 
-export default function CourseAttendanceStats({
+function getAttendanceRate(stats: GroupStats) {
+  const denominator = stats.totalLessons - stats.unspecified
+  if (denominator <= 0) return 0
+  return Math.round(((stats.present + stats.madeUp) / denominator) * 100)
+}
+
+function getRateColor(rate: number) {
+  if (rate >= 80) return 'text-emerald-600 dark:text-emerald-400'
+  if (rate >= 60) return 'text-amber-600 dark:text-amber-400'
+  return 'text-rose-600 dark:text-rose-400'
+}
+
+function getLessonsLabel(value: number) {
+  const remainder10 = value % 10
+  const remainder100 = value % 100
+  if (remainder10 === 1 && remainder100 !== 11) return 'урок'
+  if (remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 12 || remainder100 > 14))
+    return 'урока'
+  return 'уроков'
+}
+
+// ─── Main component ─────────────────────────────────────────────────────────
+
+export default function StudentGroupsSection({
   student,
-}: {
-  student: StudentWithGroupsAndAttendance
-}) {
-  const stats = computeGroupStats(student)
+  canCreateStudentGroup,
+}: StudentGroupsSectionProps) {
+  const groupStats = computeGroupStats(student)
+  const { data: allGroups = [] } = useGroupListQuery()
+
+  const studentGroupIds = new Set(student.groups.map((g) => g.groupId))
+  const availableGroups = allGroups.filter((g) => !studentGroupIds.has(g.id) && !g.isArchived)
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
-        <BarChart3 size={20} />
-        Посещаемость по группам
-      </h3>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
+          <Users size={20} />
+          Группы и посещаемость
+        </h3>
+        {canCreateStudentGroup && (
+          <AddGroupToStudentButton
+            groups={availableGroups}
+            student={student}
+            wallets={student.wallets}
+          />
+        )}
+      </div>
 
-      {stats.length > 0 ? (
-        <div className="space-y-4">
-          {stats.map((sg, i) => (
-            <AttendanceGroupRow key={sg.groupId} sg={sg} showSeparator={i < stats.length - 1} />
-          ))}
+      {groupStats.length > 0 ? (
+        <div className="space-y-6">
+          {groupStats.map((sg, i) => {
+            const groupData = student.groups.find((g) => g.groupId === sg.groupId)
+            return (
+              <GroupCard
+                key={sg.groupId}
+                sg={sg}
+                lessons={groupData?.group.lessons ?? []}
+                student={student}
+                showSeparator={i < groupStats.length - 1}
+              />
+            )
+          })}
         </div>
       ) : (
-        <p className="text-muted-foreground">Нет данных о посещаемости.</p>
+        <p className="text-muted-foreground">Ученик не состоит в группах.</p>
       )}
     </div>
   )
 }
 
-function AttendanceGroupRow({
+// ─── Per-group card ─────────────────────────────────────────────────────────
+
+function GroupCard({
   sg,
+  lessons,
+  student,
   showSeparator,
 }: {
   sg: StudentGroupWithStats
+  lessons: StudentDetail['groups'][number]['group']['lessons']
+  student: StudentDetail
   showSeparator: boolean
 }) {
   const attendanceRate = getAttendanceRate(sg.stats)
@@ -126,8 +185,14 @@ function AttendanceGroupRow({
 
   return (
     <div className="space-y-3">
+      {/* Header: group name, status, lesson count, rate */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <p className="text-sm font-medium">{getGroupName(sg.group)}</p>
+        <Link
+          href={`/groups/${sg.group.id}`}
+          className="text-primary text-sm font-medium hover:underline"
+        >
+          {getGroupName(sg.group)}
+        </Link>
         {statusBadge}
         <span className="text-muted-foreground text-xs">
           {sg.stats.totalLessons} {getLessonsLabel(sg.stats.totalLessons)}
@@ -139,6 +204,7 @@ function AttendanceGroupRow({
         </span>
       </div>
 
+      {/* Stat cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Посещено" value={sg.stats.present} icon={CheckCircle2} variant="success" />
         <StatCard label="Отработано" value={sg.stats.madeUp} icon={RefreshCw} variant="warning" />
@@ -146,10 +212,15 @@ function AttendanceGroupRow({
         <StatCard label="Без отметки" value={sg.stats.unspecified} />
       </div>
 
+      {/* Attendance timeline table */}
+      <StudentAttendanceTable lessons={lessons} students={[student]} />
+
       {showSeparator && <Separator />}
     </div>
   )
 }
+
+// ─── Status badge ───────────────────────────────────────────────────────────
 
 function getStatusBadge(sg: StudentGroupWithStats) {
   switch (sg.status) {
@@ -202,31 +273,4 @@ function getStatusBadge(sg: StudentGroupWithStats) {
     default:
       return null
   }
-}
-
-function getLessonsLabel(value: number) {
-  const remainder10 = value % 10
-  const remainder100 = value % 100
-
-  if (remainder10 === 1 && remainder100 !== 11) return 'урок'
-  if (remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 12 || remainder100 > 14)) {
-    return 'урока'
-  }
-
-  return 'уроков'
-}
-
-function getAttendanceRate(stats: StudentGroupStats) {
-  const denominator = stats.totalLessons - stats.unspecified
-
-  if (denominator <= 0) return 0
-
-  return Math.round(((stats.present + stats.madeUp) / denominator) * 100)
-}
-
-function getRateColor(rate: number) {
-  if (rate >= 80) return 'text-emerald-600 dark:text-emerald-400'
-  if (rate >= 60) return 'text-amber-600 dark:text-amber-400'
-
-  return 'text-rose-600 dark:text-rose-400'
 }

@@ -1,13 +1,15 @@
 'use client'
 
-import type { StudentGroupHistoryEntry } from '@/src/actions/students'
 import DataTable from '@/src/components/data-table'
 import { Badge } from '@/src/components/ui/badge'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import type { StudentGroupHistoryEntry } from '@/src/features/students/actions'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { ArrowRightLeft, Info } from 'lucide-react'
 import Link from 'next/link'
+import { useStudentGroupHistoryQuery } from '../../queries'
 
 const statusLabels: Record<string, string> = {
   TRIAL: 'Пробный',
@@ -56,13 +58,17 @@ const columns: ColumnDef<StudentGroupHistoryEntry>[] = [
   },
 ]
 
-export default function GroupHistory({ history }: { history: StudentGroupHistoryEntry[] }) {
+export default function GroupHistory({ studentId }: { studentId: number }) {
+  const { data: history = [], isLoading } = useStudentGroupHistoryQuery(studentId)
+
   const table = useReactTable({
     data: history,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
+
+  if (isLoading) return <Skeleton className="h-32" />
 
   return (
     <div className="space-y-4">

@@ -1,6 +1,5 @@
 'use client'
 
-import { updateStudent } from '@/src/actions/students'
 import { Button } from '@/src/components/ui/button'
 import {
   Field,
@@ -23,13 +22,13 @@ import {
 } from '@/src/components/ui/sheet'
 import { useIsMobile } from '@/src/hooks/use-mobile'
 import { getAgeFromBirthDate } from '@/src/lib/utils'
-import { EditStudentSchema, EditStudentSchemaType } from '@/src/schemas/student'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Pen } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { StudentWithGroupsAndAttendance } from './types'
+import { useStudentUpdateMutation } from '../../queries'
+import { EditStudentSchema, EditStudentSchemaType } from '../../schemas'
+import type { StudentDetail } from '../../types'
 
 function RequiredMark() {
   return <span className="text-destructive">*</span>
@@ -39,14 +38,10 @@ function OptionalMark() {
   return <span className="text-muted-foreground text-xs font-normal">(необязательно)</span>
 }
 
-export default function EditStudentDialog({
-  student,
-}: {
-  student: StudentWithGroupsAndAttendance
-}) {
+export default function EditStudentDialog({ student }: { student: StudentDetail }) {
   const isMobile = useIsMobile()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const mutation = useStudentUpdateMutation(student.id)
 
   const form = useForm<EditStudentSchemaType>({
     resolver: zodResolver(EditStudentSchema),
@@ -66,28 +61,23 @@ export default function EditStudentDialog({
 
   const onSubmit = (values: EditStudentSchemaType) => {
     const age = values.birthDate ? getAgeFromBirthDate(values.birthDate) : null
-    startTransition(async () => {
-      try {
-        await updateStudent(
-          {
-            where: { id: student.id },
-            data: {
-              firstName: values.firstName,
-              lastName: values.lastName,
-              age,
-              birthDate: values.birthDate ?? null,
-              url: values.url || null,
-            },
+    mutation.mutate(
+      {
+        payload: {
+          where: { id: student.id },
+          data: {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            age,
+            birthDate: values.birthDate ?? null,
+            url: values.url || null,
           },
-          {},
-        )
-
-        toast.success('Ученик успешно обновлён!')
-        setDialogOpen(false)
-      } catch {
-        toast.error('Ошибка при обновлении ученика.')
-      }
-    })
+        },
+      },
+      {
+        onSuccess: () => setDialogOpen(false),
+      },
+    )
   }
 
   return (
@@ -114,7 +104,7 @@ export default function EditStudentDialog({
             <Controller
               control={form.control}
               name="firstName"
-              disabled={isPending}
+              disabled={mutation.isPending}
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="edit-firstName-field">
@@ -133,7 +123,7 @@ export default function EditStudentDialog({
             <Controller
               control={form.control}
               name="lastName"
-              disabled={isPending}
+              disabled={mutation.isPending}
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="edit-lastName-field">
@@ -155,7 +145,7 @@ export default function EditStudentDialog({
             <Controller
               control={form.control}
               name="birthDate"
-              disabled={isPending}
+              disabled={mutation.isPending}
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="edit-birthDate-field">
@@ -187,7 +177,7 @@ export default function EditStudentDialog({
             <Controller
               control={form.control}
               name="url"
-              disabled={isPending}
+              disabled={mutation.isPending}
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="edit-url-field">
@@ -210,8 +200,8 @@ export default function EditStudentDialog({
         </form>
         <SheetFooter>
           <SheetClose render={<Button variant="outline" />}>Отмена</SheetClose>
-          <Button type="submit" form="edit-student-form" disabled={isPending}>
-            {isPending && <Loader className="animate-spin" />}
+          <Button type="submit" form="edit-student-form" disabled={mutation.isPending}>
+            {mutation.isPending && <Loader className="animate-spin" />}
             Сохранить
           </Button>
         </SheetFooter>

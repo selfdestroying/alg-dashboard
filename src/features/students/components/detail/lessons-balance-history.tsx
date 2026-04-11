@@ -5,7 +5,6 @@ import {
   StudentLessonsBalanceChangeReason,
   User,
 } from '@/prisma/generated/client'
-import { updateStudentBalanceHistory } from '@/src/actions/students'
 import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
 import { Button } from '@/src/components/ui/button'
@@ -26,6 +25,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { toMoscow } from '@/src/lib/timezone'
 import { JsonValue } from '@prisma/client/runtime/client'
 import {
@@ -37,8 +37,11 @@ import {
 } from '@tanstack/react-table'
 import { MoreVertical, RussianRuble } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useMemo, useState } from 'react'
+import {
+  useStudentBalanceHistoryQuery,
+  useStudentBalanceHistoryUpdateMutation,
+} from '../../queries'
 
 type HistoryRow = {
   id: number
@@ -161,9 +164,115 @@ function getMetaDetails(
   }
 }
 
-export default function LessonsBalanceHistory({ history }: { history: HistoryRow[] }) {
+function createColumns(studentId: number): ColumnDef<HistoryRow>[] {
+  return [
+    {
+      header: 'Дата',
+      accessorFn: (row) => row.createdAt,
+      cell: ({ row }) => <span>{toMoscow(row.original.createdAt).toLocaleString('ru-RU')}</span>,
+    },
+    {
+      header: 'Группа',
+      cell: ({ row }) => {
+        const group = row.original.group
+        if (!group) return <span className="text-muted-foreground">-</span>
+        const name = group.course.name + (group.location ? ` (${group.location.name})` : '')
+        return (
+          <Link href={`/groups/${group.id}`} className="text-primary hover:underline">
+            {name}
+          </Link>
+        )
+      },
+    },
+    {
+      id: 'field',
+      header: () => (
+        <span className="flex items-center gap-0.5">
+          Поле
+          <Hint text="Какой показатель был изменён: баланс уроков, сумма оплат или общее количество оплаченных уроков." />
+        </span>
+      ),
+      accessorFn: (row) => row.field,
+      cell: ({ row }) => fieldLabel[row.original.field] ?? row.original.field,
+    },
+    {
+      header: 'Причина',
+      accessorFn: (row) => row.reason,
+      cell: ({ row }) => reasonLabel[row.original.reason] ?? row.original.reason,
+    },
+    {
+      header: 'Детали',
+      cell: ({ row }) => getMetaDetails(row.original.reason, row.original.meta),
+    },
+    {
+      header: 'Кем',
+      cell: ({ row }) => {
+        const actor = row.original.actorUser ? row.original.actorUser.name : 'Система'
+        return row.original.actorUser ? (
+          <Link
+            href={`/users/${row.original.actorUser.id}`}
+            className="text-primary hover:underline"
+          >
+            {actor}
+          </Link>
+        ) : (
+          actor
+        )
+      },
+    },
+    {
+      header: 'Комментарий',
+      accessorFn: (row) => row.comment,
+      cell: ({ row }) => <span className="truncate text-right">{row.original.comment ?? '-'}</span>,
+      meta: { className: 'text-right' },
+    },
+    {
+      id: 'delta',
+      header: () => (
+        <span className="flex items-center gap-0.5">
+          Δ
+          <Hint text="Изменение значения: положительное число - начисление, отрицательное - списание." />
+        </span>
+      ),
+      accessorFn: (row) => row.delta,
+      cell: ({ row }) => {
+        const deltaText =
+          row.original.delta > 0 ? `+${row.original.delta}` : String(row.original.delta)
+        return <span className="text-right">{deltaText}</span>
+      },
+      meta: { className: 'text-right' },
+    },
+    {
+      header: 'Было',
+      accessorFn: (row) => row.balanceBefore,
+      cell: ({ row }) => <span className="text-right">{row.original.balanceBefore}</span>,
+      meta: { className: 'text-right' },
+    },
+    {
+      header: 'Стало',
+      accessorFn: (row) => row.balanceAfter,
+      cell: ({ row }) => <span className="text-right">{row.original.balanceAfter}</span>,
+      meta: { className: 'text-right' },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <LessonsBalanceHistoryActions
+          historyId={row.original.id}
+          comment={row.original.comment}
+          studentId={studentId}
+        />
+      ),
+    },
+  ]
+}
+
+export default function LessonsBalanceHistory({ studentId }: { studentId: number }) {
+  const { data: history = [], isLoading } = useStudentBalanceHistoryQuery(studentId)
+  const columns = useMemo(() => createColumns(studentId), [studentId])
+
   const table = useReactTable({
-    data: history,
+    data: history as HistoryRow[],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -174,6 +283,8 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
       },
     },
   })
+
+  if (isLoading) return <Skeleton className="h-32" />
 
   return (
     <div className="space-y-3">
@@ -186,132 +297,26 @@ export default function LessonsBalanceHistory({ history }: { history: HistoryRow
   )
 }
 
-const columns: ColumnDef<HistoryRow>[] = [
-  {
-    header: 'Дата',
-    accessorFn: (row) => row.createdAt,
-    cell: ({ row }) => <span>{toMoscow(row.original.createdAt).toLocaleString('ru-RU')}</span>,
-  },
-  {
-    header: 'Группа',
-    cell: ({ row }) => {
-      const group = row.original.group
-      if (!group) return <span className="text-muted-foreground">-</span>
-      const name = group.course.name + (group.location ? ` (${group.location.name})` : '')
-      return (
-        <Link href={`/groups/${group.id}`} className="text-primary hover:underline">
-          {name}
-        </Link>
-      )
-    },
-  },
-  {
-    id: 'field',
-    header: () => (
-      <span className="flex items-center gap-0.5">
-        Поле
-        <Hint text="Какой показатель был изменён: баланс уроков, сумма оплат или общее количество оплаченных уроков." />
-      </span>
-    ),
-    accessorFn: (row) => row.field,
-    cell: ({ row }) => fieldLabel[row.original.field] ?? row.original.field,
-  },
-  {
-    header: 'Причина',
-    accessorFn: (row) => row.reason,
-    cell: ({ row }) => reasonLabel[row.original.reason] ?? row.original.reason,
-  },
-  {
-    header: 'Детали',
-    cell: ({ row }) => getMetaDetails(row.original.reason, row.original.meta),
-  },
-  {
-    header: 'Кем',
-    cell: ({ row }) => {
-      const actor = row.original.actorUser ? row.original.actorUser.name : 'Система'
-      return row.original.actorUser ? (
-        <Link href={`/users/${row.original.actorUser.id}`} className="text-primary hover:underline">
-          {actor}
-        </Link>
-      ) : (
-        actor
-      )
-    },
-  },
-  {
-    header: 'Комментарий',
-    accessorFn: (row) => row.comment,
-    cell: ({ row }) => <span className="truncate text-right">{row.original.comment ?? '-'}</span>,
-    meta: { className: 'text-right' },
-  },
-  {
-    id: 'delta',
-    header: () => (
-      <span className="flex items-center gap-0.5">
-        Δ
-        <Hint text="Изменение значения: положительное число - начисление, отрицательное - списание." />
-      </span>
-    ),
-    accessorFn: (row) => row.delta,
-    cell: ({ row }) => {
-      const deltaText =
-        row.original.delta > 0 ? `+${row.original.delta}` : String(row.original.delta)
-      return <span className="text-right">{deltaText}</span>
-    },
-    meta: { className: 'text-right' },
-  },
-  {
-    header: 'Было',
-    accessorFn: (row) => row.balanceBefore,
-    cell: ({ row }) => <span className="text-right">{row.original.balanceBefore}</span>,
-    meta: { className: 'text-right' },
-  },
-  {
-    header: 'Стало',
-    accessorFn: (row) => row.balanceAfter,
-    cell: ({ row }) => <span className="text-right">{row.original.balanceAfter}</span>,
-    meta: { className: 'text-right' },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => (
-      <LessonsBalanceHistoryActions historyId={row.original.id} comment={row.original.comment} />
-    ),
-  },
-]
-
 function LessonsBalanceHistoryActions({
   historyId,
   comment,
+  studentId,
 }: {
   historyId: number
   comment: string | null
+  studentId: number
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [newComment, setNewComment] = useState<string | null>(comment)
-  const [isPending, startTransition] = useTransition()
+  const mutation = useStudentBalanceHistoryUpdateMutation(studentId)
 
   const handleCommentAdd = () => {
     if (!newComment) return
-    startTransition(() => {
-      const ok = updateStudentBalanceHistory({
-        where: {
-          id: historyId,
-        },
-        data: {
-          comment: newComment,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Добавление комментария',
-        success: 'Комментарий успешно добавлен',
-        error: 'Ошибка при добавлении комментария',
-        finally: () => {
-          setDialogOpen(false)
-        },
-      })
-    })
+    mutation.mutate(
+      { id: historyId, data: { comment: newComment } },
+      { onSuccess: () => setDialogOpen(false) },
+    )
   }
 
   return (
@@ -349,7 +354,7 @@ function LessonsBalanceHistoryActions({
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button variant={'outline'}>Отмена</Button>} />
-            <Button onClick={handleCommentAdd} disabled={isPending}>
+            <Button onClick={handleCommentAdd} disabled={mutation.isPending}>
               Сохранить
             </Button>
           </DialogFooter>

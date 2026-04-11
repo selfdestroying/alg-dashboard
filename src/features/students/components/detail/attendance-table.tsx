@@ -2,16 +2,18 @@
 import { Prisma, Student } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
 import { updateAttendance } from '@/src/actions/attendance'
-import { Button } from '@/src/components/ui/button'
 import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Badge } from '@/src/components/ui/badge'
+import { Button } from '@/src/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Separator } from '@/src/components/ui/separator'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { Toggle } from '@/src/components/ui/toggle'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { studentKeys } from '@/src/features/students/queries'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   ColumnDef,
   flexRender,
@@ -33,7 +35,6 @@ import {
   XCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useMemo, useState, useTransition } from 'react'
 
 // -------------------- Types --------------------
@@ -98,8 +99,7 @@ const STUDENT_STATUS_LABELS: Record<string, string> = {
 
 const toggleVariant = {
   present: {
-    active:
-      'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
+    active: 'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
     inactive: '',
   },
   absent: {
@@ -117,11 +117,13 @@ const toggleVariant = {
 function AttendanceCell({
   lesson,
   attendance,
+  studentId,
 }: {
   lesson: LessonWithAttendance
   attendance?: AttendanceWithRelations
+  studentId: number
 }) {
-  const router = useRouter()
+  const queryClient = useQueryClient()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
@@ -161,7 +163,7 @@ function AttendanceCell({
             isWarned: isWarned ?? null,
           },
         })
-        router.refresh()
+        queryClient.invalidateQueries({ queryKey: studentKeys.detail(studentId) })
       } catch {
         setOptimisticStatus(null)
       }
@@ -379,6 +381,7 @@ function buildAttendanceLookup(lessons: LessonWithAttendance[]): AttendanceLooku
 const getColumns = (
   lessons: LessonWithAttendance[],
   lookup: AttendanceLookup,
+  studentId: number,
 ): ColumnDef<Student>[] => [
   {
     id: 'id',
@@ -402,7 +405,7 @@ const getColumns = (
     cell: ({ row }) => {
       const attendance = lookup.get(lesson.id)?.get(row.original.id)
       if (!attendance) return null
-      return <AttendanceCell lesson={lesson} attendance={attendance} />
+      return <AttendanceCell lesson={lesson} attendance={attendance} studentId={studentId} />
     },
     size: 100,
   })),
@@ -416,8 +419,12 @@ export function StudentAttendanceTable({
   lessons: LessonWithAttendance[]
   students: Student[]
 }) {
+  const studentId = students[0]?.id ?? 0
   const lookup = useMemo(() => buildAttendanceLookup(lessons), [lessons])
-  const columns = useMemo(() => getColumns(lessons, lookup), [lessons, lookup])
+  const columns = useMemo(
+    () => getColumns(lessons, lookup, studentId),
+    [lessons, lookup, studentId],
+  )
 
   const table = useReactTable({
     data: students,
@@ -456,7 +463,6 @@ export function StudentAttendanceTable({
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
-                            // Enhanced keyboard handling for sorting
                             if (
                               header.column.getCanSort() &&
                               (e.key === 'Enter' || e.key === ' ')
