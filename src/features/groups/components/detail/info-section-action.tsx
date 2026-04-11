@@ -9,14 +9,14 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Archive, CalendarCog, MoreVertical, Pen } from 'lucide-react'
 import { useState } from 'react'
+import type { GroupDetailFull } from '../../types'
 import ArchiveGroupDialog from './archive-group-button'
 import EditGroupDialog from './edit-group-button'
 import ManageScheduleDialog from './manage-schedule-button'
-import { GroupDTO } from './types'
 
 interface InfoSectionActionProps {
   canArchive?: boolean
-  group: GroupDTO
+  group: GroupDetailFull
 }
 
 export default function InfoSectionAction({ canArchive, group }: InfoSectionActionProps) {

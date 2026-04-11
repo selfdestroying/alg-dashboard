@@ -1,10 +1,5 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import {
-  deleteStudentGroup,
-  dismissStudentFromGroup,
-  transferStudentToGroup,
-} from '@/src/actions/groups'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import {
@@ -36,12 +31,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/f
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
-import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
-import { useGroupListQuery } from '@/src/features/groups/queries'
 import { cn, getGroupName } from '@/src/lib/utils'
-import { DismissStudentSchema, DismissStudentSchemaType } from '@/src/schemas/dismissed'
-import { TransferStudentSchema, TransferStudentSchemaType } from '@/src/schemas/transfer'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import {
@@ -53,99 +43,109 @@ import {
   Trash,
   TriangleAlert,
 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import {
+  useDismissStudentMutation,
+  useGroupListQuery,
+  useRemoveStudentFromGroupMutation,
+  useTransferStudentMutation,
+} from '../../queries'
+import type { StudentGroupWithStudent } from '../../types'
+
+import { DateOnlySchema } from '@/src/schemas/_primitives'
+import * as z from 'zod'
+
+const DismissFormSchema = z.object({
+  date: DateOnlySchema,
+  comment: z.string('Укажите комментарий'),
+})
+type DismissFormValues = z.infer<typeof DismissFormSchema>
+
+const TransferFormSchema = z.object({
+  groupId: z.int('Выберите группу').positive('Выберите группу'),
+})
+type TransferFormValues = z.infer<typeof TransferFormSchema>
 
 interface UsersActionsProps {
-  sg: Prisma.StudentGroupGetPayload<{ include: { student: true } }>
+  sg: StudentGroupWithStudent
 }
 
 export default function GroupStudentActions({ sg }: UsersActionsProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
   const [open, setOpen] = useState(false)
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const { data: groups } = useGroupListQuery()
 
-  const dismissForm = useForm<DismissStudentSchemaType>({
-    resolver: zodResolver(DismissStudentSchema),
+  const dismissMutation = useDismissStudentMutation()
+  const transferMutation = useTransferStudentMutation()
+  const removeMutation = useRemoveStudentFromGroupMutation()
+
+  const dismissForm = useForm<DismissFormValues>({
+    resolver: zodResolver(DismissFormSchema),
     defaultValues: {
       date: undefined,
       comment: undefined,
     },
   })
-  const transferForm = useForm<TransferStudentSchemaType>({
-    resolver: zodResolver(TransferStudentSchema),
+  const transferForm = useForm<TransferFormValues>({
+    resolver: zodResolver(TransferFormSchema),
     defaultValues: {
       groupId: undefined,
     },
   })
 
-  const handleDismiss = (values: DismissStudentSchemaType) => {
-    startTransition(() => {
-      const ok = dismissStudentFromGroup({
+  const handleDismiss = (values: DismissFormValues) => {
+    dismissMutation.mutate(
+      {
         studentId: sg.student.id,
         groupId: sg.groupId,
-        dismissComment: values.comment,
         dismissedAt: values.date,
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Студент успешно переведен в отток',
-        error: 'Ошибка при переводе студента в отток',
-        finally: () => {
+        comment: values.comment,
+      },
+      {
+        onSuccess: () => {
           setDismissDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
-  const handleTransfer = (values: TransferStudentSchemaType) => {
-    startTransition(() => {
-      const ok = transferStudentToGroup({
+  const handleTransfer = (values: TransferFormValues) => {
+    transferMutation.mutate(
+      {
         studentId: sg.student.id,
         oldGroupId: sg.groupId,
         newGroupId: values.groupId,
-        organizationId: sg.organizationId,
-        actorUserId: session?.user?.id ? Number(session.user.id) : 0,
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Студент успешно переведен в другую группу',
-        error: 'Ошибка при переводе студента в другую группу',
-        finally: () => {
+      },
+      {
+        onSuccess: () => {
           setTransferDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteStudentGroup(sg.studentId, sg.groupId)
-      toast.promise(ok, {
-        loading: 'Удаление...',
-        success: 'Ученик успешно удален',
-        error: 'Ошбка при удалении ученика',
-        finally: () => {
+    removeMutation.mutate(
+      { studentId: sg.studentId, groupId: sg.groupId },
+      {
+        onSuccess: () => {
           setDeleteDialogOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   useEffect(() => {
     dismissForm.reset()
   }, [dismissForm, dismissDialogOpen])
 
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
-  }
+  const isPending =
+    dismissMutation.isPending || transferMutation.isPending || removeMutation.isPending
 
   return (
     <>

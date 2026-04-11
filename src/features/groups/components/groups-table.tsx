@@ -1,6 +1,5 @@
 'use client'
 
-import { Prisma } from '@/prisma/generated/client'
 import CourseLocationTeacherFilters from '@/src/components/course-location-teacher-filters'
 import DataTable from '@/src/components/data-table'
 import { NumberInput } from '@/src/components/number-input'
@@ -10,8 +9,8 @@ import { Input } from '@/src/components/ui/input'
 import { useTableSearchParams } from '@/src/hooks/use-table-search-params'
 import { DaysOfWeek, getGroupName } from '@/src/lib/utils'
 import {
-  ColumnDef,
-  ColumnFiltersState,
+  type ColumnDef,
+  type ColumnFiltersState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -23,19 +22,10 @@ import {
 import Link from 'next/link'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useMemo } from 'react'
+import { useGroupListQuery } from '../queries'
+import type { GroupWithRelations } from '../types'
 
-type GroupDTO = Prisma.GroupGetPayload<{
-  include: {
-    location: true
-    course: true
-    students: true
-    schedules: true
-    groupType: { include: { rate: true } }
-    teachers: { include: { teacher: true } }
-  }
-}>
-
-const columns: ColumnDef<GroupDTO>[] = [
+const columns: ColumnDef<GroupWithRelations>[] = [
   {
     header: 'Группа',
     accessorFn: (value) => value.id,
@@ -153,7 +143,9 @@ const columns: ColumnDef<GroupDTO>[] = [
   },
 ]
 
-export default function GroupsTable({ data }: { data: GroupDTO[] }) {
+export default function GroupsTable() {
+  const { data: groups = [], isLoading } = useGroupListQuery()
+
   const {
     columnFilters: baseColumnFilters,
     setColumnFilters,
@@ -193,7 +185,7 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
   }, [baseColumnFilters, scMin, scMax])
 
   const table = useReactTable({
-    data,
+    data: groups,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -216,6 +208,10 @@ export default function GroupsTable({ data }: { data: GroupDTO[] }) {
       sorting,
     },
   })
+
+  if (isLoading) {
+    return <div className="text-muted-foreground p-4 text-center text-sm">Загрузка...</div>
+  }
 
   return (
     <DataTable

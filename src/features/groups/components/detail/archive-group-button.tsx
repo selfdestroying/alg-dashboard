@@ -23,11 +23,11 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Switch } from '@/src/components/ui/switch'
 import { Textarea } from '@/src/components/ui/textarea'
-import { useArchiveGroupMutation, useFutureLessonsCountQuery } from '@/src/features/groups/queries'
 import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
+import { useArchiveGroupMutation, useFutureLessonsCountQuery } from '../../queries'
 
 interface ArchiveGroupButtonProps {
   groupId: number

@@ -1,6 +1,5 @@
 'use client'
 
-import { updateScheduleAndRegenerateLessons, updateScheduleOnly } from '@/src/actions/groups'
 import { NumberInput } from '@/src/components/number-input'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
@@ -26,19 +25,16 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Toggle } from '@/src/components/ui/toggle'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { DaysOfWeek } from '@/src/lib/utils'
-import {
-  UpdateScheduleAndLessonsSchema,
-  UpdateScheduleAndLessonsSchemaType,
-} from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Info, RefreshCw, Save, TriangleAlert } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useScheduleRegenerateMutation, useScheduleUpdateMutation } from '../../queries'
+import type { UpdateScheduleAndLessonsSchemaType } from '../../schemas'
+import { UpdateScheduleAndLessonsSchema } from '../../schemas'
 
 const WEEKDAYS = [
   { dayOfWeek: 1, label: 'Пн', fullLabel: 'Понедельник' },
@@ -67,13 +63,15 @@ export default function ManageScheduleDialog({
   isOpen,
   onClose,
 }: ManageScheduleButtonProps) {
-  const { data: session } = useSessionQuery()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     group: ['update'],
     lesson: ['create'],
   })
-  const [isPending, startTransition] = useTransition()
   const [mode, setMode] = useState<ScheduleMode>('schedule-only')
+
+  const scheduleUpdateMutation = useScheduleUpdateMutation()
+  const scheduleRegenerateMutation = useScheduleRegenerateMutation()
+  const isPending = scheduleUpdateMutation.isPending || scheduleRegenerateMutation.isPending
 
   const sortedInitial = [...schedules]
     .sort((a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek))
@@ -82,6 +80,7 @@ export default function ManageScheduleDialog({
   const form = useForm<UpdateScheduleAndLessonsSchemaType>({
     resolver: zodResolver(UpdateScheduleAndLessonsSchema),
     defaultValues: {
+      groupId,
       schedule: sortedInitial,
       startDate: undefined,
       lessonCount: undefined,
@@ -111,8 +110,6 @@ export default function ManageScheduleDialog({
   }
 
   const handleSubmit = (data: UpdateScheduleAndLessonsSchemaType) => {
-    if (!session?.organizationId) return
-
     if (mode === 'regenerate') {
       if (!data.startDate || !data.lessonCount) {
         if (!data.startDate) form.setError('startDate', { message: 'Выберите дату начала' })
@@ -120,35 +117,23 @@ export default function ManageScheduleDialog({
           form.setError('lessonCount', { message: 'Введите количество занятий' })
         return
       }
+      scheduleRegenerateMutation.mutate(
+        {
+          groupId,
+          schedule: data.schedule,
+          startDate: data.startDate,
+          lessonCount: data.lessonCount,
+        },
+        { onSuccess: () => onClose() },
+      )
+    } else {
+      scheduleUpdateMutation.mutate(
+        { groupId, schedule: data.schedule },
+        { onSuccess: () => onClose() },
+      )
     }
-
-    startTransition(async () => {
-      try {
-        if (mode === 'schedule-only') {
-          await updateScheduleOnly(groupId, session.organizationId!, data.schedule)
-          toast.success('Расписание обновлено')
-        } else {
-          await updateScheduleAndRegenerateLessons(
-            groupId,
-            session.organizationId!,
-            data.schedule,
-            data.startDate!,
-            data.lessonCount!,
-          )
-          toast.success('Расписание обновлено и уроки перегенерированы')
-        }
-        onClose()
-      } catch {
-        toast.error(
-          mode === 'schedule-only'
-            ? 'Ошибка при обновлении расписания'
-            : 'Ошибка при обновлении расписания и перегенерации уроков',
-        )
-      }
-    })
   }
 
-  // Estimate lesson generation period
   const schedulePreview = (() => {
     if (!watchedLessonCount || watchedLessonCount <= 0 || fields.length === 0) return null
     const weeksNeeded = Math.ceil(watchedLessonCount / fields.length)

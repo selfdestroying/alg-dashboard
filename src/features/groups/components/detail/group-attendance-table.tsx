@@ -1,10 +1,11 @@
 'use client'
-import { Prisma, Student } from '@/prisma/generated/client'
+
+import { Student } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
 import { updateAttendance } from '@/src/actions/attendance'
+import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
-import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Separator } from '@/src/components/ui/separator'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
@@ -13,6 +14,7 @@ import { Toggle } from '@/src/components/ui/toggle'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   ColumnDef,
   flexRender,
@@ -35,16 +37,9 @@ import {
   XCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useMemo, useState, useTransition } from 'react'
-
-// -------------------- Types --------------------
-type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
-  include: {
-    makeupForAttendance: { include: { lesson: true } }
-    makeupAttendance: { include: { lesson: true } }
-  }
-}>
+import { groupKeys } from '../../queries'
+import type { AttendanceWithRelations, LessonWithAttendance } from '../../types'
 
 // -------------------- Utils --------------------
 const formatDate = (date: Date) => formatDateOnly(date)
@@ -91,8 +86,7 @@ const STUDENT_STATUS_LABELS: Record<string, string> = {
 
 const toggleVariant = {
   present: {
-    active:
-      'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
+    active: 'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
     inactive: '',
   },
   absent: {
@@ -106,27 +100,17 @@ const toggleVariant = {
   },
 } as const
 
-type LessonWithAttendance = Prisma.LessonGetPayload<{
-  include: {
-    attendance: {
-      include: {
-        student: true
-        makeupForAttendance: { include: { lesson: true } }
-        makeupAttendance: { include: { lesson: true } }
-      }
-    }
-  }
-}>
-
 // -------------------- Attendance Cell --------------------
 function AttendanceCell({
   lesson,
   attendance,
+  groupId,
 }: {
   lesson: LessonWithAttendance
   attendance?: AttendanceWithRelations
+  groupId: number
 }) {
-  const router = useRouter()
+  const queryClient = useQueryClient()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
@@ -166,7 +150,7 @@ function AttendanceCell({
             isWarned: isWarned ?? null,
           },
         })
-        router.refresh()
+        queryClient.invalidateQueries({ queryKey: groupKeys.detail(groupId) })
       } catch {
         setOptimisticStatus(null)
       }
@@ -384,6 +368,7 @@ function buildAttendanceLookup(lessons: LessonWithAttendance[]): AttendanceLooku
 const getColumns = (
   lessons: LessonWithAttendance[],
   lookup: AttendanceLookup,
+  groupId: number,
 ): ColumnDef<Student>[] => [
   {
     id: 'id',
@@ -407,7 +392,7 @@ const getColumns = (
     cell: ({ row }) => {
       const attendance = lookup.get(lesson.id)?.get(row.original.id)
       if (!attendance) return null
-      return <AttendanceCell lesson={lesson} attendance={attendance} />
+      return <AttendanceCell lesson={lesson} attendance={attendance} groupId={groupId} />
     },
     size: 100,
   })),
@@ -417,9 +402,11 @@ const getColumns = (
 export function GroupAttendanceTable({
   lessons,
   currentStudents,
+  groupId,
 }: {
   lessons: LessonWithAttendance[]
   currentStudents: Student[]
+  groupId: number
 }) {
   const [isPending, startTransition] = useTransition()
   const [showAll, setShowAll] = useState(false)
@@ -440,7 +427,7 @@ export function GroupAttendanceTable({
 
   const hasFormerStudents = allStudents.length > currentStudents.length
   const data = showAll ? allStudents : currentStudents
-  const columns = useMemo(() => getColumns(lessons, lookup), [lessons, lookup])
+  const columns = useMemo(() => getColumns(lessons, lookup, groupId), [lessons, lookup, groupId])
 
   const table = useReactTable({
     data,
@@ -502,7 +489,6 @@ export function GroupAttendanceTable({
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
-                            // Enhanced keyboard handling for sorting
                             if (
                               header.column.getCanSort() &&
                               (e.key === 'Enter' || e.key === ' ')

@@ -1,6 +1,5 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { deleteTeacherGroup, updateTeacherGroup } from '@/src/actions/groups'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
@@ -40,93 +39,78 @@ import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useRateListQuery } from '@/src/features/organization/rates/queries'
-import { EditTeacherGroupSchema, EditTeacherGroupSchemaType } from '@/src/schemas/teacher-group'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useEditTeacherGroupMutation, useRemoveTeacherFromGroupMutation } from '../../queries'
+import type { TeacherGroupWithRate } from '../../types'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+
+const EditRateFormSchema = z.object({
+  rateId: z.number('Выберите ставку').int().positive('Выберите ставку'),
+  isApplyToLessons: z.boolean(),
+})
+type EditRateFormValues = z.infer<typeof EditRateFormSchema>
 
 interface UsersActionsProps {
-  tg: Prisma.TeacherGroupGetPayload<{
-    include: {
-      teacher: true
-      rate: true
-    }
-  }>
+  tg: TeacherGroupWithRate
 }
 
 export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const [isDeleteFromLessons, setIsDeleteFromLessons] = useState(true)
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
   const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
+  const editMutation = useEditTeacherGroupMutation()
+  const removeMutation = useRemoveTeacherFromGroupMutation()
 
-  const form = useForm<EditTeacherGroupSchemaType>({
-    resolver: zodResolver(EditTeacherGroupSchema),
+  const form = useForm<EditRateFormValues>({
+    resolver: zodResolver(EditRateFormSchema),
     defaultValues: {
       rateId: tg.rateId,
       isApplyToLessons: true,
     },
   })
 
-  const handleEdit = (data: EditTeacherGroupSchemaType) => {
-    startTransition(() => {
-      const { isApplyToLessons, ...payload } = data
-      const ok = updateTeacherGroup(
-        {
-          where: {
-            teacherId_groupId: {
-              teacherId: tg.teacherId,
-              groupId: tg.groupId,
-            },
-          },
-          data: payload,
-        },
-        isApplyToLessons,
-      )
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ставка успешно обновлена',
-        error: 'Ошибка при обновлении ставки',
-        finally: () => {
+  const handleEdit = (data: EditRateFormValues) => {
+    editMutation.mutate(
+      {
+        teacherId: tg.teacherId,
+        groupId: tg.groupId,
+        rateId: data.rateId,
+        isApplyToLessons: data.isApplyToLessons,
+      },
+      {
+        onSuccess: () => {
           setEditDialogOpen(false)
           setOpen(false)
           setIsDeleteFromLessons(false)
         },
-      })
-    })
+      },
+    )
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteTeacherGroup(
-        {
-          where: {
-            teacherId_groupId: {
-              teacherId: tg.teacherId,
-              groupId: tg.groupId,
-            },
-          },
-        },
-        isDeleteFromLessons,
-      )
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Учитель успешно удален',
-        error: 'Ошибка при удалении учителя',
-        finally: () => {
+    removeMutation.mutate(
+      {
+        teacherId: tg.teacherId,
+        groupId: tg.groupId,
+        isApplyToLessons: isDeleteFromLessons,
+      },
+      {
+        onSuccess: () => {
           setDeleteDialogOpen(false)
           setOpen(false)
           setIsDeleteFromLessons(false)
         },
-      })
-    })
+      },
+    )
   }
 
   useEffect(() => {
@@ -153,6 +137,7 @@ export default function GroupTeacherActions({ tg }: UsersActionsProps) {
   }, [form, editDialogOpen, tg.rateId])
 
   const selectedRate = rates?.find((r) => r.id === form.watch('rateId'))
+  const isPending = editMutation.isPending || removeMutation.isPending
 
   return (
     <>

@@ -2,7 +2,6 @@
 
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
-import { createGroup } from '@/src/actions/groups'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { NumberInput } from '@/src/components/number-input'
 import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
@@ -21,14 +20,12 @@ import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Separator } from '@/src/components/ui/separator'
 import { Toggle } from '@/src/components/ui/toggle'
-import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useCourseListQuery } from '@/src/features/courses/queries'
+import { useGroupTypeListQuery } from '@/src/features/group-types/queries'
 import { useLocationListQuery } from '@/src/features/locations/queries'
 import { useMemberListQuery } from '@/src/features/organization/members/queries'
 import { useRateListQuery } from '@/src/features/organization/rates/queries'
 import { DaysOfWeek } from '@/src/lib/utils'
-import { CreateGroupSchema, CreateGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { OrganizationRole } from '@/src/lib/auth/server'
@@ -36,8 +33,9 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Loader } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useEffect } from 'react'
+import { useGroupCreateMutation } from '../queries'
+import { CreateGroupSchema, type CreateGroupSchemaType } from '../schemas'
 
 const WEEKDAYS = [
   { dayOfWeek: 1, label: 'Пн', fullLabel: 'Понедельник' },
@@ -77,17 +75,13 @@ function computeLastLessonDate(
 
 export default function CreateGroupForm() {
   const router = useRouter()
-  const { data: session } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
   const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery()
   const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery()
   const { data: members, isLoading: isMembersLoading } = useMemberListQuery()
   const { data: rates, isLoading: isRatesLoading } = useRateListQuery()
 
-  const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery(
-    organizationId!,
-  )
-  const [isPending, startTransition] = useTransition()
+  const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery()
+  const createMutation = useGroupCreateMutation()
 
   const form = useForm<CreateGroupSchemaType>({
     resolver: zodResolver(CreateGroupSchema),
@@ -142,74 +136,20 @@ export default function CreateGroupForm() {
   }
 
   const onSubmit = (values: CreateGroupSchemaType) => {
-    startTransition(() => {
-      const { courseId, locationId, teacherId, rateId, startDate, lessonCount, url, schedule } =
-        values
-
-      const sortedSchedule = [...schedule].sort(
-        (a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek),
-      )
-      const scheduleDaysMap = new Map(sortedSchedule.map((s) => [s.dayOfWeek, s.time]))
-
-      // Генерация уроков: итерируем по дням от startDate (UTC midnight)
-      const lessons: Array<{ date: Date; time: string; organizationId: number }> = []
-      const currentDate = new Date(startDate.getTime())
-      const maxIterations = (lessonCount ?? 0) * 7 + 7
-
-      for (let i = 0; i < maxIterations && lessons.length < (lessonCount ?? 0); i++) {
-        const time = scheduleDaysMap.get(currentDate.getUTCDay())
-        if (time) {
-          lessons.push({
-            date: new Date(currentDate.getTime()),
-            time,
-            organizationId: organizationId!,
-          })
-        }
-        currentDate.setUTCDate(currentDate.getUTCDate() + 1)
-      }
-
-      const ok = createGroup(
-        {
-          data: {
-            groupTypeId: values.groupTypeId,
-            url,
-            organizationId: organizationId!,
-            courseId: Number(courseId),
-            locationId: Number(locationId),
-            maxStudents: values.maxStudents,
-            teachers: {
-              create: [
-                {
-                  organizationId: organizationId!,
-                  teacherId: Number(teacherId),
-                  rateId: Number(rateId),
-                },
-              ],
-            },
-            lessons: { createMany: { data: lessons } },
-            startDate: startDate,
-          },
-        },
-        sortedSchedule.map((s) => ({ dayOfWeek: s.dayOfWeek, time: s.time })),
-      )
-
-      toast.promise(ok, {
-        loading: 'Создание группы...',
-        success: 'Группа успешно создана!',
-        error: 'Не удалось создать группу. Попробуйте еще раз.',
-        finally: () => {
-          form.reset()
-          router.push('/groups')
-        },
-      })
+    createMutation.mutate(values, {
+      onSuccess: () => {
+        form.reset()
+        router.push('/groups')
+      },
     })
   }
+
+  const isPending = createMutation.isPending
 
   if (
     isMembersLoading ||
     isLocationsLoading ||
     isCoursesLoading ||
-    isMembersLoading ||
     isRatesLoading ||
     isGroupTypesLoading
   ) {

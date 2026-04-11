@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Card,
   CardAction,
@@ -11,14 +13,14 @@ import { DaysOfWeek } from '@/src/lib/utils'
 
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/src/components/ui/item'
 import { Archive, Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
+import type { GroupDetailFull } from '../../types'
 import InfoSectionAction from './info-section-action'
-import { GroupDTO } from './types'
 
-export default async function InfoSection({
+export default function InfoSection({
   group,
   canArchive,
 }: {
-  group: GroupDTO
+  group: GroupDetailFull
   canArchive?: boolean
 }) {
   const sortedSchedules = [...group.schedules].sort(

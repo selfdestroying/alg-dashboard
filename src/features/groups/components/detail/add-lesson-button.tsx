@@ -1,6 +1,5 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { createLesson } from '@/src/actions/lessons'
+
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
 import {
@@ -16,79 +15,42 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
-import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
-import { CreateLessonSchema, CreateLessonSchemaType } from '@/src/schemas/lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useCreateLessonForGroupMutation } from '../../queries'
+import type { CreateLessonForGroupSchemaType } from '../../schemas'
+import { CreateLessonForGroupSchema } from '../../schemas'
 
 interface AddLessonButtonProps {
-  group: Prisma.GroupGetPayload<{
-    include: { students: true; teachers: { include: { rate: true } } }
-  }>
+  groupId: number
 }
 
-export default function AddLessonButton({ group }: AddLessonButtonProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
-  const [isPending, startTransition] = useTransition()
+export default function AddLessonButton({ groupId }: AddLessonButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const form = useForm({
-    resolver: zodResolver(CreateLessonSchema),
+  const createMutation = useCreateLessonForGroupMutation()
+
+  const form = useForm<CreateLessonForGroupSchemaType>({
+    resolver: zodResolver(CreateLessonForGroupSchema),
     defaultValues: {
+      groupId,
       date: undefined,
       time: undefined,
     },
   })
 
-  const handleSubmit = (values: CreateLessonSchemaType) => {
-    startTransition(() => {
-      const { ...payload } = values
-      const attendances = group.students.map((student) => ({
-        organizationId: organizationId!,
-        studentId: student.studentId,
-        status: 'UNSPECIFIED' as const,
-        comment: '',
-      }))
-      const teacherLessons = group.teachers.map((teacherGroup) => ({
-        organizationId: organizationId!,
-        teacherId: teacherGroup.teacherId,
-        bid: teacherGroup.rate.bid,
-        bonusPerStudent: teacherGroup.rate.bonusPerStudent,
-      }))
-      const ok = createLesson({
-        data: {
-          ...payload,
-          organizationId: organizationId!,
-          groupId: group.id,
-          attendance: {
-            createMany: {
-              data: attendances,
-            },
-          },
-          teachers: {
-            createMany: { data: teacherLessons },
-          },
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Добавление занятия...',
-        success: 'Занятие успешно добавлено!',
-        error: 'Ошибка при добавлении занятия.',
-        finally: () => {
+  const handleSubmit = (values: CreateLessonForGroupSchemaType) => {
+    createMutation.mutate(
+      { ...values, groupId },
+      {
+        onSuccess: () => {
           setDialogOpen(false)
           form.reset()
         },
-      })
-    })
-  }
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
+      },
+    )
   }
 
   return (
@@ -166,7 +128,7 @@ export default function AddLessonButton({ group }: AddLessonButtonProps) {
 
         <DialogFooter>
           <DialogClose render={<Button variant={'outline'}>Отмена</Button>} />
-          <Button type="submit" form="add-lesson-form" disabled={isPending}>
+          <Button type="submit" form="add-lesson-form" disabled={createMutation.isPending}>
             Добавить
           </Button>
         </DialogFooter>

@@ -1,8 +1,5 @@
 'use client'
 
-import { Group, Student } from '@/prisma/generated/client'
-import { createStudentGroup } from '@/src/actions/groups'
-import { getStudents } from '@/src/actions/students'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -31,47 +28,40 @@ import {
   FieldTitle,
 } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
-import { createWallet as createWalletAction } from '@/src/features/wallets/actions'
-import { useStudentWalletsQuery, walletKeys } from '@/src/features/wallets/queries'
+import { useStudentListQuery } from '@/src/features/students/queries'
+import { useStudentWalletsQuery } from '@/src/features/wallets/queries'
 import { getWalletLabel } from '@/src/features/wallets/utils'
 import { getFullName } from '@/src/lib/utils'
-import { AddStudentToGroupSchema, AddStudentToGroupSchemaType } from '@/src/schemas/student-group'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
 import { Plus, Wallet } from 'lucide-react'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useAddStudentToGroupMutation } from '../../queries'
 
 interface AddStudentToGroupButtonProps {
-  group: Group
-  students?: Student[]
+  groupId: number
   excludeStudentIds?: number[]
   isFull?: boolean
 }
 
 export default function AddStudentToGroupButton({
-  group,
-  students: studentsProp,
+  groupId,
   excludeStudentIds,
   isFull,
 }: AddStudentToGroupButtonProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
   const { data: hasPermission } = useOrganizationPermissionQuery({ studentGroup: ['create'] })
-  const queryClient = useQueryClient()
+  const { data: allStudents } = useStudentListQuery()
+  const addMutation = useAddStudentToGroupMutation()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const [lazyStudents, setLazyStudents] = useState<Student[] | null>(null)
   const [isCreatingNewWallet, setIsCreatingNewWallet] = useState(false)
   const [newWalletName, setNewWalletName] = useState('')
 
-  const form = useForm<AddStudentToGroupSchemaType>({
-    resolver: zodResolver(AddStudentToGroupSchema),
+  const form = useForm<{
+    target: { label: string; value: number } | undefined
+    isApplyToLesson: boolean
+    walletId: number | undefined
+  }>({
     defaultValues: {
       target: undefined,
       isApplyToLesson: true,
@@ -91,75 +81,45 @@ export default function AddStudentToGroupButton({
     }
   }, [wallets, form])
 
-  useEffect(() => {
-    if (!dialogOpen || studentsProp || !organizationId || !excludeStudentIds) return
-    startTransition(() => {
-      getStudents({
-        where: {
-          organizationId,
-          NOT: { id: { in: excludeStudentIds } },
-        },
-      }).then((data) => {
-        setLazyStudents(data as Student[])
-      })
-    })
-  }, [dialogOpen, studentsProp, organizationId, excludeStudentIds])
-
-  const students = studentsProp ?? lazyStudents
+  const excludeSet = useMemo(() => new Set(excludeStudentIds ?? []), [excludeStudentIds])
+  const students = useMemo(
+    () => allStudents?.filter((s) => !excludeSet.has(s.id)) ?? [],
+    [allStudents, excludeSet],
+  )
 
   const items = useMemo(() => {
-    if (!students) return []
     return students.map((s) => ({
       label: getFullName(s.firstName, s.lastName),
       value: s.id,
     }))
   }, [students])
 
-  const handleSubmit = (data: AddStudentToGroupSchemaType) => {
+  const handleSubmit = (data: {
+    target: { label: string; value: number } | undefined
+    isApplyToLesson: boolean
+    walletId: number | undefined
+  }) => {
+    if (!data.target) return
+
     if (!isCreatingNewWallet && wallets && wallets.length > 0 && !data.walletId) {
       form.setError('walletId', { message: 'Выберите кошелёк' })
       return
     }
 
-    const { isApplyToLesson, target } = data
-    const studentId = target.value
-
-    startTransition(async () => {
-      try {
-        let walletId = data.walletId
-
-        if (isCreatingNewWallet) {
-          const { data: newWallet, serverError } = await createWalletAction({
-            studentId,
-            name: newWalletName || undefined,
-          })
-          if (serverError || !newWallet) throw new Error('Не удалось создать кошелёк')
-          walletId = newWallet.id
-        }
-
-        await createStudentGroup(
-          {
-            data: {
-              organizationId: organizationId!,
-              groupId: group.id,
-              studentId,
-              status: 'ACTIVE',
-              ...(walletId ? { walletId } : {}),
-            },
-          },
-          isApplyToLesson,
-        )
-
-        toast.success('Студент успешно добавлен в группу!')
-        setDialogOpen(false)
-
-        if (isCreatingNewWallet) {
-          queryClient.invalidateQueries({ queryKey: walletKeys.byStudent(studentId) })
-        }
-      } catch {
-        toast.error('Не удалось добавить.')
-      }
-    })
+    addMutation.mutate(
+      {
+        groupId,
+        studentId: data.target.value,
+        walletId: isCreatingNewWallet ? undefined : data.walletId,
+        isApplyToLesson: data.isApplyToLesson,
+        newWalletName: isCreatingNewWallet ? newWalletName || undefined : undefined,
+      },
+      {
+        onSuccess: () => {
+          setDialogOpen(false)
+        },
+      },
+    )
   }
 
   useEffect(() => {
@@ -169,10 +129,6 @@ export default function AddStudentToGroupButton({
   }, [dialogOpen, form])
 
   if (!hasPermission) return null
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
-  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -193,15 +149,18 @@ export default function AddStudentToGroupButton({
             <Controller
               name="target"
               control={form.control}
+              rules={{ required: 'Выберите студента' }}
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor="form-rhf-select-target">Студент</FieldLabel>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   <Combobox
                     items={items}
-                    value={field.value || ''}
+                    value={field.value ?? null}
                     onValueChange={field.onChange}
-                    isItemEqualToValue={(a, b) => a.value === b.value}
+                    isItemEqualToValue={(a: { value: number }, b: { value: number }) =>
+                      a.value === b.value
+                    }
                   >
                     <ComboboxInput id="form-rhf-select-target" aria-invalid={fieldState.invalid} />
                     <ComboboxContent>
@@ -344,7 +303,7 @@ export default function AddStudentToGroupButton({
           <Button variant="secondary" onClick={() => setDialogOpen(false)}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="add-student-form">
+          <Button disabled={addMutation.isPending} type="submit" form="add-student-form">
             Добавить
           </Button>
         </DialogFooter>

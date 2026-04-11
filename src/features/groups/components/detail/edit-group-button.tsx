@@ -1,6 +1,5 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { updateGroup } from '@/src/actions/groups'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { NumberInput } from '@/src/components/number-input'
 import { Button } from '@/src/components/ui/button'
@@ -15,41 +14,28 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/c
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useGroupTypeListQuery } from '@/src/data/group-type/group-type-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useCourseListQuery } from '@/src/features/courses/queries'
+import { useGroupTypeListQuery } from '@/src/features/group-types/queries'
 import { useLocationListQuery } from '@/src/features/locations/queries'
-import { EditGroupSchema, EditGroupSchemaType } from '@/src/schemas/group'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-type GroupDTO = Prisma.GroupGetPayload<{
-  include: {
-    location: true
-    course: true
-    students: true
-    schedules: true
-    groupType: { include: { rate: true } }
-    teachers: { include: { teacher: true } }
-  }
-}>
-
-import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useGroupUpdateMutation } from '../../queries'
+import type { UpdateGroupSchemaType } from '../../schemas'
+import { UpdateGroupSchema } from '../../schemas'
+import type { GroupDetailFull } from '../../types'
 
 interface EditGroupDialogProps {
-  group: GroupDTO
+  group: GroupDetailFull
   isOpen: boolean
   onClose: () => void
 }
 
 export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDialogProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
-  const [isPending, startTransition] = useTransition()
-  const form = useForm<EditGroupSchemaType>({
-    resolver: zodResolver(EditGroupSchema),
+  const updateMutation = useGroupUpdateMutation()
+  const form = useForm<UpdateGroupSchemaType>({
+    resolver: zodResolver(UpdateGroupSchema),
     defaultValues: {
+      id: group.id,
       courseId: group.courseId,
       locationId: group.locationId!,
       url: group.url ?? '',
@@ -58,19 +44,8 @@ export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDia
     },
   })
 
-  const handleSubmit = (data: EditGroupSchemaType) => {
-    startTransition(() => {
-      const ok = updateGroup({ where: { id: group.id }, data })
-      toast.promise(ok, {
-        loading: 'Сохранение изменений...',
-        success: 'Группа успешно обновлена!',
-        error: 'Ошибка при обновлении группы.',
-        finally: () => onClose(),
-      })
-    })
-  }
-  if (isSessionLoading || !session) {
-    return <Skeleton className="h-full w-full" />
+  const handleSubmit = (data: UpdateGroupSchemaType) => {
+    updateMutation.mutate({ ...data, id: group.id }, { onSuccess: () => onClose() })
   }
 
   return (
@@ -79,12 +54,12 @@ export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDia
         <DialogHeader>
           <DialogTitle>Редактировать группу</DialogTitle>
         </DialogHeader>
-        <EditGroupForm form={form} onSubmit={handleSubmit} organizationId={organizationId!} />
+        <EditGroupForm form={form} onSubmit={handleSubmit} />
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>
             Отмена
           </Button>
-          <Button form="edit-group-form" type="submit" disabled={isPending}>
+          <Button form="edit-group-form" type="submit" disabled={updateMutation.isPending}>
             Сохранить
           </Button>
         </DialogFooter>
@@ -94,15 +69,14 @@ export default function EditGroupDialog({ group, isOpen, onClose }: EditGroupDia
 }
 
 interface EditGroupFormProps {
-  form: ReturnType<typeof useForm<EditGroupSchemaType>>
-  onSubmit: (data: EditGroupSchemaType) => void
-  organizationId: number
+  form: ReturnType<typeof useForm<UpdateGroupSchemaType>>
+  onSubmit: (data: UpdateGroupSchemaType) => void
 }
 
-function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
+function EditGroupForm({ form, onSubmit }: EditGroupFormProps) {
   const { data: locations, isLoading: isLocationsLoading } = useLocationListQuery()
   const { data: courses, isLoading: isCoursesLoading } = useCourseListQuery()
-  const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery(organizationId)
+  const { data: groupTypes, isLoading: isGroupTypesLoading } = useGroupTypeListQuery()
 
   if (isLocationsLoading || isCoursesLoading || isGroupTypesLoading) {
     return <Skeleton className="h-full w-full" />
@@ -211,15 +185,15 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
           render={({ field, fieldState }) => (
             <Field>
               <FieldContent>
-                <FieldLabel htmlFor="form-rhf-input-maxStudents">Макс. учеников</FieldLabel>
+                <FieldLabel htmlFor="form-rhf-maxStudents">Максимум учеников</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
               <NumberInput
-                id="form-rhf-input-maxStudents"
-                placeholder="Макс. количество учеников"
-                {...field}
+                id="form-rhf-maxStudents"
+                min={1}
                 value={field.value ?? ''}
-                onChange={(v) => field.onChange(v === '' ? undefined : v)}
+                onChange={field.onChange}
+                aria-invalid={fieldState.invalid}
               />
             </Field>
           )}
@@ -230,15 +204,10 @@ function EditGroupForm({ form, onSubmit, organizationId }: EditGroupFormProps) {
           render={({ field, fieldState }) => (
             <Field>
               <FieldContent>
-                <FieldLabel htmlFor="form-rhf-input-url">Ссылка в БО</FieldLabel>
+                <FieldLabel htmlFor="form-rhf-url">Ссылка в БО</FieldLabel>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </FieldContent>
-              <Input
-                id="form-rhf-input-url"
-                type="text"
-                placeholder="https://backoffice.example.com"
-                {...field}
-              />
+              <Input id="form-rhf-url" type="url" {...field} value={field.value ?? ''} />
             </Field>
           )}
         />

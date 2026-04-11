@@ -1,17 +1,14 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
+
 import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import BalanceBadge from '@/src/features/lessons/components/balance-badge'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import BalanceBadge from '../../../lessons/[id]/_components/balance-badge'
+import type { TeacherGroupWithRate } from '../../types'
 import GroupTeacherActions from './group-teachers-actions'
-
-type TeacherGroupWithRate = Prisma.TeacherGroupGetPayload<{
-  include: { teacher: true; rate: true }
-}>
 
 function GroupTeacherActionsCell({ tg }: { tg: TeacherGroupWithRate }) {
   const { data: canEdit } = useOrganizationPermissionQuery({ teacherGroup: ['update'] })

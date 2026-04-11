@@ -1,7 +1,7 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { createTeacherGroup } from '@/src/actions/groups'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -20,41 +20,34 @@ import {
   FieldLabel,
   FieldTitle,
 } from '@/src/components/ui/field'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Switch } from '@/src/components/ui/switch'
 import { useMemberListQuery } from '@/src/features/organization/members/queries'
 import { useRateListQuery } from '@/src/features/organization/rates/queries'
+import { OrganizationRole } from '@/src/lib/auth/server'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-
-import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
-import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import { OrganizationRole } from '@/src/lib/auth/server'
-import { AddTeacherToGroupSchema, AddTeacherToGroupSchemaType } from '@/src/schemas/teacher-group'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useAddTeacherToGroupMutation } from '../../queries'
+import type { AddTeacherToGroupSchemaType } from '../../schemas'
+import { AddTeacherToGroupSchema } from '../../schemas'
+import type { GroupDetailFull } from '../../types'
 
 interface AddTeacherToGroupButtonProps {
-  group: Prisma.GroupGetPayload<{
-    include: {
-      groupType: {
-        include: {
-          rate: true
-        }
-      }
-    }
-  }>
+  group: GroupDetailFull
 }
 
 export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const addMutation = useAddTeacherToGroupMutation()
   const defaultRate = group.groupType ? group.groupType.rate.id : undefined
 
   const form = useForm<AddTeacherToGroupSchemaType>({
     resolver: zodResolver(AddTeacherToGroupSchema),
     defaultValues: {
+      groupId: group.id,
       teacherId: undefined,
       rateId: defaultRate,
       isApplyToLesson: true,
@@ -62,32 +55,17 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
   })
 
   const handleSubmit = (data: AddTeacherToGroupSchemaType) => {
-    startTransition(() => {
-      const { isApplyToLesson, teacherId, rateId, ...payload } = data
-      const ok = createTeacherGroup(
-        {
-          data: {
-            organizationId: group.organizationId,
-            groupId: group.id,
-            teacherId: Number(teacherId),
-            rateId: Number(rateId),
-            ...payload,
-          },
-        },
-        isApplyToLesson,
-      )
-      toast.promise(ok, {
-        loading: 'Добавление преподавателя...',
-        success: 'Преподаватель успешно добавлен в группу!',
-        error: 'Не удалось добавить преподавателя в группу.',
-        finally: () => setDialogOpen(false),
-      })
-    })
+    addMutation.mutate({ ...data, groupId: group.id }, { onSuccess: () => setDialogOpen(false) })
   }
 
   useEffect(() => {
-    form.reset()
-  }, [dialogOpen, form])
+    form.reset({
+      groupId: group.id,
+      teacherId: undefined,
+      rateId: defaultRate,
+      isApplyToLesson: true,
+    })
+  }, [dialogOpen, form, group.id, defaultRate])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -105,7 +83,7 @@ export default function AddTeacherToGroupButton({ group }: AddTeacherToGroupButt
           <Button variant="secondary" onClick={() => setDialogOpen(false)}>
             Отмена
           </Button>
-          <Button disabled={isPending} type="submit" form="group-teacher-form">
+          <Button disabled={addMutation.isPending} type="submit" form="group-teacher-form">
             Добавить
           </Button>
         </DialogFooter>
@@ -142,10 +120,10 @@ function GroupTeacherForm({ form, onSubmit }: GroupTeacherFormProps) {
               <CustomCombobox
                 id="form-rhf-select-teacher"
                 items={members || []}
-                getKey={(m) => m.user.id}
+                getKey={(m) => m.userId}
                 getLabel={(m) => m.user.name}
-                value={members?.find((m) => m.user.id === field.value) || null}
-                onValueChange={(m) => m && field.onChange(m.user.id)}
+                value={members?.find((m) => m.userId === field.value) || null}
+                onValueChange={(m) => m && field.onChange(m.userId)}
                 placeholder="Выберите преподавателя"
                 emptyText="Не найдены преподаватели"
                 renderItem={(m) => (
