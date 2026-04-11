@@ -138,7 +138,7 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
       : null
 
   await prisma.$transaction(async (tx) => {
-    if (oldAttendance && oldAttendance.studentStatus !== 'TRIAL') {
+    if (oldAttendance && !oldAttendance.isTrial) {
       await updateCoins(
         tx,
         status as AttendanceStatus,

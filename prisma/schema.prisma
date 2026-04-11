@@ -530,13 +530,13 @@ model TeacherLesson {
 }
 
 model Attendance {
-  id            Int              @id @default(autoincrement())
-  status        AttendanceStatus @default(UNSPECIFIED)
-  comment       String           @default("")
-  isWarned      Boolean?
-  studentStatus StudentStatus    @default(ACTIVE)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id        Int              @id @default(autoincrement())
+  status    AttendanceStatus @default(UNSPECIFIED)
+  comment   String           @default("")
+  isWarned  Boolean?
+  isTrial   Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   // Relations
   organizationId Int

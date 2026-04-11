@@ -98,7 +98,7 @@ const navLists: NavGroup[] = [
       },
       {
         title: 'Типы',
-        url: '/groups/types',
+        url: '/group-types',
         roles: ['owner', 'manager'],
         featureKey: 'groups.types',
       },

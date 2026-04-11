@@ -18,7 +18,6 @@ export const getAbsentAttendances = authAction
           },
           { makeupForAttendanceId: { not: null } },
         ],
-        studentStatus: { in: ['ACTIVE', 'TRIAL'] },
       },
       include: {
         student: true,

@@ -104,6 +104,7 @@ export const useDayStatusesQuery = (
           lesson.status === 'ACTIVE' && lesson.attendance.some((a) => a.status === 'UNSPECIFIED'),
         )
       })
+
       return statuses
     },
   })
