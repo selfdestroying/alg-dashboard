@@ -79,7 +79,7 @@ export const getRevenueData = authAction
             },
             isWarned: true,
             status: true,
-            studentStatus: true,
+            isTrial: true,
             student: {
               select: {
                 id: true,
@@ -158,7 +158,7 @@ export const getRevenueData = authAction
         return {
           status: att.status,
           isWarned: att.isWarned,
-          studentStatus: att.studentStatus,
+          isTrial: att.isTrial,
           visitCost,
           costReason,
           student: {

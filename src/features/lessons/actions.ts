@@ -23,7 +23,7 @@ import {
   RestoreLessonSchema,
   UpdateAttendanceCommentSchema,
   UpdateAttendanceStatusSchema,
-  UpdateAttendanceStudentStatusSchema,
+  UpdateAttendanceTrialStatusSchema,
 } from './schemas'
 
 // ─── Lesson Detail ───────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export const createAttendance = authAction
         organizationId: ctx.session.organizationId!,
         studentId: parsedInput.studentId,
         lessonId: parsedInput.lessonId,
-        studentStatus: parsedInput.studentStatus,
+        isTrial: parsedInput.isTrial,
         status: 'UNSPECIFIED',
         comment: '',
       },
@@ -251,7 +251,7 @@ export const updateAttendanceStatus = authAction
     if (!oldAttendance) throw new NotFoundError('Запись посещаемости не найдена')
 
     await prisma.$transaction(async (tx) => {
-      if (oldAttendance.studentStatus !== 'TRIAL') {
+      if (!oldAttendance.isTrial) {
         await updateCoins(
           tx,
           status as AttendanceStatus,
@@ -343,13 +343,13 @@ export const updateAttendanceStatus = authAction
 
 // ─── Update Attendance Student Status ────────────────────────────────────────
 
-export const updateAttendanceStudentStatus = authAction
-  .metadata({ actionName: 'updateAttendanceStudentStatus' })
-  .inputSchema(UpdateAttendanceStudentStatusSchema)
+export const updateAttendanceTrialStatus = authAction
+  .metadata({ actionName: 'updateAttendanceTrialStatus' })
+  .inputSchema(UpdateAttendanceTrialStatusSchema)
   .action(async ({ ctx, parsedInput }) => {
     await prisma.attendance.update({
       where: { id: parsedInput.id, organizationId: ctx.session.organizationId! },
-      data: { studentStatus: parsedInput.studentStatus },
+      data: { isTrial: parsedInput.isTrial },
     })
   })
 

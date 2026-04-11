@@ -13,7 +13,7 @@ export interface RevenueStats {
 export interface AttendanceWithCost {
   status: string
   isWarned: boolean | null
-  studentStatus: string | null
+  isTrial: boolean
   visitCost: number
   costReason: string
   student: {

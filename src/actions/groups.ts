@@ -185,7 +185,7 @@ export const updateScheduleAndRegenerateLessons = async (
           lessonId: lesson.id,
           studentId: s.studentId,
           status: 'UNSPECIFIED' as const,
-          studentStatus: s.status,
+          isTrial: s.status === 'TRIAL',
           comment: '',
         })),
       )

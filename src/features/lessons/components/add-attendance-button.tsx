@@ -25,20 +25,15 @@ import { useLessonDetail } from './lesson-detail-context'
 
 const AddAttendanceFormSchema = z.object({
   studentId: z.int('Выберите ученика').positive('Выберите ученика'),
-  studentStatus: z.enum(['ACTIVE', 'TRIAL'], 'Выберите статус ученика'),
+  isTrial: z.boolean(),
 })
 
 type AddAttendanceFormValues = z.infer<typeof AddAttendanceFormSchema>
 
-const studentStatusMap = {
-  ACTIVE: 'Активен',
-  TRIAL: 'Пробный',
-}
-
-const studentStatusItems = Object.entries(studentStatusMap).map(([value, label]) => ({
-  label,
-  value,
-}))
+const trialStatusItems = [
+  { label: 'Обычное', value: 'regular' },
+  { label: 'Пробное', value: 'trial' },
+]
 
 interface AddAttendanceButtonProps {
   isFull?: boolean
@@ -53,13 +48,13 @@ export default function AddAttendanceButton({ isFull }: AddAttendanceButtonProps
     resolver: zodResolver(AddAttendanceFormSchema),
     defaultValues: {
       studentId: undefined,
-      studentStatus: undefined,
+      isTrial: false,
     },
   })
 
   const handleSubmit = (data: AddAttendanceFormValues) => {
     mutate(
-      { studentId: data.studentId, studentStatus: data.studentStatus },
+      { studentId: data.studentId, isTrial: data.isTrial },
       {
         onSettled: () => {
           setOpen(false)
@@ -140,18 +135,21 @@ function AddAttendanceForm({ form, onSubmit }: AddAttendanceFormProps) {
         />
 
         <Controller
-          name="studentStatus"
+          name="isTrial"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
-              <FieldLabel htmlFor="form-rhf-select-student-status">Статус</FieldLabel>
+              <FieldLabel htmlFor="form-rhf-select-trial-status">Тип посещения</FieldLabel>
               <CustomCombobox
-                items={studentStatusItems}
-                value={studentStatusItems.find((i) => i.value === field.value) ?? null}
-                onValueChange={(item) => item && field.onChange(item.value)}
-                id="form-rhf-select-student-status"
-                placeholder="Выберите статус ученика"
-                emptyText="Нет доступных статусов"
+                items={trialStatusItems}
+                value={
+                  trialStatusItems.find((i) => (i.value === 'trial') === field.value) ??
+                  trialStatusItems[0]!
+                }
+                onValueChange={(item) => item && field.onChange(item.value === 'trial')}
+                id="form-rhf-select-trial-status"
+                placeholder="Выберите тип посещения"
+                emptyText="Нет доступных типов"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

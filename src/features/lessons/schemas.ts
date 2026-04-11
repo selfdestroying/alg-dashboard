@@ -28,7 +28,7 @@ export type RestoreLessonSchemaType = z.infer<typeof RestoreLessonSchema>
 export const CreateAttendanceSchema = z.object({
   lessonId: z.number().int().positive(),
   studentId: z.int('Выберите ученика').positive('Выберите ученика'),
-  studentStatus: z.enum(['ACTIVE', 'TRIAL'], 'Выберите статус ученика'),
+  isTrial: z.boolean(),
 })
 
 export const UpdateAttendanceStatusSchema = z.object({
@@ -38,9 +38,9 @@ export const UpdateAttendanceStatusSchema = z.object({
   isWarned: z.boolean().nullable(),
 })
 
-export const UpdateAttendanceStudentStatusSchema = z.object({
+export const UpdateAttendanceTrialStatusSchema = z.object({
   id: z.number().int().positive(),
-  studentStatus: z.enum(['ACTIVE', 'TRIAL', 'DISMISSED', 'TRANSFERRED']),
+  isTrial: z.boolean(),
 })
 
 export const UpdateAttendanceCommentSchema = z.object({
@@ -74,8 +74,8 @@ export const RescheduleMakeupSchema = z.object({
 
 export type CreateAttendanceSchemaType = z.infer<typeof CreateAttendanceSchema>
 export type UpdateAttendanceStatusSchemaType = z.infer<typeof UpdateAttendanceStatusSchema>
-export type UpdateAttendanceStudentStatusSchemaType = z.infer<
-  typeof UpdateAttendanceStudentStatusSchema
+export type UpdateAttendanceTrialStatusSchemaType = z.infer<
+  typeof UpdateAttendanceTrialStatusSchema
 >
 export type UpdateAttendanceCommentSchemaType = z.infer<typeof UpdateAttendanceCommentSchema>
 export type DeleteAttendanceSchemaType = z.infer<typeof DeleteAttendanceSchema>

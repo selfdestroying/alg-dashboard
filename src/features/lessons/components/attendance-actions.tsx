@@ -1,6 +1,5 @@
 'use client'
 
-import { StudentStatus } from '@/prisma/generated/enums'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
@@ -31,9 +30,8 @@ import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { CalendarCog, CalendarPlus, Loader, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState } from 'react'
-import { useDeleteAttendanceMutation, useUpdateAttendanceStudentStatusMutation } from '../queries'
+import { useDeleteAttendanceMutation, useUpdateAttendanceTrialStatusMutation } from '../queries'
 import type { AttendanceWithStudents } from '../types'
-import { StudentStatusMap } from './attendance-table'
 import MakeUpDialog from './create-makeup-dialog'
 import { useLessonDetail } from './lesson-detail-context'
 
@@ -44,10 +42,10 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
   const [makeupOpen, setMakeupOpen] = useState(false)
   const [statusOpen, setStatusOpen] = useState(false)
   const [confirmText, setConfirmText] = useState('')
-  const [studentStatus, setStudentStatus] = useState<StudentStatus>(attendance.studentStatus)
+  const [isTrial, setIsTrial] = useState(attendance.isTrial)
 
   const deleteMutation = useDeleteAttendanceMutation(lessonId)
-  const updateStudentStatusMutation = useUpdateAttendanceStudentStatusMutation(lessonId)
+  const updateTrialStatusMutation = useUpdateAttendanceTrialStatusMutation(lessonId)
 
   const studentFullName = `${attendance.student.firstName} ${attendance.student.lastName}`
 
@@ -67,8 +65,8 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
   }
 
   const handleStudentStatusConfirm = () => {
-    updateStudentStatusMutation.mutate(
-      { id: attendance.id, studentStatus },
+    updateTrialStatusMutation.mutate(
+      { id: attendance.id, isTrial },
       {
         onSettled: () => {
           setOpen(false)
@@ -169,22 +167,26 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
       <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Статус ученика</DialogTitle>
+            <DialogTitle>Тип посещения</DialogTitle>
           </DialogHeader>
 
           <CustomCombobox
             items={[
-              { label: StudentStatusMap[StudentStatus.ACTIVE], value: StudentStatus.ACTIVE },
-              { label: StudentStatusMap[StudentStatus.TRIAL], value: StudentStatus.TRIAL },
+              { label: 'Обычное', value: 'regular' },
+              { label: 'Пробное', value: 'trial' },
             ]}
-            value={{ label: StudentStatusMap[studentStatus], value: studentStatus }}
-            onValueChange={(item) => item && setStudentStatus(item.value as StudentStatus)}
+            value={
+              isTrial
+                ? { label: 'Пробное', value: 'trial' }
+                : { label: 'Обычное', value: 'regular' }
+            }
+            onValueChange={(item) => item && setIsTrial(item.value === 'trial')}
           />
           <DialogFooter>
-            <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
+            <DialogClose render={<Button type="button" variant="outline" />}>Отмена</DialogClose>
             <Button
               onClick={handleStudentStatusConfirm}
-              disabled={updateStudentStatusMutation.isPending}
+              disabled={updateTrialStatusMutation.isPending}
             >
               Подтвердить
             </Button>

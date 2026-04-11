@@ -2,9 +2,9 @@
 
 import { useMemo } from 'react'
 
-import { StudentStatus } from '@/prisma/generated/enums'
 import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
+import { Badge } from '@/src/components/ui/badge'
 import { Input } from '@/src/components/ui/input'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { formatDateOnly } from '@/src/lib/timezone'
@@ -16,13 +16,6 @@ import type { AttendanceWithStudents } from '../types'
 import AttendanceActions from './attendance-actions'
 import { AttendanceStatusSwitcher } from './attendance-status-switcher'
 import { useLessonDetail } from './lesson-detail-context'
-
-export const StudentStatusMap: { [key in StudentStatus]: string } = {
-  ACTIVE: 'Ученик',
-  DISMISSED: 'Отчислен',
-  TRIAL: 'Пробный',
-  TRANSFERRED: 'Переведён',
-}
 
 function AttendanceActionsCell({ attendance }: { attendance: AttendanceWithStudents }) {
   const { isCancelled } = useLessonDetail()
@@ -53,24 +46,19 @@ export default function AttendanceTable() {
       {
         header: 'Полное имя',
         accessorFn: (value) => value.studentId,
-        cell: ({ row }) => (
-          <Link
-            href={`/students/${row.original.studentId}`}
-            className="text-primary hover:underline"
-          >
-            {`${row.original.student.firstName} ${row.original.student.lastName}`}
-          </Link>
-        ),
-      },
-      {
-        id: 'studentStatus',
-        header: () => (
-          <span className="flex items-center gap-0.5">
-            Статус ученика
-            <Hint text="Статус ученика в группе: «Ученик» (активный, списывается баланс), «Пробный» (без списания), «Отчислен» или «Переведён»." />
-          </span>
-        ),
-        cell: ({ row }) => StudentStatusMap[row.original.studentStatus],
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/students/${row.original.studentId}`}
+                className="text-primary hover:underline"
+              >
+                {`${row.original.student.firstName} ${row.original.student.lastName}`}
+              </Link>
+              {row.original.isTrial && <Badge variant="secondary">Пробный</Badge>}
+            </div>
+          )
+        },
       },
       {
         header: 'Статус',

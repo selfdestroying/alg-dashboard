@@ -14,7 +14,7 @@ import {
   restoreLesson,
   updateAttendanceComment,
   updateAttendanceStatus,
-  updateAttendanceStudentStatus,
+  updateAttendanceTrialStatus,
   updateLesson,
   updateTeacherLesson,
 } from './actions'
@@ -30,7 +30,7 @@ import type {
   RescheduleMakeupSchemaType,
   UpdateAttendanceCommentSchemaType,
   UpdateAttendanceStatusSchemaType,
-  UpdateAttendanceStudentStatusSchemaType,
+  UpdateAttendanceTrialStatusSchemaType,
 } from './schemas'
 import type { LessonByDate } from './types'
 
@@ -150,11 +150,11 @@ export const useUpdateAttendanceStatusMutation = (lessonId: number) => {
   })
 }
 
-export const useUpdateAttendanceStudentStatusMutation = (lessonId: number) => {
+export const useUpdateAttendanceTrialStatusMutation = (lessonId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (values: UpdateAttendanceStudentStatusSchemaType) => {
-      const { data, serverError } = await updateAttendanceStudentStatus(values)
+    mutationFn: async (values: UpdateAttendanceTrialStatusSchemaType) => {
+      const { data, serverError } = await updateAttendanceTrialStatus(values)
       if (serverError) throw serverError
       return data
     },

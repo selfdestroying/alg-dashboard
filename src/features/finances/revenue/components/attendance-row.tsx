@@ -72,9 +72,9 @@ export default function AttendanceRow({ attendance: att }: AttendanceRowProps) {
               <TooltipContent>Предупредил</TooltipContent>
             </Tooltip>
           )}
-          {att.studentStatus && att.studentStatus !== 'ACTIVE' && (
+          {att.isTrial && (
             <Badge variant="secondary" className="text-[0.5625rem]">
-              {att.studentStatus}
+              Пробный
             </Badge>
           )}
         </div>

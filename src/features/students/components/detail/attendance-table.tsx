@@ -90,13 +90,6 @@ const ATTENDANCE_LABELS = {
   UNSPECIFIED: { label: 'Не отмечен', icon: Minus, class: 'text-muted-foreground' },
 } as const
 
-const STUDENT_STATUS_LABELS: Record<string, string> = {
-  TRIAL: 'Пробный',
-  ACTIVE: 'Активный',
-  DISMISSED: 'Отчислен',
-  TRANSFERRED: 'Переведён',
-}
-
 const toggleVariant = {
   present: {
     active: 'border-success aria-pressed:bg-success/20 text-success aria-pressed:opacity-100',
@@ -180,7 +173,7 @@ function AttendanceCell({
   }
 
   const attendanceStatus =
-    (optimisticStatus ?? attendance.studentStatus) == 'TRIAL'
+    (optimisticStatus ?? attendance.isTrial)
       ? statusClasses[`TRIAL_${currentStatus}`]
       : statusClasses[currentStatus]
   const makeUpStatus = attendance.makeupAttendance
@@ -214,9 +207,9 @@ function AttendanceCell({
               <span className={cn('font-medium', config.class)}>{config.label}</span>
             </div>
             <div className="flex items-center gap-2">
-              {attendance.studentStatus && attendance.studentStatus !== 'ACTIVE' && (
+              {attendance.isTrial && (
                 <Badge variant="secondary" className="text-[0.5625rem]">
-                  {STUDENT_STATUS_LABELS[attendance.studentStatus] ?? attendance.studentStatus}
+                  Пробный
                 </Badge>
               )}
               {attendance.isWarned && (
