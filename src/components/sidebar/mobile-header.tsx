@@ -3,6 +3,7 @@
 import { Button } from '@/src/components/ui/button'
 import { useSidebar } from '@/src/components/ui/sidebar'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { QuickTip } from '@/src/features/smart-feed/components/quick-tip'
 import { SmartFeed } from '@/src/features/smart-feed/components/smart-feed'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { Menu } from 'lucide-react'
@@ -52,9 +53,12 @@ export default function MobileHeader() {
   if (!isMobile) return null
 
   return (
-    <Item variant="muted" size="xs">
+    <Item size="xs" className="ring-foreground/10 bg-card text-card-foreground ring-1">
       <ItemContent>
-        <ItemTitle>{getPageTitle(pathname)}</ItemTitle>
+        <ItemTitle>
+          {getPageTitle(pathname)}
+          <QuickTip />
+        </ItemTitle>
       </ItemContent>
       <ItemActions>
         {canSeeFeed && <SmartFeed />}

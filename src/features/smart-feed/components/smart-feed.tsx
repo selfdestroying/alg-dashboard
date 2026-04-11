@@ -29,6 +29,7 @@ import { useMemo } from 'react'
 import { useSmartFeedQuery } from '../queries'
 import { ALERT_TYPE, getSmartFeedAlertId, type SmartFeedAlert } from '../types'
 import { FeedCard } from './feed-card'
+import { QuickTip } from './quick-tip'
 
 // ─── Popover-only trigger (mobile) ─────────────────────────────────────
 
@@ -79,10 +80,11 @@ export function SmartFeedBar() {
   return (
     <div className="flex items-center gap-2">
       {/* Date & greeting */}
-      <div className="min-w-0 flex-1">
+      <div className="flex h-full min-w-0 flex-1 items-center gap-2">
         <p className="text-muted-foreground truncate text-xs">
           {greeting} · <span className="capitalize">{dateStr}</span>
         </p>
+        <QuickTip />
       </div>
 
       {/* Alert chip-popovers */}
