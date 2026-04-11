@@ -1,7 +1,5 @@
 'use client'
 
-import { Rate } from '@/prisma/generated/client'
-import { createGroupTypeAction } from '@/src/actions/group-types'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -17,42 +15,33 @@ import {
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import { GroupTypeSchema, GroupTypeSchemaType } from '@/src/schemas/group-type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useAction } from 'next-safe-action/hooks'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import { useGroupTypeCreateMutation, useRateListQuery } from '../queries'
+import { CreateGroupTypeSchema, type CreateGroupTypeSchemaType } from '../schemas'
 
-interface CreateGroupTypeDialogProps {
-  rates: Rate[]
-}
-
-export default function CreateGroupTypeDialog({ rates }: CreateGroupTypeDialogProps) {
+export default function CreateGroupTypeDialog() {
   const [open, setOpen] = useState(false)
+  const { data: rates = [] } = useRateListQuery()
+  const { mutate, isPending } = useGroupTypeCreateMutation()
 
-  const { execute, isPending } = useAction(createGroupTypeAction, {
-    onSuccess: () => {
-      toast.success('Тип группы успешно создан!')
-      setOpen(false)
-      form.reset()
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError ?? 'Не удалось создать тип группы.')
-    },
-  })
-
-  const form = useForm<GroupTypeSchemaType>({
-    resolver: zodResolver(GroupTypeSchema),
+  const form = useForm<CreateGroupTypeSchemaType>({
+    resolver: zodResolver(CreateGroupTypeSchema),
     defaultValues: {
       name: '',
       rateId: undefined,
     },
   })
 
-  const onSubmit = (values: GroupTypeSchemaType) => {
-    execute(values)
+  const onSubmit = (values: CreateGroupTypeSchemaType) => {
+    mutate(values, {
+      onSuccess: () => {
+        setOpen(false)
+        form.reset()
+      },
+    })
   }
 
   return (
@@ -96,10 +85,10 @@ export default function CreateGroupTypeDialog({ rates }: CreateGroupTypeDialogPr
                   </FieldContent>
                   <CustomCombobox
                     id="form-rhf-select-rate"
-                    items={rates || []}
+                    items={rates}
                     getKey={(r) => r.id}
                     getLabel={(r) => r.name}
-                    value={rates?.find((r) => r.id === field.value) || null}
+                    value={rates.find((r) => r.id === field.value) || null}
                     onValueChange={(r) => r && field.onChange(r.id)}
                     placeholder="Выберите ставку"
                     emptyText="Не найдены ставки"

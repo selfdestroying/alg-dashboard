@@ -1,37 +1,22 @@
 'use client'
 
-import { Prisma, Rate } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useMemo } from 'react'
+import { useGroupTypeListQuery } from '../queries'
+import type { GroupTypeWithRelations } from '../types'
 import GroupTypeActions from './group-type-actions'
 
-type GroupTypeWithRelations = Prisma.GroupTypeGetPayload<{
-  include: {
-    rate: true
-    _count: { select: { groups: true } }
-  }
-}>
-
-interface GroupTypesTableProps {
-  data: GroupTypeWithRelations[]
-  rates: Rate[]
-}
-
-function GroupTypeActionsCell({
-  groupType,
-  rates,
-}: {
-  groupType: GroupTypeWithRelations
-  rates: Rate[]
-}) {
+function GroupTypeActionsCell({ groupType }: { groupType: GroupTypeWithRelations }) {
   const { data: canEdit } = useOrganizationPermissionQuery({ groupType: ['update'] })
   if (!canEdit?.success) return null
-  return <GroupTypeActions groupType={groupType} rates={rates} />
+  return <GroupTypeActions groupType={groupType} />
 }
 
-export default function GroupTypesTable({ data, rates }: GroupTypesTableProps) {
+export default function GroupTypesTable() {
+  const { data: groupTypes = [], isLoading } = useGroupTypeListQuery()
+
   const columns: ColumnDef<GroupTypeWithRelations>[] = useMemo(
     () => [
       {
@@ -59,17 +44,19 @@ export default function GroupTypesTable({ data, rates }: GroupTypesTableProps) {
       },
       {
         id: 'actions',
-        cell: ({ row }) => <GroupTypeActionsCell groupType={row.original} rates={rates} />,
+        cell: ({ row }) => <GroupTypeActionsCell groupType={row.original} />,
       },
     ],
-    [rates],
+    [],
   )
 
   const table = useReactTable({
-    data,
+    data: groupTypes,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+
+  if (isLoading) return <div className="text-muted-foreground p-4">Загрузка...</div>
 
   return <DataTable table={table} emptyMessage="Нет типов групп. Создайте первый тип группы." />
 }

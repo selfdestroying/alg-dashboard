@@ -1,7 +1,5 @@
 'use client'
 
-import { Prisma, Rate } from '@/prisma/generated/client'
-import { deleteGroupTypeAction, updateGroupTypeAction } from '@/src/actions/group-types'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
@@ -31,71 +29,65 @@ import {
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import { GroupTypeSchema, GroupTypeSchemaType } from '@/src/schemas/group-type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useAction } from 'next-safe-action/hooks'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-
-type GroupTypeWithRelations = Prisma.GroupTypeGetPayload<{
-  include: {
-    rate: true
-    _count: { select: { groups: true } }
-  }
-}>
+import {
+  useGroupTypeDeleteMutation,
+  useGroupTypeUpdateMutation,
+  useRateListQuery,
+} from '../queries'
+import { CreateGroupTypeSchema, type CreateGroupTypeSchemaType } from '../schemas'
+import type { GroupTypeWithRelations } from '../types'
 
 interface GroupTypeActionsProps {
   groupType: GroupTypeWithRelations
-  rates: Rate[]
 }
 
-export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsProps) {
+export default function GroupTypeActions({ groupType }: GroupTypeActionsProps) {
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
-  const { execute: executeUpdate, isPending: isUpdatePending } = useAction(updateGroupTypeAction, {
-    onSuccess: () => {
-      toast.success('Тип группы успешно обновлен')
-      setEditDialogOpen(false)
-      setOpen(false)
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError ?? 'Ошибка при обновлении типа группы')
-    },
-  })
-
-  const { execute: executeDelete, isPending: isDeletePending } = useAction(deleteGroupTypeAction, {
-    onSuccess: () => {
-      toast.success('Тип группы удален')
-      setDeleteDialogOpen(false)
-      setOpen(false)
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError ?? 'Ошибка при удалении типа группы')
-    },
-  })
+  const { data: rates = [] } = useRateListQuery()
+  const { mutate: executeUpdate, isPending: isUpdatePending } = useGroupTypeUpdateMutation()
+  const { mutate: executeDelete, isPending: isDeletePending } = useGroupTypeDeleteMutation()
 
   const isPending = isUpdatePending || isDeletePending
 
-  const form = useForm<GroupTypeSchemaType>({
-    resolver: zodResolver(GroupTypeSchema),
+  const form = useForm<CreateGroupTypeSchemaType>({
+    resolver: zodResolver(CreateGroupTypeSchema),
     defaultValues: {
       name: groupType.name,
       rateId: groupType.rateId,
     },
   })
 
-  const handleEdit = (data: GroupTypeSchemaType) => {
-    executeUpdate({ id: groupType.id, ...data })
+  const handleEdit = (data: CreateGroupTypeSchemaType) => {
+    executeUpdate(
+      { id: groupType.id, ...data },
+      {
+        onSuccess: () => {
+          setEditDialogOpen(false)
+          setOpen(false)
+        },
+      },
+    )
   }
 
   const handleDelete = () => {
-    executeDelete({ id: groupType.id })
+    executeDelete(
+      { id: groupType.id },
+      {
+        onSuccess: () => {
+          setDeleteDialogOpen(false)
+          setOpen(false)
+        },
+      },
+    )
   }
 
   useEffect(() => {
@@ -226,10 +218,10 @@ export default function GroupTypeActions({ groupType, rates }: GroupTypeActionsP
                     </FieldContent>
                     <CustomCombobox
                       id="form-rhf-select-rate"
-                      items={rates || []}
+                      items={rates}
                       getKey={(r) => r.id}
                       getLabel={(r) => r.name}
-                      value={rates?.find((r) => r.id === field.value) || null}
+                      value={rates.find((r) => r.id === field.value) || null}
                       onValueChange={(r) => r && field.onChange(r.id)}
                       placeholder="Выберите ставку"
                       emptyText="Не найдены ставки"
