@@ -1,30 +1,16 @@
-import { LessonStatus, Prisma } from '@/prisma/generated/client'
+'use client'
+
+import { LessonStatus } from '@/prisma/generated/client'
 import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { auth } from '@/src/lib/auth/server'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { getGroupName } from '@/src/lib/utils'
 import { cva } from 'class-variance-authority'
 import { Ban, Book, Clock, MapPin, Users } from 'lucide-react'
-import { headers } from 'next/headers'
 import Link from 'next/link'
 import InfoSectionAction from './info-section-action'
-
-interface InfoSectionsProps {
-  lesson: Prisma.LessonGetPayload<{
-    include: {
-      group: {
-        include: {
-          _count: { select: { students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } } }
-          course: true
-          location: true
-          schedules: true
-        }
-      }
-      attendance: true
-    }
-  }>
-}
+import { useLessonDetail } from './lesson-detail-context'
 
 export const lessonStatusMap: Record<LessonStatus, string> = {
   ACTIVE: 'Активен',
@@ -43,24 +29,17 @@ export const lessonStatusVariants = cva('', {
   },
 })
 
-export default async function InfoSection({ lesson }: InfoSectionsProps) {
-  const requestHeaders = await headers()
-  const { success: canEditLesson } = await auth.api.hasPermission({
-    headers: requestHeaders,
-    body: {
-      permissions: { lesson: ['update'] },
-    },
-  })
-
-  const isCancelled = lesson.status === 'CANCELLED'
+export default function InfoSection() {
+  const { lesson, isCancelled } = useLessonDetail()
+  const { data: canEditLesson } = useOrganizationPermissionQuery({ lesson: ['update'] })
 
   return (
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация об уроке</CardTitle>
-        {canEditLesson && (
+        {canEditLesson?.success && (
           <CardAction>
-            <InfoSectionAction lesson={lesson} />
+            <InfoSectionAction />
           </CardAction>
         )}
       </CardHeader>

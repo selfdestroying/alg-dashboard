@@ -1,5 +1,5 @@
 'use client'
-import { createAttendance } from '@/src/actions/attendance'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import {
@@ -13,20 +13,22 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useStudentListQuery } from '@/src/features/students/queries'
 import { getFullName } from '@/src/lib/utils'
-import { CreateAttendanceSchema, CreateAttendanceSchemaType } from '@/src/schemas/attendance'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import * as z from 'zod'
+import { useCreateAttendanceMutation } from '../queries'
+import { useLessonDetail } from './lesson-detail-context'
 
-interface AddAttendanceButtonProps {
-  lessonId: number
-  isFull?: boolean
-}
+const AddAttendanceFormSchema = z.object({
+  studentId: z.int('Выберите ученика').positive('Выберите ученика'),
+  studentStatus: z.enum(['ACTIVE', 'TRIAL'], 'Выберите статус ученика'),
+})
+
+type AddAttendanceFormValues = z.infer<typeof AddAttendanceFormSchema>
 
 const studentStatusMap = {
   ACTIVE: 'Активен',
@@ -38,45 +40,33 @@ const studentStatusItems = Object.entries(studentStatusMap).map(([value, label])
   value,
 }))
 
-export default function AddAttendanceButton({ lessonId, isFull }: AddAttendanceButtonProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
+interface AddAttendanceButtonProps {
+  isFull?: boolean
+}
+
+export default function AddAttendanceButton({ isFull }: AddAttendanceButtonProps) {
+  const { lessonId } = useLessonDetail()
   const [open, setOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const form = useForm<CreateAttendanceSchemaType>({
-    resolver: zodResolver(CreateAttendanceSchema),
+  const { mutate, isPending } = useCreateAttendanceMutation(lessonId)
+
+  const form = useForm<AddAttendanceFormValues>({
+    resolver: zodResolver(AddAttendanceFormSchema),
     defaultValues: {
       studentId: undefined,
       studentStatus: undefined,
     },
   })
 
-  const handleSubmit = (data: CreateAttendanceSchemaType) => {
-    startTransition(() => {
-      const { studentStatus, studentId } = data
-      const ok = createAttendance({
-        organizationId: organizationId!,
-        lessonId,
-        studentId: Number(studentId),
-        studentStatus: studentStatus,
-        status: 'UNSPECIFIED',
-        comment: '',
-      })
-
-      toast.promise(ok, {
-        loading: 'Добавление ученика...',
-        success: 'Ученик успешно добавлен в посещаемость',
-        error: 'Не удалось добавить ученика в посещаемость',
-        finally: () => {
+  const handleSubmit = (data: AddAttendanceFormValues) => {
+    mutate(
+      { studentId: data.studentId, studentStatus: data.studentStatus },
+      {
+        onSettled: () => {
           setOpen(false)
           form.reset()
         },
-      })
-    })
-  }
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
+      },
+    )
   }
 
   return (
@@ -113,8 +103,8 @@ export default function AddAttendanceButton({ lessonId, isFull }: AddAttendanceB
 }
 
 interface AddAttendanceFormProps {
-  form: ReturnType<typeof useForm<CreateAttendanceSchemaType>>
-  onSubmit: (data: CreateAttendanceSchemaType) => void
+  form: ReturnType<typeof useForm<AddAttendanceFormValues>>
+  onSubmit: (data: AddAttendanceFormValues) => void
 }
 
 function AddAttendanceForm({ form, onSubmit }: AddAttendanceFormProps) {

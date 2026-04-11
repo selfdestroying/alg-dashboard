@@ -1,6 +1,5 @@
 'use client'
 
-import { Lesson } from '@/prisma/generated/client'
 import { Button } from '@/src/components/ui/button'
 import {
   DropdownMenu,
@@ -10,19 +9,15 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Ban, MoreVertical, Pen, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
-import { CancelLessonDialog, RestoreLessonDialog } from './cancel-lesson-button'
-import EditLessonDialog from './edit-lesson-button'
+import { CancelLessonDialog, RestoreLessonDialog } from './cancel-lesson-dialog'
+import EditLessonDialog from './edit-lesson-dialog'
+import { useLessonDetail } from './lesson-detail-context'
 
-interface InfoSectionActionProps {
-  lesson: Lesson
-}
-
-export default function InfoSectionAction({ lesson }: InfoSectionActionProps) {
+export default function InfoSectionAction() {
+  const { lesson, isCancelled } = useLessonDetail()
   const [isEditOpen, setEditOpen] = useState(false)
   const [isCancelOpen, setCancelOpen] = useState(false)
   const [isRestoreOpen, setRestoreOpen] = useState(false)
-
-  const isCancelled = lesson.status === 'CANCELLED'
 
   return (
     <>
@@ -54,16 +49,8 @@ export default function InfoSectionAction({ lesson }: InfoSectionActionProps) {
       </DropdownMenu>
 
       <EditLessonDialog lesson={lesson} isOpen={isEditOpen} onClose={() => setEditOpen(false)} />
-      <CancelLessonDialog
-        lesson={lesson}
-        isOpen={isCancelOpen}
-        onClose={() => setCancelOpen(false)}
-      />
-      <RestoreLessonDialog
-        lesson={lesson}
-        isOpen={isRestoreOpen}
-        onClose={() => setRestoreOpen(false)}
-      />
+      <CancelLessonDialog isOpen={isCancelOpen} onClose={() => setCancelOpen(false)} />
+      <RestoreLessonDialog isOpen={isRestoreOpen} onClose={() => setRestoreOpen(false)} />
     </>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { deleteTeacherLesson, updateTeacherLesson } from '@/src/actions/lessons'
+
 import { NumberInput } from '@/src/components/number-input'
 import {
   AlertDialog,
@@ -28,81 +27,77 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
-import { EditTeacherLessonSchema, EditTeacherLessonSchemaType } from '@/src/schemas/teacher-lesson'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, MoreVertical, Pen, Trash } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import * as z from 'zod'
+import { useDeleteTeacherLessonMutation, useUpdateTeacherLessonMutation } from '../queries'
+import type { TeacherLessonRow } from '../types'
+import { useLessonDetail } from './lesson-detail-context'
 
-interface UsersActionsProps {
-  tl: Prisma.TeacherLessonGetPayload<{
-    include: {
-      teacher: true
-    }
-  }>
+const EditTeacherLessonFormSchema = z.object({
+  bid: z
+    .number('Не указана ставка')
+    .int('Ставка должна быть числом')
+    .gte(0, 'Ставка должна быть >= 0'),
+  bonusPerStudent: z
+    .number('Не указан бонус')
+    .int('Бонус должен быть целым числом')
+    .gte(0, 'Бонус должен быть >= 0'),
+})
+
+type EditTeacherLessonFormValues = z.infer<typeof EditTeacherLessonFormSchema>
+
+interface LessonTeacherActionsProps {
+  tl: TeacherLessonRow
 }
 
-export default function LessonTeacherActions({ tl }: UsersActionsProps) {
+export default function LessonTeacherActions({ tl }: LessonTeacherActionsProps) {
+  const { lessonId } = useLessonDetail()
   const [open, setOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false)
   const [deleteCountdown, setDeleteCountdown] = useState(0)
 
-  const form = useForm<EditTeacherLessonSchemaType>({
-    resolver: zodResolver(EditTeacherLessonSchema),
+  const updateMutation = useUpdateTeacherLessonMutation(lessonId)
+  const deleteMutation = useDeleteTeacherLessonMutation(lessonId)
+
+  const form = useForm<EditTeacherLessonFormValues>({
+    resolver: zodResolver(EditTeacherLessonFormSchema),
     defaultValues: {
       bid: tl.bid,
       bonusPerStudent: tl.bonusPerStudent,
     },
   })
 
-  const handleEdit = (data: EditTeacherLessonSchemaType) => {
-    startTransition(() => {
-      const { ...payload } = data
-      const ok = updateTeacherLesson({
-        where: {
-          teacherId_lessonId: {
-            teacherId: tl.teacherId,
-            lessonId: tl.lessonId,
-          },
-        },
-        data: payload,
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Ставка успешно обновлена',
-        error: 'Ошибка при обновлении ставки',
-        finally: () => {
+  const handleEdit = (data: EditTeacherLessonFormValues) => {
+    updateMutation.mutate(
+      {
+        teacherId: tl.teacherId,
+        lessonId: tl.lessonId,
+        ...data,
+      },
+      {
+        onSettled: () => {
           setEditDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   const handleDelete = () => {
-    startTransition(() => {
-      const ok = deleteTeacherLesson({
-        where: {
-          teacherId_lessonId: {
-            teacherId: tl.teacherId,
-            lessonId: tl.lessonId,
-          },
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Учитель успешно удален',
-        error: 'Ошибка при удалении учителя',
-        finally: () => {
+    deleteMutation.mutate(
+      { teacherId: tl.teacherId, lessonId: tl.lessonId },
+      {
+        onSettled: () => {
           setDeleteDialogOpen(false)
           setOpen(false)
         },
-      })
-    })
+      },
+    )
   }
 
   useEffect(() => {
@@ -177,9 +172,9 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
             <Button
               variant="destructive"
               onClick={handleDelete}
-              disabled={isPending || isDeleteDisabled}
+              disabled={deleteMutation.isPending || isDeleteDisabled}
             >
-              {isPending ? (
+              {deleteMutation.isPending ? (
                 <Loader className="animate-spin" />
               ) : isDeleteDisabled && deleteCountdown > 0 ? (
                 `Удалить (${deleteCountdown}с)`
@@ -231,7 +226,11 @@ export default function LessonTeacherActions({ tl }: UsersActionsProps) {
 
           <DialogFooter>
             <DialogClose render={<Button variant="secondary" />}>Cancel</DialogClose>
-            <Button type="submit" form="teacher-group-edit-form" disabled={isPending}>
+            <Button
+              type="submit"
+              form="teacher-group-edit-form"
+              disabled={updateMutation.isPending}
+            >
               Подтвердить
             </Button>
           </DialogFooter>

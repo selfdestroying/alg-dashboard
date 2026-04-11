@@ -1,11 +1,11 @@
+'use client'
+
 import { Badge } from '@/src/components/ui/badge'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
 interface BalanceBadgeProps {
   balance: number | string
-  currency?: string
-  className?: string
 }
 
 export default function BalanceBadge({ balance }: BalanceBadgeProps) {

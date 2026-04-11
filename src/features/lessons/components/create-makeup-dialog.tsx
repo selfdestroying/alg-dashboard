@@ -1,11 +1,5 @@
 'use client'
 
-import { StudentFinancialField, StudentLessonsBalanceChangeReason } from '@/prisma/generated/enums'
-import {
-  AttendanceWithStudents,
-  createAttendance,
-  deleteAttendance,
-} from '@/src/actions/attendance'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { Button } from '@/src/components/ui/button'
 import { Calendar } from '@/src/components/ui/calendar'
@@ -22,15 +16,18 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from '@/src/components/ui
 import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Switch } from '@/src/components/ui/switch'
-import { useLessonListQuery } from '@/src/data/lesson/lesson-list-query'
-import { useSessionQuery } from '@/src/data/user/session-query'
-import { updateStudentGroupBalance } from '@/src/features/students/actions'
 import { cn, getFullName, getGroupName } from '@/src/lib/utils'
 import { startOfDay } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
 import { CalendarIcon, Loader } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { toast } from 'sonner'
+import {
+  useCreateMakeupMutation,
+  useLessonsByDateQuery,
+  useRescheduleMakeupMutation,
+} from '../queries'
+import type { AttendanceWithStudents } from '../types'
+import { useLessonDetail } from './lesson-detail-context'
 
 interface MakeUpDialogProps {
   open: boolean
@@ -39,11 +36,10 @@ interface MakeUpDialogProps {
 }
 
 export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpDialogProps) {
-  const { data: session } = useSessionQuery()
-  const organizationId = session?.organizationId
+  const { lessonId } = useLessonDetail()
   const [selectedDay, setSelectedDay] = useState<Date | undefined>()
   const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
-  const { data: lessons } = useLessonListQuery(organizationId!, dayKey)
+  const { data: lessons } = useLessonsByDateQuery(dayKey)
 
   const isReschedule = !!attendance.makeupAttendance
 
@@ -51,7 +47,11 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
     null,
   )
   const [creditBalance, setCreditBalance] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const createMakeup = useCreateMakeupMutation(lessonId)
+  const rescheduleMakeupMutation = useRescheduleMakeupMutation(lessonId)
+
+  const isSubmitting = createMakeup.isPending || rescheduleMakeupMutation.isPending
 
   const resetForm = useCallback(() => {
     setSelectedDay(undefined)
@@ -67,77 +67,32 @@ export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpD
     [onOpenChange, resetForm],
   )
 
-  const handleCreate = async () => {
-    if (!selectedLesson || !organizationId) return
+  const handleSubmit = () => {
+    if (!selectedLesson) return
 
-    const newAttendance = await createAttendance({
-      organizationId,
-      studentId: attendance.studentId,
-      lessonId: selectedLesson.id,
-      comment: '',
-      status: 'UNSPECIFIED',
-      makeupForAttendanceId: attendance.id,
-    })
+    const onSettled = () => handleOpenChange(false)
 
-    if (creditBalance) {
-      const originalGroupId = attendance.lesson.groupId
-
-      await updateStudentGroupBalance({
-        studentId: attendance.studentId,
-        groupId: originalGroupId,
-        data: { lessonsBalance: { increment: 1 } },
-        audit: {
-          [StudentFinancialField.LESSONS_BALANCE]: {
-            reason: StudentLessonsBalanceChangeReason.MAKEUP_GRANTED,
-            meta: {
-              missedAttendanceId: attendance.id,
-              makeUpAttendanceId: newAttendance.id,
-              makeUpLessonId: selectedLesson.id,
-              makeUpLessonName: getGroupName(selectedLesson.group),
-              originalGroupId,
-            },
-          },
+    if (isReschedule && attendance.makeupAttendance) {
+      rescheduleMakeupMutation.mutate(
+        {
+          attendanceId: attendance.id,
+          oldMakeupAttendanceId: attendance.makeupAttendance.id,
+          studentId: attendance.studentId,
+          targetLessonId: selectedLesson.id,
         },
-      })
+        { onSettled },
+      )
+    } else {
+      createMakeup.mutate(
+        {
+          attendanceId: attendance.id,
+          studentId: attendance.studentId,
+          targetLessonId: selectedLesson.id,
+          creditBalance,
+        },
+        { onSettled },
+      )
     }
-  }
-
-  const handleReschedule = async () => {
-    if (!selectedLesson || !organizationId || !attendance.makeupAttendance) return
-
-    // Удаляем старую attendance отработки - связь удалится вместе с записью
-    await deleteAttendance({
-      where: { id: attendance.makeupAttendance.id },
-    })
-
-    // Создаём новую attendance + привязываем к пропуску
-    await createAttendance({
-      organizationId,
-      studentId: attendance.studentId,
-      lessonId: selectedLesson.id,
-      comment: '',
-      status: 'UNSPECIFIED',
-      makeupForAttendanceId: attendance.id,
-    })
-  }
-
-  const handleSubmit = async () => {
-    if (!selectedLesson || !organizationId) {
-      toast.error('Пожалуйста, выберите урок для отработки.')
-      return
-    }
-
-    setIsSubmitting(true)
-
-    toast.promise(isReschedule ? handleReschedule() : handleCreate(), {
-      loading: 'Сохраняем...',
-      success: () => {
-        handleOpenChange(false)
-        return isReschedule ? 'Дата отработки изменена' : 'Отработка успешно создана'
-      },
-      error: (e) => e.message,
-      finally: () => setIsSubmitting(false),
-    })
   }
 
   const studentName = getFullName(attendance.student.firstName, attendance.student.lastName)

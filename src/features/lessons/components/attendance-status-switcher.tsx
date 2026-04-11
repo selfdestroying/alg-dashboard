@@ -1,7 +1,7 @@
 'use client'
+
 import { Attendance } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
-import { updateAttendance } from '@/src/actions/attendance'
 import { Button } from '@/src/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { Toggle } from '@/src/components/ui/toggle'
@@ -14,7 +14,9 @@ import {
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { cva } from 'class-variance-authority'
 import { AlertCircle, Check, Loader, Minus, X } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useState } from 'react'
+import { useUpdateAttendanceStatusMutation } from '../queries'
+import { useLessonDetail } from './lesson-detail-context'
 
 interface AttendanceStatusSwitcherProps {
   attendance: Attendance
@@ -69,33 +71,24 @@ const switcherVariant = cva(['cursor-pointer'], {
 })
 
 export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceStatusSwitcherProps) {
+  const { lessonId } = useLessonDetail()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
-  const [isPending, startTransition] = useTransition()
-  const [status, setStatus] = useState<AttendanceStatus>(attendance.status)
-  const [isWarned, setIsWarned] = useState<boolean | null>(attendance.isWarned)
+  const { mutate, isPending } = useUpdateAttendanceStatusMutation(lessonId)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (disabled) return
-    if (status === attendance.status) return
+  const status = attendance.status
+  const isWarned = attendance.isWarned
 
-    startTransition(async () => {
-      await updateAttendance({
-        where: {
-          studentId_lessonId: {
-            studentId: attendance.studentId,
-            lessonId: attendance.lessonId,
-          },
-        },
-        data: {
-          status,
-          isWarned,
-        },
-      })
+  const handleStatusChange = (newStatus: AttendanceStatus, newIsWarned: boolean | null) => {
+    mutate({
+      studentId: attendance.studentId,
+      lessonId: attendance.lessonId,
+      status: newStatus,
+      isWarned: newIsWarned,
     })
-  }, [status, isWarned, attendance.lessonId, attendance.studentId, attendance.status, disabled])
+  }
 
   if (disabled) {
     const statusLabel = {
@@ -152,7 +145,7 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
                 <Button
                   variant={'destructive'}
                   onClick={() => {
-                    setStatus('ABSENT')
+                    handleStatusChange('ABSENT', false)
                     setPopoverOpen(false)
                   }}
                 >
@@ -161,8 +154,7 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
                 <Button
                   className="bg-success/10 text-success hover:bg-success/20"
                   onClick={() => {
-                    setStatus('ABSENT')
-                    setIsWarned(true)
+                    handleStatusChange('ABSENT', true)
                     setPopoverOpen(false)
                   }}
                 >
@@ -183,10 +175,7 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
                     active: status === 'ABSENT',
                   })}
                   pressed={status === 'ABSENT'}
-                  onClick={() => {
-                    setStatus('ABSENT')
-                    setIsWarned(false)
-                  }}
+                  onClick={() => handleStatusChange('ABSENT', false)}
                   disabled={isPending || status === 'ABSENT'}
                 >
                   {isPending ? <Loader className="animate-spin" /> : <X />}
@@ -208,10 +197,7 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
                 variant="outline"
                 className={switcherVariant({ variant: 'unspecified', active: isPending })}
                 pressed={status === 'UNSPECIFIED'}
-                onClick={() => {
-                  setStatus('UNSPECIFIED')
-                  setIsWarned(null)
-                }}
+                onClick={() => handleStatusChange('UNSPECIFIED', null)}
                 disabled={isPending || status === 'UNSPECIFIED'}
               >
                 {isPending ? <Loader className="animate-spin" /> : <Minus />}
@@ -232,10 +218,7 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
                 size={'sm'}
                 variant="outline"
                 pressed={status === 'PRESENT'}
-                onClick={() => {
-                  setStatus('PRESENT')
-                  setIsWarned(null)
-                }}
+                onClick={() => handleStatusChange('PRESENT', null)}
                 disabled={isPending || status === 'PRESENT'}
               >
                 {isPending ? <Loader className="animate-spin" /> : <Check />}

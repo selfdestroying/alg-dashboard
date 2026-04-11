@@ -1,7 +1,6 @@
 'use client'
 
 import { Lesson } from '@/prisma/generated/client'
-import { updateLesson } from '@/src/actions/lessons'
 import { Button } from '@/src/components/ui/button'
 import { Calendar, CalendarDayButton } from '@/src/components/ui/calendar'
 import {
@@ -15,12 +14,19 @@ import {
 } from '@/src/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
-import { EditLessonSchema, EditLessonSchemaType } from '@/src/schemas/lesson'
+import { normalizeDateOnly } from '@/src/lib/timezone'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
-import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import * as z from 'zod'
+import { useUpdateLessonMutation } from '../queries'
+
+const EditLessonFormSchema = z.object({
+  date: z.date().transform(normalizeDateOnly),
+  time: z.string('Выберите время урока'),
+})
+
+type EditLessonFormValues = z.infer<typeof EditLessonFormSchema>
 
 interface EditLessonDialogProps {
   lesson: Lesson
@@ -29,28 +35,17 @@ interface EditLessonDialogProps {
 }
 
 export default function EditLessonDialog({ lesson, isOpen, onClose }: EditLessonDialogProps) {
-  const [isPending, startTransition] = useTransition()
-  const form = useForm<EditLessonSchemaType>({
-    resolver: zodResolver(EditLessonSchema),
+  const { mutate, isPending } = useUpdateLessonMutation(lesson.id)
+  const form = useForm<EditLessonFormValues>({
+    resolver: zodResolver(EditLessonFormSchema),
     defaultValues: {
       date: lesson.date,
       time: lesson.time || undefined,
     },
   })
 
-  const handleSubmit = (values: EditLessonSchemaType) => {
-    startTransition(() => {
-      const ok = updateLesson({
-        where: { id: lesson.id },
-        data: values,
-      })
-      toast.promise(ok, {
-        loading: 'Сохранение изменений...',
-        success: 'Изменения успешно сохранены!',
-        error: 'Ошибка при сохранении изменений.',
-        finally: () => onClose(),
-      })
-    })
+  const handleSubmit = (values: EditLessonFormValues) => {
+    mutate(values, { onSettled: () => onClose() })
   }
 
   return (

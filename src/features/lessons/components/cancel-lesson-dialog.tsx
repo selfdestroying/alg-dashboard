@@ -1,7 +1,5 @@
 'use client'
 
-import { Lesson } from '@/prisma/generated/client'
-import { cancelLesson, updateLesson } from '@/src/actions/lessons'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,28 +10,20 @@ import {
   AlertDialogTitle,
 } from '@/src/components/ui/alert-dialog'
 import { Button } from '@/src/components/ui/button'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
+import { useCancelLessonMutation, useRestoreLessonMutation } from '../queries'
+import { useLessonDetail } from './lesson-detail-context'
 
 interface CancelLessonDialogProps {
-  lesson: Lesson
   isOpen: boolean
   onClose: () => void
 }
 
-export function CancelLessonDialog({ lesson, isOpen, onClose }: CancelLessonDialogProps) {
-  const [isPending, startTransition] = useTransition()
+export function CancelLessonDialog({ isOpen, onClose }: CancelLessonDialogProps) {
+  const { lessonId } = useLessonDetail()
+  const { mutate, isPending } = useCancelLessonMutation(lessonId)
 
   const handleCancel = () => {
-    startTransition(() => {
-      const ok = cancelLesson({ lessonId: lesson.id })
-      toast.promise(ok, {
-        loading: 'Отмена урока...',
-        success: 'Урок отменён.',
-        error: (e) => e.message || 'Ошибка при отмене урока.',
-        finally: () => onClose(),
-      })
-    })
+    mutate(undefined, { onSettled: () => onClose() })
   }
 
   return (
@@ -58,27 +48,16 @@ export function CancelLessonDialog({ lesson, isOpen, onClose }: CancelLessonDial
 }
 
 interface RestoreLessonDialogProps {
-  lesson: Lesson
   isOpen: boolean
   onClose: () => void
 }
 
-export function RestoreLessonDialog({ lesson, isOpen, onClose }: RestoreLessonDialogProps) {
-  const [isPending, startTransition] = useTransition()
+export function RestoreLessonDialog({ isOpen, onClose }: RestoreLessonDialogProps) {
+  const { lessonId } = useLessonDetail()
+  const { mutate, isPending } = useRestoreLessonMutation(lessonId)
 
   const handleRestore = () => {
-    startTransition(() => {
-      const ok = updateLesson({
-        where: { id: lesson.id },
-        data: { status: 'ACTIVE' },
-      })
-      toast.promise(ok, {
-        loading: 'Восстановление урока...',
-        success: 'Урок восстановлен.',
-        error: 'Ошибка при восстановлении урока.',
-        finally: () => onClose(),
-      })
-    })
+    mutate(undefined, { onSettled: () => onClose() })
   }
 
   return (

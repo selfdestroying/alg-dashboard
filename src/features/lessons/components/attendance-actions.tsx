@@ -1,12 +1,6 @@
-// components/DeleteDropdown.tsx
 'use client'
 
 import { StudentStatus } from '@/prisma/generated/enums'
-import {
-  AttendanceWithStudents,
-  deleteAttendance,
-  updateAttendance,
-} from '@/src/actions/attendance'
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import {
   AlertDialog,
@@ -35,69 +29,53 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { CalendarCog, CalendarPlus, Loader, MoreVertical, Trash2, UserPen } from 'lucide-react'
-import { useState, useTransition } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { useDeleteAttendanceMutation, useUpdateAttendanceStudentStatusMutation } from '../queries'
+import type { AttendanceWithStudents } from '../types'
 import { StudentStatusMap } from './attendance-table'
 import MakeUpDialog from './create-makeup-dialog'
+import { useLessonDetail } from './lesson-detail-context'
 
 const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents }) => {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId
+  const { lessonId } = useLessonDetail()
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [makeupOpen, setMakeupOpen] = useState(false)
   const [statusOpen, setStatusOpen] = useState(false)
   const [confirmText, setConfirmText] = useState('')
-  const [isPending, startTransition] = useTransition()
-  const [isStudentStatusPending, startStudentStatusTransition] = useTransition()
   const [studentStatus, setStudentStatus] = useState<StudentStatus>(attendance.studentStatus)
+
+  const deleteMutation = useDeleteAttendanceMutation(lessonId)
+  const updateStudentStatusMutation = useUpdateAttendanceStudentStatusMutation(lessonId)
 
   const studentFullName = `${attendance.student.firstName} ${attendance.student.lastName}`
 
   const handleDelete = () => {
     if (confirmText === studentFullName) {
-      startTransition(() => {
-        const ok = deleteAttendance({
-          where: {
-            studentId_lessonId: {
-              lessonId: attendance.lessonId!,
-              studentId: attendance.studentId,
-            },
+      deleteMutation.mutate(
+        { studentId: attendance.studentId, lessonId: attendance.lessonId },
+        {
+          onSettled: () => {
+            setConfirmOpen(false)
+            setConfirmText('')
+            setOpen(false)
           },
-        })
-        toast.promise(ok, {
-          loading: 'Загрузка...',
-          success: 'Ученик успешно удален',
-          error: (e) => e.message,
-        })
-        setConfirmOpen(false)
-        setConfirmText('')
-        setOpen(false)
-      })
+        },
+      )
     }
   }
 
   const handleStudentStatusConfirm = () => {
-    startStudentStatusTransition(() => {
-      const ok = updateAttendance({
-        where: { id: attendance.id, organizationId: organizationId! },
-        data: { studentStatus },
-      })
-      toast.promise(ok, {
-        loading: 'Загрузка...',
-        success: 'Успешно!',
-        error: (e) => e.message,
-      })
-      setOpen(false)
-      setStatusOpen(false)
-    })
-  }
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
+    updateStudentStatusMutation.mutate(
+      { id: attendance.id, studentStatus },
+      {
+        onSettled: () => {
+          setOpen(false)
+          setStatusOpen(false)
+        },
+      },
+    )
   }
 
   return (
@@ -179,10 +157,10 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
             <AlertDialogCancel onClick={() => setConfirmText('')}>Отмена</AlertDialogCancel>
             <Button
               variant="destructive"
-              disabled={confirmText !== studentFullName || isPending}
+              disabled={confirmText !== studentFullName || deleteMutation.isPending}
               onClick={handleDelete}
             >
-              {isPending ? <Loader className="animate-spin" /> : 'Удалить'}
+              {deleteMutation.isPending ? <Loader className="animate-spin" /> : 'Удалить'}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -204,7 +182,10 @@ const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents 
           />
           <DialogFooter>
             <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
-            <Button onClick={handleStudentStatusConfirm} disabled={isStudentStatusPending}>
+            <Button
+              onClick={handleStudentStatusConfirm}
+              disabled={updateStudentStatusMutation.isPending}
+            >
               Подтвердить
             </Button>
           </DialogFooter>

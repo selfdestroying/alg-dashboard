@@ -1,8 +1,8 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
-import { createTeacherLesson } from '@/src/actions/lessons'
+
 import { CustomCombobox } from '@/src/components/custom-combobox'
 import { NumberInput } from '@/src/components/number-input'
+import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -13,47 +13,35 @@ import {
   DialogTrigger,
 } from '@/src/components/ui/dialog'
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
 import { useMemberListQuery } from '@/src/features/organization/members/queries'
+import { OrganizationRole } from '@/src/lib/auth/server'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
-
-import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
-import { Item, ItemContent, ItemDescription, ItemTitle } from '@/src/components/ui/item'
-import { OrganizationRole } from '@/src/lib/auth/server'
-import {
-  AddTeacherToLessonSchema,
-  AddTeacherToLessonSchemaType,
-} from '@/src/schemas/teacher-lesson'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+import * as z from 'zod'
+import { useCreateTeacherLessonMutation } from '../queries'
+import { useLessonDetail } from './lesson-detail-context'
 
-interface AddTeacherToLessonButtonProps {
-  lesson: Prisma.LessonGetPayload<{
-    include: {
-      group: {
-        include: {
-          groupType: {
-            include: {
-              rate: true
-            }
-          }
-        }
-      }
-    }
-  }>
-}
+const AddTeacherFormSchema = z.object({
+  teacherId: z.int('Выберите преподавателя').positive('Выберите преподавателя'),
+  bid: z.number('Не указана ставка').int('Ставка должна быть числом'),
+  bonusPerStudent: z
+    .number('Не указан бонус за ученика')
+    .int('Бонус за ученика должен быть числом'),
+})
 
-export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonButtonProps) {
-  const { data: session, isLoading: isSessionLoading } = useSessionQuery()
-  const organizationId = session?.organizationId ?? undefined
+type AddTeacherFormValues = z.infer<typeof AddTeacherFormSchema>
+
+export default function AddTeacherToLessonButton() {
+  const { lesson, lessonId } = useLessonDetail()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const { mutate, isPending } = useCreateTeacherLessonMutation(lessonId)
 
-  const form = useForm<AddTeacherToLessonSchemaType>({
-    resolver: zodResolver(AddTeacherToLessonSchema),
+  const form = useForm<AddTeacherFormValues>({
+    resolver: zodResolver(AddTeacherFormSchema),
     defaultValues: {
       teacherId: undefined,
       bid: lesson.group.groupType?.rate?.bid ?? undefined,
@@ -61,35 +49,20 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
     },
   })
 
-  const handleSubmit = (data: AddTeacherToLessonSchemaType) => {
-    startTransition(() => {
-      const { teacherId, bid, bonusPerStudent, ...payload } = data
-      const ok = createTeacherLesson({
-        data: {
-          organizationId: organizationId!,
-          lessonId: lesson.id,
-          teacherId: Number(teacherId),
-          bid: Number(bid),
-          bonusPerStudent: Number(bonusPerStudent),
-          ...payload,
-        },
-      })
-      toast.promise(ok, {
-        loading: 'Добавление преподавателя...',
-        success: 'Преподаватель успешно добавлен в группу!',
-        error: 'Не удалось добавить преподавателя в группу.',
-        finally: () => setDialogOpen(false),
-      })
-    })
+  const handleSubmit = (data: AddTeacherFormValues) => {
+    mutate(
+      {
+        teacherId: data.teacherId,
+        bid: Number(data.bid),
+        bonusPerStudent: Number(data.bonusPerStudent),
+      },
+      { onSettled: () => setDialogOpen(false) },
+    )
   }
 
   useEffect(() => {
     form.reset()
   }, [dialogOpen, form])
-
-  if (isSessionLoading) {
-    return <Skeleton className="h-full w-full" />
-  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -117,8 +90,8 @@ export default function AddTeacherToLessonButton({ lesson }: AddTeacherToLessonB
 }
 
 interface LessonTeacherFormProps {
-  form: ReturnType<typeof useForm<AddTeacherToLessonSchemaType>>
-  onSubmit: (data: AddTeacherToLessonSchemaType) => void
+  form: ReturnType<typeof useForm<AddTeacherFormValues>>
+  onSubmit: (data: AddTeacherFormValues) => void
 }
 
 function LessonTeacherForm({ form, onSubmit }: LessonTeacherFormProps) {

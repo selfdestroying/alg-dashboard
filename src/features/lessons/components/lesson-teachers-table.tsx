@@ -1,13 +1,13 @@
 'use client'
-import { Prisma } from '@/prisma/generated/client'
+
 import DataTable from '@/src/components/data-table'
 import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'
+import type { TeacherLessonRow } from '../types'
 import BalanceBadge from './balance-badge'
+import { useLessonDetail } from './lesson-detail-context'
 import LessonTeacherActions from './lesson-teachers-actions'
-
-type TeacherLessonRow = Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>
 
 function ActionsCell({ tl }: { tl: TeacherLessonRow }) {
   const { data: canEdit } = useOrganizationPermissionQuery({ teacherLesson: ['update'] })
@@ -41,7 +41,10 @@ const columns: ColumnDef<TeacherLessonRow>[] = [
   },
 ]
 
-export default function LessonTeachersTable({ data }: { data: TeacherLessonRow[] }) {
+export default function LessonTeachersTable() {
+  const { lesson } = useLessonDetail()
+  const data = lesson.teachers
+
   const table = useReactTable({
     data,
     columns,
