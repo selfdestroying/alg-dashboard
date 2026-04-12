@@ -40,13 +40,6 @@ export const getLessonDetail = authAction
         },
         group: {
           include: {
-            _count: {
-              select: { students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } },
-            },
-            students: {
-              where: { status: { in: ['ACTIVE', 'TRIAL'] } },
-              include: { student: true },
-            },
             course: true,
             location: true,
             schedules: true,
@@ -54,38 +47,12 @@ export const getLessonDetail = authAction
           },
         },
         attendance: {
-          where: {
-            NOT: {
-              AND: [
-                { status: 'UNSPECIFIED' },
-                {
-                  student: {
-                    groups: {
-                      some: {
-                        status: { in: ['DISMISSED', 'TRANSFERRED'] },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
           include: {
             student: true,
-            lesson: {
-              include: {
-                group: {
-                  include: {
-                    course: true,
-                    location: true,
-                  },
-                },
-              },
-            },
             makeupForAttendance: { include: { lesson: true } },
             makeupAttendance: { include: { lesson: true } },
           },
-          orderBy: { id: 'asc' },
+          orderBy: { isTrial: 'desc' },
         },
       },
     })

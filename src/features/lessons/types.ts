@@ -10,11 +10,6 @@ export type LessonDetail = Prisma.LessonGetPayload<{
     }
     group: {
       include: {
-        _count: { select: { students: { where: { status: { in: ['ACTIVE', 'TRIAL'] } } } } }
-        students: {
-          where: { status: { in: ['ACTIVE', 'TRIAL'] } }
-          include: { student: true }
-        }
         course: true
         location: true
         schedules: true
@@ -24,16 +19,6 @@ export type LessonDetail = Prisma.LessonGetPayload<{
     attendance: {
       include: {
         student: true
-        lesson: {
-          include: {
-            group: {
-              include: {
-                course: true
-                location: true
-              }
-            }
-          }
-        }
         makeupForAttendance: { include: { lesson: true } }
         makeupAttendance: { include: { lesson: true } }
       }
@@ -45,16 +30,6 @@ export type LessonDetail = Prisma.LessonGetPayload<{
 export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
   include: {
     student: true
-    lesson: {
-      include: {
-        group: {
-          include: {
-            course: true
-            location: true
-          }
-        }
-      }
-    }
     makeupForAttendance: { include: { lesson: true } }
     makeupAttendance: { include: { lesson: true } }
   }

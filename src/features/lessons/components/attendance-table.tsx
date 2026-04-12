@@ -55,7 +55,9 @@ export default function AttendanceTable() {
               >
                 {`${row.original.student.firstName} ${row.original.student.lastName}`}
               </Link>
-              {row.original.isTrial && <Badge variant="secondary">Пробный</Badge>}
+              {row.original.isTrial && (
+                <Badge className="bg-info/10 text-info hover:bg-info/20 select-none">Пробный</Badge>
+              )}
             </div>
           )
         },
