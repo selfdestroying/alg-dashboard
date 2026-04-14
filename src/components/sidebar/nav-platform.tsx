@@ -141,6 +141,23 @@ const navLists: NavGroup[] = [
         featureKey: 'finances.salaries',
       },
       {
+        title: 'Прибыль',
+        url: '/finances/profit',
+        roles: ['owner'],
+        featureKey: 'finances.profit',
+      },
+      {
+        title: 'Аренда',
+        url: '/finances/rent',
+        roles: ['owner'],
+        featureKey: 'finances.rent',
+      },
+      {
+        title: 'Прочие расходы',
+        url: '/finances/expenses',
+        roles: ['owner'],
+      },
+      {
         title: 'Методы оплаты',
         url: '/finances/payment-methods',
         roles: ['owner'],

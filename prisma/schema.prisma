@@ -125,6 +125,8 @@ model Organization {
   paymentMethods                 PaymentMethod[]
   taxConfig                      TaxConfig?
   snoozedAlerts                  SnoozedAlert[]
+  rents                          Rent[]
+  expenses                       Expense[]
 
   @@unique([slug])
   @@map("Organization")
@@ -333,6 +335,42 @@ model Location {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   groups Group[]
+  rents  Rent[]
+
+  @@index([organizationId])
+}
+
+model Rent {
+  id        Int      @id @default(autoincrement())
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  amount    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  locationId     Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([locationId])
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Int
+  date      DateTime @db.Date
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
 }
