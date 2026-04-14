@@ -23,6 +23,7 @@ const pageTitles: Record<string, string> = {
   '/finances/revenue': 'Выручка',
   '/finances/salaries': 'Зарплаты',
   '/finances/advances': 'Авансы',
+  '/finances/profit': 'Прибыль',
   '/finances/payment-methods': 'Методы оплаты',
   '/shop/products': 'Товары',
   '/shop/categories': 'Категории',
