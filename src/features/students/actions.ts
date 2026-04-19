@@ -295,8 +295,20 @@ export const updateStudentCoins = authAction
   .metadata({ actionName: 'updateStudentCoins' })
   .inputSchema(UpdateStudentCoinsSchema)
   .action(async ({ ctx, parsedInput }) => {
+    const organizationId = ctx.session.organizationId!
+
+    if (parsedInput.coins < 0) {
+      const account = await prisma.studentAccount.findFirst({
+        where: { studentId: parsedInput.studentId, student: { organizationId } },
+        select: { coins: true },
+      })
+      if (!account || account.coins + parsedInput.coins < 0) {
+        throw new Error('Недостаточно монет для списания')
+      }
+    }
+
     await prisma.student.update({
-      where: { id: parsedInput.studentId, organizationId: ctx.session.organizationId! },
+      where: { id: parsedInput.studentId, organizationId },
       data: {
         account: {
           update: {
@@ -721,4 +733,61 @@ export const getStudentGroupHistory = authAction
     entries.sort((a, b) => b.date.getTime() - a.date.getTime())
 
     return entries
+  })
+
+// ─── SHOP STATS ──────────────────────────────────────────────────────────────
+
+export const getStudentShopStats = authAction
+  .metadata({ actionName: 'getStudentShopStats' })
+  .inputSchema(z.object({ studentId: z.number().int().positive() }))
+  .action(async ({ ctx, parsedInput }) => {
+    const { studentId } = parsedInput
+    const organizationId = ctx.session.organizationId!
+
+    const [account, allOrders, recentOrders] = await Promise.all([
+      prisma.studentAccount.findFirst({
+        where: { studentId, student: { organizationId } },
+        select: { coins: true },
+      }),
+      prisma.order.findMany({
+        where: { studentId, organizationId },
+        select: {
+          status: true,
+          quantity: true,
+          product: { select: { price: true } },
+        },
+      }),
+      prisma.order.findMany({
+        where: { studentId, organizationId },
+        include: { product: true },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+      }),
+    ])
+
+    let totalSpent = 0
+    let totalOrders = 0
+    let pendingOrders = 0
+    let completedOrders = 0
+    let cancelledOrders = 0
+
+    for (const o of allOrders) {
+      totalOrders += 1
+      if (o.status === 'PENDING') pendingOrders += 1
+      if (o.status === 'COMPLETED') completedOrders += 1
+      if (o.status === 'CANCELLED') cancelledOrders += 1
+      if (o.status !== 'CANCELLED') {
+        totalSpent += o.product.price * o.quantity
+      }
+    }
+
+    return {
+      coins: account?.coins ?? 0,
+      totalSpent,
+      totalOrders,
+      pendingOrders,
+      completedOrders,
+      cancelledOrders,
+      recentOrders,
+    }
   })
