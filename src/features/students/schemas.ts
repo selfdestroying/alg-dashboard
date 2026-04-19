@@ -45,7 +45,10 @@ export const EditStudentSchema = z.object({
 
 export const UpdateStudentCoinsSchema = z.object({
   studentId: z.number().int().positive(),
-  coins: z.number().int().positive('Укажите количество монет'),
+  coins: z
+    .number()
+    .int('Только целые числа')
+    .refine((v) => v !== 0, { message: 'Укажите количество монет' }),
 })
 
 export const DeleteStudentSchema = z.object({

@@ -1,0 +1,15 @@
+model SnoozedAlert {
+    id           Int      @id @default(autoincrement())
+    alertType    String
+    entityKey    String
+    snoozedUntil DateTime
+    createdAt    DateTime @default(now())
+
+    // Relations
+    organizationId  Int
+    snoozedByUserId Int
+    organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@unique([organizationId, alertType, entityKey])
+    @@index([organizationId, snoozedUntil])
+}

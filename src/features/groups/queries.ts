@@ -163,7 +163,9 @@ export const useScheduleRegenerateMutation = () => {
       queryClient.invalidateQueries({ queryKey: groupKeys.detail(variables.groupId) })
       toast.success('Расписание обновлено, уроки пересозданы!')
     },
-    onError: () => toast.error('Ошибка при обновлении расписания.'),
+    onError: () => {
+      toast.error('Ошибка при обновлении расписания.')
+    },
   })
 }
 

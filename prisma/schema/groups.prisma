@@ -1,0 +1,165 @@
+model Group {
+    id             Int       @id @default(autoincrement())
+    startDate      DateTime  @db.Date
+    maxStudents    Int
+    url            String?
+    isArchived     Boolean   @default(false)
+    archivedAt     DateTime? @db.Date
+    archiveComment String?
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+
+    // Relations
+    organizationId Int
+    courseId       Int
+    locationId     Int
+    groupTypeId    Int?
+    location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+    course         Course       @relation(fields: [courseId], references: [id])
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    groupType      GroupType?   @relation(fields: [groupTypeId], references: [id])
+
+    lessons               Lesson[]
+    students              StudentGroup[]
+    teachers              TeacherGroup[]
+    schedules             GroupSchedule[]
+    payments              Payment[]
+    balanceHistoryEntries StudentLessonsBalanceHistory[]
+
+    @@index([organizationId])
+    @@index([courseId])
+    @@index([locationId])
+    @@index([groupTypeId])
+    @@index([isArchived])
+}
+
+model GroupSchedule {
+    id        Int      @id @default(autoincrement())
+    dayOfWeek Int
+    time      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    groupId        Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+    @@unique([groupId, dayOfWeek])
+    @@index([groupId])
+    @@index([organizationId])
+}
+
+model Location {
+    id        Int      @id @default(autoincrement())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    groups Group[]
+    rents  Rent[]
+
+    @@index([organizationId])
+}
+
+model Rent {
+    id        Int      @id @default(autoincrement())
+    startDate DateTime @db.Date
+    endDate   DateTime @db.Date
+    amount    Int
+    comment   String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    locationId     Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+    @@index([locationId])
+}
+
+model Course {
+    id        Int      @id @default(autoincrement())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    groups Group[]
+
+    @@index([organizationId])
+}
+
+model GroupType {
+    id        Int      @id @default(autoincrement())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    rateId         Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    rate           Rate         @relation(fields: [rateId], references: [id])
+
+    groups Group[]
+
+    @@index([organizationId])
+    @@index([rateId])
+}
+
+model StudentGroup {
+    status          StudentStatus
+    dismissComment  String?
+    dismissedAt     DateTime?     @db.Date
+    transferComment String?
+    transferredAt   DateTime?     @db.Date
+    createdAt       DateTime      @default(now())
+    updatedAt       DateTime      @updatedAt
+
+    // Relations
+    organizationId Int
+    studentId      Int
+    groupId        Int
+    walletId       Int?
+    group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    wallet         Wallet?      @relation(fields: [walletId], references: [id], onDelete: SetNull)
+
+    @@id([studentId, groupId])
+    @@index([groupId])
+    @@index([organizationId])
+    @@index([walletId])
+}
+
+model TeacherGroup {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    groupId        Int
+    teacherId      Int
+    rateId         Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    teacher        User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+    rate           Rate         @relation(fields: [rateId], references: [id])
+
+    @@id([teacherId, groupId])
+    @@index([groupId])
+    @@index([organizationId])
+    @@index([rateId])
+}

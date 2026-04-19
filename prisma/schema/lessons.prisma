@@ -1,0 +1,65 @@
+model Lesson {
+    id        Int          @id @default(autoincrement())
+    date      DateTime     @db.Date
+    time      String
+    status    LessonStatus @default(ACTIVE)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
+
+    organizationId Int
+    groupId        Int
+    group          Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    attendance Attendance[]
+    teachers   TeacherLesson[]
+
+    @@index([groupId])
+    @@index([organizationId])
+    @@index([date])
+}
+
+model TeacherLesson {
+    bid             Int
+    bonusPerStudent Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    lessonId       Int
+    teacherId      Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    lesson         Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+    teacher        User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+    @@id([teacherId, lessonId])
+    @@index([lessonId])
+    @@index([organizationId])
+}
+
+model Attendance {
+    id        Int              @id @default(autoincrement())
+    status    AttendanceStatus @default(UNSPECIFIED)
+    comment   String           @default("")
+    isWarned  Boolean?
+    isTrial   Boolean          @default(false)
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+
+    // Relations
+    organizationId Int
+    lessonId       Int
+    studentId      Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    lesson         Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+    student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+    makeupForAttendanceId Int?        @unique
+    makeupForAttendance   Attendance? @relation("MakeupLink", fields: [makeupForAttendanceId], references: [id], onDelete: SetNull)
+    makeupAttendance      Attendance? @relation("MakeupLink")
+
+    @@unique([studentId, lessonId])
+    @@index([lessonId])
+    @@index([organizationId])
+}

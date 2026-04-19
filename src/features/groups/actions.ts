@@ -300,7 +300,7 @@ export const updateScheduleAndRegenerateLessons = authAction
 
       // 8. Create UNSPECIFIED attendance for active students
       const students = await tx.studentGroup.findMany({
-        where: { groupId, status: { in: ['ACTIVE', 'TRIAL'] } },
+        where: { groupId, status: { in: ['ACTIVE'] } },
       })
 
       if (students.length > 0) {
@@ -311,7 +311,7 @@ export const updateScheduleAndRegenerateLessons = authAction
               lessonId: lesson.id,
               studentId: s.studentId,
               status: 'UNSPECIFIED' as const,
-              studentStatus: s.status,
+              isTrial: s.status === 'TRIAL',
               comment: '',
             })),
           ),

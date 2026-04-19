@@ -1,0 +1,173 @@
+model PayCheck {
+    id        Int      @id @default(autoincrement())
+    amount    Int
+    comment   String
+    date      DateTime @db.Date
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    userId         Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    user           User         @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+    @@index([organizationId])
+}
+
+model Rate {
+    id              Int      @id @default(autoincrement())
+    name            String
+    bid             Int
+    bonusPerStudent Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    teacherGroups  TeacherGroup[]
+    groupTypes     GroupType[]
+
+    @@index([organizationId])
+}
+
+model Payment {
+    id           Int      @id @default(autoincrement())
+    lessonCount  Int      @default(0)
+    price        Int      @default(0)
+    bidForLesson Int      @default(0)
+    leadName     String   @default("")
+    productName  String   @default("")
+    date         DateTime @default(now()) @db.Date
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    // Relations
+    organizationId  Int
+    studentId       Int
+    groupId         Int?
+    walletId        Int?
+    paymentMethodId Int?
+    organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    student         Student        @relation(fields: [studentId], references: [id])
+    group           Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+    wallet          Wallet?        @relation(fields: [walletId], references: [id], onDelete: SetNull)
+    paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
+
+    @@index([studentId])
+    @@index([organizationId])
+    @@index([createdAt])
+    @@index([groupId])
+    @@index([walletId])
+    @@index([paymentMethodId])
+}
+
+model UnprocessedPayment {
+    id        Int      @id @default(autoincrement())
+    rawData   Json?
+    reason    String
+    resolved  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    studentId      Int?
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    student        Student?     @relation(fields: [studentId], references: [id])
+
+    @@index([organizationId])
+    @@index([studentId])
+}
+
+model PaymentProduct {
+    id          Int    @id @default(autoincrement())
+    name        String
+    productId   Int?
+    price       Int
+    lessonCount Int
+
+    // Relations
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+}
+
+model PaymentMethod {
+    id          Int      @id @default(autoincrement())
+    name        String
+    commission  Float    @default(0)
+    description String?
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    payments       Payment[]
+
+    @@index([organizationId])
+}
+
+model TaxConfig {
+    id        Int      @id @default(autoincrement())
+    taxSystem String // "USN_INCOME", "OSNO", etc.
+    config    Json // System-specific parameters, validated by Zod at app level
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    organizationId Int          @unique
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+}
+
+model StudentLessonsBalanceHistory {
+    id             Int                               @id @default(autoincrement())
+    studentId      Int
+    organizationId Int
+    actorUserId    Int?
+    groupId        Int?
+    walletId       Int?
+    field          StudentFinancialField             @default(LESSONS_BALANCE)
+    reason         StudentLessonsBalanceChangeReason
+    delta          Int
+    balanceBefore  Int
+    balanceAfter   Int
+    comment        String?
+    meta           Json?
+    createdAt      DateTime                          @default(now())
+    updatedAt      DateTime                          @updatedAt
+
+    organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    actorUser    User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+    group        Group?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+    wallet       Wallet?      @relation(fields: [walletId], references: [id], onDelete: SetNull)
+
+    @@index([studentId, createdAt])
+    @@index([actorUserId, createdAt])
+    @@index([organizationId])
+    @@index([groupId])
+    @@index([walletId])
+}
+
+model Expense {
+    id        Int      @id @default(autoincrement())
+    name      String
+    amount    Int
+    date      DateTime @db.Date
+    comment   String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+}

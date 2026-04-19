@@ -6,6 +6,7 @@ import {
   getStudentDetail,
   getStudentGroupHistory,
   getStudentLessonsBalanceHistory,
+  getStudentShopStats,
   getStudents,
   redistributeBalance,
   updateStudent,
@@ -24,6 +25,7 @@ export const studentKeys = {
   detail: (id: number) => ['students', 'detail', id] as const,
   groupHistory: (studentId: number) => ['students', 'groupHistory', studentId] as const,
   balanceHistory: (studentId: number) => ['students', 'balanceHistory', studentId] as const,
+  shopStats: (studentId: number) => ['students', 'shopStats', studentId] as const,
 }
 
 // ─── Queries ────────────────────────────────────────────────────────
@@ -68,6 +70,17 @@ export const useStudentBalanceHistoryQuery = (studentId: number) => {
       const { data, serverError } = await getStudentLessonsBalanceHistory({ studentId })
       if (serverError) throw serverError
       return data ?? []
+    },
+  })
+}
+
+export const useStudentShopStatsQuery = (studentId: number) => {
+  return useQuery({
+    queryKey: studentKeys.shopStats(studentId),
+    queryFn: async () => {
+      const { data, serverError } = await getStudentShopStats({ studentId })
+      if (serverError) throw serverError
+      return data
     },
   })
 }
@@ -145,12 +158,20 @@ export const useStudentCoinsMutation = (studentId: number) => {
       if (serverError) throw serverError
       return data
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: studentKeys.detail(studentId) })
-      toast.success('Монеты успешно начислены!')
+      queryClient.invalidateQueries({ queryKey: studentKeys.shopStats(studentId) })
+      const isDeduction = variables.coins < 0
+      toast.success(
+        isDeduction
+          ? `Списано ${Math.abs(variables.coins)} монет`
+          : `Начислено ${variables.coins} монет`,
+      )
     },
-    onError: () => {
-      toast.error('Ошибка при начислении монет.')
+    onError: (error) => {
+      const message =
+        typeof error === 'string' ? error : error instanceof Error ? error.message : null
+      toast.error(message || 'Ошибка при изменении баланса монет.')
     },
   })
 }
