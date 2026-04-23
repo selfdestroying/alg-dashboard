@@ -11,7 +11,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
 import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
-import { ChevronsUpDown, LogOut, User } from 'lucide-react'
+import { Banknote, ChevronsUpDown, LogOut, Receipt, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 
 import { useSessionQuery } from '@/src/data/user/session-query'
@@ -82,6 +82,18 @@ export default function NavUser() {
               <DropdownMenuItem render={<Link href="/me" />}>
                 <User />
                 Профиль
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/me/paychecks" />}>
+                <Receipt />
+                Мои чеки
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/me/salary" />}>
+                <Banknote />
+                Моя зарплата
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/me/settings" />}>
+                <Settings />
+                Настройки
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

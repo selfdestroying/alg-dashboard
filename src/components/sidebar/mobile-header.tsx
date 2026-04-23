@@ -28,6 +28,10 @@ const pageTitles: Record<string, string> = {
   '/shop/products': 'Товары',
   '/shop/categories': 'Категории',
   '/shop/orders': 'Заказы',
+  '/me': 'Профиль',
+  '/me/settings': 'Настройки',
+  '/me/paychecks': 'Мои чеки',
+  '/me/salary': 'Моя зарплата',
 }
 
 function getPageTitle(pathname: string): string {
