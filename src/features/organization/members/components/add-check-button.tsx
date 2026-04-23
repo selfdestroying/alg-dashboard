@@ -15,11 +15,19 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/src/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { payCheckTypeOptions } from '../paycheck-type'
 import { usePaycheckCreateMutation } from '../queries'
 import { CreatePaycheckSchema, CreatePaycheckSchemaType } from '../schemas'
 
@@ -38,6 +46,7 @@ export default function AddCheckButton({ userId, userName }: AddCheckButtonProps
       amount: undefined,
       date: undefined,
       comment: undefined,
+      type: 'SALARY',
     },
   })
 
@@ -108,6 +117,28 @@ export default function AddCheckButton({ userId, userName }: AddCheckButtonProps
                       />
                     </PopoverContent>
                   </Popover>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="type"
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Тип</FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Тип" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {payCheckTypeOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}

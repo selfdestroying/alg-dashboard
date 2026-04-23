@@ -68,10 +68,10 @@ export default function ProfitSummary({ data }: ProfitSummaryProps) {
         <StatCard
           label="Зарплаты"
           value={formatCurrency(salaries.total)}
-          description={`${pct(salaries.total, revenue)} от выручки · ${salaries.teacherCount} преп.`}
+          description={`${pct(salaries.total, revenue)} от выручки · ${salaries.teacherCount} преп. · ${salaries.managerCount} мен.`}
           icon={Users}
           variant="default"
-          hint={`Общая сумма зарплат за период. Из уроков: ${formatCurrency(salaries.totalFromLessons)} (${salaries.lessonCount} ур.). Из начислений: ${formatCurrency(salaries.totalFromPaychecks)}`}
+          hint={`Общая сумма зарплат за период. Уроки преподавателей: ${formatCurrency(salaries.totalFromLessons)} (${salaries.lessonCount} ур.). Начисления преподавателям: ${formatCurrency(salaries.totalFromPaychecks)}. Фикс. зарплаты менеджеров: ${formatCurrency(salaries.totalFromManagerFixed)}. Начисления менеджерам: ${formatCurrency(salaries.totalFromManagerPaychecks)}`}
         />
         <StatCard
           label="Аренда"

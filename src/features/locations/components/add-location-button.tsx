@@ -13,13 +13,25 @@ import {
 } from '@/src/components/ui/dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocationCreateMutation } from '../queries'
 import { CreateLocationSchema, CreateLocationSchemaType } from '../schemas'
 import LocationForm from './location-form'
 
-export default function AddLocationButton() {
+interface AddLocationButtonProps {
+  children?: ReactNode
+  size?: 'default' | 'sm' | 'icon'
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost'
+  className?: string
+}
+
+export default function AddLocationButton({
+  children,
+  size = 'icon',
+  variant = 'default',
+  className,
+}: AddLocationButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const createMutation = useLocationCreateMutation()
 
@@ -41,8 +53,8 @@ export default function AddLocationButton() {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger render={<Button size={'icon'} />}>
-        <Plus />
+      <DialogTrigger render={<Button size={size} variant={variant} className={className} />}>
+        {children ?? <Plus />}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

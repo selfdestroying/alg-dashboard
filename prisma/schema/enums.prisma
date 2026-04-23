@@ -44,3 +44,9 @@ enum StudentFinancialField {
     TOTAL_PAYMENTS
     TOTAL_LESSONS
 }
+
+enum PayCheckType {
+    SALARY
+    BONUS
+    ADVANCE
+}

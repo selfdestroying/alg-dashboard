@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Rent" ADD COLUMN     "isMonthly" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "endDate" DROP NOT NULL;

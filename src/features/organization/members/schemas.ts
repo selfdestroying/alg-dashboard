@@ -28,10 +28,13 @@ export type UpdateMemberSchemaType = z.infer<typeof UpdateMemberSchema>
 
 // ─── Paycheck schemas ───────────────────────────────────────────────
 
+export const PayCheckTypeSchema = z.enum(['SALARY', 'BONUS', 'ADVANCE'])
+
 export const CreatePaycheckSchema = z.object({
   amount: z.number('Укажите корректную сумму'),
   date: DateOnlySchema,
   comment: z.string('Укажите комментарий').max(255),
+  type: PayCheckTypeSchema,
 })
 
 export const UpdatePaycheckSchema = CreatePaycheckSchema.extend({

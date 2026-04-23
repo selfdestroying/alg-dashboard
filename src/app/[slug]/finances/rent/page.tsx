@@ -1,7 +1,5 @@
-import RentExpenses from '@/src/features/finances/rent/components/rent-expenses'
-
-export const metadata = { title: 'Аренда' }
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return <RentExpenses />
+  redirect('/organization/locations')
 }

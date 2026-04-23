@@ -51,7 +51,8 @@ export const useRentUpdateMutation = () => {
       queryClient.invalidateQueries({ queryKey: rentKeys.all })
       toast.success('Аренда успешно обновлена!')
     },
-    onError: () => {
+    onError: (e) => {
+      console.error(e)
       toast.error('Ошибка при обновлении аренды.')
     },
   })

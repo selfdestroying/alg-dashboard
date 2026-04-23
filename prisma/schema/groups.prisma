@@ -68,13 +68,14 @@ model Location {
 }
 
 model Rent {
-    id        Int      @id @default(autoincrement())
-    startDate DateTime @db.Date
-    endDate   DateTime @db.Date
+    id        Int       @id @default(autoincrement())
+    startDate DateTime  @db.Date
+    endDate   DateTime? @db.Date
+    isMonthly Boolean   @default(false)
     amount    Int
     comment   String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 
     // Relations
     organizationId Int

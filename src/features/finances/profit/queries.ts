@@ -1,24 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProfitData } from './actions'
+import { getProfitMonthlyData } from './actions'
 import type { ProfitFilters } from './schemas'
 
 export const profitKeys = {
   all: ['profit'] as const,
   data: (filters: ProfitFilters) => ['profit', 'data', filters] as const,
+  monthly: (year: number) => ['profit', 'monthly', year] as const,
 }
 
-export const useProfitDataQuery = (filters: ProfitFilters | null) => {
+export const useProfitMonthlyQuery = (year: number) => {
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: filters ? profitKeys.data(filters) : profitKeys.all,
+    queryKey: profitKeys.monthly(year),
     queryFn: async () => {
-      if (!filters) return null
-      const result = await getProfitData(filters)
+      const result = await getProfitMonthlyData({ year })
       if (result.serverError) throw new Error(String(result.serverError))
       if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
       if (!result.data) throw new Error('Сервер не вернул данные')
       return result.data
     },
-    enabled: !!filters,
+    staleTime: 5 * 60 * 1000,
   })
 }

@@ -18,6 +18,7 @@ model User {
     groups                TeacherGroup[]
     lessons               TeacherLesson[]
     payChecks             PayCheck[]
+    managerSalaries       ManagerSalary[]
     lessonsBalanceChanges StudentLessonsBalanceHistory[]
     sessions              Session[]
     accounts              Account[]
@@ -118,6 +119,7 @@ model Organization {
     snoozedAlerts                  SnoozedAlert[]
     rents                          Rent[]
     expenses                       Expense[]
+    managerSalaries                ManagerSalary[]
 
     @@unique([slug])
     @@map("Organization")

@@ -42,7 +42,7 @@ const navLists: NavGroup[] = [
         featureKey: 'organization.courses',
       },
       {
-        title: 'Локации',
+        title: 'Локации и аренда',
         url: '/organization/locations',
         roles: ['owner', 'manager'],
         featureKey: 'organization.locations',
@@ -137,20 +137,20 @@ const navLists: NavGroup[] = [
       {
         title: 'Зарплаты',
         url: '/finances/salaries',
-        roles: ['owner', 'manager', 'teacher'],
+        roles: ['owner'],
         featureKey: 'finances.salaries',
+      },
+      {
+        title: 'Ставки менеджеров',
+        url: '/finances/manager-salaries',
+        roles: ['owner'],
+        featureKey: 'finances.managerSalaries',
       },
       {
         title: 'Прибыль',
         url: '/finances/profit',
         roles: ['owner'],
         featureKey: 'finances.profit',
-      },
-      {
-        title: 'Аренда',
-        url: '/finances/rent',
-        roles: ['owner'],
-        featureKey: 'finances.rent',
       },
       {
         title: 'Прочие расходы',

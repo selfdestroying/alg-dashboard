@@ -31,7 +31,6 @@ interface ProfitBreakdownProps {
 
 export default function ProfitBreakdown({ data }: ProfitBreakdownProps) {
   const { revenue, taxes, acquiring, salaries, rent, expenses } = data
-
   return (
     <Card>
       <CardHeader>
@@ -135,7 +134,7 @@ export default function ProfitBreakdown({ data }: ProfitBreakdownProps) {
                 <Users className="text-muted-foreground size-4" />
                 <span>Зарплаты</span>
                 <Badge variant="outline" className="text-[0.625rem]">
-                  {salaries.teacherCount} преп.
+                  {salaries.teacherCount} преп. · {salaries.managerCount} мен.
                 </Badge>
               </div>
               <span className="text-muted-foreground mr-6 font-mono text-xs">
@@ -150,9 +149,19 @@ export default function ProfitBreakdown({ data }: ProfitBreakdownProps) {
                   hint={`${salaries.lessonCount} уроков. Формула: ставка + бонус за ученика × кол-во присутствующих`}
                 />
                 <DetailRow
-                  label="Начисления (aвансы, бонусы)"
+                  label="Начисления преподавателям"
                   value={formatCurrency(salaries.totalFromPaychecks)}
-                  hint="Дополнительные выплаты, зафиксированные в системе"
+                  hint="Авансы и бонусы, зафиксированные в системе"
+                />
+                <DetailRow
+                  label="Фикс. зарплаты менеджеров"
+                  value={formatCurrency(salaries.totalFromManagerFixed)}
+                  hint="Начислено по ставкам менеджеров за месяцы, попадающие в период. Полный месяц засчитывается, если часть месяца попадает в период"
+                />
+                <DetailRow
+                  label="Начисления менеджерам"
+                  value={formatCurrency(salaries.totalFromManagerPaychecks)}
+                  hint="Бонусы и авансы менеджеров за период"
                 />
                 <div className="border-t pt-2">
                   <DetailRow label="Итого зарплаты" value={formatCurrency(salaries.total)} bold />

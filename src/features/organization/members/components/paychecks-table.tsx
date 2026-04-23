@@ -2,6 +2,7 @@
 
 import { PayCheck } from '@/prisma/generated/client'
 import DataTable from '@/src/components/data-table'
+import { Badge } from '@/src/components/ui/badge'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { formatDateOnly } from '@/src/lib/timezone'
 import {
@@ -16,6 +17,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useState } from 'react'
+import { payCheckTypeLabels } from '../paycheck-type'
 import { usePaycheckListQuery } from '../queries'
 import PayCheckActions from './paycheck-actions'
 
@@ -32,6 +34,15 @@ export default function PayChecksTable({ userId, userName }: PayChecksTableProps
       header: 'Дата',
       accessorKey: 'date',
       cell: ({ row }) => formatDateOnly(row.original.date),
+    },
+    {
+      header: 'Тип',
+      accessorKey: 'type',
+      cell: ({ row }) => (
+        <Badge variant={row.original.type === 'SALARY' ? 'secondary' : 'outline'}>
+          {payCheckTypeLabels[row.original.type]}
+        </Badge>
+      ),
     },
     {
       header: 'Сумма',

@@ -50,20 +50,27 @@ export default function RentActions({ rent }: RentActionsProps) {
 
   const form = useForm<UpdateRentSchemaType>({
     resolver: zodResolver(UpdateRentSchema),
-    defaultValues: {
-      id: rent.id,
-      locationId: rent.locationId,
-      startDate:
-        rent.startDate instanceof Date
-          ? rent.startDate.toISOString().split('T')[0]
-          : String(rent.startDate).split('T')[0],
-      endDate:
-        rent.endDate instanceof Date
-          ? rent.endDate.toISOString().split('T')[0]
-          : String(rent.endDate).split('T')[0],
-      amount: rent.amount,
-      comment: rent.comment ?? undefined,
-    },
+    defaultValues: (() => {
+      const start = rent.startDate instanceof Date ? rent.startDate : new Date(rent.startDate)
+      const end = rent.endDate
+        ? rent.endDate instanceof Date
+          ? rent.endDate
+          : new Date(rent.endDate)
+        : null
+      const isMonthly = rent.isMonthly
+
+      return {
+        id: rent.id,
+        locationId: rent.locationId,
+        isMonthly,
+        startDate: isMonthly ? undefined : start.toISOString().split('T')[0],
+        endDate: isMonthly || !end ? undefined : end.toISOString().split('T')[0],
+        month: isMonthly ? start.getUTCMonth() : undefined,
+        year: isMonthly ? start.getUTCFullYear() : undefined,
+        amount: rent.amount,
+        comment: rent.comment ?? undefined,
+      }
+    })(),
   })
 
   const handleDelete = () => {
@@ -145,7 +152,7 @@ export default function RentActions({ rent }: RentActionsProps) {
             <DialogTitle>Редактировать аренду</DialogTitle>
             <DialogDescription>Обновите информацию о расходе на аренду</DialogDescription>
           </DialogHeader>
-          <RentForm form={form} formId="edit-rent-form" />
+          <RentForm form={form} formId="edit-rent-form" mode="edit" />
           <DialogFooter>
             <DialogClose render={<Button variant="outline" />}>Отмена</DialogClose>
             <Button

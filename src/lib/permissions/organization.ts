@@ -10,6 +10,7 @@ const statement = {
   payment: ['create', 'read', 'update', 'delete'],
   paycheck: ['create', 'read', 'update', 'delete'],
   salary: ['readSelf', 'readAll'],
+  managerSalary: ['create', 'read', 'update', 'delete'],
 
   rate: ['create', 'read', 'update', 'delete'],
   groupType: ['create', 'read', 'update', 'delete'],
@@ -31,6 +32,7 @@ const teacher = ac.newRole({
   payment: ['read'],
   paycheck: ['read'],
   salary: ['readSelf'],
+  managerSalary: ['read'],
 
   rate: ['read'],
   groupType: ['read'],
@@ -49,6 +51,7 @@ const manager = ac.newRole({
   paycheck: ['create', 'read', 'update', 'delete'],
   member: ['read', 'create', 'update', 'delete'],
   salary: ['readSelf', 'readAll'],
+  managerSalary: ['read'],
 
   rate: ['create', 'read', 'update', 'delete'],
   groupType: ['create', 'read', 'update', 'delete'],
@@ -64,6 +67,7 @@ const manager = ac.newRole({
 const owner = ac.newRole({
   ...ownerAc.statements,
   ...manager.statements,
+  managerSalary: ['create', 'read', 'update', 'delete'],
   organization: ['update'],
 })
 

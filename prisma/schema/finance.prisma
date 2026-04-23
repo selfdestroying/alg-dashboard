@@ -1,16 +1,36 @@
 model PayCheck {
-    id        Int      @id @default(autoincrement())
+    id        Int          @id @default(autoincrement())
     amount    Int
     comment   String
-    date      DateTime @db.Date
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    date      DateTime     @db.Date
+    type      PayCheckType @default(SALARY)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
 
     // Relations
     organizationId Int
     userId         Int
     organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     user           User         @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+    @@index([organizationId])
+}
+
+model ManagerSalary {
+    id            Int       @id @default(autoincrement())
+    monthlyAmount Int
+    startDate     DateTime  @db.Date
+    endDate       DateTime? @db.Date
+    comment       String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    // Relations
+    organizationId Int
+    userId         Int
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([userId])
     @@index([organizationId])

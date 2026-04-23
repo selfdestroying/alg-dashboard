@@ -11,6 +11,8 @@ import {
 } from '@/src/components/ui/card'
 import { ItemGroup } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
+import { useSessionQuery } from '@/src/data/user/session-query'
+import MemberManagerSalarySection from '@/src/features/finances/manager-salaries/components/member-manager-salary-section'
 import { OrganizationRole } from '@/src/lib/auth/server'
 import { useMemberDetailQuery, usePaycheckListQuery } from '../queries'
 import AddCheckButton from './add-check-button'
@@ -30,12 +32,16 @@ interface MemberDetailProps {
 export default function MemberDetail({ userId }: MemberDetailProps) {
   const { data: member, isLoading, isError } = useMemberDetailQuery(userId)
   const { data: paychecks = [] } = usePaycheckListQuery(userId)
+  const { data: session } = useSessionQuery()
 
   if (isLoading) return <Skeleton className="h-64 w-full" />
   if (isError) return <div className="text-destructive">Ошибка загрузки</div>
   if (!member) return <div>Сотрудник не найден.</div>
 
   const roleLabel = memberRoleLabels[member.role as OrganizationRole] ?? member.role ?? '-'
+  const viewerRole = session?.memberRole as OrganizationRole | undefined
+  const showManagerSalary = member.role === 'manager' || member.role === 'owner'
+  const canEditManagerSalary = viewerRole === 'owner'
 
   return (
     <div className="space-y-2">
@@ -65,6 +71,9 @@ export default function MemberDetail({ userId }: MemberDetailProps) {
         </CardHeader>
         <CardContent />
       </Card>
+      {showManagerSalary && (
+        <MemberManagerSalarySection userId={member.userId} canEdit={canEditManagerSalary} />
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Чеки</CardTitle>
