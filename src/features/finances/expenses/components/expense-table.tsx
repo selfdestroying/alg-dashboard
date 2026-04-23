@@ -44,7 +44,7 @@ export default function ExpenseTable() {
       {
         header: 'Комментарий',
         accessorKey: 'comment',
-        cell: ({ row }) => row.original.comment || '—',
+        cell: ({ row }) => row.original.comment || '-',
       },
       {
         id: 'actions',

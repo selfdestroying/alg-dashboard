@@ -98,7 +98,7 @@ export default function AttendanceTable() {
         accessorKey: 'comment',
         cell: ({ row }) =>
           isCancelled ? (
-            <span className="text-muted-foreground text-sm">{row.original.comment || '—'}</span>
+            <span className="text-muted-foreground text-sm">{row.original.comment || '-'}</span>
           ) : (
             <Input
               defaultValue={row.original.comment}

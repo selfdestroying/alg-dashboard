@@ -168,7 +168,7 @@ export default function EditStudentDialog({ student }: { student: StudentDetail 
                   <FieldDescription>
                     {calculatedAge !== null
                       ? `Возраст: ${calculatedAge}`
-                      : 'Допустимый возраст: 6–17 лет'}
+                      : 'Допустимый возраст: 6-17 лет'}
                   </FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>

@@ -139,7 +139,7 @@ const LESSON_COLUMNS: ColumnDef<LessonWithDetails>[] = [
     cell: (info) => {
       const value = info.getValue()
       if (value === 'cancelled') {
-        return <span className="text-muted-foreground">—</span>
+        return <span className="text-muted-foreground">-</span>
       }
       return value === 'marked' ? (
         <div className="text-success flex items-center gap-2">

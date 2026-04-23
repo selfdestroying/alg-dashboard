@@ -1,6 +1,6 @@
 import { Prisma } from '@/prisma/generated/client'
 
-/** Groups list — includes relations needed for the table */
+/** Groups list - includes relations needed for the table */
 export type GroupWithRelations = Prisma.GroupGetPayload<{
   include: {
     location: true
@@ -12,7 +12,7 @@ export type GroupWithRelations = Prisma.GroupGetPayload<{
   }
 }>
 
-/** Group detail page — basic payload */
+/** Group detail page - basic payload */
 export type GroupDetail = Prisma.GroupGetPayload<{
   include: {
     location: true
@@ -24,7 +24,7 @@ export type GroupDetail = Prisma.GroupGetPayload<{
   }
 }>
 
-/** Group detail page — full payload with lessons, attendance, teachers with rates */
+/** Group detail page - full payload with lessons, attendance, teachers with rates */
 export type GroupDetailFull = Prisma.GroupGetPayload<{
   include: {
     lessons: {

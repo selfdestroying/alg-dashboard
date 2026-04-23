@@ -95,13 +95,13 @@ export const getAdvancesData = authAction
     // Студенты, которые есть в выручке, но не в оплатах
     for (const e of allRevenueEntries) {
       if (!studentMap.has(e.studentId)) {
-        // Нужно имя — запросим позже или пропустим (они должны быть в оплатах)
+        // Нужно имя - запросим позже или пропустим (они должны быть в оплатах)
       }
     }
     // Студенты из посещений
     for (const r of totalAttendancesInPeriod) {
       if (!studentMap.has(r.studentId)) {
-        // Эти студенты без оплат — загрузим имена
+        // Эти студенты без оплат - загрузим имена
       }
     }
 

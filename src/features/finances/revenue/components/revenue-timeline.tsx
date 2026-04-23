@@ -119,7 +119,7 @@ function TimelinePagination({
     <div className="flex items-center gap-2">
       <Label className="flex w-fit items-center justify-center">
         Страница {currentPage} из {totalPages}{' '}
-        {pageFrom && pageTo && `(${formatDate(pageFrom)} – ${formatDate(pageTo)})`}
+        {pageFrom && pageTo && `(${formatDate(pageFrom)} - ${formatDate(pageTo)})`}
       </Label>
       <Button
         variant="outline"

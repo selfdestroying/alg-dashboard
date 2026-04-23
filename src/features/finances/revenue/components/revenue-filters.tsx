@@ -86,7 +86,7 @@ export default function RevenueFiltersBar({ filterState, setFilterState }: Reven
   const formatDateRange = () => {
     if (!dateRange?.from) return 'Выберите период'
     if (!dateRange.to) return format(dateRange.from, 'd MMM yyyy', { locale: ru })
-    return `${format(dateRange.from, 'd MMM', { locale: ru })} – ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
+    return `${format(dateRange.from, 'd MMM', { locale: ru })} - ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
   }
 
   const toggleStatus = (value: ChargeableStatus, checked: boolean) => {
@@ -180,14 +180,14 @@ export default function RevenueFiltersBar({ filterState, setFilterState }: Reven
           />
         </div>
 
-        {/* Row 2: Chargeable statuses — inline checkboxes */}
+        {/* Row 2: Chargeable statuses - inline checkboxes */}
         <div className="border-t pt-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span className="text-muted-foreground mt-1.5 text-xs font-medium whitespace-nowrap">
               Считать посещением:
             </span>
 
-            {/* Посетил — standalone */}
+            {/* Посетил - standalone */}
             <label className="mt-1 flex cursor-pointer items-center gap-1.5 text-sm">
               <Checkbox
                 checked={filterState.selectedStatuses.includes('present')}
@@ -196,7 +196,7 @@ export default function RevenueFiltersBar({ filterState, setFilterState }: Reven
               Посетил
             </label>
 
-            {/* Пропустил — bordered group */}
+            {/* Пропустил - bordered group */}
             <fieldset className="border-border flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-md border px-3 py-1.5">
               <legend className="text-muted-foreground px-1 text-xs">Пропустил</legend>
               {CHARGEABLE_STATUS_OPTIONS.filter((o) => o.value !== 'present').map((option) => {

@@ -158,7 +158,7 @@ export function SmartFeedBar() {
   )
 }
 
-// ─── Chip popover (desktop — one per alert type) ───────────────────────
+// ─── Chip popover (desktop - one per alert type) ───────────────────────
 
 const chipVariants = {
   red: 'bg-destructive/10 text-destructive hover:bg-destructive/15',

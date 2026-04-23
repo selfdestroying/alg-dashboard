@@ -161,7 +161,7 @@ export default function Salaries() {
   const formatDateRange = () => {
     if (!dateRange?.from) return 'Выберите период'
     if (!dateRange.to) return format(dateRange.from, 'd MMM yyyy', { locale: ru })
-    return `${format(dateRange.from, 'd MMM', { locale: ru })} – ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
+    return `${format(dateRange.from, 'd MMM', { locale: ru })} - ${format(dateRange.to, 'd MMM yyyy', { locale: ru })}`
   }
 
   return (
