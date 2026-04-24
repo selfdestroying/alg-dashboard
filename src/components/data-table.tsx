@@ -27,8 +27,10 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Loader,
 } from 'lucide-react'
 import { type ReactNode } from 'react'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from './ui/empty'
 
 interface DataTableProps<TData> {
   table: TanstackTable<TData>
@@ -38,6 +40,8 @@ interface DataTableProps<TData> {
   showPagination?: boolean
   /** Слот для тулбара (поиск, фильтры и т.д.) */
   toolbar?: ReactNode
+  /**  */
+  isLoading?: boolean
 }
 
 export default function DataTable<TData>({
@@ -45,6 +49,7 @@ export default function DataTable<TData>({
   emptyMessage = 'Нет данных.',
   showPagination = false,
   toolbar,
+  isLoading = false,
 }: DataTableProps<TData>) {
   const columnCount = table.getAllColumns().length
 
@@ -87,7 +92,20 @@ export default function DataTable<TData>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columnCount}>
+                <Empty className="w-full">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Loader className="animate-spin" />
+                    </EmptyMedia>
+                    <EmptyTitle>Получение списка уроков</EmptyTitle>
+                  </EmptyHeader>
+                </Empty>
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (

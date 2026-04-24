@@ -1,0 +1,104 @@
+import type { AttendanceStatus, LessonStatus, Prisma } from '@/prisma/generated/client'
+
+export type DashboardLessonRecord = Prisma.LessonGetPayload<{
+  include: {
+    attendance: {
+      include: {
+        student: true
+      }
+    }
+    group: {
+      include: {
+        course: true
+        location: true
+      }
+    }
+    teachers: {
+      include: {
+        teacher: true
+      }
+    }
+  }
+}>
+
+export type DashboardDayStatus = 'marked' | 'unmarked' | null
+
+export interface DashboardAttendanceItem {
+  id: number
+  status: AttendanceStatus
+  isTrial: boolean
+  comment: string
+  student: {
+    id: number
+    firstName: string
+    lastName: string | null
+  }
+}
+
+export interface DashboardLessonSummary {
+  attendanceCount: number
+  attendanceToMarkCount: number
+  markedAttendanceCount: number
+  unmarkedAttendanceCount: number
+  presentCount: number
+  absentCount: number
+}
+
+export interface DashboardLessonItem {
+  id: number
+  date: string
+  time: string
+  status: LessonStatus
+  group: {
+    id: number
+    course: {
+      id: number
+      name: string
+    }
+    location: {
+      id: number
+      name: string
+    } | null
+  }
+  teachers: Array<{
+    id: number
+    name: string
+  }>
+  attendance: DashboardAttendanceItem[]
+  summary: DashboardLessonSummary
+}
+
+export interface DashboardDaySummary extends DashboardLessonSummary {
+  totalLessons: number
+  activeLessons: number
+  cancelledLessons: number
+}
+
+export interface DashboardDayData {
+  date: string
+  status: DashboardDayStatus
+  lessons: DashboardLessonItem[]
+  summary: DashboardDaySummary
+}
+
+export interface DashboardMonthSummary {
+  totalLessons: number
+  unmarkedDays: number
+  todayLessons: number
+  cancelledLessons: number
+}
+
+export interface DashboardMonthData {
+  month: string
+  today: string
+  summary: DashboardMonthSummary
+  days: DashboardDayData[]
+}
+
+export interface DashboardCalendarDaySummary {
+  status: DashboardDayStatus
+  totalLessons: number
+  unmarkedAttendanceCount: number
+}
+
+export type DashboardCalendarDaySummaryMap = Record<string, DashboardCalendarDaySummary>
