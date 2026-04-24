@@ -11,44 +11,6 @@ import { Prisma } from '../../prisma/generated/client'
 import { AttendanceStatus, StudentLessonsBalanceChangeReason } from '../../prisma/generated/enums'
 import { auth } from '../lib/auth/server'
 
-export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
-  include: {
-    student: true
-    lesson: {
-      include: {
-        group: {
-          include: {
-            course: true
-            location: true
-            teachers: {
-              include: {
-                teacher: true
-              }
-            }
-          }
-        }
-      }
-    }
-    makeupForAttendance: { include: { lesson: true } }
-    makeupAttendance: { include: { lesson: true } }
-  }
-}>
-
-export const createAttendance = async (data: Prisma.AttendanceUncheckedCreateInput) => {
-  // Guard: cannot add attendance to a cancelled lesson
-  const lesson = await prisma.lesson.findUnique({
-    where: { id: data.lessonId },
-    select: { status: true },
-  })
-  if (lesson?.status === 'CANCELLED') {
-    throw new Error('Нельзя добавить ученика в отменённый урок')
-  }
-
-  const attendance = await prisma.attendance.create({ data })
-  revalidatePath(`dashboard/lessons/${data.lessonId}`)
-  return attendance
-}
-
 const updateCoins = async (
   tx: Prisma.TransactionClient,
   newStatus: AttendanceStatus,
@@ -230,29 +192,4 @@ export const updateAttendance = async (payload: Prisma.AttendanceUpdateArgs) => 
     await tx.attendance.update(payload)
   })
   revalidatePath(`/lessons/${payload.where.studentId_lessonId?.lessonId}`)
-}
-
-export const updateAttendanceComment = async (payload: Prisma.AttendanceUpdateArgs) => {
-  await prisma.attendance.update(payload)
-}
-
-export const updateDataMock = async (time: number) => {
-  await new Promise((resolve) => setTimeout(resolve, time))
-}
-
-export const deleteAttendance = async (data: Prisma.AttendanceDeleteArgs) => {
-  // Guard: cannot delete attendance from a cancelled lesson
-  const lessonId = data.where.studentId_lessonId?.lessonId
-  if (typeof lessonId === 'number') {
-    const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId },
-      select: { status: true },
-    })
-    if (lesson?.status === 'CANCELLED') {
-      throw new Error('Нельзя удалить ученика из отменённого урока')
-    }
-  }
-
-  await prisma.attendance.delete(data)
-  revalidatePath(`/lessons/${data.where.lessonId}`)
 }
