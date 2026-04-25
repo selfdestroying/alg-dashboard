@@ -41,13 +41,13 @@ function NumberInput({
       : Number(internalValue)
 
   // Sync rawInput when controlled value changes externally
-  React.useEffect(() => {
-    if (isControlled) {
-      setRawInput(
-        controlledValue === '' || controlledValue === undefined ? '' : String(controlledValue),
-      )
-    }
-  }, [isControlled, controlledValue])
+  const [prevControlledValue, setPrevControlledValue] = React.useState(controlledValue)
+  if (isControlled && prevControlledValue !== controlledValue) {
+    setPrevControlledValue(controlledValue)
+    setRawInput(
+      controlledValue === '' || controlledValue === undefined ? '' : String(controlledValue),
+    )
+  }
 
   const clamp = (n: number) => {
     if (min !== undefined && n < min) return min

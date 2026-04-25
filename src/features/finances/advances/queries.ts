@@ -9,7 +9,6 @@ export const advancesKeys = {
 
 export const useAdvancesDataQuery = (filters: AdvancesFilters | null) => {
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: filters ? advancesKeys.data(filters) : advancesKeys.all,
     queryFn: async () => {
       if (!filters) return null

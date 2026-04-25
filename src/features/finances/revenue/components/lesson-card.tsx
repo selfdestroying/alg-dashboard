@@ -31,7 +31,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { LessonWithCost } from '../types'
 import AttendanceRow from './attendance-row'
 
@@ -59,10 +59,11 @@ interface LessonCardProps {
 
 export default function LessonCard({ lesson, allCardsOpen }: LessonCardProps) {
   const [isOpen, setIsOpen] = useState(allCardsOpen)
-
-  useEffect(() => {
+  const [prevAllCardsOpen, setPrevAllCardsOpen] = useState(allCardsOpen)
+  if (prevAllCardsOpen !== allCardsOpen) {
+    setPrevAllCardsOpen(allCardsOpen)
     setIsOpen(allCardsOpen)
-  }, [allCardsOpen])
+  }
 
   const statusConfig = STATUS_CONFIG[lesson.status as keyof typeof STATUS_CONFIG]
   const StatusIcon = statusConfig?.icon ?? Clock

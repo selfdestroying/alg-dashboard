@@ -9,7 +9,6 @@ export const revenueKeys = {
 
 export const useRevenueDataQuery = (filters: RevenueFilters | null) => {
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: filters ? revenueKeys.data(filters) : revenueKeys.all,
     queryFn: async () => {
       if (!filters) return null

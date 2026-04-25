@@ -19,7 +19,7 @@ import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { formatDate } from '@/src/lib/timezone'
 import { Calendar, ChevronDown, ChevronUp } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import LessonCard from './lesson-card'
 
 function formatCurrency(value: number) {
@@ -37,10 +37,11 @@ interface DayCardProps {
 
 export default function DayCard({ day, allCardsOpen }: DayCardProps) {
   const [isOpen, setIsOpen] = useState(allCardsOpen)
-
-  useEffect(() => {
+  const [prevAllCardsOpen, setPrevAllCardsOpen] = useState(allCardsOpen)
+  if (prevAllCardsOpen !== allCardsOpen) {
+    setPrevAllCardsOpen(allCardsOpen)
     setIsOpen(allCardsOpen)
-  }, [allCardsOpen])
+  }
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
