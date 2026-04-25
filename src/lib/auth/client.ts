@@ -17,6 +17,11 @@ export const authClient = createAuthClient({
     nextCookies(),
     customSessionClient<typeof auth>(),
     adminClient({ ...globalPermissions }),
-    organizationClient({ ...organizationPermissions }),
+    organizationClient({
+      ...organizationPermissions,
+      dynamicAccessControl: {
+        enabled: true,
+      },
+    }),
   ],
 })

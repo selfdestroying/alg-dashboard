@@ -87,6 +87,9 @@ const options = {
     adminPlugin({ ...globalPermissions }),
     organization({
       ...organizationPermissions,
+      dynamicAccessControl: {
+        enabled: true,
+      },
       allowUserToCreateOrganization: true,
       schema: {
         member: { modelName: 'Member' },
