@@ -137,7 +137,7 @@ const navLists: NavGroup[] = [
       {
         title: 'Зарплаты',
         url: '/finances/salaries',
-        roles: ['owner'],
+        roles: ['owner', 'manager'],
         featureKey: 'finances.salaries',
       },
       {
