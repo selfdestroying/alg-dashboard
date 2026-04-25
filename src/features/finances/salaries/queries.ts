@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMeSalaryPaychecks, getSalaryData } from './actions'
+import { getMeSalaryPaychecks, getMySalaryData, getSalaryData } from './actions'
 import type { SalaryFilters } from './types'
 
 export const salaryKeys = {
@@ -11,7 +11,6 @@ export const salaryKeys = {
 
 export const useSalaryDataQuery = (filters: SalaryFilters | null) => {
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: filters ? salaryKeys.data(filters) : salaryKeys.all,
     queryFn: async () => {
       if (!filters) return null
@@ -25,9 +24,23 @@ export const useSalaryDataQuery = (filters: SalaryFilters | null) => {
   })
 }
 
+export const useMySalaryDataQuery = (filters: SalaryFilters | null) => {
+  return useQuery({
+    queryKey: filters ? salaryKeys.data(filters) : salaryKeys.all,
+    queryFn: async () => {
+      if (!filters) return null
+      const result = await getMySalaryData(filters)
+      if (result.serverError) throw new Error(String(result.serverError))
+      if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
+      if (!result.data) throw new Error('Сервер не вернул данные')
+      return result.data
+    },
+    enabled: !!filters,
+  })
+}
+
 export const useSalaryPaychecksQuery = (startDate: string | null, endDate: string | null) => {
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: startDate && endDate ? salaryKeys.paychecks(startDate, endDate) : salaryKeys.all,
     queryFn: async () => {
       if (!startDate || !endDate) return []

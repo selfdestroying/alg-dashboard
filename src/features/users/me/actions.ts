@@ -23,3 +23,57 @@ export const getMyPaychecks = authAction
       },
     })
   })
+
+export type IncomeEntry = { date: string; lessons: number; paychecks: number }
+
+export const getMyIncomeHistory = authAction
+  .metadata({ actionName: 'getMyIncomeHistory' })
+  .action(async ({ ctx }): Promise<IncomeEntry[]> => {
+    const userId = Number(ctx.session.user.id)
+    const organizationId = ctx.session.organizationId!
+
+    console.log(userId)
+
+    const [teacherLessons, paychecks] = await Promise.all([
+      prisma.teacherLesson.findMany({
+        where: {
+          teacherId: userId,
+          organizationId,
+          lesson: { status: 'ACTIVE', date: { lte: new Date() } },
+        },
+        select: {
+          bid: true,
+          bonusPerStudent: true,
+          lesson: {
+            select: {
+              date: true,
+              _count: { select: { attendance: { where: { status: 'PRESENT' } } } },
+            },
+          },
+        },
+      }),
+      prisma.payCheck.findMany({
+        where: { userId, organizationId },
+        select: { date: true, amount: true },
+      }),
+    ])
+
+    const map = new Map<string, IncomeEntry>()
+    const upsert = (date: Date, key: 'lessons' | 'paychecks', amount: number) => {
+      const dateKey = date.toISOString().split('T')[0]!
+      const e = map.get(dateKey) ?? { date: dateKey, lessons: 0, paychecks: 0 }
+      e[key] += amount
+      map.set(dateKey, e)
+    }
+
+    for (const tl of teacherLessons) {
+      const present = tl.lesson._count?.attendance ?? 0
+      const price = tl.bid + tl.bonusPerStudent * present
+      upsert(tl.lesson.date, 'lessons', price)
+    }
+    for (const p of paychecks) {
+      upsert(p.date, 'paychecks', p.amount)
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.date.localeCompare(b.date))
+  })

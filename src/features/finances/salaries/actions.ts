@@ -123,6 +123,102 @@ export const getSalaryData = authAction
     }
   })
 
+export const getMySalaryData = authAction
+  .metadata({ actionName: 'getMySalaryData' })
+  .inputSchema(SalaryFiltersSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    const { startDate, endDate, courseIds, locationIds } = parsedInput
+    const organizationId = ctx.session.organizationId!
+    const userId = Number(ctx.session.user.id)
+
+    // Check if user has salary:readAll permission
+    const { success: canReadAll } = await auth.api.hasPermission({
+      headers: await headers(),
+      body: { permissions: { salary: ['readAll'] } },
+    })
+
+    // Build group filter
+    const groupFilter: Record<string, object> = {}
+    if (courseIds && courseIds.length > 0) {
+      groupFilter.courseId = { in: courseIds }
+    }
+    if (locationIds && locationIds.length > 0) {
+      groupFilter.locationId = { in: locationIds }
+    }
+
+    const lessons = await prisma.lesson.findMany({
+      where: {
+        organizationId,
+        teachers: {
+          some: {
+            teacherId: userId,
+          },
+        },
+        date: { gte: startDate, lte: endDate },
+        group: Object.keys(groupFilter).length > 0 ? groupFilter : undefined,
+      },
+      include: {
+        teachers: {
+          include: {
+            teacher: true,
+          },
+        },
+        group: {
+          include: {
+            course: true,
+            location: true,
+            groupType: true,
+            schedules: true,
+          },
+        },
+        _count: { select: { attendance: { where: { status: 'PRESENT' } } } },
+      },
+      orderBy: [{ date: 'asc' }, { time: 'asc' }],
+    })
+
+    // Sort by date and time
+    lessons.sort((a, b) => {
+      const dateA = new Date(a.date)
+      const dateB = new Date(b.date)
+      if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime()
+      if (a.time && b.time) {
+        const aParts = a.time.split(':').map(Number)
+        const bParts = b.time.split(':').map(Number)
+        const aH = aParts[0] ?? 0
+        const aM = aParts[1] ?? 0
+        const bH = bParts[0] ?? 0
+        const bM = bParts[1] ?? 0
+        return aH * 60 + aM - (bH * 60 + bM)
+      }
+      return 0
+    })
+
+    // Group by teacher
+    const lessonsByTeacher: Record<number, TeacherSalaryData> = {}
+    for (const lesson of lessons) {
+      const presentCount = lesson._count?.attendance ?? 0
+      for (const tl of lesson.teachers) {
+        const teacher = tl.teacher
+        const existing = lessonsByTeacher[teacher.id]
+        if (!existing) {
+          lessonsByTeacher[teacher.id] = { teacher, lessons: [] }
+        }
+        const bonusTotal = tl.bonusPerStudent * presentCount
+        lessonsByTeacher[teacher.id]!.lessons.push({
+          ...lesson,
+          price: tl.bid + bonusTotal,
+          bonusPerStudent: tl.bonusPerStudent,
+          presentCount,
+        })
+      }
+    }
+
+    return {
+      teachers: Object.values(lessonsByTeacher).filter((t) => t.teacher.id === userId),
+      canReadAll,
+    }
+  })
+
 export const getSalaryPaychecks = authAction
   .metadata({ actionName: 'getSalaryPaychecks' })
   .inputSchema(
