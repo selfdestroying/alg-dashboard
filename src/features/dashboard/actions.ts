@@ -73,14 +73,38 @@ function mapAttendanceItem(
 ): DashboardAttendanceItem {
   return {
     id: attendance.id,
+    studentId: attendance.studentId,
+    lessonId: attendance.lessonId,
     status: attendance.status,
     isTrial: attendance.isTrial,
+    isWarned: attendance.isWarned,
     comment: attendance.comment,
+    makeupForAttendanceId: attendance.makeupForAttendanceId,
     student: {
       id: attendance.student.id,
       firstName: attendance.student.firstName,
       lastName: attendance.student.lastName,
     },
+    makeupForAttendance: attendance.makeupForAttendance
+      ? {
+          id: attendance.makeupForAttendance.id,
+          lessonId: attendance.makeupForAttendance.lessonId,
+          lesson: {
+            id: attendance.makeupForAttendance.lesson.id,
+            date: attendance.makeupForAttendance.lesson.date,
+          },
+        }
+      : null,
+    makeupAttendance: attendance.makeupAttendance
+      ? {
+          id: attendance.makeupAttendance.id,
+          lessonId: attendance.makeupAttendance.lessonId,
+          lesson: {
+            id: attendance.makeupAttendance.lesson.id,
+            date: attendance.makeupAttendance.lesson.date,
+          },
+        }
+      : null,
   }
 }
 
@@ -205,6 +229,8 @@ export const getDashboardMonthData = authAction
         attendance: {
           include: {
             student: true,
+            makeupForAttendance: { include: { lesson: true } },
+            makeupAttendance: { include: { lesson: true } },
           },
         },
         group: {

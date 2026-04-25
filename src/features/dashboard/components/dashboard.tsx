@@ -1,6 +1,5 @@
 'use client'
 
-import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
 import { StatCard } from '@/src/components/stat-card'
 import { Badge } from '@/src/components/ui/badge'
@@ -20,29 +19,34 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/src/components/ui/empty'
+import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { moscowNow } from '@/src/lib/timezone'
-import { cn } from '@/src/lib/utils'
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import AttendanceActions from '@/src/features/lessons/components/attendance-actions'
+import { AttendanceStatusSwitcher } from '@/src/features/lessons/components/attendance-status-switcher'
+import { useUpdateAttendanceCommentMutation } from '@/src/features/lessons/queries'
+import { formatDateOnly, moscowNow } from '@/src/lib/timezone'
+import { cn, getFullName } from '@/src/lib/utils'
 import { format, isSameDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { debounce } from 'es-toolkit'
 import {
   BookOpen,
   Calendar,
   Check,
+  ChevronDown,
   CircleAlert,
   CircleHelp,
   Clock,
   Info,
   RefreshCw,
   SquareArrowOutUpRight,
-  X,
   XCircle,
 } from 'lucide-react'
 import Link from 'next/link'
 import { createParser, useQueryStates } from 'nuqs'
-import { useEffect } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDashboardMonthQuery } from '../queries'
 import { DASHBOARD_MONTH_KEY_REGEX } from '../schemas'
 import type {
@@ -137,115 +141,6 @@ const dayStatusConfig: Record<
   },
 }
 
-const LESSON_COLUMNS: ColumnDef<DashboardLessonItem>[] = [
-  {
-    header: 'Урок',
-    cell: (info) => (
-      <Button
-        variant={'outline'}
-        size={'xs'}
-        render={<Link href={`/lessons/${info.row.original.id}`} />}
-        nativeButton={false}
-      >
-        Детали
-        <SquareArrowOutUpRight />
-      </Button>
-    ),
-  },
-  {
-    header: 'Ученики',
-    accessorFn: (lesson) => lesson.attendance.length,
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'course',
-    header: 'Курс',
-    accessorKey: 'group.course.id',
-    cell: ({ row }) => row.original.group.course.name,
-    filterFn: (row, columnId, filterValue) => {
-      return filterValue.length === 0 || filterValue.includes(row.original.group.course.id)
-    },
-  },
-  {
-    header: 'Время',
-    accessorKey: 'time',
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'teacher',
-    header: 'Учителя',
-    cell: ({ row }) => (
-      <div className="flex gap-x-1">
-        {row.original.teachers.length === 0 ? (
-          <span>-</span>
-        ) : (
-          row.original.teachers.map((t, index) => (
-            <span key={t.name}>
-              <Link href={`/organization/members/${t.id}`} className="text-primary hover:underline">
-                {t.name}
-              </Link>
-              {index < row.original.teachers.length - 1 && ', '}
-            </span>
-          ))
-        )}
-      </div>
-    ),
-    filterFn: (row, columnId, filterValue) => {
-      const teacherIds = row.original.teachers.map((t) => t.id)
-      return (
-        filterValue.length === 0 || teacherIds.some((teacherId) => filterValue.includes(teacherId))
-      )
-    },
-  },
-  {
-    id: 'location',
-    header: 'Локация',
-    accessorFn: (lesson) => lesson.group.location?.id,
-    cell: (info) => info.row.original.group.location?.name,
-    filterFn: (row, columnId, filterValue) => {
-      return filterValue.length === 0 || filterValue.includes(row.original.group.location?.id)
-    },
-  },
-
-  {
-    id: 'marks',
-    header: () => (
-      <span className="flex items-center gap-0.5">
-        Отметки
-        <Hint text="Показывает, все ли ученики отмечены на уроке. Зелёная галочка - все отмечены, красный крестик - есть неотмеченные." />
-      </span>
-    ),
-    accessorFn: (lesson) => {
-      if (lesson.status === 'CANCELLED') return 'cancelled'
-      return lesson.attendance.some((a) => a.status === 'UNSPECIFIED') ? 'unmarked' : 'marked'
-    },
-    cell: (info) => {
-      const value = info.getValue()
-      if (value === 'cancelled') {
-        return <span className="text-muted-foreground">-</span>
-      }
-      return value === 'marked' ? (
-        <div className="text-success flex items-center gap-2">
-          <Check className="size-4" />
-        </div>
-      ) : (
-        <div className="text-destructive flex items-center gap-2">
-          <X className="size-4" />
-        </div>
-      )
-    },
-  },
-  {
-    header: 'Статус',
-    accessorKey: 'status',
-    cell: (info) => (
-      <span className={info.getValue() === 'ACTIVE' ? 'text-success' : 'text-muted-foreground'}>
-        {info.getValue() === 'ACTIVE' ? 'Активен' : 'Отменён'}
-      </span>
-    ),
-  },
-]
-
 export default function Dashboard() {
   const [pageState, setPageState] = useQueryStates(
     {
@@ -273,12 +168,6 @@ export default function Dashboard() {
   const selectedDayData = data?.days.find((day) => day.date === selectedDayKey) ?? null
   const daySummaries = buildCalendarDaySummaryMap(data)
   const isToday = data ? selectedDayKey === data.today : isSameDay(pageState.date, today)
-
-  const table = useReactTable({
-    data: selectedDayData ? selectedDayData.lessons : [],
-    columns: LESSON_COLUMNS,
-    getCoreRowModel: getCoreRowModel(),
-  })
 
   const handleSelectDay = (day: Date) => {
     void setPageState({ date: day })
@@ -392,11 +281,14 @@ export default function Dashboard() {
 
             {selectedDayData ? (
               <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    Расписание дня
+                    <Hint text="Нажмите на строку урока, чтобы увидеть список учеников и их статусы посещаемости." />
+                  </CardTitle>
+                </CardHeader>
                 <CardContent>
-                  {/* {selectedDayData.lessons.map((lesson) => (
-                  <LessonCard key={lesson.id} lesson={lesson} />
-                  ))} */}
-                  <DataTable table={table} />
+                  <LessonsTable lessons={selectedDayData.lessons} />
                 </CardContent>
               </Card>
             ) : (
@@ -459,21 +351,21 @@ function MonthOverviewCard({
         <div className="grid grid-cols-2 gap-2">
           <StatCard
             label="Всего уроков"
-            value={summary?.totalLessons ?? '—'}
+            value={summary?.totalLessons ?? '-'}
             icon={BookOpen}
             hint="Во всех днях выбранного месяца"
           />
           <StatCard
             label="Дни с риском"
-            value={summary?.unmarkedDays ?? '—'}
+            value={summary?.unmarkedDays ?? '-'}
             icon={CircleAlert}
             variant={summary && summary.unmarkedDays > 0 ? 'danger' : 'default'}
             hint="Дни, где есть хотя бы один неотмеченный ученик"
           />
-          <StatCard label="Сегодня" value={summary?.todayLessons ?? '—'} icon={Calendar} />
+          <StatCard label="Сегодня" value={summary?.todayLessons ?? '-'} icon={Calendar} />
           <StatCard
             label="Отмены"
-            value={summary?.cancelledLessons ?? '—'}
+            value={summary?.cancelledLessons ?? '-'}
             icon={XCircle}
             variant={summary && summary.cancelledLessons > 0 ? 'warning' : 'default'}
             hint="Отменённые уроки всё ещё видны в календаре"
@@ -661,6 +553,241 @@ function MonthOverviewSkeleton() {
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+function LessonsTable({ lessons }: { lessons: DashboardLessonItem[] }) {
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+
+  const toggle = (lessonId: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(lessonId)) next.delete(lessonId)
+      else next.add(lessonId)
+      return next
+    })
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="text-muted-foreground border-b text-left">
+            <th className="w-6 px-2 py-2 font-medium"></th>
+            <th className="px-2 py-2 font-medium">Время</th>
+            <th className="px-2 py-2 font-medium">Курс</th>
+            <th className="px-2 py-2 font-medium">Учителя</th>
+            <th className="px-2 py-2 font-medium">Локация</th>
+            <th className="px-2 py-2 text-center font-medium">Учеников</th>
+            <th className="px-2 py-2 text-center font-medium">
+              <span className="inline-flex items-center gap-1.5" title="Не отмеченные">
+                Не отм.
+              </span>
+            </th>
+            <th className="px-2 py-2 text-center font-medium">Статус</th>
+            <th className="px-2 py-2 text-right font-medium">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lessons.map((lesson) => {
+            const isOpen = expanded.has(lesson.id)
+            const isCancelled = lesson.status === 'CANCELLED'
+            const hasAttendance = lesson.attendance.length > 0
+            return (
+              <Fragment key={lesson.id}>
+                <tr
+                  className={cn(
+                    'border-b transition-colors',
+                    hasAttendance && 'hover:bg-muted/50 cursor-pointer',
+                  )}
+                  onClick={hasAttendance ? () => toggle(lesson.id) : undefined}
+                >
+                  <td className="px-2 py-2">
+                    {hasAttendance && (
+                      <ChevronDown
+                        className={cn('size-3.5 transition-transform', isOpen ? '' : '-rotate-90')}
+                      />
+                    )}
+                  </td>
+                  <td className="px-2 py-2 font-mono font-medium tabular-nums">{lesson.time}</td>
+                  <td
+                    className={cn(
+                      'px-2 py-2 font-medium',
+                      isCancelled && 'text-muted-foreground line-through',
+                    )}
+                  >
+                    {lesson.group.course.name}
+                  </td>
+                  <td className="px-2 py-2">
+                    {lesson.teachers.length === 0 ? (
+                      <span className="text-muted-foreground">-</span>
+                    ) : (
+                      lesson.teachers.map((t, index) => (
+                        <Fragment key={t.id}>
+                          <Link
+                            href={`/organization/members/${t.id}`}
+                            className="text-primary hover:underline"
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            {t.name}
+                          </Link>
+                          {index < lesson.teachers.length - 1 && ', '}
+                        </Fragment>
+                      ))
+                    )}
+                  </td>
+                  <td className="text-muted-foreground px-2 py-2">
+                    {lesson.group.location?.name ?? '-'}
+                  </td>
+                  <td className="px-2 py-2 text-center font-mono tabular-nums">
+                    {lesson.attendance.length}
+                  </td>
+                  <td className="px-2 py-2 text-center font-mono tabular-nums">
+                    {lesson.summary.attendanceToMarkCount === 0 ? (
+                      <span className="text-muted-foreground">-</span>
+                    ) : lesson.summary.unmarkedAttendanceCount === 0 ? (
+                      <Check className="text-success inline size-3.5" />
+                    ) : (
+                      <span className="text-warning font-semibold">
+                        {lesson.summary.unmarkedAttendanceCount}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-2 py-2 text-center">
+                    {isCancelled ? (
+                      <Badge variant="outline">Отменён</Badge>
+                    ) : (
+                      <Badge variant="success">Активен</Badge>
+                    )}
+                  </td>
+                  <td className="px-2 py-2 text-right" onClick={(event) => event.stopPropagation()}>
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      render={<Link href={`/lessons/${lesson.id}`} />}
+                      nativeButton={false}
+                    >
+                      Детали
+                      <SquareArrowOutUpRight />
+                    </Button>
+                  </td>
+                </tr>
+                {isOpen && hasAttendance && <LessonAttendanceRows lesson={lesson} />}
+              </Fragment>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function LessonAttendanceRows({ lesson }: { lesson: DashboardLessonItem }) {
+  const isCancelled = lesson.status === 'CANCELLED'
+  const commentMutation = useUpdateAttendanceCommentMutation(lesson.id)
+  const { data: hasUpdatePermission } = useOrganizationPermissionQuery({
+    studentLesson: ['update'],
+  })
+  const showActions = Boolean(hasUpdatePermission?.success) && !isCancelled
+
+  const handleCommentChange = useMemo(
+    () =>
+      debounce((studentId: number, lessonId: number, comment: string) => {
+        commentMutation.mutate({ studentId, lessonId, comment })
+      }, 500),
+    [commentMutation],
+  )
+
+  return (
+    <>
+      {lesson.attendance.map((attendance) => {
+        const fullName = getFullName(attendance.student.firstName, attendance.student.lastName)
+        const makeup = attendance.makeupForAttendance
+          ? {
+              href: `/lessons/${attendance.makeupForAttendance.lessonId}`,
+              label: `Отработка за ${formatDateOnly(attendance.makeupForAttendance.lesson.date)}`,
+            }
+          : attendance.makeupAttendance
+            ? {
+                href: `/lessons/${attendance.makeupAttendance.lessonId}`,
+                label: `Отработка ${formatDateOnly(attendance.makeupAttendance.lesson.date)}`,
+              }
+            : null
+
+        return (
+          <tr key={attendance.id} className="bg-muted/20 border-b last:border-b-0">
+            <td colSpan={11} className="px-2 py-1.5 pl-6">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-[0.6875rem]">
+                  <Link
+                    href={`/students/${attendance.student.id}`}
+                    className="text-foreground hover:text-primary truncate hover:underline"
+                  >
+                    {fullName}
+                  </Link>
+                  {attendance.isTrial && (
+                    <Badge className="bg-info/10 text-info h-4 shrink-0 px-1.5 text-[0.5625rem]">
+                      Пробный
+                    </Badge>
+                  )}
+                  {makeup && (
+                    <Link
+                      href={makeup.href}
+                      className="text-primary shrink-0 truncate text-[0.625rem] hover:underline"
+                    >
+                      {makeup.label}
+                    </Link>
+                  )}
+                </div>
+
+                <div className="ml-auto flex items-center gap-2">
+                  <AttendanceStatusSwitcher attendance={attendance} disabled={isCancelled} />
+                  {isCancelled ? (
+                    <span className="text-muted-foreground w-56 truncate text-[0.625rem]">
+                      {attendance.comment || '-'}
+                    </span>
+                  ) : (
+                    <AttendanceCommentInput
+                      studentId={attendance.studentId}
+                      lessonId={attendance.lessonId}
+                      initialValue={attendance.comment}
+                      onChange={handleCommentChange}
+                    />
+                  )}
+
+                  {showActions && <AttendanceActions attendance={attendance} />}
+                </div>
+              </div>
+            </td>
+          </tr>
+        )
+      })}
+    </>
+  )
+}
+
+function AttendanceCommentInput({
+  studentId,
+  lessonId,
+  initialValue,
+  onChange,
+}: {
+  studentId: number
+  lessonId: number
+  initialValue: string
+  onChange: (studentId: number, lessonId: number, comment: string) => void
+}) {
+  const [value, setValue] = useState(initialValue)
+  return (
+    <Input
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value)
+        onChange(studentId, lessonId, event.target.value)
+      }}
+      placeholder="Комментарий"
+      className="h-7 w-56"
+    />
   )
 }
 

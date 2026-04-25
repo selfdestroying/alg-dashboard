@@ -1,3 +1,4 @@
+import { dashboardKeys } from '@/src/features/dashboard/queries'
 import { normalizeDateOnly } from '@/src/lib/timezone'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -80,6 +81,7 @@ export const useUpdateLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Изменения успешно сохранены!')
     },
     onError: () => toast.error('Ошибка при сохранении изменений.'),
@@ -96,6 +98,7 @@ export const useCancelLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Урок отменён.')
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Ошибка при отмене урока.'),
@@ -112,6 +115,7 @@ export const useRestoreLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Урок восстановлен.')
     },
     onError: () => toast.error('Ошибка при восстановлении урока.'),
@@ -130,6 +134,7 @@ export const useCreateAttendanceMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Ученик успешно добавлен в посещаемость')
     },
     onError: () => toast.error('Не удалось добавить ученика в посещаемость'),
@@ -146,6 +151,7 @@ export const useUpdateAttendanceStatusMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     },
   })
 }
@@ -160,6 +166,7 @@ export const useUpdateAttendanceTrialStatusMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Успешно!')
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Ошибка'),
@@ -176,6 +183,7 @@ export const useUpdateAttendanceCommentMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     },
   })
 }
@@ -190,6 +198,7 @@ export const useDeleteAttendanceMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Ученик успешно удален')
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Ошибка при удалении'),
@@ -206,6 +215,7 @@ export const useDeleteAttendanceByIdMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     },
   })
 }
@@ -222,6 +232,7 @@ export const useCreateMakeupMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Отработка успешно создана')
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Ошибка'),
@@ -238,6 +249,7 @@ export const useRescheduleMakeupMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Дата отработки изменена')
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Ошибка'),
@@ -256,6 +268,7 @@ export const useCreateTeacherLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Преподаватель успешно добавлен!')
     },
     onError: () => toast.error('Не удалось добавить преподавателя.'),
@@ -272,6 +285,7 @@ export const useUpdateTeacherLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Ставка успешно обновлена')
     },
     onError: () => toast.error('Ошибка при обновлении ставки'),
@@ -288,6 +302,7 @@ export const useDeleteTeacherLessonMutation = (lessonId: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.detail(lessonId) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       toast.success('Учитель успешно удален')
     },
     onError: () => toast.error('Ошибка при удалении учителя'),

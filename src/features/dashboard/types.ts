@@ -5,6 +5,8 @@ export type DashboardLessonRecord = Prisma.LessonGetPayload<{
     attendance: {
       include: {
         student: true
+        makeupForAttendance: { include: { lesson: true } }
+        makeupAttendance: { include: { lesson: true } }
       }
     }
     group: {
@@ -23,16 +25,31 @@ export type DashboardLessonRecord = Prisma.LessonGetPayload<{
 
 export type DashboardDayStatus = 'marked' | 'unmarked' | null
 
+export interface DashboardAttendanceMakeupRef {
+  id: number
+  lessonId: number
+  lesson: {
+    id: number
+    date: Date
+  }
+}
+
 export interface DashboardAttendanceItem {
   id: number
+  studentId: number
+  lessonId: number
   status: AttendanceStatus
   isTrial: boolean
+  isWarned: boolean | null
   comment: string
+  makeupForAttendanceId: number | null
   student: {
     id: number
     firstName: string
-    lastName: string | null
+    lastName: string
   }
+  makeupForAttendance: DashboardAttendanceMakeupRef | null
+  makeupAttendance: DashboardAttendanceMakeupRef | null
 }
 
 export interface DashboardLessonSummary {
