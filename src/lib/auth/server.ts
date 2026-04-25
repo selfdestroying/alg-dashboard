@@ -95,6 +95,7 @@ const options = {
         member: { modelName: 'Member' },
         organization: { modelName: 'Organization' },
         invitation: { modelName: 'Invitation' },
+        role: { modelName: 'OrganizationRole' },
       },
     }),
   ],

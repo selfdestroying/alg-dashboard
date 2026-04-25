@@ -32,8 +32,6 @@ export const getMyIncomeHistory = authAction
     const userId = Number(ctx.session.user.id)
     const organizationId = ctx.session.organizationId!
 
-    console.log(userId)
-
     const [teacherLessons, paychecks] = await Promise.all([
       prisma.teacherLesson.findMany({
         where: {
