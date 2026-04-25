@@ -35,6 +35,21 @@ export type AttendanceWithStudents = Prisma.AttendanceGetPayload<{
   }
 }>
 
+/** Minimal shape required by AttendanceActions (and MakeUpDialog) for reuse outside lesson detail */
+export type AttendanceForActions = {
+  id: number
+  studentId: number
+  lessonId: number
+  isTrial: boolean
+  makeupForAttendanceId: number | null
+  student: {
+    firstName: string
+    lastName: string
+  }
+  makeupAttendance: { id: number; lessonId: number } | null
+  makeupForAttendance: { id: number } | null
+}
+
 /** Teacher lesson row */
 export type TeacherLessonRow = Prisma.TeacherLessonGetPayload<{ include: { teacher: true } }>
 

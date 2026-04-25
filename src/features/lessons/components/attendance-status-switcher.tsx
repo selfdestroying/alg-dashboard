@@ -1,6 +1,6 @@
 'use client'
 
-import { Attendance } from '@/prisma/generated/client'
+import type { Attendance } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
 import { Button } from '@/src/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
@@ -16,10 +16,14 @@ import { cva } from 'class-variance-authority'
 import { AlertCircle, Check, Loader, Minus, X } from 'lucide-react'
 import { useState } from 'react'
 import { useUpdateAttendanceStatusMutation } from '../queries'
-import { useLessonDetail } from './lesson-detail-context'
+
+export type AttendanceForStatusSwitcher = Pick<
+  Attendance,
+  'studentId' | 'lessonId' | 'status' | 'isWarned'
+>
 
 interface AttendanceStatusSwitcherProps {
-  attendance: Attendance
+  attendance: AttendanceForStatusSwitcher
   disabled?: boolean
 }
 
@@ -71,11 +75,10 @@ const switcherVariant = cva(['cursor-pointer'], {
 })
 
 export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceStatusSwitcherProps) {
-  const { lessonId } = useLessonDetail()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
-  const { mutate, isPending } = useUpdateAttendanceStatusMutation(lessonId)
+  const { mutate, isPending } = useUpdateAttendanceStatusMutation(attendance.lessonId)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
 
   const status = attendance.status
@@ -230,11 +233,14 @@ export function AttendanceStatusSwitcher({ attendance, disabled }: AttendanceSta
             <p>Присутствует (-1)</p>
           </TooltipContent>
         </Tooltip>
-        {isWarned !== null && isWarned && (
+
+        {isWarned !== null && isWarned ? (
           <Tooltip>
             <TooltipTrigger render={<AlertCircle className="text-warning size-4" />} />
             <TooltipContent>Предупредили</TooltipContent>
           </Tooltip>
+        ) : (
+          <AlertCircle className="text-muted size-4" />
         )}
       </div>
     </TooltipProvider>

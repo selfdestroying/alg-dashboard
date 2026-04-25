@@ -26,17 +26,16 @@ import {
   useLessonsByDateQuery,
   useRescheduleMakeupMutation,
 } from '../queries'
-import type { AttendanceWithStudents } from '../types'
-import { useLessonDetail } from './lesson-detail-context'
+import type { AttendanceForActions } from '../types'
 
 interface MakeUpDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  attendance: AttendanceWithStudents
+  attendance: AttendanceForActions
 }
 
 export default function MakeUpDialog({ open, onOpenChange, attendance }: MakeUpDialogProps) {
-  const { lessonId } = useLessonDetail()
+  const lessonId = attendance.lessonId
   const [selectedDay, setSelectedDay] = useState<Date | undefined>()
   const dayKey = useMemo(() => selectedDay && startOfDay(selectedDay), [selectedDay])
   const { data: lessons } = useLessonsByDateQuery(dayKey)

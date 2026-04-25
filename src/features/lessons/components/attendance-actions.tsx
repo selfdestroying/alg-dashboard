@@ -31,12 +31,11 @@ import { Label } from '@/src/components/ui/label'
 import { CalendarCog, CalendarPlus, Loader, MoreVertical, Trash2, UserPen } from 'lucide-react'
 import { useState } from 'react'
 import { useDeleteAttendanceMutation, useUpdateAttendanceTrialStatusMutation } from '../queries'
-import type { AttendanceWithStudents } from '../types'
+import type { AttendanceForActions } from '../types'
 import MakeUpDialog from './create-makeup-dialog'
-import { useLessonDetail } from './lesson-detail-context'
 
-const AttendanceActions = ({ attendance }: { attendance: AttendanceWithStudents }) => {
-  const { lessonId } = useLessonDetail()
+const AttendanceActions = ({ attendance }: { attendance: AttendanceForActions }) => {
+  const lessonId = attendance.lessonId
   const [open, setOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [makeupOpen, setMakeupOpen] = useState(false)
