@@ -6,11 +6,7 @@ import { notFound } from 'next/navigation'
 export const metadata = { title: 'Зарплаты' }
 
 export default async function Page() {
-  const session = await auth.api.getSession({ headers: await headers() })
 
-  if (session?.memberRole !== 'owner') {
-    notFound()
-  }
 
   return <Salaries />
 }
