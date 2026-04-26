@@ -6,18 +6,35 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
-import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
-import { Banknote, ChevronsUpDown, LogOut, Receipt, Settings, User } from 'lucide-react'
-import Link from 'next/link'
-
+import { Skeleton } from '@/src/components/ui/skeleton'
 import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
 import type { OrganizationRole } from '@/src/lib/auth/server'
+import {
+  Banknote,
+  ChevronsUpDown,
+  LogOut,
+  Monitor,
+  Moon,
+  Palette,
+  Receipt,
+  Settings,
+  Sun,
+  User,
+} from 'lucide-react'
+import { useTheme } from 'next-themes'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Skeleton } from '../ui/skeleton'
+import { useSyncExternalStore } from 'react'
 
 export const memberRoleLabels = {
   owner: 'Владелец',
@@ -41,17 +58,30 @@ function NavUserSkeleton() {
   )
 }
 
+/**
+ * Subscribe-once helper that returns `true` only after client hydration.
+ * Avoids next-themes hydration mismatch when rendering theme indicators.
+ */
+function useMounted(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+}
+
 export default function NavUser() {
   const router = useRouter()
   const { data: session, isLoading } = useSessionQuery()
   const { mutate, isPending: isSignOutPending } = useSignOutMutation()
+  const { theme, setTheme } = useTheme()
+  const mounted = useMounted()
 
-  if (isLoading) {
-    return <NavUserSkeleton />
-  }
+  if (isLoading) return <NavUserSkeleton />
 
-  const userName = session?.user?.name
+  const userName = session?.user?.name ?? ''
   const memberRole = session?.memberRole as OrganizationRole | undefined
+  const initial = userName.slice(0, 1).toUpperCase()
 
   return (
     <SidebarMenu>
@@ -61,13 +91,14 @@ export default function NavUser() {
             render={
               <SidebarMenuButton
                 size="lg"
+                tooltip={userName}
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               />
             }
           >
             <Avatar>
               <AvatarImage alt={userName} />
-              <AvatarFallback>{userName?.[0]}</AvatarFallback>
+              <AvatarFallback>{initial}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{userName}</span>
@@ -77,7 +108,7 @@ export default function NavUser() {
             </div>
             <ChevronsUpDown />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent side="top" align="start" className="min-w-56">
             <DropdownMenuGroup>
               <DropdownMenuItem render={<Link href="/me" />}>
                 <User />
@@ -95,6 +126,34 @@ export default function NavUser() {
                 <Settings />
                 Настройки
               </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Palette />
+                  Тема
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup
+                    value={mounted ? (theme ?? 'system') : undefined}
+                    onValueChange={setTheme}
+                  >
+                    <DropdownMenuRadioItem value="light">
+                      <Sun />
+                      Светлая
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="dark">
+                      <Moon />
+                      Тёмная
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="system">
+                      <Monitor />
+                      Системная
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

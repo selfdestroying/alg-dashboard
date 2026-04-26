@@ -14,13 +14,9 @@ import { SmartFeedBar } from '@/src/features/smart-feed/components/smart-feed'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-import { Item } from '../ui/item'
-import MobileHeader from './mobile-header'
-import NavCollapse from './nav-collapse'
-import NavOrganization from './nav-organization'
-import NavPlatform from './nav-platform'
-import NavShop from './nav-shop'
-import NavTheme from './nav-theme'
+import NavBrand from './nav-brand'
+import NavCollapseButton from './nav-collapse-button'
+import NavMain from './nav-main'
 import NavUser from './nav-user'
 
 /** Закрывает мобильный сайдбар при смене маршрута */
@@ -49,34 +45,29 @@ export function AppSidebar({
   const canSeeFeed = role === 'owner' || role === 'manager'
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen ?? false}>
+    <SidebarProvider defaultOpen={defaultOpen ?? true}>
       <CloseSidebarOnNavigate />
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <NavCollapse />
-          <NavUser />
+          <NavCollapseButton />
+          <NavBrand />
         </SidebarHeader>
 
         <SidebarContent>
-          <NavPlatform />
-          <NavShop />
+          <NavMain />
         </SidebarContent>
+
         <SidebarFooter>
-          <NavTheme />
-          <NavOrganization />
+          <NavUser />
         </SidebarFooter>
       </Sidebar>
 
       <SidebarInset className="min-w-0 bg-transparent">
-        <div className="min-w-0 space-y-2 p-2">
-          <MobileHeader />
-          {canSeeFeed && (
-            <Item className="bg-card ring-foreground/10 hidden ring-1 md:block" variant={'muted'}>
-              <SmartFeedBar />
-            </Item>
-          )}
-          {children}
-        </div>
+        <header className="bg-sidebar sticky top-0 z-50 flex h-[var(--sidebar-width-icon)] shrink-0 items-center gap-2 border-b px-4">
+          <SmartFeedBar canSeeFeed={canSeeFeed} />
+        </header>
+
+        <div className="min-w-0 space-y-2 p-2">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )
