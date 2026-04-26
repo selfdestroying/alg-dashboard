@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Prisma } from '../../prisma/generated/client'
 import { moscowNow } from './timezone'
 
 export const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
@@ -19,11 +18,10 @@ export function getFullName(firstName: string, lastName: string | null): string 
   return lastName ? `${firstName} ${lastName}` : firstName
 }
 
-export function getGroupName(
-  group: Prisma.GroupGetPayload<{ include: { course: true } }> & {
-    schedules: Array<{ dayOfWeek: number; time: string }>
-  },
-) {
+export function getGroupName(group: {
+  course: { name: string }
+  schedules: Array<{ dayOfWeek: number; time: string }>
+}) {
   const sorted = [...group.schedules].sort(
     (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
   )

@@ -12,7 +12,7 @@ import {
 } from '@/src/components/ui/dialog'
 import { InputGroup, InputGroupAddon } from '@/src/components/ui/input-group'
 import { cn } from '@/src/lib/utils'
-import { CheckIcon, SearchIcon } from 'lucide-react'
+import { CheckIcon, Loader2, SearchIcon } from 'lucide-react'
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
@@ -59,8 +59,9 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  loading,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & { loading?: boolean }) {
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
       <InputGroup className="bg-input/20 dark:bg-input/30 h-8!">
@@ -73,7 +74,11 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          <SearchIcon className="size-3.5 shrink-0 opacity-50" />
+          {loading ? (
+            <Loader2 className="size-3.5 shrink-0 animate-spin opacity-70" />
+          ) : (
+            <SearchIcon className="size-3.5 shrink-0 opacity-50" />
+          )}
         </InputGroupAddon>
       </InputGroup>
     </div>
