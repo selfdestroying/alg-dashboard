@@ -9,9 +9,9 @@ import {
   CardTitle,
 } from '@/src/components/ui/card'
 import AddManagerSalaryButton from './add-manager-salary-button'
-import ManagerSalariesTable from './manager-salaries-table'
+import ManagerRatesTable from './manager-salaries-table'
 
-export default function ManagerSalaries() {
+export default function ManagerRates() {
   return (
     <Card>
       <CardHeader>
@@ -22,7 +22,7 @@ export default function ManagerSalaries() {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ManagerSalariesTable />
+        <ManagerRatesTable />
       </CardContent>
     </Card>
   )

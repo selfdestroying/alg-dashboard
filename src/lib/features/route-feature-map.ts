@@ -12,20 +12,20 @@ const ROUTE_FEATURE_MAP: [RegExp, string][] = [
   [/^\/students/, 'students'],
 
   // Groups
-  [/^\/groups\/types/, 'groups.types'],
+  [/^\/group-types/, 'groups.types'],
   [/^\/groups/, 'groups'],
 
-  // Finances
+  // Finances (specific routes BEFORE generic /finances)
+  [/^\/finances\/payment-methods/, 'finances.paymentMethods'],
+  [/^\/finances\/manager-salaries/, 'finances.managerSalaries'],
+  [/^\/finances\/profit-monthly/, 'finances.profitMonthly'],
   [/^\/finances\/payments/, 'finances.payments'],
   [/^\/finances\/unprocessed/, 'finances.unprocessedPayments'],
   [/^\/finances\/revenue/, 'finances.revenue'],
   [/^\/finances\/advances/, 'finances.advances'],
   [/^\/finances\/salaries/, 'finances.salaries'],
-  [/^\/finances\/manager-salaries/, 'finances.managerSalaries'],
-  [/^\/finances\/profit-monthly/, 'finances.profitMonthly'],
   [/^\/finances\/profit/, 'finances.profit'],
   [/^\/finances/, 'finances'],
-  [/^\/finances\/payment-methods/, 'finances.paymentMethods'],
 
   // Shop
   [/^\/shop\/products/, 'shop.products'],

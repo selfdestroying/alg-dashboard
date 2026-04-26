@@ -94,7 +94,7 @@ const datePresets = [
   },
 ]
 
-export default function Salaries() {
+export default function TeacherSalaries() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [selectedLocations, setSelectedLocations] = useState<TableFilterItem[]>([])
   const [selectedCourses, setSelectedCourses] = useState<TableFilterItem[]>([])

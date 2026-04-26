@@ -17,7 +17,7 @@ import { useManagerSalaryListQuery } from '../queries'
 import type { ManagerSalaryWithUser } from '../types'
 import ManagerSalaryActions from './manager-salary-actions'
 
-export default function ManagerSalariesTable() {
+export default function ManagerRatesTable() {
   const { data: salaries = [], isLoading, isError } = useManagerSalaryListQuery()
 
   const columns: ColumnDef<ManagerSalaryWithUser>[] = useMemo(

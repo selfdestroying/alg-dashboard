@@ -1,3 +1,4 @@
+import { Hint } from '@/src/components/hint'
 import {
   Card,
   CardAction,
@@ -6,11 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/src/components/ui/card'
-import { Hint } from '@/src/components/hint'
 import CreateRateDialog from '@/src/features/organization/rates/components/create-rate-dialog'
 import RatesTable from '@/src/features/organization/rates/components/rates-table'
 
-export const metadata = { title: 'Ставки' }
+export const metadata = { title: 'Ставки преподавателей' }
 
 export default function Page() {
   return (
@@ -18,8 +18,8 @@ export default function Page() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Ставки
-            <Hint text="Ставки определяют оплату преподавателей за проведённые уроки. Ставка включает базовую сумму за урок и опциональный бонус за каждого присутствующего ученика." />
+            Ставки преподавателей
+            <Hint text="Ставки преподавателей определяют оплату за проведённые уроки. Ставка включает базовую сумму за урок и опциональный бонус за каждого присутствующего ученика." />
           </CardTitle>
           <CardDescription>Управление ставками преподавателей</CardDescription>
           <CardAction>
