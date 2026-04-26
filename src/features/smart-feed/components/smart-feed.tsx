@@ -10,16 +10,17 @@ import {
   PopoverTrigger,
 } from '@/src/components/ui/popover'
 import { Separator } from '@/src/components/ui/separator'
+import { useSidebar } from '@/src/components/ui/sidebar'
 import { Skeleton } from '@/src/components/ui/skeleton'
+import { GlobalSearch } from '@/src/features/search/components/global-search'
 import { moscowNow } from '@/src/lib/timezone'
 import { cn } from '@/src/lib/utils'
-import { format } from 'date-fns'
-import { ru } from 'date-fns/locale'
 import {
   Bell,
   CheckCircle2,
   Clock,
   CreditCard,
+  Menu,
   SquareArrowOutUpRight,
   TrendingDown,
   UserX,
@@ -58,104 +59,137 @@ export function SmartFeed() {
 
 // ─── Desktop info bar ──────────────────────────────────────────────────
 
-export function SmartFeedBar() {
+export function SmartFeedBar({ canSeeFeed }: { canSeeFeed: boolean }) {
   const { data: alerts, isLoading } = useSmartFeedQuery()
-
+  const { isMobile, toggleSidebar } = useSidebar()
   const now = useMemo(() => moscowNow(), [])
-  const dateStr = format(now, 'd MMMM, EEEE', { locale: ru })
   const greeting = getGreeting(now)
 
-  const groups = useMemo(() => {
-    if (!alerts) return null
-    return {
-      unmarked: alerts.filter((a) => a.type === ALERT_TYPE.UNMARKED_ATTENDANCE),
-      debts: alerts.filter((a) => a.type === ALERT_TYPE.NEGATIVE_BALANCE),
-      low: alerts.filter((a) => a.type === ALERT_TYPE.LOW_BALANCE),
-      absences: alerts.filter((a) => a.type === ALERT_TYPE.CONSECUTIVE_ABSENCES),
-    }
-  }, [alerts])
-
-  const hasAlerts = (alerts?.length ?? 0) > 0
+  const chips = useMemo(() => buildChips(alerts), [alerts])
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Date & greeting */}
+    <div className="flex w-full items-center gap-2">
+      {/* Left: greeting */}
       <div className="flex h-full min-w-0 flex-1 items-center gap-2">
-        <p className="text-muted-foreground truncate text-xs">
-          {greeting} · <span className="capitalize">{dateStr}</span>
-        </p>
+        <p className="text-muted-foreground truncate text-xs">{greeting}</p>
         <QuickTip />
       </div>
 
-      {/* Alert chip-popovers */}
-      <div className="grid auto-cols-max grid-flow-col items-center gap-2">
-        {isLoading ? (
+      {/* Center: global search */}
+      <GlobalSearch />
+
+      {/* Right: alerts / sidebar toggle */}
+      <div className="flex flex-1 items-center justify-end gap-2">
+        {canSeeFeed && !isMobile && <DesktopAlerts isLoading={isLoading} chips={chips} />}
+        {canSeeFeed && isMobile && (
           <>
-            <Skeleton className="h-full w-20" />
-            <Skeleton className="h-full w-20" />
-            <Skeleton className="h-full w-20" />
-            <Skeleton className="h-full w-20" />
-          </>
-        ) : !hasAlerts ? (
-          <Badge className={cn('h-full rounded-md select-none', chipVariants.green)}>
-            <CheckCircle2 className="size-3" />
-            <span>Всё ок</span>
-          </Badge>
-        ) : (
-          <>
-            {groups!.unmarked.length > 0 && (
-              <ChipPopover
-                icon={<Clock className="size-2.5" />}
-                count={groups!.unmarked.length}
-                label="неотмечен."
-                title="Посещаемость"
-                variant="red"
-                alerts={groups!.unmarked}
-              />
-            )}
-            {groups!.debts.length > 0 && (
-              <ChipPopover
-                icon={<TrendingDown className="size-2.5" />}
-                count={groups!.debts.length}
-                label={declPlural(groups!.debts.length, 'долг', 'долга', 'долгов')}
-                title="Долги"
-                variant="red"
-                alerts={groups!.debts}
-              />
-            )}
-            {groups!.low.length > 0 && (
-              <ChipPopover
-                icon={<CreditCard className="size-2.5" />}
-                count={groups!.low.length}
-                label="оплата"
-                title="Заканчивается баланс"
-                variant="yellow"
-                alerts={groups!.low}
-              />
-            )}
-            {groups!.absences.length > 0 && (
-              <ChipPopover
-                icon={<UserX className="size-2.5" />}
-                count={groups!.absences.length}
-                label={declPlural(groups!.absences.length, 'риск', 'риска', 'рисков')}
-                title="Зона риска"
-                variant="orange"
-                alerts={groups!.absences}
-              />
-            )}
+            <SmartFeed />
+            <SidebarToggle onClick={toggleSidebar} />
           </>
         )}
-        <Button
-          variant={'outline'}
-          size={'icon'}
-          render={<Link href={'/smart-feed'} />}
-          nativeButton={false}
-        >
-          <SquareArrowOutUpRight />
-        </Button>
+        {!canSeeFeed && isMobile && <SidebarToggle onClick={toggleSidebar} />}
       </div>
     </div>
   )
+}
+
+// ─── Desktop alerts ────────────────────────────────────────────────────
+
+type ChipConfig = {
+  key: string
+  icon: React.ReactNode
+  label: string
+  title: string
+  variant: keyof typeof chipVariants
+  alerts: SmartFeedAlert[]
+}
+
+function DesktopAlerts({ isLoading, chips }: { isLoading: boolean; chips: ChipConfig[] }) {
+  return (
+    <div className="grid auto-cols-max grid-flow-col items-center gap-2">
+      {isLoading ? (
+        Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-full w-20" />)
+      ) : chips.length === 0 ? (
+        <Badge className={cn('h-full rounded-md select-none', chipVariants.green)}>
+          <CheckCircle2 className="size-3" />
+          <span>Всё ок</span>
+        </Badge>
+      ) : (
+        chips.map((c) => (
+          <ChipPopover
+            key={c.key}
+            icon={c.icon}
+            count={c.alerts.length}
+            label={c.label}
+            title={c.title}
+            variant={c.variant}
+            alerts={c.alerts}
+          />
+        ))
+      )}
+      <Button
+        variant="outline"
+        size="icon"
+        render={<Link href="/smart-feed" />}
+        nativeButton={false}
+      >
+        <SquareArrowOutUpRight />
+      </Button>
+    </div>
+  )
+}
+
+function SidebarToggle({ onClick }: { onClick: () => void }) {
+  return (
+    <Button variant="outline" size="icon" onClick={onClick}>
+      <Menu />
+    </Button>
+  )
+}
+
+function buildChips(alerts: SmartFeedAlert[] | undefined): ChipConfig[] {
+  if (!alerts?.length) return []
+  const unmarked = alerts.filter((a) => a.type === ALERT_TYPE.UNMARKED_ATTENDANCE)
+  const debts = alerts.filter((a) => a.type === ALERT_TYPE.NEGATIVE_BALANCE)
+  const low = alerts.filter((a) => a.type === ALERT_TYPE.LOW_BALANCE)
+  const absences = alerts.filter((a) => a.type === ALERT_TYPE.CONSECUTIVE_ABSENCES)
+
+  const defs: ChipConfig[] = [
+    {
+      key: 'unmarked',
+      icon: <Clock className="size-2.5" />,
+      label: 'неотмечен.',
+      title: 'Посещаемость',
+      variant: 'red',
+      alerts: unmarked,
+    },
+    {
+      key: 'debts',
+      icon: <TrendingDown className="size-2.5" />,
+      label: declPlural(debts.length, 'долг', 'долга', 'долгов'),
+      title: 'Долги',
+      variant: 'red',
+      alerts: debts,
+    },
+    {
+      key: 'low',
+      icon: <CreditCard className="size-2.5" />,
+      label: 'оплата',
+      title: 'Заканчивается баланс',
+      variant: 'yellow',
+      alerts: low,
+    },
+    {
+      key: 'absences',
+      icon: <UserX className="size-2.5" />,
+      label: declPlural(absences.length, 'риск', 'риска', 'рисков'),
+      title: 'Зона риска',
+      variant: 'orange',
+      alerts: absences,
+    },
+  ]
+
+  return defs.filter((d) => d.alerts.length > 0)
 }
 
 // ─── Chip popover (desktop - one per alert type) ───────────────────────
