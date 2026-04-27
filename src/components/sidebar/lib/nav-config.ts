@@ -123,7 +123,7 @@ export const navEntries: NavEntry[] = [
     items: [
       {
         title: 'Зарплаты',
-        url: '/finances/salaries',
+        url: '/finances/salaries/teacher',
         roles: STAFF_ROLES,
         featureKey: 'finances.salaries',
       },
