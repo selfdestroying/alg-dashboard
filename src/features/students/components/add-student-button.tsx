@@ -25,7 +25,7 @@ import {
   SheetTrigger,
 } from '@/src/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { getAgeFromBirthDate } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ru } from 'date-fns/locale'

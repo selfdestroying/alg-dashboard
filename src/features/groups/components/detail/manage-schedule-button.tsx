@@ -24,7 +24,7 @@ import {
 } from '@/src/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Toggle } from '@/src/components/ui/toggle'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { DaysOfWeek } from '@/src/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'

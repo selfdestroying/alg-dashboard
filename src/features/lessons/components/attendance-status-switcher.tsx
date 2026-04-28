@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/src/components/ui/tooltip'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { cva } from 'class-variance-authority'
 import { AlertCircle, Check, Loader, Minus, X } from 'lucide-react'
 import { useState } from 'react'

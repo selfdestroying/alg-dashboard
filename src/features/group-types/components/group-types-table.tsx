@@ -1,7 +1,7 @@
 'use client'
 
 import DataTable from '@/src/components/data-table'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useMemo } from 'react'
 import { useGroupTypeListQuery } from '../queries'

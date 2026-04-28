@@ -2,7 +2,7 @@
 
 import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import BalanceBadge from '@/src/features/lessons/components/balance-badge'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'

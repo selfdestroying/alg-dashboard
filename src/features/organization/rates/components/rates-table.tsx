@@ -3,7 +3,7 @@
 import DataTable from '@/src/components/data-table'
 import { Hint } from '@/src/components/hint'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { useRateListQuery } from '../queries'
 import type { RateWithCount } from '../types'

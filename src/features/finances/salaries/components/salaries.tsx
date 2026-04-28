@@ -24,7 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { useMappedCourseListQuery } from '@/src/features/courses/queries'
 import { useMappedLocationListQuery } from '@/src/features/locations/queries'
 import { useMappedMemberListQuery } from '@/src/features/organization/members/queries'

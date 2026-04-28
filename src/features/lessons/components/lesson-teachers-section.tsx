@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import AddTeacherToLessonButton from './add-teacher-to-lesson-button'
 import { useLessonDetail } from './lesson-detail-context'
 import LessonTeachersTable from './lesson-teachers-table'

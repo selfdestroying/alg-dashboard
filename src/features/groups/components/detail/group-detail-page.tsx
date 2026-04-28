@@ -3,7 +3,7 @@
 import { Hint } from '@/src/components/hint'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { useGroupDetailPageQuery } from '../../queries'
 import AddLessonButton from './add-lesson-button'
 import AddStudentToGroupButton from './add-student-to-group-button'

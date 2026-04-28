@@ -3,7 +3,7 @@
 import { LessonStatus } from '@/prisma/generated/client'
 import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { getGroupName } from '@/src/lib/utils'
 import { cva } from 'class-variance-authority'

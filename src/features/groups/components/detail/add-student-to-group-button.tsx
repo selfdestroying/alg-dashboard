@@ -29,7 +29,7 @@ import {
 } from '@/src/components/ui/field'
 import { Input } from '@/src/components/ui/input'
 import { Switch } from '@/src/components/ui/switch'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { useStudentListQuery } from '@/src/features/students/queries'
 import { useStudentWalletsQuery } from '@/src/features/wallets/queries'
 import { getWalletLabel } from '@/src/features/wallets/utils'

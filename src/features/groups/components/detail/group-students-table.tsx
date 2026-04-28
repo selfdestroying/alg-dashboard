@@ -1,7 +1,7 @@
 'use client'
 
 import DataTable from '@/src/components/data-table'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { getFullName } from '@/src/lib/utils'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import Link from 'next/link'

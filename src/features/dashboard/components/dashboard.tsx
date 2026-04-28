@@ -22,7 +22,7 @@ import {
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import AttendanceActions from '@/src/features/lessons/components/attendance-actions'
 import { AttendanceStatusSwitcher } from '@/src/features/lessons/components/attendance-status-switcher'
 import { useUpdateAttendanceCommentMutation } from '@/src/features/lessons/queries'
