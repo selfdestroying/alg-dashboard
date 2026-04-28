@@ -2,7 +2,6 @@
 
 import { Student } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
-import { updateAttendance } from '@/src/actions/attendance'
 import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -11,7 +10,8 @@ import { Separator } from '@/src/components/ui/separator'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { Tabs, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Toggle } from '@/src/components/ui/toggle'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
+import { useUpdateAttendanceStatusMutation } from '@/src/features/lessons/queries'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
@@ -100,14 +100,14 @@ function AttendanceCell({
   groupId,
 }: {
   lesson: LessonWithAttendance
-  attendance?: AttendanceWithRelations
+  attendance: AttendanceWithRelations
   groupId: number
 }) {
   const queryClient = useQueryClient()
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
-  const [isPending, startTransition] = useTransition()
+  const { mutate, isPending } = useUpdateAttendanceStatusMutation(attendance.lessonId)
   const [optimisticStatus, setOptimisticStatus] = useState<AttendanceStatus | null>(null)
   const [showWarnedChoice, setShowWarnedChoice] = useState(false)
 
@@ -129,25 +129,22 @@ function AttendanceCell({
     setOptimisticStatus(newStatus)
     setShowWarnedChoice(false)
 
-    startTransition(async () => {
-      try {
-        await updateAttendance({
-          where: {
-            studentId_lessonId: {
-              studentId: attendance.studentId,
-              lessonId: attendance.lessonId,
-            },
-          },
-          data: {
-            status: newStatus,
-            isWarned: isWarned ?? null,
-          },
-        })
-        queryClient.invalidateQueries({ queryKey: groupKeys.detail(groupId) })
-      } catch {
-        setOptimisticStatus(null)
-      }
-    })
+    mutate(
+      {
+        studentId: attendance.studentId,
+        lessonId: attendance.lessonId,
+        status: newStatus,
+        isWarned: isWarned ?? null,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: groupKeys.detail(groupId) })
+        },
+        onError: () => {
+          setOptimisticStatus(null)
+        },
+      },
+    )
   }
 
   const handleAbsentClick = () => {

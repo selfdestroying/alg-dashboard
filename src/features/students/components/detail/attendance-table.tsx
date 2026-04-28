@@ -1,7 +1,6 @@
 'use client'
 import { Prisma, Student } from '@/prisma/generated/client'
 import { AttendanceStatus } from '@/prisma/generated/enums'
-import { updateAttendance } from '@/src/actions/attendance'
 import DragScrollArea from '@/src/components/drag-scroll-area'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -9,7 +8,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import { Separator } from '@/src/components/ui/separator'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { Toggle } from '@/src/components/ui/toggle'
-import { useOrganizationPermissionQuery } from '@/src/data/organization/organization-permission-query'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
+import { useUpdateAttendanceStatusMutation } from '@/src/features/lessons/queries'
 import { studentKeys } from '@/src/features/students/queries'
 import { formatDateOnly } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
@@ -35,7 +35,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useState } from 'react'
 
 // -------------------- Types --------------------
 type AttendanceWithRelations = Prisma.AttendanceGetPayload<{
@@ -120,7 +120,7 @@ function AttendanceCell({
   const { data: hasPermission } = useOrganizationPermissionQuery({
     studentLesson: ['selectWarned'],
   })
-  const [isPending, startTransition] = useTransition()
+  const { mutate, isPending } = useUpdateAttendanceStatusMutation(attendance?.lessonId ?? 0)
   const [optimisticStatus, setOptimisticStatus] = useState<AttendanceStatus | null>(null)
   const [showWarnedChoice, setShowWarnedChoice] = useState(false)
 
@@ -142,25 +142,22 @@ function AttendanceCell({
     setOptimisticStatus(newStatus)
     setShowWarnedChoice(false)
 
-    startTransition(async () => {
-      try {
-        await updateAttendance({
-          where: {
-            studentId_lessonId: {
-              studentId: attendance.studentId,
-              lessonId: attendance.lessonId,
-            },
-          },
-          data: {
-            status: newStatus,
-            isWarned: isWarned ?? null,
-          },
-        })
-        queryClient.invalidateQueries({ queryKey: studentKeys.detail(studentId) })
-      } catch {
-        setOptimisticStatus(null)
-      }
-    })
+    mutate(
+      {
+        studentId: attendance.studentId,
+        lessonId: attendance.lessonId,
+        status: newStatus,
+        isWarned: isWarned ?? null,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: studentKeys.detail(studentId) })
+        },
+        onError: () => {
+          setOptimisticStatus(null)
+        },
+      },
+    )
   }
 
   const handleAbsentClick = () => {
