@@ -4,7 +4,7 @@ import { memberRoleLabels } from '@/src/components/sidebar/nav-user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import { Card, CardContent } from '@/src/components/ui/card'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { Building2, Mail, Shield } from 'lucide-react'
 

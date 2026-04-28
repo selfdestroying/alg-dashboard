@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/src/components/ui/button'
-import { useSignOutMutation } from '@/src/data/user/sign-out-mutation'
+import { useSignOutMutation } from '@/src/features/users/me/queries'
 import { Loader, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 

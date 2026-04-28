@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/src/components/ui/sidebar'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { isFeatureDisabled } from '@/src/lib/features/registry'
 import {

@@ -9,7 +9,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from '@/src/components/ui/sidebar'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import { SmartFeedBar } from '@/src/features/smart-feed/components/smart-feed'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { usePathname } from 'next/navigation'

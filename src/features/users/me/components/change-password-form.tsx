@@ -11,7 +11,7 @@ import {
   FieldTitle,
 } from '@/src/components/ui/field'
 import { Switch } from '@/src/components/ui/switch'
-import { useChangePasswordMutation } from '@/src/data/user/user-change-password-mutation'
+import { useChangePasswordMutation } from '@/src/features/users/me/queries'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'

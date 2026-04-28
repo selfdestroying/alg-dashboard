@@ -11,7 +11,7 @@ import {
 } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import { useRentListQuery } from '@/src/features/finances/rent/queries'
 import { useFeatureEnabled } from '@/src/hooks/use-feature-enabled'
 import { Building2, MapPinned, Plus, Wallet } from 'lucide-react'

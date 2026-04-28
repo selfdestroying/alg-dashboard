@@ -11,7 +11,7 @@ import {
 } from '@/src/components/ui/card'
 import { ItemGroup } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import MemberManagerSalarySection from '@/src/features/finances/manager-salaries/components/member-manager-salary-section'
 import { OrganizationRole } from '@/src/lib/auth/server'
 import { useMemberDetailQuery, usePaycheckListQuery } from '../queries'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import { isFeatureDisabled } from '@/src/lib/features/registry'
 
 /** Check if a feature is enabled for the current organization */

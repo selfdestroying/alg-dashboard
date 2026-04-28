@@ -1,6 +1,6 @@
 'use client'
 
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import type { OrganizationRole } from '@/src/lib/auth/server'
 import { useMemo } from 'react'
 import { filterNav } from './filter-nav'

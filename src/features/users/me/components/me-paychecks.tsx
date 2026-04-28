@@ -10,7 +10,7 @@ import {
 } from '@/src/components/ui/card'
 import { ItemGroup } from '@/src/components/ui/item'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { useSessionQuery } from '@/src/data/user/session-query'
+import { useSessionQuery } from '@/src/features/users/me/queries'
 import AddCheckButton from '@/src/features/organization/members/components/add-check-button'
 import PayChecksTable from '@/src/features/organization/members/components/paychecks-table'
 import { useMyPaychecksQuery } from '../queries'
