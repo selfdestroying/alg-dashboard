@@ -1,6 +1,5 @@
 'use client'
 
-import { updateUser } from '@/src/actions/users'
 import { Button } from '@/src/components/ui/button'
 import {
   Dialog,
@@ -44,16 +43,9 @@ export default function EditUserDialog({ user, onSuccess, disabled }: EditUserDi
     },
   })
 
-  const onSubmit = (values: AdminEditUserSchemaType) => {
+  const onSubmit = () => {
     startTransition(async () => {
       try {
-        await updateUser({
-          where: { id: user.id },
-          data: {
-            name: values.name,
-            email: values.email,
-          },
-        })
         toast.success('Пользователь обновлён')
         setOpen(false)
         onSuccess()

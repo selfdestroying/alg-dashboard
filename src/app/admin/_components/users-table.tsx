@@ -25,7 +25,6 @@ import { Ban, Loader, ShieldCheck, UserX } from 'lucide-react'
 import { useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import CreateUserDialog from './create-user-dialog'
-import EditUserDialog from './edit-user-dialog'
 import PasswordChangeDialog from './password-change-dialog'
 import type { AdminDashboardData, AdminUser } from './types'
 
@@ -185,7 +184,7 @@ export default function UsersTable({ data, onRefresh }: UsersTableProps) {
         return (
           <div className="flex items-center justify-end gap-1">
             {/* Редактирование */}
-            <EditUserDialog user={user} onSuccess={onRefresh} disabled={isLoading} />
+            {/* <EditUserDialog user={user} onSuccess={onRefresh} disabled={isLoading} /> */}
 
             {/* Смена пароля */}
             <PasswordChangeDialog user={user} disabled={isLoading} />
