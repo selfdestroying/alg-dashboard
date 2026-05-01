@@ -86,12 +86,16 @@ async function getBalanceAlerts(
     where: {
       organizationId,
       lessonsBalance: { lte: 1 },
-      studentGroups: { some: { status: { in: ['ACTIVE', 'TRIAL'] } } },
     },
     include: {
       student: true,
       studentGroups: {
-        where: { status: { in: ['ACTIVE', 'TRIAL'] } },
+        where: {
+          status: { in: ['ACTIVE', 'TRIAL'] },
+          group: {
+            isArchived: false,
+          },
+        },
         include: { group: { include: { course: true } } },
         take: 1,
       },
@@ -148,6 +152,7 @@ async function getConsecutiveAbsenceAlerts(
     where: {
       organizationId,
       status: { in: ['ACTIVE', 'TRIAL'] },
+      group: { isArchived: false },
     },
     select: {
       studentId: true,
