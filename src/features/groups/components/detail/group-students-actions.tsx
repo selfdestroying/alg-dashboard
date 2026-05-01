@@ -53,7 +53,7 @@ import {
 } from '../../queries'
 import type { StudentGroupWithStudent } from '../../types'
 
-import { DateOnlySchema } from '@/src/schemas/_primitives'
+import { DateOnlySchema } from '@/src/lib/timezone'
 import * as z from 'zod'
 
 const DismissFormSchema = z.object({

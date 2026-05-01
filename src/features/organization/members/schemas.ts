@@ -1,4 +1,4 @@
-import { combobox, DateOnlySchema } from '@/src/schemas/_primitives'
+import { DateOnlySchema } from '@/src/lib/timezone'
 import * as z from 'zod'
 
 // ─── Member (User) schemas ──────────────────────────────────────────
@@ -13,6 +13,8 @@ export const CreateMemberSchema = MemberBaseSchema.extend({
   role: z.enum(['manager', 'teacher'], 'Выберите роль'),
   email: z.email('Введите почту'),
 })
+
+export const combobox = (error: string) => z.object({ label: z.string(), value: z.string() }, error)
 
 export const UpdateMemberSchema = z.object({
   memberId: z.string(),

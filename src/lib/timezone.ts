@@ -1,12 +1,14 @@
 import { endOfDay, format, startOfDay } from 'date-fns'
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { ru } from 'date-fns/locale'
+import z from 'zod'
 
 /**
  * Бизнес-часовой пояс приложения.
  * Все бизнес-даты (уроки, KPI, статистика) привязаны к этой таймзоне.
  */
 export const BUSINESS_TZ = 'Europe/Moscow'
+export const DateOnlySchema = z.date().transform(normalizeDateOnly)
 
 /**
  * Текущий момент времени в московской таймзоне.

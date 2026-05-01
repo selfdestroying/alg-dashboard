@@ -13,17 +13,25 @@ import {
 import { Input } from '@/src/components/ui/input'
 import { Switch } from '@/src/components/ui/switch'
 import { authClient } from '@/src/lib/auth/client'
-import { SignInSchema, SignInSchemaType } from '@/src/schemas/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, LogIn } from 'lucide-react'
 import { useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import z from 'zod'
 
 interface SignInFormProps {
   onSuccess?: () => void | Promise<void>
   showPasswordToggle?: boolean
 }
+
+const SignInSchema = z.object({
+  email: z.email('Введите корректный email'),
+  password: z.string().min(1, 'Введите пароль'),
+  rememberMe: z.boolean(),
+})
+
+export type SignInSchemaType = z.infer<typeof SignInSchema>
 
 export function SignInForm({ onSuccess, showPasswordToggle = false }: SignInFormProps) {
   const [loading, startTransition] = useTransition()

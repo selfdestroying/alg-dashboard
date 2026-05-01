@@ -1,4 +1,4 @@
-import { DateOnlySchema } from '@/src/schemas/_primitives'
+import { DateOnlySchema } from '@/src/lib/timezone'
 import * as z from 'zod'
 
 // ─── Schedule item ──────────────────────────────────────────────────

@@ -1,5 +1,7 @@
-import { comboboxNumber } from '@/src/schemas/_primitives'
 import * as z from 'zod'
+
+export const comboboxNumber = (error: string) =>
+  z.object({ label: z.string(), value: z.number() }, error)
 
 export const CreatePaymentSchema = z.object({
   studentId: z.int('Выберите студента').positive('Выберите студента'),
