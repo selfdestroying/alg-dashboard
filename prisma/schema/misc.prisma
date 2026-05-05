@@ -1,7 +1,7 @@
 model SnoozedAlert {
     id           Int      @id @default(autoincrement())
-    alertType    String
     entityKey    String
+    entityId     Int
     snoozedUntil DateTime
     createdAt    DateTime @default(now())
 
@@ -10,6 +10,6 @@ model SnoozedAlert {
     snoozedByUserId Int
     organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-    @@unique([organizationId, alertType, entityKey])
+    @@unique([organizationId, entityId, entityKey])
     @@index([organizationId, snoozedUntil])
 }

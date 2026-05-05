@@ -113,14 +113,6 @@ export interface SmartFeedPageData {
   snoozed: SmartFeedPageAlert[]
 }
 
-export function isAlertType(value: string): value is AlertType {
-  return ALERT_TYPE_VALUES.includes(value as AlertType)
-}
-
-export function isAlertSeverity(value: string): value is AlertSeverity {
-  return ALERT_SEVERITY_VALUES.includes(value as AlertSeverity)
-}
-
 export function getSmartFeedEntityKey(alert: SmartFeedAlert): string {
   switch (alert.type) {
     case ALERT_TYPE.UNMARKED_ATTENDANCE:
@@ -135,43 +127,4 @@ export function getSmartFeedEntityKey(alert: SmartFeedAlert): string {
 
 export function getSmartFeedAlertId(alert: SmartFeedAlert): string {
   return `${alert.type}:${getSmartFeedEntityKey(alert)}`
-}
-
-export function getSmartFeedAlertHref(alert: SmartFeedAlert): string {
-  switch (alert.type) {
-    case ALERT_TYPE.UNMARKED_ATTENDANCE:
-      return `/lessons/${alert.lessonId}`
-    case ALERT_TYPE.LOW_BALANCE:
-    case ALERT_TYPE.NEGATIVE_BALANCE:
-    case ALERT_TYPE.CONSECUTIVE_ABSENCES:
-      return `/students/${alert.studentId}`
-  }
-}
-
-export function getSmartFeedAlertTitle(alert: SmartFeedAlert): string {
-  switch (alert.type) {
-    case ALERT_TYPE.UNMARKED_ATTENDANCE:
-      return alert.groupName
-    case ALERT_TYPE.LOW_BALANCE:
-    case ALERT_TYPE.NEGATIVE_BALANCE:
-    case ALERT_TYPE.CONSECUTIVE_ABSENCES:
-      return alert.studentName
-  }
-}
-
-export function isSmartFeedAlertSnoozable(alert: SmartFeedAlert): alert is SnoozableSmartFeedAlert {
-  return alert.type === ALERT_TYPE.LOW_BALANCE || alert.type === ALERT_TYPE.NEGATIVE_BALANCE
-}
-
-export function compareSmartFeedAlerts(a: SmartFeedAlert, b: SmartFeedAlert): number {
-  const severityDiff = ALERT_SEVERITY_ORDER[a.severity] - ALERT_SEVERITY_ORDER[b.severity]
-  if (severityDiff !== 0) return severityDiff
-
-  const typeDiff = ALERT_TYPE_ORDER[a.type] - ALERT_TYPE_ORDER[b.type]
-  if (typeDiff !== 0) return typeDiff
-
-  const titleDiff = getSmartFeedAlertTitle(a).localeCompare(getSmartFeedAlertTitle(b), 'ru')
-  if (titleDiff !== 0) return titleDiff
-
-  return getSmartFeedEntityKey(a).localeCompare(getSmartFeedEntityKey(b), 'ru')
 }

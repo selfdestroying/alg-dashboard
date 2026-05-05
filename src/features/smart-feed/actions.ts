@@ -3,20 +3,14 @@
 import prisma from '@/src/lib/db/prisma'
 import { authAction } from '@/src/lib/safe-action'
 import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
-import { addDays } from 'date-fns'
+import { addDays, startOfDay } from 'date-fns'
+import z from 'zod'
 import { RestoreSnoozedAlertSchema, SnoozeAlertSchema } from './schemas'
 import {
   ALERT_TYPE,
-  SMART_FEED_STATUS,
-  compareSmartFeedAlerts,
-  getSmartFeedAlertId,
-  getSmartFeedEntityKey,
   type ConsecutiveAbsencesAlert,
   type LowBalanceAlert,
   type NegativeBalanceAlert,
-  type SmartFeedAlert,
-  type SmartFeedPageAlert,
-  type SmartFeedPageData,
   type UnmarkedAttendanceAlert,
 } from './types'
 
@@ -32,98 +26,96 @@ function currentMoscowMinutes(): number {
   return now.getHours() * 60 + now.getMinutes()
 }
 
-// ─── Query A: Unmarked attendance ──────────────────────────────────────
+export const getUnmarkedAttendance = authAction
+  .metadata({ actionName: 'getUnmarkedAttendance' })
+  .action(async ({ ctx }): Promise<UnmarkedAttendanceAlert[]> => {
+    const today = normalizeDateOnly(moscowNow())
+    const nowMinutes = currentMoscowMinutes()
 
-async function getUnmarkedAttendanceAlerts(
-  organizationId: number,
-): Promise<UnmarkedAttendanceAlert[]> {
-  const today = normalizeDateOnly(moscowNow())
-  const nowMinutes = currentMoscowMinutes()
-
-  const lessons = await prisma.lesson.findMany({
-    where: {
-      organizationId,
-      status: 'ACTIVE',
-      attendance: { some: { status: 'UNSPECIFIED' } },
-      date: { lte: today },
-    },
-    include: {
-      group: { include: { course: true } },
-      _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } },
-    },
-    orderBy: [{ date: 'desc' }, { time: 'asc' }],
-  })
-
-  return lessons
-    .filter((lesson) => {
-      // For today's lessons, only show if time + 2h has passed
-      const lessonDateMs = lesson.date.getTime()
-      const todayMs = today.getTime()
-      if (lessonDateMs === todayMs) {
-        const lessonMinutes = parseLessonTime(lesson.time)
-        return nowMinutes > lessonMinutes + 120
-      }
-      return true
-    })
-    .map((lesson) => ({
-      type: ALERT_TYPE.UNMARKED_ATTENDANCE,
-      severity: 'red' as const,
-      lessonId: lesson.id,
-      lessonDate: lesson.date,
-      lessonTime: lesson.time,
-      groupId: lesson.groupId,
-      groupName: lesson.group.course.name,
-      unspecifiedCount: lesson._count.attendance,
-    }))
-}
-
-// ─── Query B: Low / Negative wallet balance ────────────────────────────
-
-async function getBalanceAlerts(
-  organizationId: number,
-): Promise<(LowBalanceAlert | NegativeBalanceAlert)[]> {
-  const wallets = await prisma.wallet.findMany({
-    where: {
-      organizationId,
-      lessonsBalance: { lte: 1 },
-    },
-    include: {
-      student: true,
-      studentGroups: {
-        where: {
-          status: { in: ['ACTIVE', 'TRIAL'] },
-          group: {
-            isArchived: false,
-          },
-        },
-        include: { group: { include: { course: true } } },
-        take: 1,
+    const lessons = await prisma.lesson.findMany({
+      where: {
+        organizationId: ctx.session.organizationId!,
+        status: 'ACTIVE',
+        attendance: { some: { status: 'UNSPECIFIED' } },
+        date: { lte: today },
       },
-    },
+      include: {
+        group: { include: { course: true } },
+        _count: { select: { attendance: { where: { status: 'UNSPECIFIED' } } } },
+      },
+      orderBy: [{ date: 'desc' }, { time: 'asc' }],
+    })
+
+    return lessons
+      .filter((lesson) => {
+        const lessonDateMs = lesson.date.getTime()
+        const todayMs = today.getTime()
+        if (lessonDateMs === todayMs) {
+          const lessonMinutes = parseLessonTime(lesson.time)
+          return nowMinutes > lessonMinutes + 120
+        }
+        return true
+      })
+      .map((lesson) => ({
+        type: ALERT_TYPE.UNMARKED_ATTENDANCE,
+        severity: 'red' as const,
+        lessonId: lesson.id,
+        lessonDate: lesson.date,
+        lessonTime: lesson.time,
+        groupId: lesson.groupId,
+        groupName: lesson.group.course.name,
+        unspecifiedCount: lesson._count.attendance,
+      }))
   })
 
-  const alerts: (LowBalanceAlert | NegativeBalanceAlert)[] = []
+export const getLowBalance = authAction
+  .metadata({ actionName: 'getLowBalance' })
+  .inputSchema(z.object({ withSnoozed: z.boolean().optional().default(false) }))
+  .action(async ({ ctx, parsedInput }): Promise<(LowBalanceAlert | NegativeBalanceAlert)[]> => {
+    const { withSnoozed } = parsedInput
 
-  for (const wallet of wallets) {
-    const sg = wallet.studentGroups[0]
-    if (!sg) continue
+    const wallets = await prisma.wallet.findMany({
+      where: {
+        organizationId: ctx.session.organizationId!,
+        lessonsBalance: { lte: 1 },
+      },
+      include: {
+        student: true,
+        studentGroups: {
+          where: {
+            status: { in: ['ACTIVE', 'TRIAL'] },
+            group: {
+              isArchived: false,
+            },
+          },
+          include: { group: { include: { course: true } } },
+          take: 1,
+        },
+      },
+    })
 
-    const isDebt = wallet.lessonsBalance <= 0
-    const studentName = `${wallet.student.firstName} ${wallet.student.lastName}`
-    const groupName = sg.group.course.name
+    const alerts: (LowBalanceAlert | NegativeBalanceAlert)[] = []
 
-    if (isDebt) {
-      alerts.push({
-        type: ALERT_TYPE.NEGATIVE_BALANCE,
-        severity: 'red',
-        walletId: wallet.id,
-        studentId: wallet.studentId,
-        studentName,
-        groupId: sg.groupId,
-        groupName,
-        lessonsBalance: wallet.lessonsBalance,
-      })
-    } else {
+    for (const wallet of wallets) {
+      const sg = wallet.studentGroups[0]
+      if (!sg) continue
+      if (!withSnoozed) {
+        const snoozed = await prisma.snoozedAlert.findFirst({
+          where: {
+            entityKey: 'wallet',
+            entityId: wallet.id,
+            organizationId: ctx.session.organizationId!,
+            snoozedUntil: {
+              gt: new Date(),
+            },
+          },
+        })
+        if (snoozed) continue
+      }
+
+      const studentName = `${wallet.student.firstName} ${wallet.student.lastName}`
+      const groupName = sg.group.course.name
+
       alerts.push({
         type: ALERT_TYPE.LOW_BALANCE,
         severity: 'yellow',
@@ -135,143 +127,130 @@ async function getBalanceAlerts(
         lessonsBalance: wallet.lessonsBalance,
       })
     }
-  }
 
-  return alerts
-}
-
-// ─── Query C: Consecutive absences ─────────────────────────────────────
-
-async function getConsecutiveAbsenceAlerts(
-  organizationId: number,
-): Promise<ConsecutiveAbsencesAlert[]> {
-  const today = normalizeDateOnly(moscowNow())
-
-  // Get active student-group pairs
-  const studentGroups = await prisma.studentGroup.findMany({
-    where: {
-      organizationId,
-      status: { in: ['ACTIVE', 'TRIAL'] },
-      group: { isArchived: false },
-    },
-    select: {
-      studentId: true,
-      groupId: true,
-      student: { select: { firstName: true, lastName: true } },
-      group: { include: { course: true } },
-    },
+    return alerts.sort((a, b) => a.lessonsBalance - b.lessonsBalance)
   })
 
-  const alerts: ConsecutiveAbsencesAlert[] = []
+export const getAbsentStreak = authAction
+  .metadata({ actionName: 'getAbsentStreak' })
+  .inputSchema(
+    z.object({
+      withSnoozed: z.boolean().optional().default(false),
+    }),
+  )
+  .action(async ({ ctx, parsedInput }) => {
+    const { withSnoozed } = parsedInput
+    const now = startOfDay(new Date())
+    const LESSONS_LOOKBACK = 10
 
-  // For each student-group, check the last 2 completed lessons
-  for (const sg of studentGroups) {
-    const recentAttendance = await prisma.attendance.findMany({
+    const groups = await prisma.group.findMany({
       where: {
-        organizationId,
-        studentId: sg.studentId,
-        lesson: {
-          groupId: sg.groupId,
-          status: 'ACTIVE',
-          date: { lt: today },
-        },
-        status: { not: 'UNSPECIFIED' },
+        organizationId: ctx.session.organizationId!,
+        isArchived: false,
       },
-      orderBy: { lesson: { date: 'desc' } },
-      take: 2,
-      select: { status: true, makeupAttendance: true },
+      select: {
+        id: true,
+        students: {
+          where: { status: { in: ['ACTIVE', 'TRIAL'] } },
+          select: {
+            studentId: true,
+            student: { select: { firstName: true, lastName: true } },
+          },
+        },
+        lessons: {
+          where: {
+            date: { lte: now },
+            status: 'ACTIVE',
+          },
+          orderBy: { date: 'desc' },
+          take: LESSONS_LOOKBACK,
+          select: {
+            id: true,
+            date: true,
+            attendance: {
+              select: {
+                id: true,
+                studentId: true,
+                status: true,
+                makeupAttendance: { select: { id: true } },
+              },
+            },
+          },
+        },
+        course: {
+          select: {
+            name: true,
+          },
+        },
+      },
     })
 
-    if (
-      recentAttendance.length >= 2 &&
-      recentAttendance.every(
-        (a) =>
-          a.status === 'ABSENT' && (!a.makeupAttendance || a.makeupAttendance.status == 'ABSENT'),
-      )
-    ) {
-      alerts.push({
-        type: ALERT_TYPE.CONSECUTIVE_ABSENCES,
-        severity: 'orange',
-        studentId: sg.studentId,
-        studentName: `${sg.student.firstName} ${sg.student.lastName}`,
-        groupId: sg.groupId,
-        groupName: sg.group.course.name,
-        absenceCount: 2,
-      })
+    type GroupItem = (typeof groups)[number]
+    type LessonItem = GroupItem['lessons'][number]
+    type RawAttendance = LessonItem['attendance'][number]
+    type AttendanceWithLesson = RawAttendance & { lesson: { id: number; date: Date } }
+
+    const alerts: ConsecutiveAbsencesAlert[] = []
+
+    for (const group of groups) {
+      // attendance, сгруппированное по студенту, в порядке lesson date desc (как пришло из БД)
+      const byStudent = new Map<number, AttendanceWithLesson[]>()
+      for (const lesson of group.lessons) {
+        for (const a of lesson.attendance) {
+          const arr = byStudent.get(a.studentId) ?? []
+          arr.push({ ...a, lesson: { id: lesson.id, date: lesson.date } })
+          byStudent.set(a.studentId, arr)
+        }
+      }
+
+      for (const sg of group.students) {
+        const records = byStudent.get(sg.studentId) ?? []
+        const lastTwo = records.filter((a) => a.status !== 'UNSPECIFIED').slice(0, 2)
+        if (lastTwo.length < 2) continue
+        if (!lastTwo.every((a) => a.status === 'ABSENT' && !a.makeupAttendance)) continue
+        if (!withSnoozed) {
+          const snoozed = await prisma.snoozedAlert.findFirst({
+            where: {
+              entityKey: 'student',
+              entityId: sg.studentId,
+              organizationId: ctx.session.organizationId!,
+              snoozedUntil: {
+                gt: new Date(),
+              },
+            },
+          })
+          if (snoozed) continue
+        }
+        alerts.push({
+          type: ALERT_TYPE.CONSECUTIVE_ABSENCES,
+          severity: 'orange',
+          groupId: group.id,
+          studentId: sg.studentId,
+          studentName: `${sg.student.firstName} ${sg.student.lastName}`,
+          absenceCount: lastTwo.length,
+          groupName: group.course.name,
+        })
+      }
     }
-  }
 
-  return alerts
-}
-
-// ─── Load active snoozed alerts ────────────────────────────────────────
-
-async function getSnoozedAlertMap(organizationId: number): Promise<Map<string, Date>> {
-  const snoozedAlerts = await prisma.snoozedAlert.findMany({
-    where: {
-      organizationId,
-      snoozedUntil: { gt: new Date() },
-    },
-    select: { alertType: true, entityKey: true, snoozedUntil: true },
+    return alerts
   })
 
-  return new Map(
-    snoozedAlerts.map((alert) => [`${alert.alertType}:${alert.entityKey}`, alert.snoozedUntil]),
-  )
-}
-
-function buildSmartFeedPageAlert(
-  alert: SmartFeedAlert,
-  snoozedUntil: Date | null,
-): SmartFeedPageAlert {
-  return {
-    ...alert,
-    id: getSmartFeedAlertId(alert),
-    entityKey: getSmartFeedEntityKey(alert),
-    snoozedUntil,
-    status: snoozedUntil ? SMART_FEED_STATUS.SNOOZED : SMART_FEED_STATUS.ACTIVE,
-  }
-}
-
-async function getSmartFeedSnapshot(organizationId: number): Promise<SmartFeedPageData> {
-  const [snoozedAlertMap, unmarked, balance, absences] = await Promise.all([
-    getSnoozedAlertMap(organizationId),
-    getUnmarkedAttendanceAlerts(organizationId),
-    getBalanceAlerts(organizationId),
-    getConsecutiveAbsenceAlerts(organizationId),
-  ])
-
-  const alerts = [...unmarked, ...balance, ...absences].sort(compareSmartFeedAlerts)
-  const pageAlerts = alerts.map((alert) => {
-    const snoozedUntil = snoozedAlertMap.get(getSmartFeedAlertId(alert))
-    return buildSmartFeedPageAlert(alert, snoozedUntil ?? null)
-  })
-
-  return {
-    active: pageAlerts.filter((alert) => alert.status === SMART_FEED_STATUS.ACTIVE),
-    snoozed: pageAlerts.filter((alert) => alert.status === SMART_FEED_STATUS.SNOOZED),
-  }
-}
-
-// ─── Main feed action ──────────────────────────────────────────────────
-
-export const getSmartFeed = authAction
-  .metadata({ actionName: 'getSmartFeed' })
+export const getSnoozedAlerts = authAction
+  .metadata({ actionName: 'getSnoozedAlerts' })
   .action(async ({ ctx }) => {
-    const snapshot = await getSmartFeedSnapshot(ctx.session.organizationId!)
-    return snapshot.active
+    const snoozedAlerts = await prisma.snoozedAlert.findMany({
+      where: {
+        organizationId: ctx.session.organizationId!,
+        snoozedUntil: { gt: new Date() },
+      },
+    })
+
+    return snoozedAlerts
   })
 
-export const getSmartFeedPageData = authAction
-  .metadata({ actionName: 'getSmartFeedPageData' })
-  .action(async ({ ctx }) => {
-    return await getSmartFeedSnapshot(ctx.session.organizationId!)
-  })
-
-// ─── Snooze action ─────────────────────────────────────────────────────
-
-export const snoozeAlert = authAction
-  .metadata({ actionName: 'snoozeAlert' })
+export const createSnoozedAlert = authAction
+  .metadata({ actionName: 'createSnoozedAlert' })
   .inputSchema(SnoozeAlertSchema)
   .action(async ({ ctx, parsedInput }) => {
     const organizationId = ctx.session.organizationId!
@@ -279,9 +258,9 @@ export const snoozeAlert = authAction
 
     await prisma.snoozedAlert.upsert({
       where: {
-        organizationId_alertType_entityKey: {
+        organizationId_entityId_entityKey: {
           organizationId,
-          alertType: parsedInput.alertType,
+          entityId: parsedInput.entityId,
           entityKey: parsedInput.entityKey,
         },
       },
@@ -291,7 +270,7 @@ export const snoozeAlert = authAction
       },
       create: {
         organizationId,
-        alertType: parsedInput.alertType,
+        entityId: parsedInput.entityId,
         entityKey: parsedInput.entityKey,
         snoozedUntil: addDays(new Date(), parsedInput.snoozeDays),
         snoozedByUserId: userId,
@@ -306,8 +285,8 @@ export const restoreSnoozedAlert = authAction
     await prisma.snoozedAlert.deleteMany({
       where: {
         organizationId: ctx.session.organizationId!,
-        alertType: parsedInput.alertType,
         entityKey: parsedInput.entityKey,
+        entityId: parsedInput.entityId,
       },
     })
   })

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import SmartFeedPage from '@/src/features/smart-feed/components/smart-feed-page'
 import { auth } from '@/src/lib/auth/server'
 import { protocol, rootDomain } from '@/src/lib/utils'
@@ -30,16 +30,5 @@ export default async function Page() {
     )
   }
 
-  return (
-    <div className="grid min-h-0 flex-1 grid-cols-1">
-      <Card>
-        <CardHeader>
-          <CardTitle>Smart Feed</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SmartFeedPage />
-        </CardContent>
-      </Card>
-    </div>
-  )
+  return <SmartFeedPage />
 }

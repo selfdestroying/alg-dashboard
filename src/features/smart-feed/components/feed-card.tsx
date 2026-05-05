@@ -6,16 +6,15 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
-  ItemMedia,
   ItemTitle,
 } from '@/src/components/ui/item'
 import { dateOnlyToLocal } from '@/src/lib/timezone'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { ArrowRight, Clock, CreditCard, TrendingDown, UserX } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import Link from 'next/link'
-import { useSnoozeAlertMutation } from '../queries'
-import { ALERT_TYPE, getSmartFeedEntityKey, type SmartFeedAlert } from '../types'
+import { useCreateSnoozedAlertMutation } from '../queries'
+import { ALERT_TYPE, type SmartFeedAlert } from '../types'
 
 interface FeedCardProps {
   alert: SmartFeedAlert
@@ -27,10 +26,8 @@ export function FeedCard({ alert }: FeedCardProps) {
       return <UnmarkedAttendanceCard alert={alert} />
     case ALERT_TYPE.LOW_BALANCE:
       return <LowBalanceCard alert={alert} />
-    case ALERT_TYPE.NEGATIVE_BALANCE:
-      return <NegativeBalanceCard alert={alert} />
     case ALERT_TYPE.CONSECUTIVE_ABSENCES:
-      return <ConsecutiveAbsencesCard alert={alert} />
+      return <AbsentStreakCard alert={alert} />
   }
 }
 
@@ -43,42 +40,45 @@ function UnmarkedAttendanceCard({
 
   return (
     <Item size={'xs'}>
-      <ItemMedia variant="icon">
-        <Clock className="text-destructive" />
-      </ItemMedia>
       <ItemContent>
-        <ItemTitle>{alert.groupName}</ItemTitle>
+        <ItemTitle>
+          <Link
+            href={`/groups/${alert.groupId}`}
+            className="hover:text-primary underline-offset-1 hover:underline"
+          >
+            {alert.groupName}
+          </Link>
+        </ItemTitle>
         <ItemDescription>
           {formattedDate}, {alert.lessonTime} · {alert.unspecifiedCount} неотмечен.
         </ItemDescription>
       </ItemContent>
-      <ItemActions>
-        <Button
-          variant="outline"
-          size={'icon'}
-          render={<Link href={`/lessons/${alert.lessonId}`} />}
-          nativeButton={false}
-        >
-          <ArrowRight />
-        </Button>
-      </ItemActions>
     </Item>
   )
 }
 
-function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGATIVE_BALANCE' } }) {
-  const snoozeMutation = useSnoozeAlertMutation()
+function LowBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'LOW_BALANCE' } }) {
+  const snoozeMutation = useCreateSnoozedAlertMutation()
 
   return (
     <Item size={'xs'}>
-      <ItemMedia variant="icon">
-        <TrendingDown className="text-destructive" />
-      </ItemMedia>
       <ItemContent>
-        <ItemTitle>{alert.studentName}</ItemTitle>
-        <ItemDescription>
-          {alert.groupName} ·{' '}
-          <span className="text-destructive">
+        <ItemTitle>
+          <Link
+            href={`/students/${alert.studentId}`}
+            className="hover:text-primary underline-offset-1 hover:underline"
+          >
+            {alert.studentName}
+          </Link>
+        </ItemTitle>
+        <ItemDescription className="line-clamp-0 [&>a]:no-underline [&>a]:underline-offset-1 [&>a]:hover:underline">
+          <Link
+            href={`/groups/${alert.groupId}`}
+            className="hover:text-primary underline-offset-1 hover:underline"
+          >
+            {alert.groupName}
+          </Link>
+          <span className="text-destructive ml-1">
             {alert.lessonsBalance} {declLessons(alert.lessonsBalance)}
           </span>
         </ItemDescription>
@@ -89,8 +89,8 @@ function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGAT
           size={'icon'}
           onClick={() =>
             snoozeMutation.mutate({
-              alertType: alert.type,
-              entityKey: getSmartFeedEntityKey(alert),
+              entityId: alert.walletId,
+              entityKey: 'wallet',
               snoozeDays: 2,
             })
           }
@@ -99,88 +99,29 @@ function NegativeBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'NEGAT
         >
           <Clock />
         </Button>
-        <Button
-          variant="outline"
-          size={'icon'}
-          render={<Link href={`/students/${alert.studentId}`} />}
-          nativeButton={false}
-        >
-          <ArrowRight />
-        </Button>
       </ItemActions>
     </Item>
   )
 }
 
-function LowBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'LOW_BALANCE' } }) {
-  const snoozeMutation = useSnoozeAlertMutation()
-
+function AbsentStreakCard({ alert }: { alert: SmartFeedAlert & { type: 'CONSECUTIVE_ABSENCES' } }) {
   return (
     <Item size={'xs'}>
-      <ItemMedia variant="icon">
-        <CreditCard className="text-yellow-600" />
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle>{alert.studentName}</ItemTitle>
-        <ItemDescription>
-          {alert.groupName} · остался {alert.lessonsBalance} урок
+      <ItemContent className="truncate">
+        <ItemTitle>
+          <Link
+            href={`/students/${alert.studentId}`}
+            className="hover:text-primary underline-offset-1 hover:underline"
+          >
+            {alert.studentName}
+          </Link>
+        </ItemTitle>
+        <ItemDescription className="line-clamp-0 [&>a]:no-underline [&>a]:underline-offset-1 [&>a]:hover:underline">
+          <Link href={`/groups/${alert.groupId}`} className="hover:text-primary">
+            {alert.groupName}
+          </Link>
         </ItemDescription>
       </ItemContent>
-      <ItemActions>
-        <Button
-          variant="outline"
-          size={'icon'}
-          onClick={() =>
-            snoozeMutation.mutate({
-              alertType: alert.type,
-              entityKey: getSmartFeedEntityKey(alert),
-              snoozeDays: 2,
-            })
-          }
-          disabled={snoozeMutation.isPending}
-          title="Отложить на 2 дня"
-        >
-          <Clock />
-        </Button>
-        <Button
-          variant="outline"
-          size={'icon'}
-          render={<Link href={`/students/${alert.studentId}`} />}
-          nativeButton={false}
-        >
-          <ArrowRight />
-        </Button>
-      </ItemActions>
-    </Item>
-  )
-}
-
-function ConsecutiveAbsencesCard({
-  alert,
-}: {
-  alert: SmartFeedAlert & { type: 'CONSECUTIVE_ABSENCES' }
-}) {
-  return (
-    <Item size={'xs'}>
-      <ItemMedia variant="icon">
-        <UserX className="text-orange-500" />
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle>{alert.studentName}</ItemTitle>
-        <ItemDescription>
-          {alert.groupName} · {alert.absenceCount} пропуска подряд
-        </ItemDescription>
-      </ItemContent>
-      <ItemActions>
-        <Button
-          render={<Link href={`/students/${alert.studentId}`} />}
-          nativeButton={false}
-          size={'icon'}
-          variant={'outline'}
-        >
-          <ArrowRight />
-        </Button>
-      </ItemActions>
     </Item>
   )
 }

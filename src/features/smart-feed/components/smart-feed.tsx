@@ -3,40 +3,43 @@
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/src/components/ui/empty'
+import {
   Popover,
   PopoverContent,
+  PopoverDescription,
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
 } from '@/src/components/ui/popover'
-import { Separator } from '@/src/components/ui/separator'
 import { useSidebar } from '@/src/components/ui/sidebar'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { GlobalSearch } from '@/src/features/search/components/global-search'
 import { moscowNow } from '@/src/lib/timezone'
 import { cn } from '@/src/lib/utils'
-import {
-  Bell,
-  CheckCircle2,
-  Clock,
-  CreditCard,
-  Menu,
-  SquareArrowOutUpRight,
-  TrendingDown,
-  UserX,
-} from 'lucide-react'
+import { Ban, Bell, Clock, CreditCard, Menu, SquareArrowOutUpRight, UserX } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { useSmartFeedQuery } from '../queries'
-import { ALERT_TYPE, getSmartFeedAlertId, type SmartFeedAlert } from '../types'
+import { useAbsentStreaksQuery, useLowBalanceQuery, useUnmarkedAttendnace } from '../queries'
+import { getSmartFeedAlertId, type SmartFeedAlert } from '../types'
 import { FeedCard } from './feed-card'
 import { QuickTip } from './quick-tip'
 
 // ─── Popover-only trigger (mobile) ─────────────────────────────────────
 
 export function SmartFeed() {
-  const { data: alerts } = useSmartFeedQuery()
-  const count = alerts?.length ?? 0
+  const { data: unmarkedAlerts } = useUnmarkedAttendnace()
+  const { data: lowBalanceAlerts } = useLowBalanceQuery()
+  const { data: absentStreakAlerts } = useAbsentStreaksQuery()
+  const count =
+    (unmarkedAlerts?.length ?? 0) +
+    (lowBalanceAlerts?.length ?? 0) +
+    (absentStreakAlerts?.length ?? 0)
   const hasAlerts = count > 0
 
   return (
@@ -60,12 +63,9 @@ export function SmartFeed() {
 // ─── Desktop info bar ──────────────────────────────────────────────────
 
 export function SmartFeedBar({ canSeeFeed }: { canSeeFeed: boolean }) {
-  const { data: alerts, isLoading } = useSmartFeedQuery()
   const { isMobile, toggleSidebar } = useSidebar()
   const now = useMemo(() => moscowNow(), [])
   const greeting = getGreeting(now)
-
-  const chips = useMemo(() => buildChips(alerts), [alerts])
 
   return (
     <div className="flex w-full items-center gap-2">
@@ -80,7 +80,21 @@ export function SmartFeedBar({ canSeeFeed }: { canSeeFeed: boolean }) {
 
       {/* Right: alerts / sidebar toggle */}
       <div className="flex flex-1 items-center justify-end gap-2">
-        {canSeeFeed && !isMobile && <DesktopAlerts isLoading={isLoading} chips={chips} />}
+        {canSeeFeed && !isMobile && (
+          <div className="grid auto-cols-max grid-flow-col items-center gap-2">
+            <UnmarkedAttendanceChip />
+            <LowBalanceChip />
+            <AbsentStreaksChip />
+            <Button
+              variant="outline"
+              size="icon"
+              render={<Link href="/smart-feed" />}
+              nativeButton={false}
+            >
+              <SquareArrowOutUpRight />
+            </Button>
+          </div>
+        )}
         {canSeeFeed && isMobile && (
           <>
             <SmartFeed />
@@ -93,49 +107,47 @@ export function SmartFeedBar({ canSeeFeed }: { canSeeFeed: boolean }) {
   )
 }
 
-// ─── Desktop alerts ────────────────────────────────────────────────────
+export function UnmarkedAttendanceChip() {
+  const { data, isLoading, isError } = useUnmarkedAttendnace()
 
-type ChipConfig = {
-  key: string
-  icon: React.ReactNode
-  label: string
-  title: string
-  variant: keyof typeof chipVariants
-  alerts: SmartFeedAlert[]
+  return (
+    <ChipPopover
+      alerts={data ?? []}
+      icon={<Clock />}
+      title="Неотмеченные посещения"
+      isLoading={isLoading}
+      isError={isError}
+      description="Группы, в которых не отмечены посещения"
+    />
+  )
 }
 
-function DesktopAlerts({ isLoading, chips }: { isLoading: boolean; chips: ChipConfig[] }) {
+export function LowBalanceChip() {
+  const { data, isLoading, isError } = useLowBalanceQuery()
   return (
-    <div className="grid auto-cols-max grid-flow-col items-center gap-2">
-      {isLoading ? (
-        Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-full w-20" />)
-      ) : chips.length === 0 ? (
-        <Badge className={cn('h-full rounded-md select-none', chipVariants.green)}>
-          <CheckCircle2 className="size-3" />
-          <span>Всё ок</span>
-        </Badge>
-      ) : (
-        chips.map((c) => (
-          <ChipPopover
-            key={c.key}
-            icon={c.icon}
-            count={c.alerts.length}
-            label={c.label}
-            title={c.title}
-            variant={c.variant}
-            alerts={c.alerts}
-          />
-        ))
-      )}
-      <Button
-        variant="outline"
-        size="icon"
-        render={<Link href="/smart-feed" />}
-        nativeButton={false}
-      >
-        <SquareArrowOutUpRight />
-      </Button>
-    </div>
+    <ChipPopover
+      alerts={data ?? []}
+      icon={<CreditCard />}
+      title="Низкий баланс"
+      isLoading={isLoading}
+      isError={isError}
+      description="Ученики с низким балансом в кошельке"
+    />
+  )
+}
+
+export function AbsentStreaksChip() {
+  const { data, isLoading, isError } = useAbsentStreaksQuery()
+
+  return (
+    <ChipPopover
+      alerts={data ?? []}
+      icon={<UserX />}
+      title="Риски"
+      isLoading={isLoading}
+      isError={isError}
+      description="Ученики с 2 пропусками подряд"
+    />
   )
 }
 
@@ -147,51 +159,6 @@ function SidebarToggle({ onClick }: { onClick: () => void }) {
   )
 }
 
-function buildChips(alerts: SmartFeedAlert[] | undefined): ChipConfig[] {
-  if (!alerts?.length) return []
-  const unmarked = alerts.filter((a) => a.type === ALERT_TYPE.UNMARKED_ATTENDANCE)
-  const debts = alerts.filter((a) => a.type === ALERT_TYPE.NEGATIVE_BALANCE)
-  const low = alerts.filter((a) => a.type === ALERT_TYPE.LOW_BALANCE)
-  const absences = alerts.filter((a) => a.type === ALERT_TYPE.CONSECUTIVE_ABSENCES)
-
-  const defs: ChipConfig[] = [
-    {
-      key: 'unmarked',
-      icon: <Clock className="size-2.5" />,
-      label: 'неотмечен.',
-      title: 'Посещаемость',
-      variant: 'red',
-      alerts: unmarked,
-    },
-    {
-      key: 'debts',
-      icon: <TrendingDown className="size-2.5" />,
-      label: declPlural(debts.length, 'долг', 'долга', 'долгов'),
-      title: 'Долги',
-      variant: 'red',
-      alerts: debts,
-    },
-    {
-      key: 'low',
-      icon: <CreditCard className="size-2.5" />,
-      label: 'оплата',
-      title: 'Заканчивается баланс',
-      variant: 'yellow',
-      alerts: low,
-    },
-    {
-      key: 'absences',
-      icon: <UserX className="size-2.5" />,
-      label: declPlural(absences.length, 'риск', 'риска', 'рисков'),
-      title: 'Зона риска',
-      variant: 'orange',
-      alerts: absences,
-    },
-  ]
-
-  return defs.filter((d) => d.alerts.length > 0)
-}
-
 // ─── Chip popover (desktop - one per alert type) ───────────────────────
 
 const chipVariants = {
@@ -201,43 +168,70 @@ const chipVariants = {
   green: 'bg-green-500/10 text-green-600 hover:bg-green-500/15',
 } as const
 
+function getChipVariant(count: number): keyof typeof chipVariants {
+  if (count === 0) return 'green'
+  if (count <= 5) return 'yellow'
+  if (count <= 10) return 'orange'
+  return 'red'
+}
+
 function ChipPopover({
   icon,
-  count,
-  label,
   title,
-  variant,
   alerts,
+  isLoading,
+  isError,
+  description: tooltipMessage,
 }: {
   icon: React.ReactNode
-  count: number
-  label: string
   title: string
-  variant: keyof typeof chipVariants
+  description?: string
   alerts: SmartFeedAlert[]
+  isLoading: boolean
+  isError: boolean
 }) {
+  if (isLoading) {
+    return <Skeleton className="h-full w-10" />
+  }
+
   return (
     <Popover>
       <PopoverTrigger
         render={
           <Badge
-            className={cn('h-full cursor-pointer rounded-md select-none', chipVariants[variant])}
-          />
+            variant={'secondary'}
+            className={cn(
+              'h-full cursor-pointer rounded-md select-none',
+              !isError && chipVariants[getChipVariant(alerts.length)],
+            )}
+          >
+            {icon}
+            {isError ? '-' : alerts.length}
+          </Badge>
         }
         nativeButton={false}
-      >
-        {icon}
-        {count} {label}
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-max">
+      />
+      <PopoverContent align="end">
         <PopoverHeader>
           <PopoverTitle>{title}</PopoverTitle>
+          <PopoverDescription>{tooltipMessage}</PopoverDescription>
         </PopoverHeader>
-        <Separator />
-        <div className="thin-scrollbar max-h-64 space-y-2 overflow-y-auto">
-          {alerts.map((alert) => (
-            <FeedCard key={getSmartFeedAlertId(alert)} alert={alert} />
-          ))}
+        <div className="thin-scrollbar max-h-64 space-y-1 overflow-y-auto">
+          {isError ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia>
+                  <Ban />
+                </EmptyMedia>
+                <EmptyTitle>Ошибка загрузки</EmptyTitle>
+                <EmptyDescription>
+                  Произошла ошибка при загрузке модуля. Попробуйте обновить страницу.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            alerts.map((alert) => <FeedCard key={getSmartFeedAlertId(alert)} alert={alert} />)
+          )}
         </div>
       </PopoverContent>
     </Popover>
@@ -252,13 +246,4 @@ function getGreeting(date: Date): string {
   if (h < 12) return 'Доброе утро'
   if (h < 18) return 'Добрый день'
   return 'Добрый вечер'
-}
-
-function declPlural(n: number, one: string, few: string, many: string): string {
-  const abs = Math.abs(n) % 100
-  const lastDigit = abs % 10
-  if (abs > 10 && abs < 20) return many
-  if (lastDigit === 1) return one
-  if (lastDigit >= 2 && lastDigit <= 4) return few
-  return many
 }
