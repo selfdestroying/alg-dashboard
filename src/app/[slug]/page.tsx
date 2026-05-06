@@ -3,8 +3,9 @@ import { protocol, rootDomain } from '@/src/lib/utils'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Dashboard from '../../features/dashboard/components/dashboard'
+import { Metadata } from 'next'
 
-export const metadata = { title: 'Панель управления' }
+export const metadata: Metadata = { title: 'Панель управления' }
 
 export default async function Page() {
   const requestHeaders = await headers()

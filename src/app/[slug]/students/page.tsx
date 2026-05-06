@@ -8,8 +8,9 @@ import {
 } from '@/src/components/ui/card'
 import AddStudentButton from '@/src/features/students/components/add-student-button'
 import StudentsTable from '@/src/features/students/components/students-table'
+import { Metadata } from 'next'
 
-export const metadata = { title: 'Ученики' }
+export const metadata: Metadata = { title: 'Ученики' }
 
 export default function Page() {
   return (
