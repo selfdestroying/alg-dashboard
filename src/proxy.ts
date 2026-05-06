@@ -49,16 +49,18 @@ function buildAuthRedirectUrl(request: NextRequest): string {
 
 export async function proxy(request: NextRequest) {
   const subdomain = extractSubdomain(request)
+  const { pathname, search } = request.nextUrl
+
+  if (pathname.startsWith('/edit/')) {
+    return NextResponse.next()
+  }
 
   if (!subdomain) {
-    const { pathname } = request.nextUrl
     if (pathname !== '/') {
       return NextResponse.redirect(new URL('/', request.url))
     }
     return NextResponse.next()
   }
-
-  const { pathname, search } = request.nextUrl
 
   const session = await auth.api.getSession({
     headers: request.headers,
