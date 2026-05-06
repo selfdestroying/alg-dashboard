@@ -2,7 +2,17 @@
 
 import { StatCard } from '@/src/components/stat-card'
 import { Separator } from '@/src/components/ui/separator'
-import { Cake, ExternalLink, Link as LinkIcon, LucideIcon, User, UserRound } from 'lucide-react'
+import { protocol, rootDomain } from '@/src/lib/utils'
+import {
+  Cake,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  Link as LinkIcon,
+  LucideIcon,
+  User,
+  UserRound,
+} from 'lucide-react'
 import type { StudentDetail } from '../../types'
 
 interface StudentCardProps {
@@ -24,6 +34,21 @@ export default function StudentCard({ student }: StudentCardProps) {
     year: 'numeric',
   })
 
+  const actualizedAt = student.dataActualizedAt
+    ? new Date(student.dataActualizedAt).toLocaleString('ru-RU', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Europe/Moscow',
+      })
+    : null
+
+  const parentEditUrl = rootDomain
+    ? `${protocol}://${rootDomain}/edit/${student.editToken}`
+    : `/edit/${student.editToken}`
+
   return (
     <>
       {/* Общие сведения */}
@@ -40,38 +65,54 @@ export default function StudentCard({ student }: StudentCardProps) {
           value={memberSince}
           description={`Групп: ${student.groups.length}`}
         />
+        <StatCard
+          label="Актуальность данных"
+          value={student.dataActual ? 'Подтверждены' : 'Не подтверждены'}
+          description={actualizedAt ? `Дата: ${actualizedAt}` : 'Родитель ещё не подтвердил'}
+          icon={student.dataActual ? CheckCircle2 : Clock}
+        />
       </div>
 
       <Separator />
 
       {/* Ссылки и интеграции */}
-      {student.url && (
-        <>
-          <SectionHeader title="Ссылки и интеграции" icon={LinkIcon} />
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard
-              label="Ссылка в CRM"
-              value={
-                student.url ? (
-                  <a
-                    href={student.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary inline-flex items-center gap-1 hover:underline"
-                  >
-                    Открыть
-                    <ExternalLink className="size-3" />
-                  </a>
-                ) : (
-                  'Не указано'
-                )
-              }
-              icon={ExternalLink}
-            />
-          </div>
-          <Separator />
-        </>
-      )}
+      <SectionHeader title="Ссылки и интеграции" icon={LinkIcon} />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard
+          label="Ссылка для родителей"
+          value={
+            <a
+              href={parentEditUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary inline-flex items-center gap-1 hover:underline"
+            >
+              Открыть форму
+              <ExternalLink className="size-3" />
+            </a>
+          }
+          description="Отправьте эту ссылку родителю"
+          icon={LinkIcon}
+        />
+        {student.url && (
+          <StatCard
+            label="Ссылка в CRM"
+            value={
+              <a
+                href={student.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary inline-flex items-center gap-1 hover:underline"
+              >
+                Открыть
+                <ExternalLink className="size-3" />
+              </a>
+            }
+            icon={ExternalLink}
+          />
+        )}
+      </div>
+      <Separator />
     </>
   )
 }

@@ -23,6 +23,10 @@ function getAggregateBalance(student: StudentWithGroups) {
   return student.wallets.reduce((sum, w) => sum + w.lessonsBalance, 0) + student.lessonsBalance
 }
 
+function formatActualizedDate(date: Date) {
+  return date.toLocaleDateString('ru-RU', { timeZone: 'Europe/Moscow' })
+}
+
 const columns: ColumnDef<StudentWithGroups>[] = [
   {
     header: 'Имя',
@@ -60,6 +64,20 @@ const columns: ColumnDef<StudentWithGroups>[] = [
       row.parents
         .map((sp) => [sp.parent.firstName, sp.parent.lastName].filter(Boolean).join(' '))
         .join(', ') || '-',
+  },
+  {
+    header: 'Актуальность',
+    accessorFn: (row) => (row.dataActualizedAt ? formatActualizedDate(row.dataActualizedAt) : '-'),
+    cell: ({ row }) =>
+      row.original.dataActual ? (
+        <span>
+          {row.original.dataActualizedAt
+            ? formatActualizedDate(row.original.dataActualizedAt)
+            : 'Да'}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">Не подтверждены</span>
+      ),
   },
 ]
 
