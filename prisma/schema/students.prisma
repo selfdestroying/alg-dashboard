@@ -5,7 +5,10 @@ model Student {
     age            Int?
     birthDate      DateTime? @db.Date
     url            String?
-    lessonsBalance Int       @default(0)
+    editToken      String @unique @default(uuid()) @db.Uuid
+    dataActual       Boolean   @default(false)
+    dataActualizedAt DateTime?
+    lessonsBalance   Int       @default(0)
     totalLessons   Int       @default(0)
     totalPayments  Int       @default(0)
     createdAt      DateTime  @default(now())
