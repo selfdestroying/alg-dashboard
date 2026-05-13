@@ -231,13 +231,13 @@ export const getSalaryPaychecks = authAction
     return await prisma.payCheck.findMany({
       where: {
         organizationId: ctx.session.organizationId!,
-        date: { gte: parsedInput.startDate, lte: parsedInput.endDate },
+        date: { gte: new Date(parsedInput.startDate), lte: new Date(parsedInput.endDate) },
       },
     })
   })
 
-export const getMeSalaryPaychecks = authAction
-  .metadata({ actionName: 'getMeSalaryPaychecks' })
+export const getMySalaryPaychecks = authAction
+  .metadata({ actionName: 'getMySalaryPaychecks' })
   .inputSchema(
     z.object({
       startDate: z.string(),

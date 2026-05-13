@@ -16,7 +16,7 @@ import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import {
   useMySalaryDataQuery,
-  useSalaryPaychecksQuery,
+  useMySalaryPaychecksQuery,
 } from '@/src/features/finances/salaries/queries'
 import type { LessonWithPrice, SalaryFilters } from '@/src/features/finances/salaries/types'
 import { MyIncomeChart } from '@/src/features/users/me/components/my-income-chart'
@@ -125,7 +125,7 @@ export default function MySalary() {
   }, [dateRange])
 
   const { data: salaryData, isPending, isError, error } = useMySalaryDataQuery(filters)
-  const { data: paychecks = [] } = useSalaryPaychecksQuery(
+  const { data: paychecks = [] } = useMySalaryPaychecksQuery(
     filters?.startDate ?? null,
     filters?.endDate ?? null,
   )

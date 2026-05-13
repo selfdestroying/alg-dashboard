@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMeSalaryPaychecks, getMySalaryData, getSalaryData } from './actions'
+import { getMySalaryData, getMySalaryPaychecks, getSalaryData, getSalaryPaychecks } from './actions'
 import type { SalaryFilters } from './types'
 
 export const salaryKeys = {
@@ -44,7 +44,22 @@ export const useSalaryPaychecksQuery = (startDate: string | null, endDate: strin
     queryKey: startDate && endDate ? salaryKeys.paychecks(startDate, endDate) : salaryKeys.all,
     queryFn: async () => {
       if (!startDate || !endDate) return []
-      const result = await getMeSalaryPaychecks({ startDate, endDate })
+      const result = await getSalaryPaychecks({ startDate, endDate })
+      if (result.serverError) throw new Error(String(result.serverError))
+      if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
+      if (!result.data) throw new Error('Сервер не вернул данные')
+      return result.data
+    },
+    enabled: !!startDate && !!endDate,
+  })
+}
+
+export const useMySalaryPaychecksQuery = (startDate: string | null, endDate: string | null) => {
+  return useQuery({
+    queryKey: startDate && endDate ? salaryKeys.paychecks(startDate, endDate) : salaryKeys.all,
+    queryFn: async () => {
+      if (!startDate || !endDate) return []
+      const result = await getMySalaryPaychecks({ startDate, endDate })
       if (result.serverError) throw new Error(String(result.serverError))
       if (result.validationErrors) throw new Error('Ошибка валидации входных данных')
       if (!result.data) throw new Error('Сервер не вернул данные')
