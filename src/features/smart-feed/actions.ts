@@ -5,7 +5,12 @@ import { authAction } from '@/src/lib/safe-action'
 import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { addDays, startOfDay } from 'date-fns'
 import z from 'zod'
-import { RestoreSnoozedAlertSchema, SnoozeAlertSchema } from './schemas'
+import {
+  RestoreSnoozedAlertSchema,
+  RestoreSnoozedAlertsBulkSchema,
+  SnoozeAlertSchema,
+  SnoozeAlertsBulkSchema,
+} from './schemas'
 import {
   ALERT_TYPE,
   type ConsecutiveAbsencesAlert,
@@ -238,11 +243,13 @@ export const getAbsentStreak = authAction
 
 export const getSnoozedAlerts = authAction
   .metadata({ actionName: 'getSnoozedAlerts' })
-  .action(async ({ ctx }) => {
+  .inputSchema(z.object({ entityKey: z.string().min(1).optional() }).optional())
+  .action(async ({ ctx, parsedInput }) => {
     const snoozedAlerts = await prisma.snoozedAlert.findMany({
       where: {
         organizationId: ctx.session.organizationId!,
         snoozedUntil: { gt: new Date() },
+        ...(parsedInput?.entityKey ? { entityKey: parsedInput.entityKey } : {}),
       },
     })
 
@@ -289,4 +296,53 @@ export const restoreSnoozedAlert = authAction
         entityId: parsedInput.entityId,
       },
     })
+  })
+
+export const restoreSnoozedAlertsBulk = authAction
+  .metadata({ actionName: 'restoreSnoozedAlertsBulk' })
+  .inputSchema(RestoreSnoozedAlertsBulkSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    await prisma.snoozedAlert.deleteMany({
+      where: {
+        organizationId: ctx.session.organizationId!,
+        OR: parsedInput.alerts.map(({ entityId, entityKey }) => ({
+          entityId,
+          entityKey,
+        })),
+      },
+    })
+  })
+
+export const createSnoozedAlertsBulk = authAction
+  .metadata({ actionName: 'createSnoozedAlertsBulk' })
+  .inputSchema(SnoozeAlertsBulkSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    const organizationId = ctx.session.organizationId!
+    const userId = Number(ctx.session.user.id)
+    const snoozedUntil = addDays(new Date(), parsedInput.snoozeDays)
+
+    await prisma.$transaction(
+      parsedInput.alerts.map((alert) =>
+        prisma.snoozedAlert.upsert({
+          where: {
+            organizationId_entityId_entityKey: {
+              organizationId,
+              entityId: alert.entityId,
+              entityKey: alert.entityKey,
+            },
+          },
+          update: {
+            snoozedUntil,
+            snoozedByUserId: userId,
+          },
+          create: {
+            organizationId,
+            entityId: alert.entityId,
+            entityKey: alert.entityKey,
+            snoozedUntil,
+            snoozedByUserId: userId,
+          },
+        }),
+      ),
+    )
   })
