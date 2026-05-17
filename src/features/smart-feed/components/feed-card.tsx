@@ -11,10 +11,11 @@ import {
 import { dateOnlyToLocal } from '@/src/lib/timezone'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Clock } from 'lucide-react'
+import { BellOff } from 'lucide-react'
 import Link from 'next/link'
 import { useCreateSnoozedAlertMutation } from '../queries'
 import { ALERT_TYPE, type SmartFeedAlert } from '../types'
+import { SnoozeDaysMenu } from './snooze-days-menu'
 
 interface FeedCardProps {
   alert: SmartFeedAlert
@@ -84,21 +85,25 @@ function LowBalanceCard({ alert }: { alert: SmartFeedAlert & { type: 'LOW_BALANC
         </ItemDescription>
       </ItemContent>
       <ItemActions>
-        <Button
-          variant="outline"
-          size={'icon'}
-          onClick={() =>
+        <SnoozeDaysMenu
+          onSelect={(days) =>
             snoozeMutation.mutate({
               entityId: alert.walletId,
               entityKey: 'wallet',
-              snoozeDays: 2,
+              snoozeDays: days,
             })
           }
-          disabled={snoozeMutation.isPending}
-          title="Отложить на 2 дня"
+          trigger={
+            <Button
+              variant="ghost"
+              size={'icon'}
+              disabled={snoozeMutation.isPending}
+              title="Отложить"
+            />
+          }
         >
-          <Clock />
-        </Button>
+          <BellOff />
+        </SnoozeDaysMenu>
       </ItemActions>
     </Item>
   )

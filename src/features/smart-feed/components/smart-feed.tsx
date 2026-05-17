@@ -9,26 +9,37 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/src/components/ui/empty'
-import {
-  Popover,
-  PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverTrigger,
-} from '@/src/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/popover'
 import { useSidebar } from '@/src/components/ui/sidebar'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { GlobalSearch } from '@/src/features/search/components/global-search'
 import { moscowNow } from '@/src/lib/timezone'
 import { cn } from '@/src/lib/utils'
-import { Ban, Bell, Clock, CreditCard, Menu, SquareArrowOutUpRight, UserX } from 'lucide-react'
+import {
+  Ban,
+  Bell,
+  BellOff,
+  ClipboardList,
+  Menu,
+  RotateCcw,
+  SquareArrowOutUpRight,
+  UserX,
+  Wallet,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { useAbsentStreaksQuery, useLowBalanceQuery, useUnmarkedAttendnace } from '../queries'
-import { getSmartFeedAlertId, type SmartFeedAlert } from '../types'
-import { FeedCard } from './feed-card'
+import {
+  useAbsentStreaksQuery,
+  useCreateSnoozedAlertMutation,
+  useCreateSnoozedAlertsBulkMutation,
+  useLowBalanceQuery,
+  useRestoreSnoozedAlertsBulkMutation,
+  useSnoozedAlertsQuery,
+  useUnmarkedAttendnace,
+} from '../queries'
+import { type SmartFeedAlert } from '../types'
 import { QuickTip } from './quick-tip'
+import { SnoozeDaysMenu, type SnoozeDaysOption } from './snooze-days-menu'
 
 // ─── Popover-only trigger (mobile) ─────────────────────────────────────
 
@@ -109,45 +120,191 @@ export function SmartFeedBar({ canSeeFeed }: { canSeeFeed: boolean }) {
 
 export function UnmarkedAttendanceChip() {
   const { data, isLoading, isError } = useUnmarkedAttendnace()
+  const amount = data?.length ?? 0
 
   return (
     <ChipPopover
-      alerts={data ?? []}
-      icon={<Clock />}
+      amount={amount}
+      snoozedAmount={0}
+      icon={<ClipboardList />}
       title="Неотмеченные посещения"
       isLoading={isLoading}
       isError={isError}
       description="Группы, в которых не отмечены посещения"
-    />
+    >
+      <ul className="divide-border max-h-80 divide-y overflow-y-auto">
+        {data?.map((alert) => (
+          <li
+            key={`${alert.groupId}`}
+            className="flex items-center justify-between gap-2 px-3 py-2"
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="bg-destructive/10 text-destructive ring-destructive/15 flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-xs font-semibold tabular-nums ring-1"
+                title="Количество неотмеченных"
+              >
+                {alert.unspecifiedCount}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  <Link
+                    href={`/students/${alert.groupId}`}
+                    className="hover:text-primary underline-offset-1 hover:underline"
+                  >
+                    {alert.groupName}
+                  </Link>
+                </p>
+                <span className="text-muted-foreground truncate text-xs underline-offset-1">
+                  {alert.lessonDate.toLocaleDateString('ru-RU')} {alert.lessonTime}
+                </span>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </ChipPopover>
   )
 }
 
 export function LowBalanceChip() {
   const { data, isLoading, isError } = useLowBalanceQuery()
+  const { data: snoozedAlerts } = useSnoozedAlertsQuery('wallet')
+  const snoozeAllMutation = useCreateSnoozedAlertsBulkMutation()
+  const snoozeMutation = useCreateSnoozedAlertMutation()
+  const restoreAllMutation = useRestoreSnoozedAlertsBulkMutation()
+
+  const snoozedCount = snoozedAlerts?.length ?? 0
+  const amount = data?.length ?? 0
+
+  const handleSnoozeAll = (days: SnoozeDaysOption) => {
+    const items = data!.map((a) => ({ entityId: a.walletId, entityKey: 'wallet' }))
+    if (items.length === 0) return
+    snoozeAllMutation.mutate({ alerts: items, snoozeDays: days })
+  }
+
+  const handleRestoreAll = () => {
+    if (!snoozedAlerts || snoozedAlerts.length === 0) return
+    restoreAllMutation.mutate({
+      alerts: snoozedAlerts.map((a) => ({ entityId: a.entityId, entityKey: a.entityKey })),
+    })
+  }
+
   return (
     <ChipPopover
-      alerts={data ?? []}
-      icon={<CreditCard />}
+      amount={amount}
+      snoozedAmount={snoozedCount}
+      snoozeAll={handleSnoozeAll}
+      restoreAll={handleRestoreAll}
+      icon={<Wallet />}
       title="Низкий баланс"
       isLoading={isLoading}
       isError={isError}
       description="Ученики с низким балансом в кошельке"
-    />
+    >
+      <ul className="divide-border max-h-80 divide-y overflow-y-auto">
+        {data?.map((alert) => (
+          <li
+            key={`${alert.groupId}:${alert.studentId}`}
+            className="flex items-center justify-between gap-2 px-3 py-2"
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="bg-destructive/10 text-destructive ring-destructive/15 flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-xs font-semibold tabular-nums ring-1"
+                title="Количество уроков"
+              >
+                {alert.lessonsBalance}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  <Link
+                    href={`/students/${alert.studentId}`}
+                    className="hover:text-primary underline-offset-1 hover:underline"
+                  >
+                    {alert.studentName}
+                  </Link>
+                </p>
+                <Link
+                  href={`/groups/${alert.groupId}`}
+                  className="text-muted-foreground hover:text-primary truncate text-xs underline-offset-1 hover:underline"
+                >
+                  {alert.groupName}
+                </Link>
+              </div>
+            </div>
+            <SnoozeDaysMenu
+              onSelect={(days) =>
+                snoozeMutation.mutate({
+                  entityId: alert.walletId,
+                  entityKey: 'wallet',
+                  snoozeDays: days,
+                })
+              }
+              trigger={
+                <Button
+                  variant="ghost"
+                  size={'icon'}
+                  disabled={snoozeMutation.isPending}
+                  title="Отложить"
+                />
+              }
+            >
+              <BellOff />
+            </SnoozeDaysMenu>
+          </li>
+        ))}
+      </ul>
+    </ChipPopover>
   )
 }
 
 export function AbsentStreaksChip() {
   const { data, isLoading, isError } = useAbsentStreaksQuery()
+  const amount = data?.length ?? 0
 
   return (
     <ChipPopover
-      alerts={data ?? []}
+      amount={amount}
+      snoozedAmount={0}
       icon={<UserX />}
       title="Риски"
       isLoading={isLoading}
       isError={isError}
       description="Ученики с 2 пропусками подряд"
-    />
+    >
+      <ul className="divide-border max-h-80 divide-y overflow-y-auto">
+        {data?.map((alert) => (
+          <li
+            key={`${alert.groupId}:${alert.studentId}`}
+            className="flex items-center justify-between gap-2 px-3 py-2"
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="bg-destructive/10 text-destructive ring-destructive/15 flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-xs font-semibold tabular-nums ring-1"
+                title="Количество пропусков подряд"
+              >
+                {alert.absenceCount}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  <Link
+                    href={`/students/${alert.studentId}`}
+                    className="hover:text-primary underline-offset-1 hover:underline"
+                  >
+                    {alert.studentName}
+                  </Link>
+                </p>
+                <Link
+                  href={`/groups/${alert.groupId}`}
+                  className="text-muted-foreground hover:text-primary truncate text-xs underline-offset-1 hover:underline"
+                >
+                  {alert.groupName}
+                </Link>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </ChipPopover>
   )
 }
 
@@ -178,17 +335,26 @@ function getChipVariant(count: number): keyof typeof chipVariants {
 function ChipPopover({
   icon,
   title,
-  alerts,
+  amount,
+  snoozedAmount,
+  snoozeAll,
+  restoreAll,
   isLoading,
   isError,
-  description: tooltipMessage,
+  description,
+  children,
 }: {
   icon: React.ReactNode
   title: string
   description?: string
-  alerts: SmartFeedAlert[]
+  amount: number
+  snoozedAmount: number
+  snoozeAll?: (days: SnoozeDaysOption) => void
+  restoreAll?: () => void
   isLoading: boolean
   isError: boolean
+  footer?: (alerts: SmartFeedAlert[]) => React.ReactNode
+  children?: React.ReactNode
 }) {
   if (isLoading) {
     return <Skeleton className="h-full w-10" />
@@ -202,37 +368,70 @@ function ChipPopover({
             variant={'secondary'}
             className={cn(
               'h-full cursor-pointer rounded-md select-none',
-              !isError && chipVariants[getChipVariant(alerts.length)],
+              !isError && chipVariants[getChipVariant(amount)],
             )}
           >
             {icon}
-            {isError ? '-' : alerts.length}
+            {isError ? '-' : amount}
           </Badge>
         }
         nativeButton={false}
       />
-      <PopoverContent align="end">
-        <PopoverHeader>
-          <PopoverTitle>{title}</PopoverTitle>
-          <PopoverDescription>{tooltipMessage}</PopoverDescription>
-        </PopoverHeader>
-        <div className="thin-scrollbar max-h-64 space-y-1 overflow-y-auto">
-          {isError ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia>
-                  <Ban />
-                </EmptyMedia>
-                <EmptyTitle>Ошибка загрузки</EmptyTitle>
-                <EmptyDescription>
-                  Произошла ошибка при загрузке модуля. Попробуйте обновить страницу.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            alerts.map((alert) => <FeedCard key={getSmartFeedAlertId(alert)} alert={alert} />)
-          )}
+      <PopoverContent align="end" sideOffset={8} className="w-max min-w-96 justify-start gap-0 p-0">
+        <div className="border-border flex w-full items-center justify-between border-b px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className={cn('flex h-3.5 w-3.5 items-center')}>{icon}</span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{title}</p>
+              <div className="text-muted-foreground truncate text-xs">
+                {amount}
+                {snoozedAmount > 0 && ` (${snoozedAmount} отложено)`}
+              </div>
+            </div>
+          </div>
+          <div>
+            {snoozeAll && amount > 0 && (
+              <SnoozeDaysMenu
+                trigger={<Button size={'icon'} variant={'ghost'} title="Отложить все" />}
+                onSelect={snoozeAll}
+              >
+                <BellOff />
+              </SnoozeDaysMenu>
+            )}
+            {restoreAll && snoozedAmount > 0 && (
+              <Button size={'icon'} variant={'ghost'} onClick={restoreAll} title="Восстановить все">
+                <RotateCcw />
+              </Button>
+            )}
+          </div>
+          {/*<span className={cn('text-xs font-semibold tabular-nums')}>{snoozedCount}</span>*/}
         </div>
+
+        {isError ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Ban />
+              </EmptyMedia>
+              <EmptyTitle>Ошибка загрузки</EmptyTitle>
+              <EmptyDescription>
+                Произошла ошибка при загрузке модуля. Попробуйте обновить страницу.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : amount > 0 ? (
+          children
+        ) : (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>{icon}</EmptyMedia>
+              <EmptyTitle>Нет уведомлений</EmptyTitle>
+              <EmptyDescription>
+                {description ?? 'На данный момент нет элементов, требующих внимания.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
       </PopoverContent>
     </Popover>
   )
