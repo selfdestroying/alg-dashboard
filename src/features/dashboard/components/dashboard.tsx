@@ -13,6 +13,12 @@ import {
   CardTitle,
 } from '@/src/components/ui/card'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/src/components/ui/dropdown-menu'
+import {
   Empty,
   EmptyDescription,
   EmptyHeader,
@@ -22,10 +28,10 @@ import {
 import { Input } from '@/src/components/ui/input'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import AttendanceActions from '@/src/features/lessons/components/attendance-actions'
 import { AttendanceStatusSwitcher } from '@/src/features/lessons/components/attendance-status-switcher'
 import { useUpdateAttendanceCommentMutation } from '@/src/features/lessons/queries'
+import { useOrganizationPermissionQuery } from '@/src/features/organization/queries'
 import { formatDateOnly, moscowNow } from '@/src/lib/timezone'
 import { cn, getFullName } from '@/src/lib/utils'
 import { format, isSameDay } from 'date-fns'
@@ -585,7 +591,7 @@ function LessonsTable({ lessons }: { lessons: DashboardLessonItem[] }) {
               </span>
             </th>
             <th className="px-2 py-2 text-center font-medium">Статус</th>
-            <th className="px-2 py-2 text-right font-medium">Действия</th>
+            <th className="px-2 py-2 text-right font-medium"></th>
           </tr>
         </thead>
         <tbody>
@@ -661,15 +667,7 @@ function LessonsTable({ lessons }: { lessons: DashboardLessonItem[] }) {
                     )}
                   </td>
                   <td className="px-2 py-2 text-right" onClick={(event) => event.stopPropagation()}>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      render={<Link href={`/lessons/${lesson.id}`} />}
-                      nativeButton={false}
-                    >
-                      Детали
-                      <SquareArrowOutUpRight />
-                    </Button>
+                    <LessonActions lesson={lesson} />
                   </td>
                 </tr>
                 {isOpen && hasAttendance && <LessonAttendanceRows lesson={lesson} />}
@@ -679,6 +677,27 @@ function LessonsTable({ lessons }: { lessons: DashboardLessonItem[] }) {
         </tbody>
       </table>
     </div>
+  )
+}
+
+function LessonActions({ lesson }: { lesson: DashboardLessonItem }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+        <SquareArrowOutUpRight />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem render={<Link href={`/lessons/${lesson.id}`} />} nativeButton={false}>
+          В урок
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={<Link href={`/groups/${lesson.group.id}`} />}
+          nativeButton={false}
+        >
+          В группу
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
