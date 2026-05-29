@@ -3,9 +3,9 @@ model Group {
     startDate      DateTime  @db.Date
     maxStudents    Int
     url            String?
-    isArchived     Boolean   @default(false)
-    archivedAt     DateTime? @db.Date
-    archiveComment String?
+    status     GroupStatus   @default(ACTIVE)
+    statusChangedAt     DateTime? @db.Date
+    statusComment String?
     createdAt      DateTime  @default(now())
     updatedAt      DateTime  @updatedAt
 
@@ -30,7 +30,6 @@ model Group {
     @@index([courseId])
     @@index([locationId])
     @@index([groupTypeId])
-    @@index([isArchived])
 }
 
 model GroupSchedule {
@@ -122,10 +121,8 @@ model GroupType {
 
 model StudentGroup {
     status          StudentStatus
-    dismissComment  String?
-    dismissedAt     DateTime?     @db.Date
-    transferComment String?
-    transferredAt   DateTime?     @db.Date
+    statusChangedAt DateTime      @default(now())
+    statusComment   String?
     createdAt       DateTime      @default(now())
     updatedAt       DateTime      @updatedAt
 

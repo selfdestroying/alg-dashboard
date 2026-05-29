@@ -10,6 +10,13 @@ enum OrderStatus {
     CANCELLED
 }
 
+enum GroupStatus {
+    ACTIVE
+    ARCHIVED
+    COMPLETED
+}
+
+
 enum LessonStatus {
     ACTIVE
     CANCELLED
@@ -20,6 +27,7 @@ enum StudentStatus {
     ACTIVE
     DISMISSED
     TRANSFERRED
+    COMPLETED
 }
 
 enum StudentLessonsBalanceChangeReason {
