@@ -25,22 +25,42 @@ import { useMemo } from 'react'
 import { useGroupListQuery } from '../queries'
 import type { GroupWithRelations } from '../types'
 
+const groupStatusConfig: Record<
+  Exclude<GroupWithRelations['status'], 'ACTIVE'>,
+  { label: string; variant: 'secondary' | 'success'; className?: string }
+> = {
+  ARCHIVED: {
+    label: 'Архивная',
+    variant: 'secondary',
+    className: 'text-muted-foreground',
+  },
+  COMPLETED: {
+    label: 'Завершена',
+    variant: 'success',
+  },
+}
+
 const columns: ColumnDef<GroupWithRelations>[] = [
   {
     header: 'Группа',
     accessorFn: (value) => value.id,
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Link href={`/groups/${row.original.id}`} className="text-primary hover:underline">
-          {getGroupName(row.original)}
-        </Link>
-        {row.original.isArchived && (
-          <Badge variant="secondary" className="text-muted-foreground">
-            Архивная
-          </Badge>
-        )}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const statusConfig =
+        row.original.status === 'ACTIVE' ? null : groupStatusConfig[row.original.status]
+
+      return (
+        <div className="flex items-center gap-2">
+          <Link href={`/groups/${row.original.id}`} className="text-primary hover:underline">
+            {getGroupName(row.original)}
+          </Link>
+          {statusConfig && (
+            <Badge variant={statusConfig.variant} className={statusConfig.className}>
+              {statusConfig.label}
+            </Badge>
+          )}
+        </div>
+      )
+    },
   },
   {
     header: 'Расписание',

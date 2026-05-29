@@ -76,7 +76,8 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
   const [dismissDialogOpen, setDismissDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const { data: groups } = useGroupListQuery()
+  const { data: allGroups } = useGroupListQuery()
+  const groups = allGroups?.filter((g) => g.status === 'ACTIVE')
 
   const dismissMutation = useDismissStudentMutation()
   const transferMutation = useTransferStudentMutation()
@@ -101,7 +102,7 @@ export default function GroupStudentActions({ sg }: UsersActionsProps) {
       {
         studentId: sg.student.id,
         groupId: sg.groupId,
-        dismissedAt: values.date,
+        statusChangedAt: values.date,
         comment: values.comment,
       },
       {

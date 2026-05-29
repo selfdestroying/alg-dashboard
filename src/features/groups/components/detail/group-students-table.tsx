@@ -20,10 +20,10 @@ function GroupStudentActionsCell({ sg }: { sg: StudentGroupWithStudent }) {
 
 export default function GroupStudentsTable({
   data,
-  isArchived,
+  isActive,
 }: {
   data: StudentGroupWithStudent[]
-  isArchived?: boolean
+  isActive?: boolean
 }) {
   const columns: ColumnDef<StudentGroupWithStudent>[] = useMemo(
     () => [
@@ -67,10 +67,10 @@ export default function GroupStudentsTable({
       },
       {
         id: 'actions',
-        cell: ({ row }) => !isArchived && <GroupStudentActionsCell sg={row.original} />,
+        cell: ({ row }) => isActive && <GroupStudentActionsCell sg={row.original} />,
       },
     ],
-    [isArchived],
+    [isActive],
   )
   const table = useReactTable({
     data,

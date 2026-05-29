@@ -18,10 +18,10 @@ function GroupTeacherActionsCell({ tg }: { tg: TeacherGroupWithRate }) {
 
 export default function GroupTeachersTable({
   data,
-  isArchived,
+  isActive,
 }: {
   data: TeacherGroupWithRate[]
-  isArchived?: boolean
+  isActive?: boolean
 }) {
   const columns: ColumnDef<TeacherGroupWithRate>[] = useMemo(
     () => [
@@ -52,10 +52,10 @@ export default function GroupTeachersTable({
       },
       {
         id: 'actions',
-        cell: ({ row }) => !isArchived && <GroupTeacherActionsCell tg={row.original} />,
+        cell: ({ row }) => isActive && <GroupTeacherActionsCell tg={row.original} />,
       },
     ],
-    [isArchived],
+    [isActive],
   )
   const table = useReactTable({
     data,

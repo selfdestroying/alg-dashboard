@@ -27,9 +27,9 @@ import { moscowNow, normalizeDateOnly } from '@/src/lib/timezone'
 import { ru } from 'date-fns/locale'
 import { CalendarIcon, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
-import { useArchiveGroupMutation, useFutureLessonsCountQuery } from '../../queries'
+import { useCompleteGroupMutation, useFutureLessonsCountQuery } from '../../queries'
 
-interface ArchiveGroupButtonProps {
+interface CompleteGroupDialogProps {
   groupId: number
   isOpen: boolean
   onClose: () => void
@@ -39,7 +39,11 @@ function getFullDateString(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: ArchiveGroupButtonProps) {
+export default function CompleteGroupDialog({
+  groupId,
+  isOpen,
+  onClose,
+}: CompleteGroupDialogProps) {
   const [statusChangedAt, setStatusChangedAt] = useState<Date | undefined>(undefined)
   const [comment, setComment] = useState('')
   const [deleteFutureLessons, setDeleteFutureLessons] = useState(false)
@@ -52,10 +56,10 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
     { enabled: isOpen },
   )
 
-  const archiveMutation = useArchiveGroupMutation()
+  const completeMutation = useCompleteGroupMutation()
 
-  const handleArchive = () => {
-    archiveMutation.mutate(
+  const handleComplete = () => {
+    completeMutation.mutate(
       {
         groupId,
         statusChangedAt: getFullDateString(statusChangedAt ?? normalizeDateOnly(moscowNow())),
@@ -83,16 +87,16 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Архивировать группу</DialogTitle>
+          <DialogTitle>Завершить группу</DialogTitle>
           <DialogDescription>
-            Группа будет помечена как архивная и перестанет отображаться в выпадающих списках.
+            Группа будет помечена как завершённая и перестанет отображаться в выпадающих списках.
             Данные о посещаемости и история сохранятся.
           </DialogDescription>
         </DialogHeader>
 
         <FieldGroup className="gap-3">
           <Field>
-            <FieldLabel>Дата архивации</FieldLabel>
+            <FieldLabel>Дата завершения</FieldLabel>
             <Popover>
               <PopoverTrigger render={<Button variant="outline" className="w-full font-normal" />}>
                 <CalendarIcon />
@@ -118,7 +122,7 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
           <Field>
             <FieldLabel>Комментарий</FieldLabel>
             <Textarea
-              placeholder="Причина архивации (необязательно)"
+              placeholder="Комментарий к завершению (необязательно)"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={2}
@@ -131,7 +135,7 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
                 <FieldContent>
                   <FieldTitle>Удалить будущие уроки</FieldTitle>
                   <FieldDescription>
-                    Уроки начиная с даты архивации будут удалены вместе с данными посещаемости
+                    Уроки начиная с даты завершения будут удалены вместе с данными посещаемости
                   </FieldDescription>
                 </FieldContent>
                 <Switch checked={deleteFutureLessons} onCheckedChange={setDeleteFutureLessons} />
@@ -154,11 +158,11 @@ export default function ArchiveGroupDialog({ groupId, isOpen, onClose }: Archive
         <DialogFooter>
           <DialogClose render={<Button variant="secondary" />}>Отмена</DialogClose>
           <Button
-            variant="destructive"
-            onClick={handleArchive}
-            disabled={archiveMutation.isPending}
+            className="bg-success/10 text-success hover:bg-success/20 focus-visible:border-success/40 focus-visible:ring-success/20 dark:bg-success/20 dark:hover:bg-success/30 dark:focus-visible:ring-success/40"
+            onClick={handleComplete}
+            disabled={completeMutation.isPending}
           >
-            Архивировать
+            Завершить
           </Button>
         </DialogFooter>
       </DialogContent>

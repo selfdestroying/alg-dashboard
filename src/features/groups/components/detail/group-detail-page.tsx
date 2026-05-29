@@ -42,6 +42,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
 
   const currentStudents = group.students.map((gs) => gs.student)
   const excludeStudentIds = group.students.map((gs) => gs.studentId)
+  const isActive = group.status === 'ACTIVE'
 
   return (
     <div className="space-y-2">
@@ -50,14 +51,14 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
         <Card>
           <CardHeader>
             <CardTitle>Преподаватели</CardTitle>
-            {canCreateTeacherGroup?.success && !group.isArchived && (
+            {canCreateTeacherGroup?.success && isActive && (
               <CardAction>
                 <AddTeacherToGroupButton group={group} />
               </CardAction>
             )}
           </CardHeader>
           <CardContent>
-            <GroupTeachersTable data={group.teachers} isArchived={group.isArchived} />
+            <GroupTeachersTable data={group.teachers} isActive={isActive} />
           </CardContent>
         </Card>
       </div>
@@ -68,7 +69,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
             Посещаемость
             <Hint text="Зелёный - присутствовал, красный - пропустил, градиент - пробный ученик. Контур ячейки показывает статус отработки." />
           </CardTitle>
-          {canCreateLesson?.success && !group.isArchived && (
+          {canCreateLesson?.success && isActive && (
             <CardAction>
               <AddLessonButton groupId={group.id} />
             </CardAction>
@@ -85,7 +86,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
       <Card>
         <CardHeader>
           <CardTitle>Список учеников</CardTitle>
-          {canCreateStudentGroup?.success && !group.isArchived && (
+          {canCreateStudentGroup?.success && isActive && (
             <CardAction>
               <AddStudentToGroupButton
                 groupId={group.id}
@@ -96,7 +97,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
           )}
         </CardHeader>
         <CardContent>
-          <GroupStudentsTable data={group.students} isArchived={group.isArchived} />
+          <GroupStudentsTable data={group.students} isActive={isActive} />
         </CardContent>
       </Card>
     </div>

@@ -12,9 +12,46 @@ import { formatDateOnly } from '@/src/lib/timezone'
 import { DaysOfWeek } from '@/src/lib/utils'
 
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/src/components/ui/item'
-import { Archive, Book, Calendar, ExternalLink, MapPin, Tag, Users } from 'lucide-react'
+import {
+  Archive,
+  Book,
+  Calendar,
+  CheckCircle2,
+  ExternalLink,
+  MapPin,
+  Tag,
+  Users,
+} from 'lucide-react'
 import type { GroupDetailFull } from '../../types'
 import InfoSectionAction from './info-section-action'
+
+type InactiveGroupStatus = Exclude<GroupDetailFull['status'], 'ACTIVE'>
+
+const groupStatusConfig: Record<
+  InactiveGroupStatus,
+  {
+    label: string
+    Icon: typeof Archive
+    itemClassName: string
+    iconClassName: string
+    descriptionClassName: string
+  }
+> = {
+  ARCHIVED: {
+    label: 'архивирована',
+    Icon: Archive,
+    itemClassName: '',
+    iconClassName: '',
+    descriptionClassName: '',
+  },
+  COMPLETED: {
+    label: 'завершена',
+    Icon: CheckCircle2,
+    itemClassName: 'border-success/20 bg-success/10 text-success dark:bg-success/20',
+    iconClassName: 'text-success',
+    descriptionClassName: 'text-success/80',
+  },
+}
 
 export default function InfoSection({
   group,
@@ -26,26 +63,33 @@ export default function InfoSection({
   const sortedSchedules = [...group.schedules].sort(
     (a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7),
   )
+  const isActive = group.status === 'ACTIVE'
+  const statusConfig = isActive ? null : groupStatusConfig[group.status as InactiveGroupStatus]
 
   return (
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Информация о группе</CardTitle>
-        {!group.isArchived ? (
+        {isActive ? (
           <CardAction>
             <InfoSectionAction group={group} canArchive={canArchive} />
           </CardAction>
         ) : (
           <CardDescription>
-            <Item variant="muted">
-              <ItemMedia variant="icon">
-                <Archive />
+            <Item variant="muted" className={statusConfig?.itemClassName}>
+              <ItemMedia variant="icon" className={statusConfig?.iconClassName}>
+                {statusConfig && <statusConfig.Icon />}
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>
-                  Группа архивирована {group.archivedAt && formatDateOnly(group.archivedAt)}
+                  Группа {statusConfig?.label}{' '}
+                  {group.statusChangedAt && formatDateOnly(group.statusChangedAt)}
                 </ItemTitle>
-                <ItemDescription>Комментарий: {group.archiveComment}</ItemDescription>
+                {group.statusComment && (
+                  <ItemDescription className={statusConfig?.descriptionClassName}>
+                    Комментарий: {group.statusComment}
+                  </ItemDescription>
+                )}
               </ItemContent>
             </Item>
           </CardDescription>
