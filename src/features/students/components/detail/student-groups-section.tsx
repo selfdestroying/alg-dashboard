@@ -48,6 +48,7 @@ const StudentStatusMap = {
   TRIAL: 'Пробный',
   DISMISSED: 'Отчислен',
   TRANSFERRED: 'Переведён',
+  COMPLETED: 'Завершил',
 } as const
 
 // ─── Stats helpers ──────────────────────────────────────────────────────────
@@ -127,7 +128,9 @@ export default function StudentGroupsSection({
   const { data: allGroups = [] } = useGroupListQuery()
 
   const studentGroupIds = new Set(student.groups.map((g) => g.groupId))
-  const availableGroups = allGroups.filter((g) => !studentGroupIds.has(g.id) && !g.isArchived)
+  const availableGroups = allGroups.filter(
+    (g) => !studentGroupIds.has(g.id) && g.status === 'ACTIVE',
+  )
 
   return (
     <div className="space-y-4">
@@ -225,8 +228,8 @@ function GroupCard({
 function getStatusBadge(sg: StudentGroupWithStats) {
   switch (sg.status) {
     case 'DISMISSED': {
-      const date = sg.dismissedAt
-        ? formatDateOnly(sg.dismissedAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
+      const date = sg.statusChangedAt
+        ? formatDateOnly(sg.statusChangedAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
         : null
 
       return (
@@ -241,14 +244,14 @@ function getStatusBadge(sg: StudentGroupWithStats) {
           />
           <TooltipContent>
             <p>Дата: {date ?? 'Не указана'}</p>
-            <p>Комментарий: {sg.dismissComment?.trim() || 'Не указан'}</p>
+            <p>Комментарий: {sg.statusComment?.trim() || 'Не указан'}</p>
           </TooltipContent>
         </Tooltip>
       )
     }
     case 'TRANSFERRED': {
-      const date = sg.transferredAt
-        ? formatDateOnly(sg.transferredAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
+      const date = sg.statusChangedAt
+        ? formatDateOnly(sg.statusChangedAt, { day: '2-digit', month: '2-digit', year: 'numeric' })
         : null
 
       return (
@@ -263,11 +266,13 @@ function getStatusBadge(sg: StudentGroupWithStats) {
           />
           <TooltipContent>
             <p>Дата: {date ?? 'Не указана'}</p>
-            <p>Комментарий: {sg.transferComment?.trim() || 'Не указан'}</p>
+            <p>Комментарий: {sg.statusComment?.trim() || 'Не указан'}</p>
           </TooltipContent>
         </Tooltip>
       )
     }
+    case 'COMPLETED':
+      return <Badge variant="success">{StudentStatusMap.COMPLETED}</Badge>
     case 'TRIAL':
       return <Badge variant="secondary">{StudentStatusMap.TRIAL}</Badge>
     default:

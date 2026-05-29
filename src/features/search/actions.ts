@@ -30,7 +30,7 @@ export const globalSearch = authAction
       prisma.group.findMany({
         where: {
           organizationId: orgId,
-          isArchived: false,
+          status: 'ACTIVE',
           OR: [
             { course: { name: { contains: q, mode: 'insensitive' } } },
             { location: { name: { contains: q, mode: 'insensitive' } } },

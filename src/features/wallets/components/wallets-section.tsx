@@ -116,7 +116,7 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
 
   const unlinkedGroups = student.groups.filter(
     (sg) =>
-      (sg.status === 'ACTIVE' || sg.status === 'TRIAL') &&
+      (sg.status === 'ACTIVE' || sg.status === 'TRIAL' || sg.status === 'COMPLETED') &&
       !student.wallets.some((w) => w.studentGroups.some((wsg) => wsg.groupId === sg.groupId)),
   )
 
@@ -456,7 +456,10 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                   <div className="text-muted-foreground space-y-0.5 text-[0.625rem]">
                     <span>Группы:</span>
                     {w.studentGroups.map((sg) => {
-                      const isInactive = sg.status === 'DISMISSED' || sg.status === 'TRANSFERRED'
+                      const isInactive =
+                        sg.status === 'DISMISSED' ||
+                        sg.status === 'TRANSFERRED' ||
+                        sg.status === 'COMPLETED'
                       return (
                         <div
                           key={sg.groupId}
@@ -475,6 +478,11 @@ export default function WalletsSection({ student }: WalletsSectionProps) {
                             {sg.status === 'TRANSFERRED' && (
                               <Badge variant="outline" className="px-1 py-0 text-[0.5rem]">
                                 Переведён
+                              </Badge>
+                            )}
+                            {sg.status === 'COMPLETED' && (
+                              <Badge variant="outline" className="px-1 py-0 text-[0.5rem]">
+                                Завершён
                               </Badge>
                             )}
                           </div>

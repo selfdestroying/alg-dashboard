@@ -143,7 +143,7 @@ export const getDismissedStatistics = authAction
           },
           student: true,
         },
-        orderBy: { dismissedAt: 'asc' },
+        orderBy: { statusChangedAt: 'asc' },
       }),
       prisma.teacherGroup.findMany({
         where: { organizationId },
@@ -168,7 +168,7 @@ export const getDismissedStatistics = authAction
 
     const monthlyStatsMap = new Map<string, { count: number; timestamp: number }>()
     dismissed.forEach((item) => {
-      const date = item.dismissedAt ? new Date(item.dismissedAt) : new Date(item.updatedAt)
+      const date = item.statusChangedAt ? new Date(item.statusChangedAt) : new Date(item.updatedAt)
       const y = date.getUTCFullYear()
       const m = date.getUTCMonth()
       const key = `${y}-${String(m + 1).padStart(2, '0')}`

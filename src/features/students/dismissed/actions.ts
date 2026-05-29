@@ -26,7 +26,7 @@ export const getDismissedStudents = authAction
         },
         student: true,
       },
-      orderBy: { dismissedAt: 'desc' },
+      orderBy: { statusChangedAt: 'desc' },
     })
   })
 
@@ -53,8 +53,8 @@ export const returnToGroup = authAction
         where: { studentId_groupId: { studentId, groupId } },
         data: {
           status: 'ACTIVE',
-          dismissComment: null,
-          dismissedAt: null,
+          statusComment: null,
+          statusChangedAt: normalizeDateOnly(moscowNow()),
         },
       })
 

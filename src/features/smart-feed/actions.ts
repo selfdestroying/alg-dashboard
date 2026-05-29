@@ -90,7 +90,7 @@ export const getLowBalance = authAction
           where: {
             status: { in: ['ACTIVE', 'TRIAL'] },
             group: {
-              isArchived: false,
+              status: 'ACTIVE',
             },
           },
           include: { group: { include: { course: true } } },
@@ -151,7 +151,7 @@ export const getAbsentStreak = authAction
     const groups = await prisma.group.findMany({
       where: {
         organizationId: ctx.session.organizationId!,
-        isArchived: false,
+        status: 'ACTIVE',
       },
       select: {
         id: true,

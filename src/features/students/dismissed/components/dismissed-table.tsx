@@ -90,8 +90,8 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   {
     header: 'Комментарий',
     cell: ({ row }) => (
-      <p className="max-w-52 truncate" title={row.original.dismissComment || ''}>
-        {row.original.dismissComment || '-'}
+      <p className="max-w-52 truncate" title={row.original.statusComment || ''}>
+        {row.original.statusComment || '-'}
       </p>
     ),
   },
@@ -105,8 +105,9 @@ const columns: ColumnDef<DismissedWithStudentAndGroup>[] = [
   },
   {
     header: 'Дата отчисления',
-    accessorKey: 'dismissedAt',
-    cell: ({ row }) => (row.original.dismissedAt ? formatDateOnly(row.original.dismissedAt) : '-'),
+    accessorKey: 'statusChangedAt',
+    cell: ({ row }) =>
+      row.original.statusChangedAt ? formatDateOnly(row.original.statusChangedAt) : '-',
   },
   {
     id: 'actions',

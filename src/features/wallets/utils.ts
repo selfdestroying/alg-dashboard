@@ -33,7 +33,7 @@ export function getBadgeVariant(variant: BalanceVariant) {
 
 export function getWalletLabel(w: WalletWithGroups) {
   const activeGroups = w.studentGroups.filter(
-    (sg) => sg.status === 'ACTIVE' || sg.status === 'TRIAL',
+    (sg) => sg.status === 'ACTIVE' || sg.status === 'TRIAL' || sg.status === 'COMPLETED',
   )
   const groupNames = activeGroups.map((sg) => getGroupName(sg.group)).join(', ')
   return w.name ? `${w.name} (${groupNames || 'без групп'})` : groupNames || `Кошелёк #${w.id}`
