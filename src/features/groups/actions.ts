@@ -8,6 +8,7 @@ import {
   AddStudentToGroupSchema,
   AddTeacherToGroupSchema,
   ArchiveGroupSchema,
+  CompleteGroupSchema,
   CreateGroupSchema,
   CreateLessonForGroupSchema,
   DeleteGroupSchema,
@@ -29,7 +30,7 @@ export const getGroups = authAction
   .metadata({ actionName: 'getGroups' })
   .action(async ({ ctx }) => {
     return await prisma.group.findMany({
-      where: { organizationId: ctx.session.organizationId!, isArchived: false },
+      where: { organizationId: ctx.session.organizationId! },
       include: {
         groupType: { include: { rate: true } },
         location: true,
@@ -174,23 +175,60 @@ export const archiveGroup = authAction
   .metadata({ actionName: 'archiveGroup' })
   .inputSchema(ArchiveGroupSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { groupId, archivedAt, comment, deleteFutureLessons } = parsedInput
-    const archivedAtDate = new Date(
-      archivedAt ?? normalizeDateOnly(moscowNow()).toISOString().split('T')[0]!,
+    const { groupId, statusChangedAt, comment, deleteFutureLessons } = parsedInput
+    const statusChangedAtDate = new Date(
+      statusChangedAt ?? normalizeDateOnly(moscowNow()).toISOString().split('T')[0]!,
     )
     await prisma.$transaction(async (tx) => {
       await tx.group.update({
         where: { id: groupId, organizationId: ctx.session.organizationId! },
         data: {
-          isArchived: true,
-          archivedAt: archivedAtDate,
-          archiveComment: comment ?? null,
+          status: 'ARCHIVED',
+          statusChangedAt: statusChangedAtDate,
+          statusComment: comment ?? null,
         },
       })
 
       if (deleteFutureLessons) {
         await tx.lesson.deleteMany({
-          where: { groupId, date: { gte: archivedAtDate } },
+          where: { groupId, date: { gte: statusChangedAtDate } },
+        })
+      }
+    })
+  })
+
+// ─── COMPLETE ───────────────────────────────────────────────────────
+
+export const completeGroup = authAction
+  .metadata({ actionName: 'completeGroup' })
+  .inputSchema(CompleteGroupSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    const { groupId, statusChangedAt, comment, deleteFutureLessons } = parsedInput
+    const statusChangedAtDate = new Date(
+      statusChangedAt ?? normalizeDateOnly(moscowNow()).toISOString().split('T')[0]!,
+    )
+    await prisma.$transaction(async (tx) => {
+      await tx.group.update({
+        where: { id: groupId, organizationId: ctx.session.organizationId! },
+        data: {
+          status: 'COMPLETED',
+          statusChangedAt: statusChangedAtDate,
+          statusComment: comment ?? null,
+        },
+      })
+
+      await tx.studentGroup.updateMany({
+        where: { groupId, status: { in: ['ACTIVE', 'TRIAL'] } },
+        data: {
+          status: 'COMPLETED',
+          statusChangedAt: statusChangedAtDate,
+          statusComment: null,
+        },
+      })
+
+      if (deleteFutureLessons) {
+        await tx.lesson.deleteMany({
+          where: { groupId, date: { gte: statusChangedAtDate } },
         })
       }
     })
@@ -398,7 +436,7 @@ export const getGroupDetail = authAction
         groupType: { include: { rate: true } },
         teachers: { include: { teacher: true, rate: true } },
         students: {
-          where: { status: { in: ['ACTIVE', 'TRIAL'] } },
+          where: { status: { in: ['ACTIVE', 'TRIAL', 'COMPLETED'] } },
           include: { student: true },
         },
       },
@@ -484,7 +522,7 @@ export const dismissStudentFromGroup = authAction
   .metadata({ actionName: 'dismissStudentFromGroup' })
   .inputSchema(DismissStudentSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { studentId, groupId, dismissedAt, comment } = parsedInput
+    const { studentId, groupId, statusChangedAt, comment } = parsedInput
     await prisma.$transaction(async (tx) => {
       // Verify org ownership
       await tx.group.findFirstOrThrow({
@@ -496,8 +534,8 @@ export const dismissStudentFromGroup = authAction
         },
         data: {
           status: 'DISMISSED',
-          dismissComment: comment,
-          dismissedAt,
+          statusComment: comment,
+          statusChangedAt,
         },
       })
 
@@ -543,8 +581,8 @@ export const transferStudent = authAction
         where: { studentId_groupId: { studentId, groupId: oldGroupId } },
         data: {
           status: 'TRANSFERRED',
-          transferredAt: normalizeDateOnly(moscowNow()),
-          transferComment: `Переведён в группу ${newGroupName}`,
+          statusChangedAt: normalizeDateOnly(moscowNow()),
+          statusComment: `Переведён в группу ${newGroupName}`,
         },
       })
 
@@ -560,10 +598,8 @@ export const transferStudent = authAction
           where: { studentId_groupId: { studentId, groupId: newGroupId } },
           data: {
             status: 'ACTIVE',
-            dismissComment: null,
-            dismissedAt: null,
-            transferComment: null,
-            transferredAt: null,
+            statusComment: null,
+            statusChangedAt: normalizeDateOnly(moscowNow()),
             walletId: oldSg.walletId,
           },
         })

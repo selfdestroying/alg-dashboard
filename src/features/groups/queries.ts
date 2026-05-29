@@ -4,6 +4,7 @@ import {
   addStudentToGroup,
   addTeacherToGroup,
   archiveGroup,
+  completeGroup,
   countFutureLessons,
   createGroup,
   createLessonForGroup,
@@ -24,6 +25,7 @@ import type {
   AddStudentToGroupSchemaType,
   AddTeacherToGroupSchemaType,
   ArchiveGroupSchemaType,
+  CompleteGroupSchemaType,
   CreateGroupSchemaType,
   CreateLessonForGroupSchemaType,
   DeleteGroupSchemaType,
@@ -142,11 +144,29 @@ export const useArchiveGroupMutation = () => {
       if (serverError) throw serverError
       return data
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: groupKeys.all })
+      queryClient.invalidateQueries({ queryKey: groupKeys.detail(variables.groupId) })
       toast.success('Группа успешно архивирована!')
     },
     onError: () => toast.error('Ошибка при архивации группы.'),
+  })
+}
+
+export const useCompleteGroupMutation = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (values: CompleteGroupSchemaType) => {
+      const { data, serverError } = await completeGroup(values)
+      if (serverError) throw serverError
+      return data
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: groupKeys.all })
+      queryClient.invalidateQueries({ queryKey: groupKeys.detail(variables.groupId) })
+      toast.success('Группа успешно завершена!')
+    },
+    onError: () => toast.error('Ошибка при завершении группы.'),
   })
 }
 

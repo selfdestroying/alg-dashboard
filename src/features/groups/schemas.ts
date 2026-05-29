@@ -44,7 +44,15 @@ export const DeleteGroupSchema = z.object({
 // ─── Archive ────────────────────────────────────────────────────────
 export const ArchiveGroupSchema = z.object({
   groupId: z.number().int().positive(),
-  archivedAt: z.string().optional(),
+  statusChangedAt: z.string().optional(),
+  comment: z.string().optional(),
+  deleteFutureLessons: z.boolean(),
+})
+
+// ─── Complete ───────────────────────────────────────────────────────
+export const CompleteGroupSchema = z.object({
+  groupId: z.number().int().positive(),
+  statusChangedAt: z.string().optional(),
   comment: z.string().optional(),
   deleteFutureLessons: z.boolean(),
 })
@@ -81,7 +89,7 @@ export const DeleteStudentGroupSchema = z.object({
 export const DismissStudentSchema = z.object({
   studentId: z.int().positive(),
   groupId: z.int().positive(),
-  dismissedAt: DateOnlySchema,
+  statusChangedAt: DateOnlySchema,
   comment: z.string('Укажите комментарий'),
 })
 
@@ -127,6 +135,7 @@ export type CreateGroupSchemaType = z.infer<typeof CreateGroupSchema>
 export type UpdateGroupSchemaType = z.infer<typeof UpdateGroupSchema>
 export type DeleteGroupSchemaType = z.infer<typeof DeleteGroupSchema>
 export type ArchiveGroupSchemaType = z.infer<typeof ArchiveGroupSchema>
+export type CompleteGroupSchemaType = z.infer<typeof CompleteGroupSchema>
 export type UpdateScheduleAndLessonsSchemaType = z.infer<typeof UpdateScheduleAndLessonsSchema>
 export type UpdateScheduleOnlySchemaType = z.infer<typeof UpdateScheduleOnlySchema>
 export type AddStudentToGroupSchemaType = z.infer<typeof AddStudentToGroupSchema>
